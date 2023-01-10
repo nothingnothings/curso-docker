@@ -1,0 +1,292 @@
+
+
+
+
+
+
+
+
+
+JÁ TEMOS 1 BOA IDEIA DO QUE É O DOCKER,
+
+O QUE SÃO CONTAINERS,
+
+E 
+
+PQ 
+
+PODE 
+
+SER 
+
+BOM TRABALHAR COM ISSO....
+
+
+
+
+
+
+
+
+
+
+BEM, PARA TRABALHAR COM O DOCKER,
+
+PRECISAMOS 
+
+O INSTALAR...
+
+
+
+
+
+
+
+
+
+--> PARA TRABALHAR COM ESSES CONTAINERS, CRIÁ-LOS,
+
+
+PRECISAMOS 
+
+INSTALAR 
+
+O DOCKER...
+
+
+
+
+
+
+
+--> A DEPENDER DO SEU SISTEMA OPERACIONAL,
+
+AS STEPS MUDAM --> 
+
+
+
+
+
+TAMBÉM 
+
+PRECISAMOS DE ALGUNS REQUISITOS DE SISTEMA ESPECÍFICOS...
+
+
+
+
+
+
+
+
+
+
+
+
+DEV DOCS --> no site do docker --> AÍ TEMOS 'DOWNLOAD E INSTALL' .. ---> 
+
+
+
+
+
+
+ESCOLHA SEU 
+
+DEV SYSTEM...
+
+
+
+
+
+
+
+--> REQUISITOS DE SISTEMA...
+
+
+
+
+
+
+--> NO MAC, precisamos de 1 modelo mais recente do que 2010...
+
+
+
+
+
+
+
+
+
+
+------> PARA WINDOWS,
+
+PRECISAMOS DE VERSIONS ESPECÍFICAS..
+
+
+
+
+
+
+
+
+
+--> A INSTALAÇÃO DO LINUX É BEM MAIS FÁCIL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA O MACOS,
+
+SE OS REQUISITOS SÃO SATISFEITOS,
+
+VOCÊ INSTALA A TOOL CHAMADA DE 'DOCKER DESKTOP'... ------>
+
+
+
+
+SE OS REQUISITOS NÃO SÃO SATISFEITOS,
+
+
+USAMOS A 'DOCKER TOOLBOX'...
+
+
+
+
+
+
+
+
+
+
+
+--> PARA O WINDOWS, 
+
+MESMA COISA:
+
+
+
+
+
+TENTAMOS INSTALAR 'DOCKER DESKTOP',
+
+SENÃO 
+
+TENTAMOS INSTALAR O  'DOCKER TOOLBOX'..
+
+
+
+
+
+
+
+
+
+--> JÁ O LINUX NATIVAMENTE SUPORTA A DOCKER ENGINE --> 
+
+
+AÍ VOCÊ 
+
+INSTALA 
+
+
+A 'DOCKER ENGINE'... -------> e pronto...
+
+
+
+
+
+
+
+--> JÁ 
+
+O 
+'docker toolbox' e 'docker desktop' 
+
+
+BASICAMENTE 
+
+
+TENTAM REPLICAR A TECNOLOGIA DO 'DOCKER ENGINE'
+
+
+NO WINDOWS 
+
+E NO MACOS...
+
+
+
+
+
+
+
+
+
+
+
+
+----> OK... TENTAR INSTALAR NO WINDOWS...
+
+
+
+
+
+
+
+--> PRECISAMOS DA 'DOCKER DESKTOP' TOOL....
+
+
+
+
+
+
+
+
+
+NAS PRÓXIMAS LIÇÕES,
+
+O PROFESSOR 
+
+VAI MOSTRAR 
+
+
+
+A INSTALAÇÃO NO MACOS 
+
+e no windows..
+
+
+
+
+
+
+TAMBÉM O DOCKER DESKTOP E DOCKER TOOLBOX..
+
+
+
+
+
+
+
+
+
+
+quando instalarmos a coisa adequada,
+
+
+poderemos usar o docker...
+
+
+
+VAMOS RODAR OS MESMOS COMANDOS NO WINDOWS...
+
+
+
+-> TUDO O QUE É MOSTRADO NAS AULAS DE 'MACOS' DEVE SER FEITO IGUALMENTE NO WINDOWS...
