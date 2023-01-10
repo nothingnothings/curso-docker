@@ -1,0 +1,1022 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AGORA QUE SABEMOS O QUE SÃO CONTAINERS,
+
+E QUE O DOCKER NOS AJUDA A CRIÁ-LOS,
+
+
+
+
+
+
+O PROFESSOR 
+
+
+JÁ DESTACOU ALGUMAS DAS VANTAGENS..
+
+
+
+
+
+
+
+
+
+
+MAS TALVEZ VOCÊ SE PERGUNTE:
+
+
+
+
+
+'''PQ PRECISAMOS DISSO PARA SOFTWARE DEVELOPMENT?'''
+
+
+
+
+
+
+
+
+
+
+
+
+-> É TÃO IMPORTANTE E ÚTIL ASSIM?
+
+
+
+
+
+
+
+
+--> SIM, É..
+
+
+
+
+
+
+
+
+
+
+
+--> PQ GOSTARÍAMOS 
+
+DE 
+
+'INDEPENDENT, STANDARDIZED ""APPLICATION PACKAGES""  NO SOFTWARE DEVELOPMENT?'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> bem,
+
+
+1 razão para isso,
+
+1 dos use-cases,
+
+
+
+
+
+
+
+1 DOS MAIN-USE-CASES,
+
+É QUE 
+
+
+FREQUENTEMENTE 
+
+
+TEMOS 
+
+
+ 
+
+
+
+
+
+
+
+
+
+ """" DIFERENTES __ DEVELOPMENT E PRODUCTION ENVIRONMENTS'''...
+
+
+'''' WE WANT TO BUILD AND TEST __ IN __ EXACTLY (!) THE SAME ENVIRONMENT
+AS WE LATER RUN OUR APP IN''''
+
+
+
+
+
+ --> EXEMPLO SIMPLES:
+
+
+
+
+
+
+
+
+
+ DIGAMOS QUE __ VOCÊ CRIOU UM APP NODEJS,
+
+
+
+ E VOCê ESCREVEU UM CÓDIGO LÁ 
+
+ QUE __ 
+
+
+ REQUER __ A VERSÃO NODEJS '14.3'
+
+ 
+
+ PARA RODAR BEM. ----> 
+
+
+
+
+
+
+
+E ESSE EXEMPLO NÃO É TÃO MALUCO/INVENTADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> TEMOS ESTE CÓDIGO NODE AQUI:
+
+
+
+
+
+
+
+
+
+
+import express from 'express';
+
+import connectToDatabase from './helpers.mjs'
+
+const app = express();
+
+
+
+app.get(
+    '/', (req, res ) => {
+        res.send('<h2>Hi there</h2>')
+    }
+);
+
+
+
+
+await connectToDatabase();
+
+
+
+app.listen(3000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE É UM CÓDIGO NODEJS 
+
+QUE 
+
+ESTA´
+
+USANDO A FEATURE 
+
+'TOP LEVEL AWAIT' ------> 
+
+
+
+
+
+
+
+
+ESSA É UMA FEATURE _ QUE __ NÃO FUNCIONA __ EM 
+
+VERSÕES MAIS ANTIGAS DE NODEJS... -------> PARA CONSEGUIRMOS 
+
+
+
+RODAR 
+
+ESSE 
+
+
+'TOP LEVEL AWAIT',
+
+ 
+
+
+ PRECISAMOS __ 
+
+
+
+
+ 
+
+
+
+ DE UMA VERSÃO 
+
+ 14.3 
+
+
+ OU MAIOR 
+
+
+ DO NODEJS... ------->
+
+
+
+ O 
+
+
+
+
+
+ PROBLEMA É QUE 
+
+  
+
+
+
+
+  TALVEZ TENHAMOS 
+
+  ESSA VERSÃO 
+
+  INSTALADA NO NOSSO 'LOCAL ENVIRONMENT',
+
+
+
+  NO NOSSO DEV ENVIRONEMNT,
+
+
+
+
+  MAS 
+
+
+
+  SE 
+  LEVARMOS 
+
+
+  ESSE APP 
+
+
+  E ENTÃO 
+
+ O DEPLOYARMOS 
+
+ EM 
+
+
+ 1 
+ SERVER,
+
+
+
+ PARA QUE 
+
+
+  
+  SEJA HOSTEADO
+
+
+
+  E PARA QUE O MUNDO INTEIRA POSSA ALCANÇAR 
+
+
+  ESSE CÓDIGO,
+
+
+
+
+  AÍ ENCONTRAREMOS 1 PROBLEMA,
+
+
+
+
+
+
+
+
+  PQ 
+
+  NESSA 
+
+  MÁQUINA 
+
+
+  PODEMOS 
+
+
+  TER 
+
+
+  1 VERSÃO DIFERENTE 
+
+  DO NODE,
+
+
+
+  MAIS ANTIGA,
+
+  QUE VAI QUEBRAR TUDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -----> E, DEPENDENDO DO PROBLEMA,
+
+
+
+
+
+
+  DO QUE ESTÁ DANDO ERRADO,
+
+
+  PODE 
+
+  DEMORAR 1 TEMPO ATÉ 
+
+
+  SOLUCIONAR O PROBLEMA/DESCOBRIR A RAZÃO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --> E É EXATAMENTE __ POR ISSO _ QUE _ TER 
+
+
+  O 
+
+  'MESMO DEVELOPMENT ENVIRONMENT' 
+
+
+
+ COLOCADO EM PRODUCTION __ PODE SALVAR MT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ENVIRONMENT --> 'OS RUNTIMES, LANGUAGES, FRAMEWORKS QUE VOCê PRECISA PARA O DEVELOPMENT''...
+
+
+
+
+
+
+
+
+
+
+ DEVELOPMENT ENVIRONMENT <---> PRODUCTION ENVIRONMENT 
+
+                        (frequentemente são diferenteS)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    --> O PROFESSOR QUER DIZER 
+
+    'O MESMO ENV DE DEV, EXISTINDO NA PRODUCTION, PODE AJUDAR MT'...
+
+
+
+
+
+
+
+
+
+
+    ''''WE WANT TO HAVE THE EXACT SAME ENVIRONMENT FOR DEVELOPMENT AND FOR PRODUCTION -> isso garante 
+        QUE A COISA VAI FUNCIONAR EXATAMENTE COMO TESTAMOS'''..
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+--> E É ASSIM QUE __ DOCKERS E CONTAINERS PODEM NOS AJUDAR...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS FAZER 'LOCK'
+
+
+DE 
+
+1 VERSÃO 
+
+ESPECÍFICA  
+
+
+
+DO NODE _ __ NO SEU __ DOCKER CONTAINER,
+
+
+
+E AÍ GARANTIR QUE 
+
+
+SEU CÓDIGO VAI SEMPRE SER EXECUTADO COM ESSA VERSION ESPECÍFICA...
+
+
+
+
+
+
+
+
+
+
+COM ISSO, SEU PROBLEMA FICA 'GONE',
+
+
+
+
+
+E NÃO PODE MAIS OCORRER,
+
+
+TUDO  
+
+PQ 
+
+SEU APP 
+
+
+RODA NESSE CONTAINER,,
+
+
+
+QUE 
+
+VAI TRAZER 
+SUA PRÓPRIA VERSÃO 
+
+DO NODEJS..
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. ESSE É O PRIMEIRO EXEMPLO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> TEMOS OUTRO EXEMPLO:
+
+
+
+
+'''DIFERENTES DEVELOPMENT ENVIRONMENTS __ 
+DENTRO DE 1 MESMA COMPANY/TEAM'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É O CASO DA FIDELIZOU.ME --> 
+
+
+DIGAMOS QUE 
+
+
+ESTAMOS EM 1 GRANDE EQUIPE,
+
+TRABALHANDO 
+
+
+
+EM 1
+
+
+
+MESMO PROJECT... -->  IMAGINE QUE VOCê NÃO TRABALHA COM NODE
+
+
+
+POR ALGUM TEMPO... -> VOCÊ 
+
+AINDA 
+
+TEM 
+
+UMA 
+
+
+VERSÃO 
+
+MAIS ANTIGA 
+
+DO NODE 
+
+
+INSTALADA NA SUA MÁQUINA ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR TEM A VERSÃO MAIS AVANÇADA,
+MAS VOCÊ NÃO TEM...
+
+
+
+
+
+
+--> EM VEZ DE VOCÊ TER QUE 
+INSTALAR 
+A VERSÃO 
+
+MAIS 
+
+RECENTE 
+
+
+DO NODE 
+
+
+MANUALMENTE,
+
+
+
+
+
+
+
+
+O DOCKER FAZ TUDO ISSO AUTOMÁTICO..
+
+
+
+
+
+
+
+
+
+--> AQUI TEMOS UMA GARANTIA DE QUE 
+
+
+O NEGÓCIO VAI SEMPRE FUNCIONAR,
+
+
+E QUE TEREMOS SEMPRE OO MESMO ENVIRONMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''IT SHOULD BE EASY TO SHARE A COMMON DEVELOPMENT ENVIRONMENT/SETUP 
+
+WITH _ NEW__ EMPLOYEES AND COLLEAGUES''...
+
+
+
+
+
+
+
+
+
+
+--> ATÉ MESMO AQUI,
+
+SEM DEPLOYAR O CÓDIGO,
+
+TER 
+
+
+TUDO 
+
+
+
+NECESSÁRIO PARA O CÓDIGO FUNCIONAR,
+
+COLOCADO 
+
+
+EM 1 CONTAINER,
+
+PODE 
+
+AJUDAR UM MONTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ATÉ MESMO QUANDO VOCÊ TRABALHA SOZINHO,
+
+
+O USO DE DOCKER PODE SER MT ÚTIL --> PQ SE VOCÊ TEM 
+
+MÚLTIPLOS 
+
+
+PROJETOS EM QUE ESTÁ TRABALHANDO,
+
+ 
+
+
+
+
+
+
+
+
+
+ É POSSÍVEL QUE 
+
+
+ ALGUNS PROJECTS TENHAM VERSÕES 
+
+
+ CONFLITANTES.. --> 
+
+ 1 PROJECT PODE 
+
+ USAR 
+
+ A VERSÃO 
+
+
+ 2 
+
+ DO PYTHON,
+
+
+
+
+ E OUTRO 
+
+ USA A VERSÃO 
+
+ MAIS RECENTE... (mesma coisa com nodejs ou php)..
+
+
+
+
+
+
+
+
+
+
+
+ --> LÁ, PODEMOS TER CLASHING VERSIONS --> AÍ, 
+
+
+ISSO SIGNIFICA QUE 
+
+SEMPER QUE 
+
+
+VOCê 
+
+
+TROCAR DE 'PROJECT A '
+
+
+PARA 
+
+
+'PROJECT B',
+
+
+VOCÊ 
+
+
+ 
+ SERÁ 
+
+ FORÇADO 
+
+
+
+ A DESINSTALAR 
+
+ A VERSÃO 
+
+
+ERRADA  
+
+ E INSTALAR A VERSÃO 
+CORRETA (
+
+ex: 1 PROJETO EXIGE VERSAO 12  DO NODE,
+
+OUTRO EXIGE 
+
+
+A VERSÃO 14...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE VOCÊ FICAR TROCANDO ENTRE PROJECTS,
+
+FICAR DESINSTALANDO E REINSTALANDO É UM SACO..
+
+
+
+
+
+
+
+
+-----> ISSO, DE NOVO, 
+
+É ALGO 
+
+
+COM QUE 
+
+O 
+
+DOCKER PODE NOS AJUDAR..
+
+
+
+
+
+
+
+
+'''WE DONT WANT TO UNINSTALL AND REINSTALL LOCAL 
+DEPENDENCIES AND RUNTIMES ALL THE TIME'''..
+
+
+
+
+
+
+
+
+
+
+
+
+-----> COM O DOCKER,
+
+SÓ TROCAMOS DE PROJETO E PRONTO...
+
+
+
+
+
+
+--> TUDO ESTARÁ NO NOSSO CONTAINER,
+
+E NÃO GLOBALMENTE,
+
+NA NOSSA LOCAL MACHINE..
+
+
+
+
+
+
+
+
+
+--> ISSO SIGNIFICA QUE O SWITCH DE PROJECTS 
+
+
+FICA 
+TÃO  
+SIMPLES QUANTO 
+
+O RUN 
+
+DE 
+
+1 
+CONTAINER DIFERENTE... 
+
+
+
+
+
+
+
+
+
+
+--> ESSAS SÃO TODAS COISAS QUE VEREMOS AO LONGO DO CURSO...
+
+
+
+
+
+APRENDEREMOS TUDO 
+
+NECESSÁRIO PARA RESOLVER ESSES PROBLEMAS...
+
+
+
+
+
