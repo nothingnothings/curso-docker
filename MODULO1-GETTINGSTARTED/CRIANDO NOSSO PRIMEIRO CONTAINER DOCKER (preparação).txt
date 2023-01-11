@@ -1,0 +1,126 @@
+
+
+
+
+
+
+
+
+
+
+
+
+NESSE CURSO,
+
+PRIMARIAMENTE 
+
+RODAREMOS UM MONTE DE COMANDOS NA CLI,
+
+
+
+
+
+
+
+MAS TAMBÉM VAMOS RODAR ESSES COMANDOS 
+
+
+
+
+
+
+EM PROJECTS _ 
+
+QUE _ ESTÃO ESCRITOS COM NODEJS 
+
+OU QUAISQUER OUTRAS 
+
+PROGRAMMING LANGUAGES..
+
+
+
+
+
+
+--> TEREMOS CÓDIGO,
+
+E TEREMOS CONFIG FILES...
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR RECOMENDA O VISUAL STUDIO CODE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PROFESSOR INSTALA A EXTENSÃO DO DOCKER...
+
+
+
+
+
+
+
+
+-> A EXTENSÃO DO DOCKER AJUDA COM O WRITE 
+
+
+DAS CONFIG FILES... --> 
+DEIXA ISSO 
+UM PCO 
+MAIS FÁCIL...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR TAMBÉM RECOMENDA O PRETTIER..
+
+
+
+
+
+
+
+
+
+--> ESSE É O SETUP QUE USAREMOS...
+
+
+
+
+
+
+
+
+
+--> devemos sujar nossas mãos e escrever 
+
+código docker...
+ (
+    criar o primeiro docker container..
+ )
