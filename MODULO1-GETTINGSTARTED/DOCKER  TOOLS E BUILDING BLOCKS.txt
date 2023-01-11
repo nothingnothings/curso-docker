@@ -1,0 +1,274 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NAS ÚLTIMAS AULAS,
+
+INSTALAMOS O DOCKER...
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR ACHA IMPORTANTE ENTENDERMOS O QUE 
+
+
+INSTALAMOS,
+
+E O QUE FAZEMOS COM ESSAS TOOLS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> INSTALAMOS:
+
+
+
+
+
+
+
+1) O DOCKER ENGINE (
+    nõa interessa qual instalador vocÊ usou..
+)
+
+
+
+
+
+--> a ideia é NÃO USAR VIRTUAL MACHINES..
+
+
+
+
+
+
+
+
+
+--> instalada a docker engine,
+
+
+
+tanto com docker desktop ou docker tools..
+
+
+
+
+
+
+
+
+
+--> DOCKER DESKTOP --> É UMA TOOL QUE ASSEGURA QUE A DOCKER ENGINE 
+
+FICA INSTALADA --> 
+
+
+
+ela instala o 'DAEMON' e o 'CLI' 
+
+
+(
+
+    daemon é o coração do docker...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+--> a CLI É CRUCIAL,
+
+PQ É A FERRAMENTA QUE USAREMOS AO LONGO DESSE CURSO 
+
+PARA CRIAR IMAGES E CONTAINERS,
+
+E PARA TRABALHAR COM O DOCKER....
+
+
+
+
+
+
+
+
+
+
+
+
+DURANTE O CURSO,
+
+TRABALHAREMOS COM O 'DOCKER HUB'...
+
+
+
+
+
+
+
+
+SERÁ UM SERVICE QUE NOS DEIXARÁ
+
+
+HOSTEAR NOSSAS IMAGES NA CLOUD,
+
+NA WEB,
+
+PARA QUE POSSAMOS OS COMPARTILHAR COM OUTROS SYSTEMS,
+
+
+
+COM OUTRAS PESSOAS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> TAMBÉM TRABALHAREMOS COM UMA FERRAMENTA CHAMADA 
+
+DE 
+'DOCKER COMPOSE',
+
+
+
+UMA FERRAMENTA QUE 
+
+
+'BUILDS UPON DOCKER'..
+
+
+
+
+
+
+
+
+
+
+
+
+--> É UMA TOOL 
+
+
+QUE _ DEIXA O MANAGE _ 
+
+DE CONTAINERS MAIS COMPLEXOS (ou multi-container projects)
+
+
+MAIS FÁCIL...
+
+
+
+
+
+
+
+
+
+
+-> a outra coisa é o kubernetes,
+
+que 
+
+
+é outra ferramenta 
+
+
+que NOS AJUDA 
+
+A MANAGEAR 
+
+
+APPS 
+
+
+
+CONTAINERIZADOS _ 
+
+QUANDO QUEREMOS OS DEPLOYAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É ISSO QUE INSTALAMOS,
+
+
+
+
+E ALGUMAS DAS FERRAMENTAS DE QUE DEVEMOS 
+
+TER CIÊNCIA..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---_> DEVEMOS USAR A DOCKER TOOL QUE INSTALAMOS PARA 
+
+SUJAR NOSSAS MÃOS E CRIAR NOSSO PRIMEIRO CONTAINER DE 
+VERDADE...
