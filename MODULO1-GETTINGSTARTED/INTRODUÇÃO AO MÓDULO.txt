@@ -12,6 +12,7 @@
 
 
 
+
 --> vamos estudar o DOCKER E O KUBERNETES...
 
 
