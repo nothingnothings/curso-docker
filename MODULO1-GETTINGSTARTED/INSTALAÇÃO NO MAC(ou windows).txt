@@ -1,0 +1,450 @@
+
+
+
+
+
+
+
+
+
+
+
+OK... BAIXEI O DOCKER...
+
+
+
+
+
+
+
+
+
+----> PROFESSOR PEGA O PACOTE DO DOCKER...
+
+
+
+
+
+
+
+
+
+
+
+
+TEMOS ALGUNS DETALHES SOBRE O FUNCIONAMENTO DO DOCKER...
+
+
+
+
+
+
+
+--> QUANDO RODAMOS O DOCKER,
+
+VEREMOS O ÍCONE DA BALEIA...
+
+
+
+
+
+
+
+
+
+
+
+
+->  NAS PREFERÊNCIAS,
+
+CONTROLAMOS 
+
+
+
+COISAS COMO 'O DOCKER INICIA QUANDO ABRIMOS O WINDOWS'...
+
+
+
+
+
+--> NÃO MUDE O RESTO DAS COISAS...
+
+
+
+
+
+
+
+
+
+
+
+
+--> DETALHE --> NA PARTE INFERIOR-ESQUERDA,
+
+
+
+
+TEMOS 1 BOLA VERDE --> ISSO MOSTRA QUE O DOCKER ESTÁ RODANDO...
+
+
+
+
+
+
+
+
+
+
+-> SE VOCÊ ABRE O EXE DO DOCKER MANUALMENTE,
+
+
+ELE  PASSA A RODAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TODOS OS COMANDOS DO DOCKER SÓ SÃO LIDOS, NO TERMINAL,
+E EXECUTADOS,
+
+
+SE 
+
+O 
+DOCKER ESTIVER RODANDO NO FUNDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SEMPRE PODEMOS FECHAR O DOCKER COM ESSE MENU AÍ...
+
+
+
+
+
+
+
+
+OK...
+
+ESSE É O SETUP DO DOCKER NO MAC...
+
+ 
+
+
+
+
+AGORA VEREMOS ISSO NO WINDOWS...
+
+
+
+
+
+
+
+
+O PROFESSOR MOSTRA OS REQUISITOS 
+
+
+DO WINDOWS...
+
+
+
+
+
+
+
+--> O WINDOWS 7 
+
+NÃO SUPORTA O 'DOCKER DESKTOP'...
+
+
+
+
+--> VOCÊ 
+PRECISA, 
+
+NO WINDOWS, 
+
+
+
+ENABLAR 
+
+
+'HYPER-V'
+
+
+
+E 'CONTAINERS WINDOWS FEATURES'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ENABLAR ISSO,
+
+
+temos algumas instructions...
+
+
+
+
+
+
+
+PRECISAMOS RODAR ESTE COMANDO AQUI:
+
+
+
+
+
+
+
+
+
+
+
+--> isso vai enablar uma funcionalidade no seu sistema necessária para o funcionamento 
+
+do docker...
+
+
+
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+
+
+
+
+
+
+
+
+
+--> A OUTRA FEATURE NECESSÁRIA PARA RODAR O DOCKER 
+
+É 'containers',
+
+QUE 
+
+É ENABLADA 
+
+POR MEIO DESTE COMANDO:
+
+
+
+
+
+
+
+
+Enable-WindowsOptionalFeature -Online -FeatureName containers -All
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+RODE ISSO NO POWERSHELL,
+TAMBÉM..
+
+
+
+
+
+
+
+
+SE ESTAMOS NO 'WINDOWS 10 HOME',
+
+
+TEMOS MAIS ETAPAS...
+
+
+
+
+
+
+
+
+
+
+
+TEMOS QUE ENABLAR A FEATURE 'WSL2'..
+
+
+
+
+
+
+
+
+-_> mas eu estou no windows 10 PRO... 
+
+
+então não preciso fazer isso...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O DOCKER PEDE 'ENABLE WSL2 WINDOWS FEATURE' -> 
+
+
+
+você 
+
+deve 
+
+deixar 
+
+
+isso marcado..
+
+
+
+
+
+
+QUAISQUER CHECKBOXES QUE VOCê VISUALIZAR,
+
+VOCÊ 
+
+DEVE MARCAR....
+
+
+
+
+A FERRAMENTA DOCKER SERÁ INSTALADA NO NOSSO SISTEMA...
+
+
+
+
+
+PRECISO REINICIAR MEU SISTEMA, É CLARO...
+
+
+
+
+
+EXECUTE A FERRAMENTA 
+
+
+
+DO DOCKER...
+
+
+
+
+
+
+--> TEREMOS A BALEIA NO SYSTEM TRAY..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SE VOCÊ FOR TRABALHAR COM O DOCKER,
+
+DEIXE 
+
+
+
+ELE RODANDO...
+
+
+
+
+
+
+--> nas settings do docker,
+controlamos 
+
+se ele ABRE 
+
+quando 
+
+iniciamos o windows...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, INSTALAMOS O DOCKER E PODEMOS O INSTALAR...
+
+
+
+
+
+
+
+
+--> PODEMOS RODAR 'docker' no terminal --> e isso vai te dar uma lista de comandos, sinalizando que funcionou...

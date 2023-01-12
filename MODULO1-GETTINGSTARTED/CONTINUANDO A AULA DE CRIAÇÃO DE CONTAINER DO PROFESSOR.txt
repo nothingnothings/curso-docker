@@ -1,0 +1,1012 @@
+
+
+
+
+
+
+
+
+
+
+
+ok, rodariámos 
+
+
+
+'node app.mjs'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> A IDEIA COM O DOCKER É DIFERENTE,
+
+QUEREMOS RODAR ESSE CÓDIGO EM 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+--> PRECISAMOS CRIAR 1 IMAGE ..
+
+
+
+
+
+
+--> CONTAINERS SÃO CRIADOS A PARTIR 
+
+DE IMAGES...
+
+
+
+
+
+
+
+
+
+PARA CRIAR 1 IMAGE,
+
+CRIAMOS 1 DOCKERFILE...
+
+
+
+
+
+
+
+
+
+
+Dockerfile...
+
+
+
+
+
+
+
+
+
+
+
+
+--> AÍ ESCREVEMOS DENTRO DESSA 'DOCKERFILE'
+
+COMO 
+O 
+
+
+
+NOSSO CONTAINER DEVE SE PARECER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK, 
+
+TEMOS 1 DOCKERFILE JÁ 
+
+'ACABADA'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ela é tipo assim:
+
+
+
+
+
+
+
+
+
+
+
+FROM node:14 
+
+
+WORKDIR /app
+
+COPY package.json . 
+
+RUN npm install
+
+COPY . . 
+
+EXPOSE 3000 
+
+CMD ["node", "app.mjs"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+TEMOS ALGUMAS INSTRUCTIONS NESSA FILE...
+
+
+
+
+
+'''FROM''' -->  QUEREMOS USAR _ 'X' COMO UMA BASE IMAGE (colocamos 'node', pq QUEREMOS TER O NODE DISPONÍVEL NESSE CONTAINER)...
+
+
+
+
+
+
+
+
+'''WORKDIR''' --> AÍ TEMOS 1 CERTO 'DIRECTORY' DENTRO DO 'CONTAINER FILESYSTEM '-->  CADA __ CONTAINER_ TEM SEU PRÓPRIO FILE SYSTEM (para que póssamos ter um 'special directory' dentro do container, com que trabalhamos)...
+(será '/app')
+
+
+
+
+
+
+
+
+
+
+''''COPY package.json ''''' --> VAMOS COPIAR O ARQUIVO 'package.json' PARA DENTRO DO NOSSO WORKING DIRECTORY...
+
+
+
+
+
+
+
+
+
+
+
+''' RUN NPM INSTALL ''' --> TEMOS ESSE COMANDO, PARA INSTALAR TODAS AS DEPENDENCIAS NECESSÁRIAS AO NOSSO APP containerizado...
+
+
+
+
+
+
+'''COPY . . ' ' ---> ISSO FAZ COM __ QUE _ O RESTO DO CÓDIGO SEJA COPIADO (o código de '.gitignore', 'app.mjs', 'helpers.mjs')
+
+
+
+
+
+
+
+
+
+
+
+
+''EXPOSE 3000'' -> EXPOMOS A PORTA DE '3000' AO __ MUNDO EXTERNO (PQ ESSA É A PORTA QUE NOSSO APP FICARÁ 'LISTENING ON') --> e queremos ser capazes de ALCANÇAR ESSA PORT 
+
+DO LADO DE FORA DO CONTAINER,
+
+NÃO SÓ DO LADO INTERNO..
+
+
+
+
+
+
+
+
+
+
+
+'''' CMD [ "node", "app.mjs" ]'''' ----> USAMOS O COMANDO 'node' 
+
+
+PARA RODAR 'app.mjs' -->  ESSE COMANDO 'node' FICA DISPONÍVEL PQ _ ESTAMOS SETTANDO NOSSO PROJETO EM 1 CONTAINER 
+
+'NODE ENVIRONMENT'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE FOI UM RÁPIDO WALKTHROUGH... OS DETALHES VEREMOS NA PRÓXIMA COURSE SECTION..
+
+
+
+
+
+
+
+
+
+
+
+--> COM ESSA DOCKERFILE CRIADA,
+
+
+CRIAMOS 1 TERMINAL...
+
+
+
+
+
+
+
+
+
+
+---> E AÍ DEIXAMOS A 'DOCKERFILE' NO ROOT DOS NOSSOS ARQUIVOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ABRIMOS O TERMINAL COM O VSCODE..
+
+
+
+
+
+
+
+
+
+
+
+estamos dentro de 'container-node-1'...
+
+
+
+
+
+
+
+--> AÍ DEVEMOS RODAR 'docker build .' --> 
+
+
+
+
+
+
+
+
+
+
+O 'docker build .' 
+
+
+
+
+
+
+ISSO _ VAI __ BUILDAR __ A  IMAGE,
+
+
+A DOCKERFILE,
+
+NO FOLDER EM QUE 
+
+VOCÊ ESTÁ -------> 
+
+
+
+
+
+
+
+
+
+
+ISSO 
+
+
+
+
+
+VAI FAZER COM QUE SEJA AUTOMATICAMENTE INICIADO ESSE 'Dockerfile'...
+
+
+
+
+
+
+
+
+
+
+------> isso vai BUILDAR 1 IMAGE, COM BASE NESSA DOCKERFILE...
+
+
+
+
+
+
+
+
+--> OK... faço exatamente isso....
+
+
+
+
+
+
+
+
+
+[+] Building 6.7s (4/9)
+ => [internal] load build definition from Dockerfile                                                             0.1s 
+ => => transferring dockerfile: 169B                                                                             0.0s 
+ => [internal] load .dockerignore                                                                                0.1s 
+ => => transferring context: 2B                                                                                  0.0s 
+ => [internal] load metadata for docker.io/library/node:14                                                       2.9s 
+ => [1/5] FROM docker.io/library/node:14@sha256:0c888dc647d36f5a895edb6b1b1c96ae81064455e0cdeee0792e14927604ca9  3.7s 
+ => => resolve docker.io/library/node:14@sha256:0c888dc647d36f5a895edb6b1b1c96ae81064455e0cdeee0792e14927604ca9  0.0s 
+ => => sha256:ac1030c3e2d90127cbeda24aeaf5d9a76540a64e6aa1fe5e8d10dd1389c005a6 7.52kB / 7.52kB                   0.0s 
+ => => sha256:ac7f2e1c758675427623d0da4faa88b336c62466c15a98af61efd3f015282f2f 15.73MB / 50.45MB                 3.7s 
+ => => sha256:dbcdf7fce05b60278ea57279b4fd04f78778f80a6d64b6f875afc4bde32c2d1b 7.86MB / 7.86MB                   2.1s 
+ => => sha256:0c888dc647d36f5a895edb6b1b1c96ae81064455e0cdeee0792e14927604ca99 776B / 776B                       0.0s 
+ => => sha256:bd24adafdf5198951ccd0ce2880205b487c435da6e3b93f251f333ad63ed60fe 2.21kB / 2.21kB                   0.0s 
+ => => sha256:0ed0c2752d8478245519a7aab5e660053796af3c7ea7b34ad3df855b33ff5502 10.00MB / 10.00MB                 2.7s 
+ => => sha256:bf01cd4ea334ab5c64bed24016c153dc7c276f552f468e564664e739dac31e09 6.29MB / 51.87MB                  3.7s 
+ => => sha256:739282cf09da60e112d9d378faf
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> ok... 
+
+
+
+
+
+ ISSO PEGA ESSE NODE ENVIRONMENT,
+
+ BAIXA ELE LÁ DO 'DOCKER HUB' (CLOUD),
+
+
+
+
+
+ E AÍ 
+
+
+ SETTA 
+
+
+ 1 IMAGE,
+
+ PARA 
+
+ 1 CONTAINER 
+ SER LANÇADO,
+
+
+
+
+
+
+
+
+
+
+
+
+ COM TODAS ESSAS SETUP STEPS SENDO INICIADAS DENTRO DA IMAGE ------> VAI NOS 
+
+
+ DAR 
+
+ 1 IMAGE QUE 
+ ESTARÁ PREPARADA 'TO BE STARTED'
+
+
+
+
+
+
+
+
+
+
+ COMO 1 CONTAINER... ------> OK... 
+
+
+
+
+
+
+ ISSO VAI RODAR TODAS ESSAS ETAPAS,
+
+
+ E AÍ 
+
+
+
+
+ GANHAREMOS 
+
+
+
+
+
+ 1 OUTPUT...
+
+
+
+
+
+
+
+ --> ok...
+
+
+
+
+
+
+
+ o professor ganhou um 'Successfully built d2cc7b04fba'
+
+
+
+
+
+
+
+
+ --> MAS EU N GANHEI NADA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> ELE NOS EXPLICA QUE O OUTPUT 
+
+
+
+ DO 
+ WINDOWS 
+
+
+
+
+É REALMENTE DIFERENTE,
+
+É ASSIM:
+
+
+
+
+writing image sha256:00dd65a472062cb961666454efdbfbb93779213c6f694ec0de0e55f3dcb60982
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... PODEMOS USAR ESSE ID AÍ
+
+
+__ E ENTÃO_ RODAR 1 CONTAINER COM BASE 
+
+
+
+NESSA IMAGE,
+
+
+
+TUDO 
+
+
+
+POR MEIO DO COMANDO 'docker run'...
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+sha256:00dd65a472062cb961666454efdbfbb93779213c6f694ec0de0e55f3dcb60982
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker run sha256:00dd65a472062cb961666454efdbfbb93779213c6f694ec0de0e55f3dcb60982
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... EU TENTEI FAZER ISSO,
+
+
+MAS O PROFESSOR ME CORTOU:
+
+
+
+
+
+'''ENTRETANTO,
+
+
+ACTUALLY,
+
+COMO NOSSO CONTAINER TEM 1 PORT COM QUE QUER SE COMUNICAR,
+
+
+3000,
+
+
+
+PRECISAMOS ACTUALLY __ fAZER __ ''' PUBLISH_ ''''
+
+
+
+DA PORT __ NO CONTAINER QUE _ QUEREMOS _ RODAR.... ''' 
+
+
+
+
+
+
+
+
+
+
+--> PARA FAZER 'PUBLISH'
+
+DESSA PORT,
+
+
+É NECESSÁRIO 
+
+ESCREVER A FLAG DE '-p' ,
+
+
+
+
+E AÍ 
+
+
+
+COLOCAR 
+
+
+
+'3000:3000'  -----> 'PORT 3000 ON PORT 3000' -------> ISSO SIGNIFICA QUE 
+
+
+
+
+
+PODEREMOS USAR O `NOSSO LOCAL HOST, NO NOSSO LOCAL SYSTEM',
+
+
+
+PARA _ 'ALCANÇAR _ O APP _ RODANDO _ NA PORT 3000, 
+
+DENTRO DO __ CONTAINER'.... --> ISSO PQ,
+
+POR DEFAULT,
+
+
+
+NÃO 
+
+
+EXISTE __ 
+
+
+CONEXÃO _ ENTRE O CONTAINER E NOSSO HOST OPERATING SYSTEM --> 
+
+
+
+
+
+
+
+
+
+
+
+
+EM OUTRAS PALAVRAS: 
+
+
+
+
+
+
+
+__ SE VOCÊ _ QUER ENVIAR HTTP REQUESTS_ A 1 APP RODANDO EM 1 CONTAINER,
+
+PRECISAMOS 
+
+
+
+__aBRIR__ A PORT__ NO CONTAINER__ COM QUE _ QUEREMOS NOS COMUNICAR (
+
+
+    CASO CONTRÁRIO, O 
+
+    CONTAINER SERÁ UMA 'LOCKED NETWORK',
+
+    E NÃO PODEREMOS A ALCANÇAR DO LADO DE FORA...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, NOSSO COMANDO FICOU ASSIM:
+
+
+
+
+
+
+docker run -p 3000:3000 sha256:00dd65a472062cb961666454efdbfbb93779213c6f694ec0de0e55f3dcb60982
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... 
+
+
+
+
+
+
+
+
+PODEMOS PERCEBER QUE ELE ESTÁ RODANDO PQ NÃO SERÁ POSSÍVEL DIGITAR MAIS NADA NO TERMINAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... NÃO PODEMOS MAIS DIGITAR COMANDO ALGUM...
+
+
+
+
+
+
+
+
+
+FICARÁ 'STUCK'
+
+PQ TEREMOS 1 'RUNNING WEB SERVER'..
+
+
+
+
+
+
+--> SE ENTRAMOS NO CHROME E DIGITAMOS 'LOCALHOST:3000',
+
+ 
+
+ ENCONTRAMOS 'HI THERE',
+
+ 
+
+ SINAL QUE O 
+
+ CREATE DESSA IMAGE 
+
+ E SEU SUBSEQUENTE 
+
+ 'RUN',
+
+
+ O RUN DE SEU CONTAINER,
+
+
+
+ FUNCIONOU..
+
+
+
+
+
+
+
+
+
+
+
+ --> PARA PARAR ESSE CONTAINER, DEVEMOS ABRIR 1 OUTRA JANELA NO TERMINAL E:
+
+
+
+
+
+
+
+
+ 1) DIGITAR 'docker ps' PARA VER OS DIFERENTES RUNNING CONTAINERS DO DOCKER..
+
+
+
+
+
+
+
+
+
+ 2) AÍ DEVEMOS PEGAR O CONTAINER QUE __ FOI STARTADO --> o nome dele -->  E O NOME, SE VOCÊ NÃO DEFINIU COISA ALGUMA, É 'AUTO-ASSIGNED' (randomizado)... 
+
+
+
+ --> é por isso que fiquei com 1 container com nome de 'eager-einstein'..
+
+
+
+
+
+
+
+
+
+ ex:
+
+
+
+
+
+
+
+ docker stop eager_einstein
+
+
+
+
+
+
+
+
+
+
+ isso vai parar esse container,
+
+ vai 'shut it down'...
+
+
+
+
+
+
+ --> VAI DEMORAR 1 POUCO,
+
+ MAS ISSO VAI REALMENTE 
+
+ PARAR NOSSO CONTAINER,....
+
+
+ 
+
+ NOSSO SITE NÃO PODERÁ 
+
+ MAIS 
+
+ SER ALCANÇADo...
+
+
+
+
+
+
+
+ --> OK....
+
+
+
+
+
+
+
+
+ ESSE É O PRIMEIRO EXEMPLO BÁSICO DO DOCKER..
+
+
+
+
+
+
+-> JÁ NOS MOSTRA QUE:
+
+
+1) O DOCKER FOI INSTALADO 
+
+
+
+2) QUE FUNCIONA 
+
+
+
+3) QUE CONSEGUIMOS CRIAR 1 'CONTAINERIZED APPLICATION' ------> 
+
+
+ISSO PQ NÃO INSTALAMOS O NODE NO NOSSO SISTEMA,
+
+E NEM PRECISAMOS 
+
+
+RODAR O 'NPM INSTALL',
+
+FOI TUDO 
+
+POR CONTA DO DOCKER..
