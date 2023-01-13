@@ -1,0 +1,1336 @@
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR MENCIONOU QUE 
+
+'CONTAINERS'
+
+SÃO 
+
+CRIADOS A PARTIR DE IMAGES... 
+
+
+
+
+
+
+
+
+
+--> E, AGORA, ELE NOS DIZ QUE HÁ 2 MANEIRAS DE 
+
+
+'GET' OU 'CREATE' 1 IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> PEGAREMOS ESSA IMAGE PARA ENTÃO PODERMOS RODAR 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+--> A PRIMEIRA MANEIRA  É 
+
+
+''USAR 1 ALREADY EXISTING, PRE-BUILT IMAGE'''...
+
+
+
+
+
+
+
+ISSO ACONTECE QUANDO 1 COLEGA JÁ CONSTRUIU
+
+
+
+
+1 image .... OU, ENTAÕ, 
+
+
+
+
+MT COMUM,
+
+
+
+É QUE 
+
+
+''NÓS usamos 1 __DAS OFFICIAL PRE-BUILT IMAGES'',  OU
+
+
+
+
+1 DAS IMAGES 
+
+__ PROVIDENCIADAS PELA COMUNIDADE....
+
+
+
+
+
+
+
+
+
+
+--> 1 grande fonte para essas images é 'DOCKER HUB'....
+
+
+
+
+
+
+
+
+
+--> LÁ DENTRO, PODEMOS FAZER LOGIN --> 
+
+
+
+
+
+
+
+
+
+
+
+TEMOS A SEARCH BAR --> PODEMOS PROCURAR POR 'node' --> 
+
+
+
+AÍ ENCONTRAREMOS 
+
+
+A  IMAGE OFICIAL DOCKER DO 'NODE'... --> PODERÍAMOS USAR ESSA IMAGE 
+
+
+PARA CONSTRUIR 
+
+
+
+'' NODE APPLICATION CONTAINER'''...
+
+
+
+
+
+
+
+
+
+
+
+-----> NODE APP CONTAINER --> É 1 CONTAINER  EM QUE MAIS TARDE PODEREMOS RODAR '1 NODE APPLICATION'...
+
+
+
+
+
+
+
+
+
+
+--> BEM... ESSA NODE IMAGE, QUE VOCê ENCONTRA NO DOCKER HUB,
+
+PODE SER USADA _ POR QUALQUER 1... -> E É DISTRIBUÍDA E CRIADA,
+
+MAINTAINED,
+
+
+PELA 
+
+
+PRÓPRIA 
+
+
+
+'NODE TEAM'...  --> 
+
+
+
+
+
+
+
+
+
+
+
+E NÓS VAMOS USAR 1 MONTE DE OFFICIAL IMAGES AO LONGO DO CURSO... -> E, EM GERAL, QUANDO USAMOS 
+
+O DOCKER,
+
+USAMOS 
+
+1 MONTE DESSAS IMAGES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS PODEMOS _ USÁ-LA 'RIGHT-AWAY',
+
+PARA COMEÇARMOS 
+
+
+COM 
+
+
+
+O ESTUDO DE IMAGES E CONTAINERS...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+https://hub.docker.com/_/node
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> TUDO O QUE PRECISAMOS FAZER, PARA USAR 
+
+
+ESSA IMAGE OFICIAL,
+
+É 
+
+
+ABRIR O TERMINAL DO VSCODE
+
+
+
+ 
+
+ E ENTÃO NAVEGAR ATÉ QUALQUER FOLDER DE NOSSA ESCOLHA..
+
+
+
+
+
+
+
+
+
+
+ NESSE FOLDER DE NOSSA ESCOLHA,
+
+
+ ESCREVEMOS 
+
+
+
+
+
+ 'docker run node'...
+
+
+
+
+
+ -> ESSE COMANDO VAI USAR ESSA 'NODE IMAGE'
+
+
+ QUE 
+
+ ENCONTRAMOS 
+
+ NO 'DOCKER HUB' -> E VAI 
+
+
+ A UTILIZAR 
+
+
+
+
+
+
+ __ PARA_ _ CRIAR 1 CONTAINER _ 
+
+
+
+
+
+COM _ BASE NESSA IMAGE (
+
+
+    pQ CONTAINERS __ 
+
+
+    SÃO __ 
+
+
+    'RUNNING INSTANCES'
+
+    DE IMAGES... --> E IMAGES CONTÊM 
+    O 
+
+    'SETUP',
+
+    O ENVIRONMENT...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+--> NODE IMAGES POSSUEM _ O SETUP CODE,
+
+
+
+O ENVIRONMENT  -----> NESSE CASO, 
+
+
+
+
+A NODE IMAGE CONTÊM A 'NODE INSTALLATION' --> E AÍ PODEMOS RODAR 
+
+A IMAGE 
+
+
+PARA __ RODAR_ _ A APPLICATION ---------> OU, ENTAÕ,
+
+NESSE CASO,
+
+
+
+
+PARA SIMPLESMENTE 
+
+
+
+
+
+
+RODAR A 'NODE INTERACTIVE SHELL'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE APERTAMOS ENTER COM O 'DOCKER RUN NODE',
+
+
+
+
+
+
+
+
+
+
+ISSO VAI TE DAR 1 ERROR ----->  TE DÁ 1 ERRO INICIAL,
+
+PQ 
+
+
+
+
+ESSA IMAGE NÃO É ENCONTRADA LOCALMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> AÍ, ISSO FEITO,
+
+O DOCKER VAI AUTOMATICAMENTE PULLAR ESSA IMAGE,
+
+LÁ DO DOCKER HUB...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ISSO VAI BAIXAR A IMAGE MAIS RECENTE DO 'NODE', LÁ DO DOCKER HUB...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO FEITO,
+
+
+
+BAIXADO O NEGÓCIO __ LOCALMENNTE_ _NA NOSSA MÁQUINA,
+
+
+
+ELE __ 
+
+
+
+VAI __ 
+
+
+RODAR ESSA IMAGE, COMO 1 CONTAINER... 
+
+
+
+
+
+
+
+
+-->  
+
+
+
+PS A:\projeto15-DOCKER> docker run node
+Unable to find image 'node:latest' locally
+latest: Pulling from library/node
+bbeef03cda1f: Pull complete
+f049f75f014e: Pull complete
+56261d0e6b05: Pull complete
+9bd150679dbd: Pull complete
+5b282ee9da04: Pull complete
+8bc43c905b24: Pull complete
+3ce9e21024ae: Pull complete
+36d91be124f1: Pull complete
+7d6b04e90455: Pull complete
+Digest: sha256:c1d6d7364e956b061d62241c362b3cd0856beba066ec60e25523a169e2137623
+Status: Downloaded newer image for node:latest
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... E, DEPOIS DISSO,
+
+
+VEREMOS 
+
+'NOTHING SPECIAL' ---> ESTARÁ 'DONE',
+
+E AÍ 
+
+
+
+
+
+PODEREMOS RODAR MAIS COMANDOS...
+
+
+
+
+
+
+
+
+--> OK... RODAMOS OU NÃO O CONTAINER?
+
+
+
+
+
+
+
+
+--> CRIAMOS 1 CONTAINER COM BASE NESSA IMAGE, OU NÃO?
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> BEM, CRIAMOS 1 CONTAINER, SIM, 
+
+MAS 
+
+
+''THIS CONTAINER IS NOT REALLY DOING MUCH'''..
+
+ 
+
+
+
+
+
+
+
+
+
+
+ --> ISSO PQ O  'NODE' É APENAS 1 SOFTWARE --> E, DE FATO,
+
+ PODEMOS 
+
+ RODAR O NODE PARA CONSEGUIR 1 'INTERACTIVE SHELL',
+
+
+ EM QUE 
+
+ PODEMOS 
+
+ INSERIR COMANDOS -----> OK.... MAS AQUI TEMOS 1 PROBLEMA:
+
+
+
+
+
+
+
+
+
+ POR DEFAULT,
+
+ 1 CONTAINER É SEMPRE 'ISOLADO' DO SURROUNDING ENVIRONMENT... ----> 
+
+
+
+
+
+
+
+E, MESMO QUE 1 SHELL ESTEJA RODANDO DENTRO DE 1 CONTAINER,
+ 
+
+ ISSO NÃO SIGNIFICA NECESSARIAMENTE QUE 
+
+
+ ESSE CONTAINER ESTARÁ EXPOSTO A NÓS,
+
+ USERS...
+
+
+
+
+
+
+
+
+
+ ---> AINDA ASSIM,
+
+
+ ESSE CONTAINER FOI CRIADO... --> E PODEMOS VERIFICAR ISSO 
+
+
+ ATRAVÉS 
+
+ DO COMANDO 
+
+ 'docker ps -a'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> 'DOCKER PS -A' 
+
+
+
+
+
+
+
+
+
+ - PS ---> SIGNIFICA 'PROCESSES'..
+
+
+
+
+
+
+
+
+
+ ' -A ' ---> ISSO TE MOSTRA  TODOS OS PROCESSOS/CONTAINERS 
+
+
+ QUE O DOCKER 
+ CRIOU PARA NÓS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ------> E, SE RODAMOS ENTER,
+
+
+
+ PERCEBEMOS QUE 1 MINUTO ATRÁS CRIAMOS 1 CONTAINER... 
+
+
+
+
+
+
+
+
+
+
+ --> TEMOS 
+
+
+
+
+
+                IMAGE
+CONTAINER ID                        COMMAND                     CREATED         STATUS                      PORTS
+ 'b750852d025d   node              "docker-entrypoint.s…"   4 minutes ago   Exited (0) 3 minutes ago'
+
+
+
+
+
+
+
+
+
+ -> VIMOS QUE A IMAGE FOI A NODE IMAGE,
+
+
+
+
+ QUE FOI CRIADA HÁ 2 MINUTOS,
+
+
+ QUE 
+
+ DEU 
+
+ 'EXIT' 
+ HÁ 3 MINUTES ATRÁS (ou seja, não está mais rodando)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> TAMBÉM TEMOS 1 AUTOMATICALLY GENERATED NAME (
+    '' eloquent_hypatia''
+
+
+ )
+
+
+
+
+
+
+
+
+
+
+ --> veremos esses auto names mais tarde.... 
+
+
+
+
+ mas o que percebemos
+
+
+
+
+
+ É QUE 
+
+
+
+
+ O CONTAINER RODOU POR ALGUNS INSTANTES,
+
+ E LOGO 
+
+
+
+
+
+
+ PAROU...
+
+
+
+
+
+
+
+
+
+
+ --> ISSO ACONTECEU PQ, CONFORME O PROFESSOR MENCIONOU,
+
+
+
+ 1 CONTAINER 'RODA EM ISOLAMENTO',
+
+
+ E EMBORA
+
+ TENHAMOS 
+
+
+ RODADO 
+
+
+ 
+
+ O NODE COMO 1 'IMAGE'/CONTAINER BASEADA NA NODE IMAGE,
+
+
+ ISSO 
+
+
+ NÃO FAZ MT COISA --> ISSO PQ A 'INTERACTIVE NODE SHELL'
+
+
+
+
+ EXPOSTA PELO NODE __ 
+
+
+ NÃO É AUTOMATICAMENTE EXPOSTA PELO __ CONTAINER_ A NÓS... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> MAS PODEMOS MUDAR ISSO, COM RELATIVA FACILIDADE...
+
+
+
+
+
+
+
+
+
+ --> BASTA REPETIR O COMANDO DE 'docker run node',
+
+
+ mas agora com 
+
+ '-p 3000:3000'...
+
+
+
+
+
+
+
+
+
+
+MENTIRA...
+
+
+
+
+
+
+
+
+
+NÃO DEVEMOS USAR  '-p 3000:3000',
+
+
+
+E SIM 
+
+
+
+DEVEMOS 
+
+USAR 
+
+
+
+
+A FLAG DE '-it'..
+
+
+
+
+
+
+
+
+-> essa flag 
+
+
+
+
+__ DIZ __ AO DOCKER QUE 'QUEREMOS EXPOR 1 __ INTERACTIVE __ SESSION',
+
+
+DE DENTRO 
+
+DO CONTAINER,
+
+
+EM DIREÇÃO A NOSSA 'HOST MACHINE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+ESCREVA ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK, MAS GANHEI 1 ERROR PQ AINDA NÃO HAVIA ABERTO O DOCKER...
+
+
+
+
+
+
+
+
+
+
+--> AGORA ABRI O DOCKER, E RODEI COMANDO --> 
+
+
+
+AÍ FICO 
+
+
+COM 
+
+
+
+A SHELL NODE BÁSICA, O 'REPL'...
+
+
+
+
+
+
+podemos rodar comandos node básicos, etc etc..
+
+
+
+
+
+
+
+
+
+
+
+--> MAS A COISA IMPORTANTE DE ISSO AÍ É QUE:
+
+
+
+
+
+
+
+
+
+1) 'NODE AGORA ESTÁ RODANDO __ DENTRO __ DESSE CREATED CONTAINER'...
+
+
+
+
+
+
+2) E ESSE CONTAINER ESTÁ EXPOSTO A NÓS,
+
+TUDO POR MEIO DO ADD DESSA FLAG EXTRA DE '-it'...
+
+
+
+
+
+
+
+
+
+
+
+-_> '-it' --> 'INTERACT' --> 
+
+
+
+
+ESSE '-IT'
+
+
+
+NOS 
+
+DEIXA 
+INTERAGIR COM O CONTAINER,
+
+ 
+
+
+
+
+ E COM __ O NODE__ RODANDO DENTRO DESSE CONTAINER,...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> MAS O NODE _ 
+
+
+
+
+
+
+ NÃO ESTÁ RODANDO NA NOSSA 'ACTUAL MACHINE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> O PROFESSRO DIZ QUE PODE COMPROVAR ISSO:
+
+
+
+
+
+
+
+
+
+
+
+
+ ----> NODE 14.9 --> É A VERSÃO 
+
+
+ MAIS RECENTE,
+
+ USADA NESSA IMAGE -> 
+
+
+
+ ESTA´SENDO USADA NESSE CONTAINER... ->
+
+
+
+
+
+
+
+
+
+
+
+
+ MAS SE DIGITAMOS ISSO NO TERMINAL, NO NOSSO TERMINAL,
+
+
+
+
+
+ se digitamos 'node -v',
+
+
+
+
+ VEMOS 
+
+
+
+ UMA OUTRA VERSÃO (mais antiga)...
+
+
+
+
+
+
+ -> ISSO PROVA QUE 
+
+ A VERSÃO COM QUE INTERAGIMOS NO DOCKER CONTAINER 
+
+ É A VERSÃO INSTALADA DENTRO DO CONTAINER EM SI...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> E NÃO PRECISAMOS TER NENHUM SOFTWARE PARA RODAR AS COISAS QUE TEMOS DENTRO DE 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+ -> ESSES SÃO OS BÁSICOS SOBRE CONTAINERS... O TRABALHO COM CONTAINERS...
+
+
+
+
+
+
+
+
+
+ --> E ISSO NOS MOSTRA O QUE SÃO 'IMAGES' E 'CONTAINERS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> images --> são usadas, POR TRÁS DAS CENAS,
+ PARA 'SEGURAR TODA A LÓGICA E CÓDIGO NECESSÁRIOS PARA 1 CONTAINER'...
+
+
+
+
+
+
+
+
+
+ -> E AÍ CRIAMOS __ INSTANCES DE 1 IMAGE,
+
+ POR MEIO DO COMANDO DE 'docker run'...
+
+
+
+
+
+
+
+
+
+
+ DOCKER RUN --> ISSO CRIA 'DOCKER CONTAINERS',
+
+
+ COM 
+
+ BASE 
+
+
+ NAS IMAGES....
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> E SE AGORA RODAMOS 'docker ps -a',
+
+
+ VEMOS 
+
+ QUE 
+ TEMOS 
+
+ 2 CONTAINERS:
+
+
+
+
+
+
+
+
+
+ --> AMBOS NÃO ESTÃO MAIS RODANDO --> 
+
+
+
+
+
+
+
+
+
+MAS TEMOS MAIS DE 1 CONTAINER,
+
+
+
+AMBOS BASEADOS NA MESMA 'IMAGE' --> 
+
+
+
+
+
+
+
+SIM, ELES NÃO ESTÃO MAIS RODANDO,
+MAS PODERÍAMOS
+
+
+TER 2 
+
+
+
+
+
+
+CONTAINERS __ 
+
+
+
+
+,
+CRIADOS A PARTIR DE 1 MESMA IMAGE,
+
+
+RODANDO A 1 MESMO PONTO NO TEMPO ---------> BASTA ABRIR MÚLTIPLOS TERMINALS E REPETIR 
+
+ESSE COMANDO DE 'docker run' ----> ISSO É ABSOLUTAMENTE POSSÍVEL..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSA É A IDEIA POR TRÁS DE IMAGES E CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+IMAGES -> POSSUEM  O CÓDIGO, O SETUP, O MEAT...
+
+
+
+
+
+CONTAINERS --> SÃO AS RUNNING INSTANCES DAS IMAGES...
