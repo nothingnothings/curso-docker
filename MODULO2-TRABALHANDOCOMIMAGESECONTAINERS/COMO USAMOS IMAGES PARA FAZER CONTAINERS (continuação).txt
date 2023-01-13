@@ -1,0 +1,752 @@
+
+
+
+
+
+
+
+
+BEM, NA VASTA MAIORIA DOS USE-CASES,
+
+
+
+VOCÊ 
+
+NÃO 
+
+VAI QUERER 
+
+APENAS 
+
+
+FAZER 
+
+
+DOWNLOAD 
+
+
+
+
+E RODAR 
+
+
+1 IMAGE QUE 
+TE DÁ 
+
+UMA 
+
+
+'INTERACTIVE SHELL' (como essa image de 'node' NOS DÁ, NO MOMENTO)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO É BOM PARA COMEÇAR,
+
+E PARA TERMOS 1 PRIMEIRA EXPERIÊNCIA 
+
+COM IMAGES E CONTAINERS..
+
+
+
+
+
+
+
+
+
+
+
+
+--> EM VEZ DISSO,
+
+
+VOCê
+TIPICAMENTE 
+
+FAZ 'BUILD UP' 
+
+EM CIMA 
+
+DESSAS IMAGES,
+
+
+
+
+
+
+
+PARA _ AÍ _ __
+
+
+CRIAR _ SUAS PRÓPRIAS IMAGES ------> AQUI, POR EXEMPLO,
+
+
+
+PODEMOS 
+
+
+USAR 
+
+
+
+ESSE 'PADRÃO' DA IMAGE OFICIAL DO 'NODE'
+
+
+PARA ENTÃO 
+
+
+RODAR CERTO CÓDIGO 
+
+
+
+NODEJS 
+
+
+__ COM ESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E É CLARO QUE O 'NODE' É APENAS 1 EXEMPLO --> QUE SERÁ USADO 1 MONTE AO LONGO DO CURSO...
+
+
+
+
+
+
+
+
+
+
+MAS ___ O MESMO SE APLICA PARA PHP,
+
+PARA GO,
+
+PARA PYTHON,
+
+
+
+
+PARA QUALQUQER PROGRAMMING 
+
+
+LANGUAGE QUE 
+
+VOCÊ 
+
+ESTIVER USANDO ---------> TIPICAMENTE VOCÊ 
+
+
+
+PULLARIA A 
+
+'OFFICIAL BASE IMAGE' (da linguagem desejada)
+
+
+E ENTAÕ 
+
+
+
+ADICIONARIA SEU PRÓPRIO CÓDIGO EM CIMA DESSA IMAGE,
+
+
+PARA EXECUTAR SEU CÓDIGO COM ESSA IMAGE --> E É CLARO QUE VOCÊ QUER 
+
+FAZER 
+
+
+
+TUDO ISSO __ DENTRO DE 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> E ESSE É UM CENÁRIO EM QUE VOCÊ 
+
+
+
+''''TEM QUE CONSTRUIR SUA PRÓPRIA IMAGE''',
+
+
+
+PQ 
+
+
+
+'''SEU  EXATO APP, COM SEU CÓDIGO''',
+
+
+OBVIAMENTE NÃO EXISTIRÁ 
+
+
+NO DOCKER HUB...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU SEJA -> 'CREATE YOUR OWN, CUSTOM IMAGE' --> WRITE YOUR OWN DOCKERFILE (based on another image)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... PORTANTO,
+
+AGORA 
+
+CONSTRUÍREMOS 
+
+
+NOSSA 
+
+PRÓPRIA 
+IMAGE,
+
+
+
+
+
+
+
+
+
+COM BASE NESSA 'NODE IMAGE'...
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+O PROFESSOR PREPAROU UM NODEJS DUMMY PROJECT..
+
+
+
+
+
+
+
+
+
+
+
+--> ELE TEM UNS ARQUIVOS..
+
+
+
+
+4 ARQUIVOS:
+
+
+
+
+
+.gitignore 
+
+package.json 
+
+
+
+server.js 
+
+
+
+public> styles.css 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------> NO ARQUIVO 'server.js',
+
+TEMOS 
+
+
+NOSSO MAIN NODE APP CODE -----> 
+
+
+
+
+
+
+ELE SERVE 1 PÁGINA AO USER... -> ELE VAI COMEÇAR 
+
+1 
+
+WEB SERVER COM O NODEJS,
+
+
+
+
+FAZENDO LISTEN TO NA PORT '80',
+
+E AÍ HANDLAMOS 
+
+
+
+
+INCOMING REQUESTS_  A 2 URLS (
+
+
+    '/', 
+
+    GET HTTP REQUEST,
+
+
+
+
+
+    RETORNA O CÓDIGO HTML...
+
+
+
+
+
+
+    E AÍ OS 'POST REQUESTS',
+
+    PARA 
+    AÍ 
+    '/store-goal',
+
+
+EM QUE TENTAMOS 
+
+RETRIEVAR 1 'GOAL VALUE'
+
+
+DO REQUEST BODY,
+
+QUE ENTÃO É CONSOLE.LOGGADO 
+
+
+
+E ENTÃO 
+
+
+__DEFINIMOS 1 VARIÁVEL NO SERVER COMO EQUIVALENTE A ESSE GOAL 
+
+
+DO REQUEST.. ->  E, AÍ ,
+
+REDIRECIONAMOS PARA A ROUTE 
+
+INICIAL,
+
+EM QUE 
+
+RENDERIZAMOS CÓDIGO 
+
+
+HTML
+
+
+E OUTPUTTAMOS 
+
+
+
+ESSA VARIÁVEL 
+
+
+
+DE 'Learn Docker'... (que será substituída com o 'get goal')...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO TUDO É CÓDIGO JAVASCRIPT,
+
+
+EXECUTADO COM NODE, 
+
+PARA TRAZER 1 WEBSERVER..
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+
+let userGoal = 'Learn Docker!';
+
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
+
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+  res.send(
+    <html>
+      <head>
+        <link rel="stylesheet" href="style.css"></link>
+      </head>
+      <body>
+        <section>
+          <h2>My Course Goal</h2>
+          <h3>${userGoal}</h3>
+        </section>
+        <form action="/store-goal" method="POST">
+          <div class="form-control">
+            <label>Course Goal</label>
+            <input type="text" name="goal"></input>
+          </div>
+          <button>Set Course Goal</button>
+        </form>
+      </body>
+    </html>
+  );
+});
+
+app.post('/store-goal', (req, res) => {
+  const enteredGoal = req.body.goal;
+  console.log(enteredGoal);
+  userGoal = enteredGoal;
+  res.redirect('/');
+});
+
+app.listen(80);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK, MAS E OS STYLES?
+
+
+
+
+
+
+
+
+ah, temos alguns styles ali...
+
+
+
+
+
+
+
+
+
+--> nada de mais....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> OK... MAS A PARTE MAIS IMPORTANTE,
+
+
+ A PARTE KEY'
+
+ É 
+
+
+ O 
+
+
+
+
+ ARQUIVO 'package.json' ----> 
+
+
+
+ LÁ DENTRO DESCREVEMOS 
+
+ ESSA NODE APPLICATION..
+
+
+
+
+
+
+
+
+
+
+
+ --> E ESSE É UM CONCEITO EXCLUSIVO DO NODE ----> AÍ DIZEMOS AO NODE 'QUAL DEPENDENCIES PRECISAMOS'..
+
+
+
+
+
+
+
+
+
+
+
+
+ --> NESSE CASO,
+
+ É O 'EXPRESS'
+
+ E O 'BODY-PARSER'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ------>>>>>>>>>>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ PRECISAMOS INSTALAR ESSES NEGÓCIOS ANTES.. (e depois apagar node_modules)..
+
+
+
+
+
+
+
+
+
+
+
+ PRONTo:
+
+
+
+
+
+
+ PS A:\projeto15-DOCKER\MODULO2-TRABALHANDOCOMIMAGESECONTAINERS\example-container-1> npm install express --save
+
+added 57 packages, and audited 58 packages in 5s
+
+7 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+PS A:\projeto15-DOCKER\MODULO2-TRABALHANDOCOMIMAGESECONTAINERS\example-container-1> npm install body-parser -save
+
+up to date, audited 58 packages in 700ms
+
+7 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+PS A:\projeto15-DOCKER\MODULO2-TRABALHANDOCOMIMAGESECONTAINERS\example-container-1> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> E ISSO PRECISA EXISTIR NO 
+
+
+PACKAGE.JSOn...
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR RODA NOSSO APP LOCALMENTE (com 'node server.js')...
+
+
+
+
+
+
+
+
+
+--> AGORA VEREMOS COMO CRIAR 1 IMAGE DESSE APP 
+
+
+E ENTAÕ 
+
+
+O RODAR _ DENTRO DE 1 CONTAINER...
+
+
+
+
+
+
+
+OK.. AGORA COMO PODEMOS CONSTRUIR NOSSA IMAGE,
+QUE CONTÉM 
+
+ESSE APP,
+
+E QUE ENTAÕ 
+
+
+
+__ TAMBÉM UTILIZA 
+
+
+A 'NODE DOCKER HUB IMAGE' 
+
+PARA 
+
+
+RODAR ESSE CÓDIGO...
