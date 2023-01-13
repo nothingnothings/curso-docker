@@ -1,0 +1,92 @@
+
+
+
+
+
+
+
+
+
+VAMOS APRENDER AS 2 COISAS NECESSÁRIAS PARA TRABALHAR COM O DOCKER,
+
+
+
+
+
+
+
+
+'''IMAGES'''
+
+
+
+
+E 
+
+
+'''CONTAINERS'''..
+
+
+
+
+
+
+
+
+
+
+EXPLORAREMOS A RELAÇÃO DAS IMAGES COM OS CONTAINERS,
+
+
+E COMO PRECISAMOS DOS 2 PARA TRABALHAR COM O DOCKER...
+
+
+
+
+
+
+
+
+
+
+
+VEREMOS:
+
+
+
+
+
+
+1) COMO PODEMOS USAR 'PRE-BUILT' E 'CUSTOM' IMAGES... e veremos a diferença entre os 2 tipos de image...
+
+
+
+
+
+
+
+
+
+2) MAIS IMPORTANTE,
+
+APRENDEREMOS COMO PODEMOS 'CREATE', 'RUN' E 'MANAGE' DOCKER CONTAINERS..
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+DEVEMOS APRENDER O QUE SÃO IMAGES E CONTAINERS,
+
+PARA USARMOS O DOCKER...
