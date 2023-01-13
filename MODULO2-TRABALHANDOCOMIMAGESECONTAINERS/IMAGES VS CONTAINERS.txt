@@ -1,0 +1,384 @@
+
+
+
+
+
+
+
+
+
+
+CONFORME MENCIONADO, TEMOS ALGO ALÉM DE 'CONTAINERS',
+
+QUE 
+
+
+SÃO 
+
+
+'IMAGES'...
+
+
+
+
+
+
+
+
+
+-> QUAL É A DIFERENÇA ENTRE OS 2,
+
+
+E COMO OS UTILIZAMOS?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ESTUDAMOS OS CONTAINERS NO PRIMEIRO MÓDULO --> APRENDEMOS 
+
+QUE 
+
+SÃO 
+
+PEQUENOS 'PACKAGES'
+
+
+QUE 
+
+CONTÉM 
+
+SEU APP,
+
+SEU WEBSITE,
+
+
+SEU NODE SERVER,
+
+
+ETC... ---> E, ALÉM DISSO, ELES CONTÉM 
+
+
+
+
+
+'''TODO O ENVIRONMENT PARA RODAR ESSE APP''' --> isso quer dizer que 
+
+
+O CONTAINER É 
+
+
+ESSA ''''RUNNING PIECE OF SOFTWARE''' -> É A COISA QUE 
+
+VOCê 
+
+'RODA',
+
+NO FINAL DAS CONTAS...
+
+
+
+
+
+
+
+
+
+
+--> MAS QUANDO TRABALHAMOS COM O DOCKER,
+
+
+PRECISAMOS DESSE OUTRO CONCEITO,
+
+CHAMADO DE 'IMAGES',
+
+
+QUE 
+
+
+SERÃO 
+
+
+
+
+
+OS 'TEMPLATES' OU 'BLUEPRINTS'
+
+PARA SEUS 
+
+
+CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SÃO ACTUALLY _ AS IMAGES QUE CONTERÃO 
+
+
+
+
+
+
+___ O 'CODE' E AS TOOLS NECESSÁRIAS PARA RODAR O CÓDIGO... -> E __ É O CONTAINER 
+
+QUE 
+
+
+VAI 
+
+ENTÃO 'RODAR'
+
+E EXECUTAR O CÓDIGO... ----> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE TEMOS UMA SEPARAÇÃO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+IMAGES 
+
+A) TEMPLATES/BLUEPRINTS FOR CONTAINERS 
+
+
+B) CONTAINS CODE + REQUIRED TOOLS/RUNTIMES 
+
+
+
+
+
+
+
+
+
+
+CONTAINERS 
+
+
+
+
+A) THE 'RUNNING UNIT OF SOFTWARE'
+
+
+
+
+
+
+
+
+
+
+
+
+--> é o container que é rodado e executa o código...
+
+
+
+
+
+
+
+
+
+
+-----> TEMOS ESSE 'SPLIT' PARA QUE _ POSSAMOS 
+
+CRIAR 
+
+
+
+1 IMAGE, COM 
+
+
+TODAS AS 'SETUP INSTRUCTIONS'  QUE 
+
+
+NOSSO CÓDIGO VAI QUERER...
+
+
+
+
+
+
+
+
+
+
+
+--> AÍ PODEMOS __USAR__ ESSA IMAGE PARA __ _cRIAR __ MÚLTIPLOS CONTAINERS COM BASE NELA ... --> 
+
+
+
+
+
+
+
+
+
+FAZEMOS ISSO PARA QUE, POR EXEMPLO,
+
+
+
+SE ESTAMOS PENSANDO EM 1 APP NODE,
+
+
+
+PODEMOS 
+
+
+
+O DEFINIR 1 ÚNICA VEZ,
+
+MAS AÍ 
+
+
+
+
+__ O EXECUTAR MÚLTIPLAS VEZES,
+
+EM DIFERENTES MÁQUINAS E DIFERENTES SERVERS ----------> E A IMAGE É AQUELE 'SHARABLE PACKAGE',
+
+
+
+COM TODAS AS SETUP INSTRUCTIONS E O  CODE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> JÁ O CONTAINER SERÁ '''A RUNNING INSTANCE CONCRETA'' DESSA IMAGEM AÍ.... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+resumindo:  'CONTAINER' É O 'OBJETO INSTANCIADO',
+
+
+
+
+
+E 'IMAGE' são os object constructors...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CONTAINERS SÃO CRIADOS A PARTIR DE IMAGES... ESSE É O CONCEITO FUNDAMENTAL,
+
+
+
+
+''ALL DOCKER IS ABOUT''...
+
+
+
+
+
+
+
+
+--> images e containers --> images são os BLUEPRINTS, TEMPLATES QUE CONTÊM O CÓDIGO E O APP, 
+
+
+E CONTAINERS 
+
+SÃO 
+
+
+A RUNNING APPLICATION...
+
+
+
+
+
+
+
+
+
+ISSO FICARÁ CLARO AO LONGO DESTE MÓDULO,
+
+ASSIM QUE 
+
+TRABALHARMOS COM IMAGES E CONTAINRS..
+
+
+
+
+
+
+
+
+--> VAMOS COMEÇAR A TRABALHAR COM IMAGES E CONTAINERS AGORA, no contexto do docker...
