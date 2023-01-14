@@ -40,6 +40,9 @@ RUN npm install
 
 
 ### o __ EXPOSE__ dos PORTS _deve acontecer __ ANTES_ DO RUN DE COMANDOS NO CONTAINER (com 'CMD')...
+
+#### para conseguirmos EXPOR ESSA PORT A NOSSA 'LOCAL MACHINE', precisamos rodar '''docker run -p port_da_maquina_local_que_queremos_mappear:80 ''''
+
 EXPOSE 80
 
 

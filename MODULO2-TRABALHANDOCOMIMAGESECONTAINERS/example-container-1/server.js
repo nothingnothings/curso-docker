@@ -15,6 +15,7 @@ app.use(express.static('public'));
 
 app.get('/', (req, res) => {
   res.send(
+    `
     <html>
       <head>
         <link rel="stylesheet" href="style.css"></link>
@@ -33,6 +34,7 @@ app.get('/', (req, res) => {
         </form>
       </body>
     </html>
+    `
   );
 });
 
