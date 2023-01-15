@@ -1,0 +1,435 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA, JÁ EXPLORAMOS OS CORE CONCEPTS DE IMAGES E CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+AQUI TEMOS 1 PEQUENO RESUMO:
+
+
+
+
+
+
+
+
+
+A) O DOCKER, NO FINAL DAS CONTAS, É 'ALL ABOUT' O NOSSO CÓDIGO --> NOSSO WEBAPP...
+
+
+
+
+
+
+
+
+
+
+B) COLOCAMOS ESSE CÓDIGO, QUE COMPÕE NOSSO APP,
+
+
+EM 1 IMAGE... 
+
+
+
+
+
+
+
+
+
+C) NESSA IMAGE, COLOCAMOS MAIS DO QUE NOSSO CÓDIGO,
+
+
+TAMBÉM COLOCAMOS O 'ENVIRONMENT',
+
+ AS TOOLS NECESSÁRIAS PARA RODAR ESSE CÓDIGO...
+
+
+
+
+
+
+
+
+
+
+
+ D) PODEMOS CRIAR 1 IMAGE DESSAS POR MEIO DO CREATE DE 1 'DOCKERFILE',
+
+
+ EM QUE VOCê PROVIDENCIA INSTRUÇÕES DETALHADAS ACERCA 'DO QUE VAI IR DENTRO DA IMAGE'...
+
+
+
+
+
+
+
+
+
+E) AS INSTRUCTIONS SÃO:
+
+
+1) WHICH BASE IMAGE YOU MIGHT BE USING ('FROM')
+
+
+2) WHICH CODE, AND WHICH DEPENDENCIES SHOULD BE COPIED IN THERE ('copy package.json /app')
+
+
+3) SE É NECESSÁRIA ALGUMA SETUP STEP (como "npm install")
+
+
+4) SE ENTÃO é necessário copiar o resto dos arquivos ('COPY . /app'))
+
+
+5) SE VOCÊ QUER  ABRIR ALGUMA 'INTERNAL PORT', PARA QUE 
+
+VOCÊ CONSIGA FAZER 'LISTEN TO ' A ESSA PORT 
+
+DO __ LADO _ DE FORA DA IMAGE (
+
+    e fora do container, no final das contas...
+)
+
+
+
+
+6) COMANDOS QUE SERÃO RODADOS NO PRÓPRIO CONTAINER (com CMD, e com os parâmetros como '["node", "server.js"]')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E É IMPORTANTE SABER ISSO:
+
+
+
+
+
+''''O DOCKER É __ ALL ABOUT CONTAINERS,
+
+E NÃO IMAGES''''.... ------> MAS IMAGES SÃO UM BUILDING BLOCK IMPORTANTE,
+
+
+
+PQ SÃO O _ 'TEMPLATE'/'BLUEPRINT'
+
+PARA 
+
+SEUS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+------->  e, então,
+
+
+
+VOCÊ PODE RODAR MÚLTIPLOS CONTAINERS,
+
+COM BASE EM 1 IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> A 'IMAGE'
+
+
+É _ A COISA __ QUE CONTÉM SEU CÓDIGO E ASSIM POR DIANTE --> O CONTAINER É APENAS 
+
+
+
+
+1 
+
+
+''EXTRA-THIN LAYER''
+
+EM CIMA 
+
+DA IMAGE,
+
+
+
+
+
+MAS __ AINDA __ ASSIM,
+
+
+O CONTAINER É 
+
+SEU 
+
+'RUNNING APPLICATION'.. -------> SUA RUNNING APPLICATION 
+
+
+EXISTE COM BASE EM 1 IMAGE,
+
+
+
+
+
+
+
+
+__ MAS __ 1 VEZ QUE ESTÁ RODANDO,
+
+EXISTE
+ 
+
+ 'STANDALONE'
+
+
+ EM RELAÇÃO AOS OUTROS CONTAINERS 
+
+ QUE 
+
+ TALVEZ ESTEJAM RODANDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ MAS O PROFESSOR QUER ENFATIZAR:
+
+
+
+
+
+
+
+ ''''1 CONTAINER NÃO COPIA OVER O CÓDIGO E ENVIRONMENT 
+
+ _ DE 1 IMAGE __ PARA 1 NOVO CONTAINER/FILE,
+
+
+ PQ 
+
+
+
+ NÃO É ISSO QUE ESTÁ ACONTECENDO''' ---> 1 CONTAINER VAI __ USAR__ O ENVIRONMENT 
+
+
+ ARMAZENADO EM 1 IMAGE,
+
+ E AÍ 
+
+ VAI 
+
+
+ SOMENTE 
+
+
+
+
+ 'ADD'
+
+ ESSE 
+
+ 'EXTRA-LAYER'
+
+
+ EM CIMA 
+
+
+
+
+
+ DO ENVIRONMENT DA IMAGE --------> esse 'running node server process',
+
+
+
+
+
+
+E AÍ __ 
+
+
+
+
+VAI __ ALLOCATE__ 
+
+RESOURCES,
+
+
+MEMORY E ETC,
+
+PARA RODAR ESSE APP,
+
+
+
+
+MAS __ NÃO VAI _ COPIAR O CÓDIGO __ 
+
+
+
+
+
+
+LÁ DA 'IMAGE' ------> ISSO QUER DIZER QUE 
+
+
+
+
+
+
+
+
+NOSSO CÓDIGO DA IAMGE __ NÃO VAI 
+
+
+ESTAR 'SENDO COPIADO 3x',
+
+
+se 
+
+criarmos 3 containers com base na mesma image --------> ISSO PQ __ O CÓDIGO DO ENVIRONMENT + NOSSO CÓDIGO VAI 
+
+
+EXISTIR 
+
+
+APENAS 1 ÚNICA VEZ,
+
+
+DENTRO DA IMAGE -----------> a ÚNICA COISA QUE 
+
+OS CONTAINERS 
+
+FAZEM 
+
+É 
+
+
+'UTILIZAR 
+
+ESSA IMAGE E O CÓDIGO NELA'',
+
+
+
+
+
+
+É ASSIM QUE O DOCKER FAZ MANAGE DISSO,
+
+
+
+E ISSO, É CLARO,
+
+É MT EFICIENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ESSA É A CORE IDEA POR TRÁS DO DOCKER:
+
+
+
+
+
+
+
+
+
+
+''''TER ESSES ISOLATED ENVIRONMENTS QUE CONTÉM SEU APP,
+
+E TUDO _ QUE __ É NECESSÁRIO PARA RODAR ESSE APP,
+
+
+TODOS ENVIRONMENTS,
+
+TODAS AS TOOLS,
+
+
+E TER ISSO 
+
+
+
+NOS ISOLATED ENVIRONMENTS'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> e ter tudo isso dentro desse isolated container --> É ISSO QUE O DOCKER É ALL ABOUT...
