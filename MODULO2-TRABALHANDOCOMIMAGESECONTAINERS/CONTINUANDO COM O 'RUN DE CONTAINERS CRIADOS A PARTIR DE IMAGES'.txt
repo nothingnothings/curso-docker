@@ -1,0 +1,1060 @@
+
+
+
+
+
+
+
+
+
+
+
+NA ÚLTIMA AULA,
+
+CRIAMOS NOSSO PRIMEIRO DOCKERFILE.. --> COM ELE,
+
+
+
+
+CRIAMOS NOSSA PRIMEIRA 'CUSTOM IMAGE',
+
+E AÍ 
+
+
+RODAMOS NOSSO PRIMEIRO CONTAINER, COM BASE NESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE HÁ BEM MAIS COISAS A APRENDER SOBRE ESSA DOCKER FILE,
+
+SOBRE O COMANDO 'docker'
+
+
+
+E TODOS SEUS SUBCOMMANDS (
+
+
+    as diferentes maneiras de configurar coisas...
+)
+
+
+
+
+
+
+
+
+
+
+MAS ANTES DE  APRENDERMOS QUALQUUER COISA RELATIVA A ISSO,
+
+
+
+DEVEMOS:
+
+
+
+
+
+
+
+
+1) '''ENTENDER COMO __ 1 IMAGE__ E 1 CONTAINER FUNCIONAM, E COMO FUNCIONAM EM CONJUNTO''.
+
+
+
+
+
+
+
+
+-_ PARA ISSO,
+
+
+VAMOS ATÉ NOSSO CÓDIGO NODE,
+
+
+E AÍ 
+DIGAMOS QUE QUEREMOS _ CHANGE_ O NOSSO CÓDIGO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+O CÓDIGO ESTÁ ASSIM:
+
+
+
+
+
+
+
+
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+
+let userGoal = 'Learn Docker!';
+
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
+
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+  res.send(
+    `
+    <html>
+      <head>
+        <link rel="stylesheet" href="style.css"></link>
+      </head>
+      <body>
+        <section>
+          <h2>My Course Goal</h2>
+          <h3>${userGoal}</h3>
+        </section>
+        <form action="/store-goal" method="POST">
+          <div class="form-control">
+            <label>Course Goal</label>
+            <input type="text" name="goal"></input>
+          </div>
+          <button>Set Course Goal</button>
+        </form>
+      </body>
+    </html>
+    `
+  );
+});
+
+app.post('/store-goal', (req, res) => {
+  const enteredGoal = req.body.goal;
+  console.log(enteredGoal);
+  userGoal = enteredGoal;
+  res.redirect('/');
+});
+
+app.listen(80);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> DIGAMOS QUE QUEREMOS TROCAR O CÓDIGO,
+
+
+DEIXAR 
+
+
+'MY COURSE GOAL!!!!',
+
+com várias exclamações ---------> ESSA SERÁ UMA PEQUENA MUDANÇA,
+
+
+MAS É UMA MUDANÇA QUE AINDA NÃO SERÁ 
+
+REFLETIDA NA NOSSA 'RUNNING APPLICATION'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> SE RODAMOS NOVAMENTE AQUELE COMANDO QUE 
+
+
+
+_ INICIA O CONTAINER,
+
+COMANDO DE 
+
+
+
+
+
+docker run -p 3000:80 seu_container_id
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SE FAZEMOS ISSO _ PARa __ COMEÇAR NOSSA NODE APPLICATION MAIS UMA VEZ,
+
+
+
+VEREMOS QUE 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+''' NOSSA PEQUENA MUDANÇA NO CÓDIGO __ NÃO TERÁ SIDO REFLETIDA NA 
+
+
+
+PÁGINA/NO PROJETO/NA IMAGE/NO CONTAINER'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> OK...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS PQ ISSO?
+
+
+
+
+
+
+
+
+
+
+
+
+PQ AINDA ESTMAOS COM A VERSÃO ANTIGA DO CONTAINER?
+
+
+
+
+
+
+
+
+
+
+--> PQ ESSA CHANGE NÃO FOI REFLETIDA? ATÉ MESMO RESETTAMOS O CONTAINER, o que quer dizer que 
+
+
+
+REALMENTE REINICIAMOS O CONTAINER....  (rodamos 'docker stop nome_do_container' para o parar)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS O RESTART REALMENTE NÃO FEZ NADA,
+
+PQ NÃO VEJO ESSA CHANGE NO NOSSO WEBAPP...
+
+
+
+
+
+
+
+
+
+PQ ISSO ACONTECEU?
+
+
+
+
+
+
+
+
+
+
+
+
+É PQ __ DEVEMOS ENTENDER 'COMO IMAGES FUNCIONAM'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> DEVEMOS ENTENDER COMO ELAS FUNCIONAM..
+
+
+
+
+
+
+ 
+ OK... DEVEMOS TER EM MENTE QUE 
+
+ ISTO AQUI:
+
+
+
+
+
+
+
+
+ const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+
+let userGoal = 'Learn Docker!';
+
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
+
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+  res.send(
+    `
+    <html>
+      <head>
+        <link rel="stylesheet" href="style.css"></link>
+      </head>
+      <body>
+        <section>
+          <h2>My Course Goal</h2>
+          <h3>${userGoal}</h3>
+        </section>
+        <form action="/store-goal" method="POST">
+          <div class="form-control">
+            <label>Course Goal</label>
+            <input type="text" name="goal"></input>
+          </div>
+          <button>Set Course Goal</button>
+        </form>
+      </body>
+    </html>
+    `
+  );
+});
+
+app.post('/store-goal', (req, res) => {
+  const enteredGoal = req.body.goal;
+  console.log(enteredGoal);
+  userGoal = enteredGoal;
+  res.redirect('/');
+});
+
+app.listen(80);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É __ PARTE__ DO NOSSO 'NODE APP CODE',
+
+
+
+
+É O 
+
+
+NOSSO SOURCE CODE -->   E __ O QUE ESTAMOS FAZENDO COM ESSE CÓDIGO?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> BEM, LÁ NO DOCKER FILE ESTAMOS INSTRUINDO O DOCKER A:
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''COPY TUDO __ DOS ARQUIVOS, PARA DENTRO DO FOLDER DE PROJECT, PARA _ DENTRO DO FILE SYSTEM DA __IMAGE___,
+
+
+MAIS PRECISAMENTE PARA DENTRO DO FOLDER DE NOME 'app',
+
+
+
+
+
+
+
+
+
+
+
+
+COMO ESCREVEMOS ASSIM:
+
+
+
+
+
+
+
+
+COPY . /app --------->  É EXATAMENTE ISSO QUE ESTAVA ACONTECENDO...
+
+
+
+
+
+
+
+
+
+
+
+--> DEPOIS DISSO,
+
+
+
+NÓS HAVÍAMOS PEDIDO PARA O DOCKER RODAR 'RUN npm install',
+
+
+
+
+
+
+
+
+
+PARA _ RODAR__ E INSTALAR NOSSAS DEPENDENCIES..
+
+
+
+
+
+
+
+
+
+DEPOIS DISSO, EXPOMOS A PORT DE '80',
+
+
+
+PARA ENTÃO 
+
+RODAR 'node server.js' com o 'CMD',
+
+
+que 
+
+
+DEIXOU ESSE SERVER RODANDO..
+
+
+
+
+
+
+
+---> CERTO...
+
+
+
+
+
+
+
+
+
+
+OU SEJA,
+
+FIZEMOS ALGO IMPORTANTE, AQUI,
+
+DENTRO DESSE DOCKERFILE  -------> NÓS FIZEMOS COPY DO 'SOURCE CODE' 
+
+
+
+PARA __ DENTRO DA IMAGE,
+
+TUDO POR MEIO DE 'COPY . /app' -----> OU SEJA,
+
+
+ESSENCIALMENTE 
+
+FIZEMOS 
+1 
+
+'SNAPSHOT' DO ESTADO DE NOSSO CÓDIGO, QUANDO ESSA IMAGE FOI CRIADA, 'A SNAPSHOT AT THE POINT OF TIME WE COPIED IT'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E AQUI, QUANDO ADICIONAMOS "!!!!!!",
+
+
+ISSO __ NÃO ACABA ALTERANDO 
+
+
+
+O CÓDIGO 'SOURCE-CODE'
+
+
+
+NA IMAGE... ------> ISSO QUER DIZER QUE 
+
+
+
+__ É NECESSÁRIO FAZER 'REBUILD' DA IMAGE,
+
+
+PARa _ COPIAR __ 
+
+NOSSO 
+
+
+'UPDATED SOURCE-CODE'
+
+
+
+EM 
+
+
+1 NOVA IMAGE.. ---------> E ISSO _ É ___ MT CRUCIAL..
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> E SE ISSO __ PARECE ESTRANHO/CUMBERSOME,
+
+
+
+ISSO 
+DE TER 
+
+DE 
+FAZER 
+
+'REBUILD' 
+
+
+
+DE 1 IMAGE __ TODA __ VEZ QUE _ 
+
+
+
+
+
+
+MUDAMOS NOSSO CÓDIGO,
+
+
+O PROFESSOR TEM UMA BOA NOTÍCIA:
+
+
+
+
+
+"""ENCONTRAREMOS __ UMA MANEIRA_ MAIS RÁPIDA E FÁCIL DE 'PICK UP CHANGES' NO NOSSO CÓDIGO __ MAIS 
+
+TARDE'''...
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O 'CORE TAKEAWAY',
+AQUI
+,
+
+É IMPORTANTE,
+
+
+
+E __ SEMPRE SERÁ __ VERDADE:
+
+
+
+
+
+
+
+
+"""IMAGES SÃO BASICAMENTE __ LOCKED_ E FINISHED''',
+
+
+
+LOCKED E FINSIHED 
+
+_ NO MOMENTO EM QUE 
+
+
+VOCÊ 
+
+FAZ 'BUILD DELAS' ------>  ISSO QUER DIZER QUE 
+
+
+__TUDO _ 
+
+
+
+DENTRO DA IMAGE É 
+
+'READ-ONLY',
+
+
+
+E TUDO 
+
+QUE HÁ 
+
+LÁ DENTRO 
+
+NÃO PODE SER EDITADO DO LADO DE FORA 
+
+
+
+POR MEIO 
+
+
+DE ALGO SIMPLES/BANAL COMO 
+
+'UPDATE THE CODE',
+
+
+
+
+
+
+
+PQ _ A IMAGE NÃO VAI 
+
+
+
+
+SE IMPORTAR COM O PAST/FUTURE ----> ASSIM QUE ESSA 'COPY' OPERATION TIVER ACABADO,
+
+
+
+E O BUILD TER SIDO EXECUTADO,
+
+
+
+
+
+
+
+SUAS CHANGES NO 'MUNDO EXTERIOR',
+
+NOS ARQUIVOS,
+
+NÃO SERÃO 
+
+REFLETIDAS   
+
+
+
+NA IMAGE... --> ISSO SIGNIFICA QUE PRECISAMOS 
+
+
+'REBUILD' 
+
+
+
+
+
+
+
+PARA FAZER PICKUP DE CHANGES EXTERNAS, 
+
+
+
+E BASICAMENTE 'COPY ALL THE UPDATED CODE'
+
+
+PARA DENTRO DA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-_> É POR ISSO QUE O QUE PRECISAMOS FAZER, AQUI,
+É 
+
+RODAR 
+
+
+
+
+'docker build .'
+
+
+
+MAIS UMA VEZ,
+
+
+PARA _ ENTÕA FAZER __ REBUILD DA IMAGE,
+
+
+
+PARA _ CONSTRUIR UMA NOVA IMAGE,
+ NO FINAL DAS CONTAS... ------> ASSIM QUE 
+
+
+
+ ESSA IMAGE TIVER SIDO BUILDADA,
+
+
+ TEREMOS TAMBÉM UM NOVO 
+
+ 'IMAGE NAME',
+
+
+
+ PQ 
+
+
+ ELA SERÁ EXATAMENTE ISSO:
+
+ UMA NOVA IMAGE...
+
+
+
+
+
+
+
+
+
+
+ -_> É QUASE IGUAL à IMAGE ANTERIOR,
+
+ MAS TECNICAMENTE __ É TOTALMENTE DIFERENTE (
+
+    pq tem código totalmente diferente no seu interior...
+ )
+
+
+
+
+
+
+
+
+
+
+
+
+ --> OK.... COM ESSE NOVO IMAGE NAME,
+
+ rodamos 
+
+ 'docker run IMAGE_NAME' ----->
+
+
+
+
+
+
+ SE FIZERMOS ISSO,
+
+
+
+
+ AGORA SIM VEREMOS __ 
+
+
+ A MUDANÇA NO NOSSO CÓDIGO, OS "!!!!",
+
+
+ PQ 
+
+ TEREMOS 
+
+
+ CRIADO 1 NOVA IMAGE,
+
+
+
+ COM ESSE NOVO CÓDIGO NO INTERIOR..
+
+
+
+
+
+
+
+
+
+
+
+ -_> O PROFESSOR 
+
+
+
+ ENFATIZA TUDO ISSO 
+
+
+ PQ 
+
+
+
+ É CRUCIAL 
+
+ ENTENDER QUE 
+
+
+
+ '''UMA IMAGE_ _ É __ UM _ CLOSED _ _TEMPLATE, NO FINAL DAS CONTAS'....
+
+
+
+
+
+
+
+
+
+
+
+
+ E AS INSTRUCTIONS DE 
+
+
+
+ FROM node 
+
+ WORKDIR /app 
+
+ COPY . /app 
+
+ RUN npm install 
+
+ EXPOSE 80 
+
+ CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+SÃO __ REALMENTE DEFINITIVAS,
+
+SÃO 'FINISHED',
+
+
+
+É LOCKED ----> E SE VOCÊ MUDA ALGO QUE __ VOCÊ 
+
+
+
+
+
+__ HAVIA COPIADO __ PARA DENTRO DA IMAGE ANTERIORMENTE,
+
+ISSO 
+
+NÃO TERÁ 
+
+
+
+NENHUM EFEITO NAS FILES QUE AGORA ESTARÃO VIVENDO 
+
+DENTRO 
+
+DAQUELA IMAGE...
+
+
+
+
+
+
+
+
+
+O PROFESSOR RODA 'docker stop'
+PARA 
+
+PARAR 
+
+
+
+ESSE CONTAINER DE NODE,
+
+PQ AGORA VAMOS ESTUDAR MAIS IMAGES E CONTAINERS...
