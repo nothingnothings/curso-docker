@@ -1,0 +1,1964 @@
+
+
+
+
+
+
+
+
+OK.. AGORA SABEMOS QUE UMA IMAGE ESTÁ 'CLOSED' ASSIM QUE A CONSTRUÍMOS (docker build .)
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+OU SEJA,
+
+
+QUANDO AS INSTRUCTIONS 
+
+
+
+DE 
+
+'''
+
+
+
+ FROM node 
+
+ WORKDIR /app 
+
+ COPY . /app 
+
+ RUN npm install 
+
+ EXPOSE 80 
+
+ CMD ["node", "server.js"]
+
+
+
+
+
+
+
+''
+
+
+SÃO EXECUTADAS,
+
+
+
+
+
+JÁ ERA,
+
+
+
+
+
+__ O CÓDIGO-FONTE JÁ É COPIADO,
+
+E NÃO PODE SER ALTERADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> É POR ISSO QUE PRECISAMOS REBUILD/CONSTRUIR UMA NOVA IMAGE 
+
+
+
+SE FAZEMOS ALGUMA ALTERAÇÃO NO NOSSO CÓDIGO, ALGO NOVO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS A PARTIR  DESSAS NOÇÕES,
+
+
+
+
+
+
+
+
+HÁ OUTRO CONCEITO IMPORTANTE,
+
+RELATIVO A 'IMAGES',
+
+QUE VOCê 
+
+DEVE 
+
+
+
+
+SABER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> AS IMAGES SÃO 'LAYER-BASED'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS O QUE ISSO QUER DIZER?
+
+
+
+
+
+
+
+
+
+
+
+QUER DIZER QUE  QUANDO CONSTRUÍMOS/RE-CONSTRUÍMOS UMA IMAGE,
+
+
+
+
+
+
+
+__ APENAS__ AS INSTRUCTIONS EM QUE 
+
+
+
+
+
+'''ALGO __ MUDOU____ ''',
+
+
+
+
+
+
+
+E TODAS AS INSTRUCTIONS __ POSTERIORES,
+
+
+
+SÃO 
+
+'RE-EVALUATED'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... TENHA EM MENTE QUE O PROFESSOR MUDOU O CÓDIGO html 
+
+
+
+SERVIDO PELO NODE... E, ISSO FEITO,
+
+O PROFESSOR 
+
+
+FEZ 
+
+'RE-BUILD'
+
+DA IMAGE,
+
+PARA QUE 
+
+
+
+AS MUDANÇAS NO ARQUIVO 'server.js'
+
+
+
+FOSSEM REFLETIDAS NA NOVA IMAGE BUILDADA,
+
+
+QUE 
+
+
+
+POR FIM 
+
+
+
+RESULTA _ EM 1 NOVO CONTAINER (com as alterações aplicadas)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> FIZEMOS ISSO NA ÚLTIMA LIÇÃO, SIM... -------->
+
+
+
+
+
+
+
+
+
+
+
+E O PROFESSOR NÃO REALIZOU MAIS NENHUMA MUDANÇA 
+
+
+
+
+NO NOSSO CÓDIGO ----->  É POR ISSO QUE, AGORA, SE 
+
+O PROFESSOR 
+
+
+RECONSTRÓI/CRIA UMA NOVA 
+
+
+IMAGE POR MEIO DE 
+
+
+
+
+'docker build .',
+
+
+
+
+
+esse _ PROCESSO __ SERÁ _ ULTRA RÁPIDO --> TERMINA EM 0.25 SEGUNDOS ----> ISSO ACONTECEU 
+
+TRI RÁPIDO 
+
+
+JUSTAMENTE 
+
+
+PQ 
+
+
+
+O 
+
+
+
+DOCKER OUTPUTTOU VÁRIAS MENSAGENS, no terminal, de 'using cache'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO SIGNIFICA QUE O DOCKER _ BASICAMENTE _ RECONHECE QUE 
+
+
+
+
+
+
+'''PARA TODAS ESSAS INSTRUCTIONS,
+
+
+
+O RESULT _ QUANDO TODAS ESSAS INSTRUCTIONS FOREM EXECUTADAS _ SERÁ _ EXATAMENTE 
+
+O MESMO DE ANTES''' (nenhuma mudança concreta, entre nossa versão atual e a última  )
+
+
+
+
+
+
+
+
+
+
+
+ISSO QUER DIZER QUE O DOCKER É CAPAZ DE 
+
+'INFER'
+
+
+QUE 
+
+_ NÃO É REALMENTE NECESSÁRIO ELE 'IR POR DENTRO'
+
+
+DAQUELA INSTRUCTION MAIS UMA VEZ...
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+[+] Building 0.1s (9/9) FINISHED
+ => [internal] load build definition from Dockerfile                                                                0.0s 
+ => => transferring dockerfile: 32B                                                                                 0.0s 
+ => [internal] load .dockerignore                                                                                   0.0s 
+ => => transferring context: 2B                                                                                     0.0s 
+ => [internal] load metadata for docker.io/library/node:latest                                                      0.0s 
+ => [1/4] FROM docker.io/library/node                                                                               0.0s 
+ => [internal] load build context                                                                                   0.0s 
+ => => transferring context: 191B                                                                                   0.0s 
+ => CACHED [2/4] WORKDIR /app                                                                                       0.0s 
+ => CACHED [3/4] COPY . /app                                                                                        0.0s 
+ => CACHED [4/4] RUN npm install                                                                                    0.0s 
+ => exporting to image                                                                                              0.0s 
+ => => exporting layers                                                                                             0.0s 
+ => => writing image sha256:4f8d683be1a6b15b21b4804452c7ac9cef3f359b34b48f6bc5f1b71df8b93f35 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> EM VEZ DISSO,
+
+ SEMPRE QUANDO VOCÊ FAZ 'BUILD'
+
+ DE UMA IMAGE,
+
+
+
+
+
+
+_ O DOCKER FAZ 'CACHE' 
+
+
+
+
+
+
+__ DE _ TODA_ _ 'INSTRUCTION RESULT'... --> E, AÍ, QUANDO VOCÊ FAZ REBUILD DE 1 IMAGE,
+
+
+
+O DOCKER 
+
+
+
+USA ESSES 'CACHED RESULTS'
+
+SE NÃO 
+
+
+HÁ NENHUMA NECESSIDADE 
+
+
+
+
+
+
+
+__PARA RODAR 1 INSTRUCTION NOVAMENTE -------> E ISSO É CHAMADO 
+
+
+DE 
+
+UMA 
+
+'LAYER-BASED ARCHITECTURE' -->   CADA _ INSTRUCTION,
+
+
+
+NA DOCKER FILE,
+
+
+VAI 
+
+REPRESENTAR 
+
+
+
+1 
+
+'LAYER'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E 1 IMAGE,
+
+
+
+DE FATO,
+
+
+É __ CONSTRUÍDA __
+
+
+
+POR 'MÚLTIPLOS LAYERS'...
+
+
+
+
+e ESSES LAYERS SÃO JUSTAMENTE ESSAS 'MÚLTIPLAS INSTRUCTIONS'...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+instruction N3 --> IMAGE LAYER 3
+
+instruction N2 ---> IMAGE LAYER 2
+
+INSTRUCTION N1 --> IMAGE LAYER 1 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALÉM DISSO,
+
+
+
+
+
+1 IMAGE É 'READ-ONLY' -->  ISSO QUER DIZER QUE ,
+
+ASSIM QUE 
+
+
+
+__ UMA INSTRUCTION FOI EXECUTADA E A IMAGE FOI 'BUILT',
+
+
+ESSA IMAGE 
+FICA 
+'LOCKED-IN',
+
+ 
+
+
+
+
+
+
+
+
+ E O CÓDIGO DENTRO DA IMAGE NÃO PODE SER MAIS ALTERADO -->  _ A NÃO SER QUE 
+
+ VOCÊ 
+
+ FAÇA 
+
+
+
+ __REBUILD DA IMAGE (
+
+o que TECNICAMENTE SIGNIFICA 'CRIAR UMA NOVA IMAGE'...
+
+ )
+
+
+
+
+
+
+
+
+
+
+
+
+ OK, MAS VOLTANDO AO CONCEITO DOS LAYERS...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> 1 IMAGE É 'LAYER-BASED'...
+
+
+
+
+
+
+
+
+
+
+ --> CADA INSTRUCTION CRIA 1 LAYER,
+
+
+ E CADA LAYER FICA 'CACHED' --> 
+
+
+
+
+
+
+
+ SE VOCCÊ ENTÃO 
+
+ TENTA RODAR 1 CONTAINER COM BASE EM 1 IMAGE,
+
+
+ ESSE _ CONTAINER__ VAI _ BASICAMENTE 
+
+
+
+
+
+
+
+
+
+ '''''ADICIONAR 1 NOVO  EXTRA LAYER __ EM CIMA DA IMAGE'''''
+
+
+
+
+
+
+
+
+
+
+ ---> ESSE LAYER DO 'CONTAINER'
+
+
+
+
+
+ FICARÁ TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+CONTAINER LAYER (POR CIMA DAS INSTRUCTIONS/LAYERS DA IMAGE)..
+ 
+instruction N3 --> IMAGE LAYER 3
+
+instruction N2 ---> IMAGE LAYER 2
+
+INSTRUCTION N1 --> IMAGE LAYER 1 
+
+
+
+
+
+
+
+
+
+
+
+
+-> ESSE É UM EXTRA-LAYER,
+
+
+EM CIMA 
+
+DA IMAGE,
+
+
+
+QUE 
+
+
+
+ESSENCIALMENTE É 
+
+A 
+
+'RUNNING APPLICATION',
+
+O 
+
+'
+RUNNING CODE '-->   ISSO QUER DIZER, EM OUTRAS PALAVRAS,
+QUE 
+
+
+
+
+O 
+
+'CONTAINER', o layer do container,
+
+
+É BASICAMENTE O RESULTADO 
+
+
+
+
+
+DA EXECUÇÃO DE 'CMD',
+
+LÁ 
+
+
+
+NO SEU DOCKERFILE (
+
+
+
+    CMD ["node", "server.js"]
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> QUER DIZER QUE 
+
+'CMD'
+
+
+ADICIONA __ O FINAL LAYER 
+
+
+AO SEU RUNTIME,
+
+
+
+
+
+
+
+
+__ QUE _ APENAS VAI FICAR __ ATIVO__ ASSIM QUE VOCê 'RODAR 1 IMAGE COMO 1 LAYER' (por meio do RUN DE 1 CONTAINER, CRIADO A PARTIR DE 1 IMAGE)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> E TODAS AS OUTRAS INSTRUCTIONS, QUE 
+
+
+SÃO ESCRITAS __ ANTES_ DE 'CMD[]',
+
+
+
+
+
+
+
+JÁ FAZEM PARTE_ 
+
+DA IMAGE,
+
+
+
+
+
+COMO "lAYERS SEPARADOS" ------------> E, SE NADA MUDA,
+
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE TODOS ESSES LAYERS 
+
+
+
+
+
+
+PODEM SER USADOS LÁ DO CACHE( poderá ser usado o cache para isso)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK, MAS 
+
+
+
+SE O PROFESSOR ALTERA QUALQUER COISA NO CÓDIGO DE 'server.js',
+
+
+
+
+
+
+
+
+E AÍ _ TENTA __ 
+
+
+
+
+RE-RODAR 'dockber build .',
+
+ 
+
+
+
+
+
+
+
+
+
+PERCEBEMOS QUE 
+
+
+'O PROCESSO DEMOROU MAIS 1 POUCO'....-- --> DEMOROU MAIS 1 POUCO 
+
+
+
+
+
+
+
+
+
+JUSTAMENTE PQ 
+
+'''ELE APENAS USOU __ ALGUNS_ 
+
+
+
+
+__ DOS RESULTS LÁ DO CACHE''' ------>
+
+
+
+
+
+
+
+ELE USOU, LÁ DO CACHE,
+
+
+
+O:
+
+
+
+
+
+
+1) WORKING DIRECTORY
+
+
+
+
+
+
+
+
+2) MAS ELE PERECBEU QUE, PARA A INSTRUCTION DE 'COPY',
+
+
+ELE 
+
+PRECISA RODAR ALGO 'FORA DO CACHE',
+
+
+
+
+
+
+
+
+__ PQ _ O DOCKER _ ESCANEIA AS 'FILES' QUE SÃO COPIED IN -->  E O DOCKER _ 
+
+
+
+
+
+
+
+__ DETECTA_ QUE '1 FILE MUDOU' --> POR CONSEQUÊNCIA,
+O DOCKER 
+
+
+
+
+
+__ COPIA __ 
+
+
+
+
+TODOS OS FILES 
+
+PARA 
+
+DENTRO DE './app'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... 
+
+
+
+
+
+
+
+
+
+--> MAS AQUI TEMOS 1 PROBLEMA:
+
+
+
+
+
+
+
+
+---> DETECTADO QUE 1 FILE MUDOU,
+
+
+
+
+SEMPRE QUE 1 LAYER MUDA,
+
+
+
+TODOS OS LAYERS  SUBSEQUENTES (
+
+
+    posteriores ao layer que mudou 
+) 
+
+
+SÁO TAMBÉM __ 'REBUILT' -----> 
+
+
+
+
+
+
+OK, RECAPITULANDO O CÓDIGO:
+
+
+
+
+
+
+
+
+
+
+FROM node
+
+
+
+
+
+WORKDIR /app
+
+
+COPY . /app
+
+
+
+
+
+RUN npm install
+
+
+
+
+
+EXPOSE 80
+
+
+
+CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU SEJA, 
+
+
+
+OS PASSOS DE 'npm install' 
+
+
+
+'expose'
+
+
+e 'cmd'
+
+são completamente alterados/são reexaminados e compilados...
+
+
+
+
+
+
+
+
+
+
+
+
+--> SÃO REBUILT --> ISSO PQ O DOCKER NÃO VAI SABER SE O 'NPM INSTALL'
+
+
+
+VAI 
+
+
+RENDER O MESMO RESULTADO DE ANTES (pq 
+
+
+agora 
+
+POSSÍVELMENTE TEREMOS 1 ARQUIVO PACKAGE.JSON COMPLETAMENTE DIFERENTE,
+
+
+e o docker não vai fazer uma 'DEEP ANALYSIS DE CADA FILE',
+
+
+
+SE 1 FILE MUDOU EM X LUGAR,
+
+E 
+
+SE ISSO 
+VAI AFETAR O NPM INSTALL..
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE SEMPRE QUE 1 LAYER MUDA,
+
+TODOS OS LAYERS SUBSEQUENTES SÃO REEXECUTADOS --> E ESSA É A RAZÃO DE 'NPM INSTALL'
+
+
+TER RODADO  NOVAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+--> ESSA LAYER-BASED ARCHITECTURE EXISTE,
+
+E FAZ SENTIDO...
+
+
+
+
+
+
+
+
+--> ELA EXISTE PARA 'SPEED-UP'
+
+
+
+A CRIAÇÃO 
+
+DE IMAGES,
+
+
+VISTO QUE O 
+
+
+
+DOCKER SÓ __ REBUILDA __ E REEXECUTA O QUE _ REALMENTE PRECISA 
+
+
+SER REEXECUTADO/REAVALIADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-_> E  ISSO, É CLARO,
+
+
+É UM 
+
+MECANISMO MT ÚTIL..
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. MAS ISSO SIGNIFICA QUE AGORA, QUANDO MUDAMOS QUALQUER COISA NO NOSSO CÓDIGO DE 'server.js',
+
+
+
+
+O NPM  INSTALL É __ EXECUTADO NOVAMENTE ... --> AINDA QUE NÓS,
+
+DESENVOLVEDORES,
+
+
+
+SAIBAMOS _ QUE 
+
+
+ISSO É TOTALMENTE DESNECESSÁRIO...
+
+
+
+
+
+
+
+
+
+
+
+
+E AS COISAS CONTINUARAM ACONTECENDO/SENDO EXECUTADAS ASSIM...
+ 
+
+
+
+
+
+
+
+
+
+E, SE NÃO ALTERARMOS NENHUMA DAS DEPENDENCIES NO PACKAGE.JSON,
+
+
+
+
+NUNCA EXISTIRÁ A NECESSIDADE DE RODAR 'npm install',
+
+
+MAS 
+
+
+
+ELE CONTINUARÁ SENDO RODADO,
+
+
+PQ 
+
+É ISSO QUE O DOCKER FAZ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> EX: SE MUDARMOS O CÓDIGO HTML SERVIDO AO USER,
+
+ISSO NÃO VAI MUDAR NEM UM POUCO AS DEPENDENCIES NECESSÁRIAS A ESSE PROJETO --------> isso quer dizer que, no mundo 'node',
+
+
+o npm 
+
+
+INSTALL NÃO PRECISA SER REEXECUTADO..
+
+
+
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE _ AQUI __ TEMOS __ NOSSO PRIMEIRO 
+
+
+'OPTIMIZAITON POTENTIAL'
+
+
+
+PARA NOSSA DOCKER FILE...
+
+
+
+
+
+
+
+
+
+__ EM VEZ DE ___ SEMPRE 'COPIAR TUDO E ENTÃO RODAR NPM INSTALL',
+
+
+
+
+
+
+
+
+
+
+
+tipo por meio desta ordem:
+
+
+
+
+
+""""""""""""""""""""""""""
+
+
+COPY . /app
+
+
+
+
+
+RUN npm install
+
+
+
+
+""""""""""""""""""""""
+
+
+
+
+
+
+
+
+
+
+
+
+
+SERIA MELHOR __ SE __ FIZÉSSEMOS ESSA COPY  DE 'TODOS OS ARQUIVOS'
+
+
+
+
+
+__ APÓS___ O NPM INSTALL,
+
+
+
+
+
+
+
+
+
+MAS ____ ANTES__ DE RODARMOS NPM INSTALL,
+
+
+
+TAMBÉM 
+
+
+
+COPIÁSSEMOS O ARQUIVO 'package.json' (separar o arquivo package.json do resto dos arquivos)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node
+
+
+
+
+
+WORKDIR /app
+
+
+COPY package.json /app
+
+
+RUN npm install
+
+
+
+
+COPY . /app
+
+
+
+EXPOSE 80
+
+
+
+CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OU SEJA,
+
+COM ISSO COPIAREMOS O 'package.json' PARA DENTRO DO APP 
+
+
+
+__ ANTES__ 
+
+
+
+
+
+
+DE __ RODAR NPM INSTALL,
+
+
+E _ APENAS _ DEPOIS _ COPIAREMOS O RESTO DO CÓDIGO...
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO, 
+
+GARANTIMOS QUE 
+O 
+LAYER 
+
+DE 
+
+
+'npm install' 
+
+
+
+
+
+
+
+
+É _ EXECUTADO/VEM _ ANTES__ DA PARTE EM QUE COPIAMOS NOSSO SOURCE CODE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> FAZEMOS ISSO PARA QUE, NO FUTURO,
+
+SEMPRE QUE 
+
+
+
+COPIARMOS NOSSO SOURCE CODE,
+
+
+
+
+OS 
+
+LAYERS 
+
+
+
+
+
+
+
+__ NA __ FRENTE__ DO COMANDO DE 'COPY THE SOURCE CODE' (
+
+
+    que 
+    são 
+
+
+'''''
+
+
+FROM node
+
+
+
+
+
+WORKDIR /app
+
+
+COPY package.json /app
+
+
+RUN npm install
+
+
+
+''''''
+
+)
+
+
+
+
+
+
+__ NÃO _ SERÃO INVÁLIDADOS,
+
+
+
+
+
+E AÍ 
+
+O 
+
+
+NPM INSTALL _ NÃO VAI RODAR DE NOVO SÓ PQ _ COPIAMOS 
+
+
+NOSSO SOURCE 
+
+
+CODE PARA DENTRO, DE FORMA ALTERADA, 
+
+MAIS UMA VEZ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO CONSEQUÊNCIA DISSO,
+
+
+APENAS 
+OS 
+
+LAYERS DE 
+
+
+
+
+
+'''''
+
+COPY . /app
+
+
+
+EXPOSE 80
+
+
+
+CMD ["node", "server.js"]
+
+
+
+
+
+'''''
+
+
+
+
+
+RODARIAM 
+
+
+DE NOVO,
+
+
+
+O 
+
+
+QUE 
+
+SERIA 
+
+
+BEM MAIS PERFORMANT DO QUE RODAR 'NPM INSTALL'
+
+
+TODA SANTA VEZ (
+
+    pq isso toma certo tempo para acabar...
+)
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR ESPERA QUE ISSO TENHA FEITO SENTIDO...
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. AGORA O PROJETO DA FIDELIZOU.ME FAZ MAIS SENTIDO...
+
+
+
+
+
+
+
+
+
+
+
+--> O PROJETO É UM  CONJUNTO DE CONTAINERS QUE JÁ USAM IMAGES PRÉ-PRONTAS,
+
+
+COMO 
+
+"node:alpine",
+
+
+
+"postgres:alpine",
+
+
+
+"redis:alpine"...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> essas images são todas pré-prontas,
+
+
+e são carregadas com a ajuda do arquivo 'app.yml'....
+
+
+
+
+
+
+
+
+
+
+---> ENFIM,
+
+O CÓDIGO 
+
+
+DE 
+
+
+
+
+
+
+
+
+
+
+
+FROM node
+
+
+WORKDIR /app
+
+
+COPY package.json /app
+
+
+RUN npm install
+
+
+COPY . /app
+
+
+
+EXPOSE 80
+
+
+
+CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É BEM MAIS PERFORMANT DO QUE RODAR 'npm install'
+
+
+TODA SANTA VEZ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... SE BUILDAMOS ISSO MAIS UMA VEZ,
+
+
+ 
+
+
+
+
+ __ E CONSTRUÍMOS ESSA IMAGE... -----> 
+
+
+
+
+
+
+
+
+
+E SE AGORA USAMOS ESSA IMAGE PARA RODAR NOSSO CONTAINER...
+
+
+
+
+
+
+
+
+-->  
+
+
+
+
+se paramos esse container
+
+
+
+
+e então 
+
+
+
+UPDATARMOS O CÓDIGO SOURCE DO 'server.js',
+
+
+
+VEREMOS QUE O NPM INSTALL NÃO VAI MAIS RODAR... (será super rápido, pq o DOCKER vai poder usar o 'CACHED RESULT' DO npm install... tudo pq O PACKAGE.JSON NÃO MUDOU, o que não gera a necessidade de rodar 'npm install' -----> APENAS O RESTO DOS ARQUIVOS É COPIADO, MAIS TARDE, PQ ESSE PASSO VEM EM 1 LAYER POSTERIOR...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OUTPUT:
+
+
+
+
+
+ => [internal] load build definition from Dockerfile                                                                            0.0s 
+ => => transferring dockerfile: 32B                                                                                             0.0s 
+ => [internal] load .dockerignore                                                                                               0.0s 
+ => => transferring context: 2B                                                                                                 0.0s 
+ => [internal] load metadata for docker.io/library/node:latest                                                                  0.0s 
+ => [1/5] FROM docker.io/library/node                                                                                           0.0s 
+ => [internal] load build context                                                                                               0.1s 
+ => => transferring context: 1.21kB                                                                                             0.0s 
+ => CACHED [2/5] WORKDIR /app                                                                                                   0.0s 
+ => CACHED [3/5] COPY package.json /app                                                                                         0.0s 
+ => CACHED [4/5] RUN npm install                                                                                                0.0s 
+ => [5/5] COPY . /app                                                                                                           0.0s 
+ => exporting to image                                                                                                          0.1s 
+ => => exporting layers                                                                                                         0.0s 
+ => => writing image sha256:9e413ed4ef7d6685ee9e277cbf6ae5b67c50f1a589805b6d72ff45ec788987e2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ OK... ESSA É UMA PRIMEIRA OPTIMIZATION..
+
+
+
+
+
+
+
+
+
+ MAS MAIS IMPORTANTE DO QUE ESSA OPTIMIZATION,
+
+ É 
+
+ ENTENDER 
+
+ ''ESSA LAYER-BASED APPROACH'''',
+
+
+ ESSA LAYER-BASED ARCHITECTURE,
+
+
+
+ PQ ESSE CONCEITO É UM CORE CONCEPT NO DOCKER E DOCKER IMAGES,
+
+
+
+ E EXISTE PARA 
+
+
+
+ AUMENTAR PERFORMANCE...
