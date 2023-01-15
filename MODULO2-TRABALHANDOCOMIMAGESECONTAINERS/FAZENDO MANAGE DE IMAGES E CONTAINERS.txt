@@ -1,0 +1,420 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA O PROFESSOR QUER TIRAR 1 TEMPO 
+
+
+E 
+
+DAR UMA OLHADA EM 
+
+'COMO PODEMOS CONFIGURAR E MANAGE NOSSAS IMAGES E CONTAINERS' -----> isso pq, até agora,
+
+
+
+
+
+
+
+
+VIMOS COMO PODEMOS 'BUILD UMA IMAGE',
+
+
+
+
+COMO PODEMOS 'RUN A CONTAINER',
+
+
+
+COMO PODEMOS
+
+
+'STOP A CONTAINER',
+
+
+
+
+
+
+
+
+
+
+MAS HÁ MAIS COISAS QUE PODEMOS FAZER,
+
+
+E MAIS 
+COISAS DE QUE TEMOS QUE FICAR 'AWARE OF'...
+
+
+
+
+
+
+
+
+
+
+
+--> MAS, EM GERAL,
+
+
+1 DICA/NOTE 
+
+
+
+QUE 
+
+
+VOCÊ 
+
+DEVE TER CIÊNCIA DE ,
+
+
+É QUE 
+
+
+
+
+
+
+
+EM _ QUALQUER DOCKER COMMAND,
+
+
+
+
+
+
+
+
+
+VOCÊ 
+
+PODE ADICIONAR 
+
+'--help'
+
+
+
+
+
+PARA __ VER _ TODAS AS OPTIONS DISPONÍVEIS...
+
+
+
+
+
+
+
+
+
+
+
+
+--> EXISTIRÃO MILHARES DE OPTIONS QUE VOCÊ RARAMENTE UTILIZAR,
+
+
+MAS VOCê 
+
+VERÁ 
+
+
+
+VÁRIAS 
+
+OPTIONS COMUNS, TAMBÉM...
+
+
+
+
+
+
+
+
+
+-> NAS PRÓXIMAS LIÇÕES,
+
+
+VEREMOS 
+
+
+'CORE CONFIG OPTIONS'
+
+
+E 
+
+'CORE FEATURE'
+
+
+BUILT 
+
+
+NO DOCKER...
+
+
+
+
+
+
+
+
+
+
+-----> VAMOS APRENDER:
+
+
+
+
+
+
+
+
+IMAGES            CONTAINERS 
+
+
+A) TAGS                 A) NAMES (with --name)
+
+B) LISTS                B) CONFIGs ('--help', para ver várias options)
+
+C) INSPECT              C) docker ps (para ver a list de containers)...
+
+
+
+
+
+
+
+
+
+
+-_> VEREMOS 'TAGS' nas images --> PQ PODEMOS 'TAGGAR' IMAGES, O QUE É BASICAMENTE 'NOMEAR IMAGES'... (com a flag de '-t', ou 'docker tag xxx')
+
+
+
+
+
+
+
+
+--> VEERMOS QUE PODEMOS __ 'LIST' __ AS IMAGES QUE CRIAMOS NO PASSADO... (com 'docker images')
+
+
+
+
+
+
+
+
+
+-> VEREMOS QUE PODEMOS 'ANALYZE' E 'INSPECT' AS IMAGES (com 'docker image inspect')..
+
+
+
+
+
+
+
+--> E VEREMOS QUE PODEMOS __ 'remove'  E __ CLEAR_ IMAGES__ ,
+
+
+SE ELAS NÃO SE TORNAM MAIS NECESSÁRIAS (
+
+    com 
+
+
+    'docker rmi, docker prune'...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> nossa... 'docker images' É MT ÚTIL...
+
+
+
+
+
+
+
+
+
+
+docker images:
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE 
+<none>       <none>    9e413ed4ef7d   17 minutes ago   1GB  
+<none>       <none>    821a58ae7171   17 minutes ago   1GB  
+<none>       <none>    4f8d683be1a6   10 hours ago     1GB  
+<none>       <none>    b3d3ee64a966   25 hours ago     1GB  
+<none>       <none>    354bcb337446   25 hours ago     1GB  
+<none>       <none>    00dd65a47206   3 days ago       922MB
+node         latest    51bd6c84a7f2   4 days ago       998MB
+redis        alpine    26b875a60c63   5 days ago       29.9MB
+postgres     alpine    f8428074961e   5 days ago       243MB
+node         alpine    17299c0421ee   5 days ago       176MB
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VOCÊ NÃO PODE FAZER 'REMOVE' DE IMAGES USADAS POR STOPPED CONTAINERS...
+
+
+
+
+
+
+
+
+--> MAS SE VOCÊ PARAR OS CONTAINERS E OS REMOVER,
+
+VOCÊ PODE REMOVER AS IMAGES, com docker rmi ID DO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEPOIS DISSO,
+
+
+TEMOS OS CONTAINERS...
+
+
+
+
+
+
+
+VEREMOS:
+
+
+
+
+
+A) COMO DAR NAMES AOS CONTAINERS, COM '--name.'...
+
+
+
+
+
+
+
+
+
+B) VEREMOS COMO CONFIGURAR CONTAINERS, COM A AJUDA DE PARÂMETROS EXPLICADOS COM '--help'...
+
+
+
+
+
+
+
+
+
+C) VEREMOS COMO PODEMOS 'LIST' CONTAINERS... ---> com 'docker ps'...
+
+
+
+--> VEREMOS TAMBÉM COMO PODEMOS 'RESTART' CONTAINERS QUE PARAMOS NO PASSADO...
+
+
+
+
+
+
+
+
+
+--> VEREMOS COMO PODEMOS __ TAMBÉM __ REMOVER __ CONTAINERS,
+
+
+com 
+
+'docker rm',
+
+
+QUANDO ESSES CONTAINERS 
+
+NÃO 
+
+SÃO MAIS NECESSÁRIOS A NÓS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ESSAS SÃO AS COISAS QUE PODEMOS FAZER COM IMAGES E CONTAINERS....
+
+
+
+
+
+
+
+DEVEMOS 
+
+
+
+ESTUDAR TUDO ISSO....
