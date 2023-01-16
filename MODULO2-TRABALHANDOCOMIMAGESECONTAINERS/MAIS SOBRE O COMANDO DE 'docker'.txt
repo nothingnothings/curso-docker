@@ -1,0 +1,1376 @@
+
+
+
+
+
+
+
+
+
+
+BEM, HÁ MAIS COISAS QUE PODEMOS FAZER COM O COMANDO DE 'docker'
+
+DO QUE 
+
+
+APENAS 
+
+IMAGES 
+
+E CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+-_> O PROFESSOR 
+
+
+QUER 
+
+
+
+VOLTAR AO TÓPICO DO 'MODE'
+
+
+EM QUE ENTRAMOS QUANDO FAZEMOS 
+
+'RESTART'
+
+DE 
+
+1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TEMOS, EM OUTRAS PALAVRAS, 2 MODOS:
+
+
+
+
+
+
+
+
+1) 'docker run id_do_container' -->  É O MODO CLÁSSICO.. se temos um 'running server', ficamos impedidos de escrever coisas no terminal (fica rodando sem parar)...
+
+
+
+
+
+
+
+
+2) 'docker start id_do_container_que_foi_parado_anteriormente' --> É O MODO NO QUAL ENTRAMOS ANTERIORMENTE... ELE NÃO BLOQUEIA O TERMINAL, mas não te deixa inputtar comandos...
+
+
+
+
+
+
+
+
+
+
+
+------> com docker 'start',
+
+
+FAZEMOS __ O RESTART DO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> QUANDO RESTARTAMOS 
+
+
+
+
+
+O CONTAINER COM 'docker start',
+
+
+
+O __ PROCESSO __ 
+
+
+DO CONTAINER __ FOI 'FINISHED IMMEDIATELY'.. (
+
+
+
+    FICA RODANDO NO BACKGROUND...
+)
+
+
+
+
+
+
+
+
+
+
+
+ISSO SIGNIFICA QUE 
+
+'NÃO ESTAMOS MAIS ATTACHEADOS A ESSE RUNNING DOCKER CONTAINER,
+
+LÁ NO TERMINAL'..
+
+
+
+
+
+
+
+
+-> AINDA ASSIM,
+
+
+
+
+O 
+CONTAINER AINDA FICA RODANDO,
+
+
+COMO PODEMOS CONSTATAR COM 'docker ps' ------> O CONTAINER CONTINUA RODANDO,
+
+
+
+A ÚNICA DIFERENÇA É QUE ELE PARA DE NOS 'BLOQUEAR'
+
+LÁ NO TERMINAl..
+
+
+
+
+
+
+
+
+
+-----> E ISSO É BEM DIFERENTE DE 'docker run'...
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR DECIDE RODAR NOSSO CONTAINER EM 1 PORT DISTINTA..
+
+
+
+
+
+
+
+
+
+
+--> ELE FAZ ISSO PQ A PORT DE '3000'
+
+
+JÁ ESTÁ SENDO USADA PELO 'CURRENTLY RUNNING CONTAINER'..
+
+
+
+
+
+
+--> O PROFESSOR 
+
+VAI FAZER ISSO NA PORT DE '8000' ----> VAMOS RODAR 1 CONTAINER 
+
+ADICIONAL,
+
+COM BASE 
+NA MESMA 
+
+IMAGE...  
+
+
+
+
+
+-> TEREMOS 2 CONTAINERS 'UP AND RUNNING',
+
+com base na mesma image...
+
+
+
+
+
+
+
+
+
+
+--> isso quer dizer que ele roda assim:
+
+
+
+docker run -p 8000:80 8b41a3f87eac
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS QUANDO FAZEMOS ISSO, IMEDIATAMENTE CONSTATAMOS QUE FICAMOS 'STUCK' 
+
+NESSE 
+TERMINAL,
+
+
+
+não conseguimos 
+
+
+inputtar mais comandos e confirmar com enter --> pq esse process 
+
+
+estará 
+
+
+BLOQUEANDO  O TERMIANL...
+
+
+
+
+
+
+
+
+
+--> E ISSO __ TUDO NÃO É UM BUG,
+
+
+NÃO É ALGO QUE VOCÊ DEVE 
+
+CONSERTAR,
+
+
+E SIM 
+
+
+
+__ ALGO _ QUE 
+
+
+VOCÊ 
+
+DEVE __ CONFIGURAR:
+
+
+
+
+
+
+
+
+
+VOCÊ DEVE DECIDIR SE VOCÊ QUER FICAR NO 'ATTACHED MODE'
+
+
+
+OU 
+
+'DETACHED MODE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM O DOCKER 'START',
+
+
+
+O DEFAULT É 'COMEÇAR NO DETACHED MODE'...
+
+
+
+
+
+
+
+
+
+
+
+
+com o DOCKER RUN,
+
+
+O default é COMEÇAR NO 'ATTACHED MODE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> mas, agora, a questão é 
+
+'''QUAL MODE VOCÊ QUER''''... E PQ 
+
+ISSO INTERESSA?
+
+
+
+
+
+
+
+
+ 
+ BEM, NESSE NOSSO EXAMPLE APP,
+
+
+ ESTAMOS FAZENDO 'CONSOLE.LOG'
+
+
+
+DO INPUT DO USER,
+
+NO TERMINAL,
+
+
+SEMPRE QUE 
+
+1 NOVO GOAL É SETTADO...
+
+
+
+
+
+
+
+
+
+
+
+--> isso quer dizer que TALVEZ SEJA UMA BOA IDEIA ESTARMOS NO 'ATTACHED MODE'...
+
+
+
+
+
+
+
+
+--> 
+
+POR OUTRO LADO,
+
+
+SE VAMOS 
+
+ATÉ O 
+
+port de 
+
+'8000'
+
+
+
+E 
+
+SETTAMOS NOSSO GOAL,
+
+VEREMOS 
+
+QUE 
+
+ISSO É MOSTRADO NO TERMINAL... --> TUDO PQ ESTAMOS 'ATTACHED'
+
+A ESSE 
+
+
+
+RUNNING CONTAINER.. ---> E 'ATTACHED'
+
+
+SIMPLESMENTE SIGNIFICA QUE 
+
+ESTAMOS 
+
+FAZENDO 'LISTEN TO' 
+
+
+
+
+AO OUTPUT 
+
+
+DAQUELE CONTAINER.... -----> POR EXEMPLO,
+
+
+ESTAMOS 
+
+
+
+
+FAZENDO 'LISTEN' TO A COISAS QUE 
+SÃO PRINTADAS NO CONSOLE...
+
+
+
+
+
+
+
+
+
+E ISSO PODE/PODE NÃO SER O QUE QUEREMOS..
+
+
+
+
+
+
+
+
+
+E PODEMOS, SIM, RODAR 1 CONTAINER EM 'DETACHED MODE'
+
+
+SE ASSIM O DESEJARMOS...
+
+
+
+
+
+
+---> NÃO TEMOS QUE ACEITAR ESSE 
+DEFAULT DE ESTAR 'ATTACHED'...
+
+
+
+
+
+
+
+
+--> para isso,
+
+o professor 
+
+
+
+PARA _ ESSE CONTAINER MAIS RECENTE QUE 
+
+COMEÇAMOS ,
+
+com 'docker stop'...
+
+
+
+
+
+
+
+
+
+--> ASSIM QUE ISSO PARAR,
+
+
+O PROFESSOR 
+
+
+__VAI _ REEXECUTAR_ 
+
+
+
+ESSE COMANDO DE 'docker run',
+
+MAS 
+aGORA 
+
+
+
+COM 
+
+
+A FLAG DE 
+'-d' 
+
+
+
+
+
+-----> COLOCAMOS '-d'
+
+
+NA FRENTE DA 'IMAGE ID'
+
+
+
+JUSTAMENTE _ PARA __ RODAr_ 
+
+ESSE CONTAINER NO MODO 'DETACHED' ( sem precisar usar o 'docker start')...
+
+
+
+
+
+
+
+
+
+
+
+---> ISSO QUER DIZER QUE O COMANDO COMPLETO FICA ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+docker run -p 8000:80 -d id_do_container 
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+docker run -p 3000:80 -d 8b41a3f87eac
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE AGORA COLOCAMOS 'ENTER',
+
+
+
+
+O _ TERMINAL NÃO VAI FICAR TRAVADO,
+
+E NÃO VAMOS MAIS GANHAR O OUTPUT
+
+DO RUNNING CONTAINER SEMPRE QUE ALGO ACONTECER NO NOSSO BACKEND...
+
+
+
+
+
+
+
+
+
+
+
+OK, NOSSO CONTAINER CONTINUARÁ 
+
+RODANDO NO BACKGROUND,
+
+
+
+
+
+MAS __ NÃO FICAREMOS NO 'ATTACHED MODE'
+
+LÁ NO TERMINAL ( o que é ÓTIMO, a depender do caso)...
+
+
+
+
+
+
+
+
+A VANTAGEM DISSO 
+
+É QUE 
+
+PODEMOS 
+
+
+'USAR O 1 E MESMO 
+
+
+TERMINAL _ PARA FAZER OUTRAS COISAS''...
+ 
+
+
+
+
+
+
+
+
+
+ --> SE VOCÊ AINDA QUER FAZER 'LOOK INTO'
+
+
+ O SEU RUNNING CONTAINER,
+
+ MESMO 
+
+ TENDO COMEÇADO NO 'DETACHED MODE',
+
+
+
+ VOCÊ 
+
+
+ TEM 2 OPÇÕES:
+
+
+
+
+
+
+
+
+ 1) se digitamos 'docker help',
+
+
+
+ LEMOS ALI QUE EXISTE UM COMANDO DE 'attach'...  ---> COM ISSO,
+
+
+ PODEMOS 
+
+ 
+
+ FAZER ATTACH DE NOSSA MÁQUINA A 1 RUNNING CONTAINER,
+ MAIS 1 VEZ...
+
+
+
+
+
+
+
+ -> PARA ISSO,
+
+ BASTA RODAR 
+
+
+
+ 'docker attach id_ou_name_do_container'...
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+A:\projeto15-DOCKER>docker run -p 8000:80 -d 8b41a3f87eac   
+86ba85df4f22cf4deb2db5ac3773fdaeac6325dcab87ce043e340981fab3b45e
+
+
+
+
+
+
+
+
+
+
+
+--> AÍ RODAMOS ASSIM:
+
+
+
+
+A:\projeto15-DOCKER>docker attach 86ba85df4f22cf4deb2db5ac3773fdaeac6325dcab87ce043e340981fab3b45e
+dassda
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ou seja,
+realmente
+ 
+
+ escrevemos 
+
+ 'docker attach id_ou_name_do_running_container'...
+
+
+
+
+
+
+
+
+
+
+ OK... ISSO FEZ O SERVIÇO,
+
+
+ CONSEGUIMOS FAZER 'ATTACH' AO RUNNING 
+
+
+ CONTAINER, MAIS UMA VEZ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+ OK, ESSA É 1 MANEIRA DE FAZER ISSO...
+
+
+
+
+
+
+
+
+
+
+ MAS O PROFESSOR PARA ESSE CONTAINER... E AÍ 
+
+
+ __ O RESTARTA...
+
+
+
+
+
+
+
+
+
+
+
+ --> O PROFESSOR RESTARTOU O CONTAINER COM 'docker start nome_ou_id_do_container',
+
+ que 
+
+ é 
+ algo que 
+
+
+
+ __ FAZ COM QUE __ O CONTAINER JÁ COMECE NO MODO 'DETACHED',
+
+ PQ 
+
+ ESSE É O DEFAULT PARA O DOCKER START...
+
+
+
+
+
+
+
+
+
+
+ --> OK.... AÍ 
+
+
+ O PROFESSOR QUER 
+
+
+ NOS MOSTRAR OUTRA FORMA DE CONSEGUIR ACESSO 
+
+  A COISAS 
+
+  COMO 
+
+
+  AS
+  'LOG MESSAGES'
+
+
+  QUE SÃO PRINTADAS DENTRO DE 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --> ok...
+
+
+
+
+  SE ENVIAMOS 1 GOAL AGORA,
+
+
+lá no site,
+
+
+NÃO VEREMOS NADA NO TERMINAL, PQ ESTAREMOS 'DETACHED'... 
+
+
+
+
+
+
+
+
+
+
+E, SIM, PODERÍAMOS FAZER 'ATTACH'
+
+
+MAIS UMA VEZ, com 'docker attach nome_ou_id_do_container',
+
+
+
+MAS ISSO 
+
+APENAS 
+
+NOS MOSTRARIA AS MESSAGES/OUTPUTS _ FUTUROS__ DO TERMINAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> A ALTERNATIVA A ISSO,
+
+É O __ ÚTIL
+
+COMANDO 
+
+DE 
+
+'docker logs',
+
+
+QUE 
+
+
+
+FETCHEIA 
+
+
+
+OS LOGS 
+
+QUE 
+
+FORAM 
+
+PRINTADOS POR NOSSO CONTAINER...
+
+
+
+
+
+
+
+
+
+--> BASTA ACHAR O NOME/ID DO CONTAINER...
+
+
+
+
+
+
+
+
+
+--> aí 
+
+escrevemos 
+
+
+
+
+'''docker logs nome_ou_id_do_container'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> E ISSO __ VAI REALMENTE NOS DAR OS 'ANTIGOS LOGS'
+
+PRINTADOS POR ESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker logs 86ba85df4f22cf4deb2db5ac3773fdaeac6325dcab87ce043e340981fab3b45e
+dassda
+
+A:\projeto15-DOCKER>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> PODEMOS, TAMBÉM,
+
+
+
+
+SE __ INSPECIONARMOS AS OPTIONS 
+
+
+
+DE 
+
+
+'docker logs',
+
+
+
+
+COLOCAR 
+
+
+A 
+
+FLAG 
+DE 
+
+'-f'
+
+
+
+NO 'docker logs'
+
+
+PARA ENTÃO 
+
+ENTRAR 
+
+NO MODO DE 'FOLLOW',
+
+
+
+
+
+
+__ QUE _ É UM MODO 
+
+USADO
+ 
+ PARA 
+
+
+
+ FAZER 'KEEP ON LISTENING' -------> OU SEJA,
+
+
+
+ VAMOS BASICAMENTE 
+
+
+ FAZER 
+
+ 'ATTACH'
+
+ DE NOSSA MÁQUINA AO RUNNING CONTAINER,
+
+
+ EXATAMENTE COMO 
+
+
+
+ FIZEMOS COM 'docker attach nome_ou_id_do_container'...
+
+
+
+
+
+
+
+
+
+
+
+ ---> OK...
+
+
+
+
+
+ E, POR ACASO,
+
+ NÃO SERIA POSSÍVEL FAZER 'DETACH'
+ MANUALMENTE,
+
+
+
+ DE 1 DE NOSSOS CONTAINERS...?
+
+
+
+
+
+
+
+
+
+
+
+ --> OK... ESSAS SÃO AS DIFERENTES
+
+
+ OPTIONS QUE TEMOS 
+
+
+
+ _ PARA __ TUDO ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> E O PROFESSOR ESTÁ GASTANDO MT TEMPO 
+
+ NISSO 
+
+ JUSTAMENTE 
+
+ PARA QUE 
+
+ COMPREENDAMOS 
+
+ A 
+
+ DIFENREÇA 
+
+
+
+ ENTRE 
+
+ 1 
+
+ 'RUNNING'
+
+
+ E 
+ 'STOPPED' CONTAINER,
+
+
+
+ E 
+
+
+ 1 
+
+ 'DETACHED'
+
+
+ E 
+ 'ATTACHED' CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ NÃO INTERESSA SE ESTÁ 'ATTACHED' OU 'DETACHED',
+
+
+ O QUE INTERESSA É QUE ELE AINDA ESTÁ 'UP AND RUNNING'..
+
+
+
+
+
+
+
+
+
+
+ MAS SE VOCÊ PRECISA __ REALMENTE _ DE INFO DE DENTRO DE 1 CONTAINER,
+ VOCÊ 
+
+ PODE 
+ USAR 
+
+ 'DOCKER LOGS',
+
+
+
+ OU 
+
+
+ ENTÃO 
+
+
+ FAZER 'ATTACH' DE VOCÊ 
+
+ AO CONTAINER MAIS UMA VEZ,
+
+ PARA PEGAR ESSA INFO EXTRA...
+
+
+
+
+
+
+
+
+
+ OK, AGORA O PROFESSOR FAZ STOP DOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+ -> E AÍ FAZEMOS DETACH...
+
+
+
+
+
+
+
+
+ --> OK, MAS UMA ÚLTIMA NOTE SOBRE ISSO TUDO:
+
+
+
+
+
+ SE VOCÊ QUISESSE FAZER 
+
+ RESTART 
+
+ DE 1 STOPPED CONTAINER,
+
+
+
+
+ COMO ESSE QUE PARAMOS ,
+
+
+
+
+
+
+
+ __ MAS ___ 1 RESTART COM 'start'
+
+
+ __ 
+
+
+
+ AO MESMO TEMPO COM 'ATTACHED' LIGADO,
+
+
+
+ VOCê 
+
+ PODE 
+
+ FAZER 
+
+ ISSO 
+
+
+
+ COM O COMANDO 
+
+ DE 
+
+
+ 'docker start -a nome_ou_id_do_container'...
+
+
+
+
+
+
+
+
+
+
+ isso quer dizer que 
+
+
+
+
+ 'docker start -a nome_ou_id_do_container' É A MESMA COISA que 'docker run nome_ou_id_do_container' 
+
+
+
+
+
+
+E 
+
+
+'docker run -p 3000:80 -d nome_ou_id_do_container'  É A MESMA COISA QUE 'docker start nome_ou_id_do_container'...
+
+
+
+
+
+
+
+
+
+
+
+
+certo... fim da lição..
