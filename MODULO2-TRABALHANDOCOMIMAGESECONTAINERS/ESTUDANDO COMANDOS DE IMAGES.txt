@@ -1,0 +1,696 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO O PROFESSOR MENCIONOU, SE VOCê RODA 'docker --help',
+
+VOCÊ 
+
+GANHA UMA LIST 
+
+
+DE 
+
+TODOS 
+
+
+OS MAIN COMMANDS QUE VOCê PODE RODAR COM O DOCKER...
+
+
+
+
+
+
+HÁ MTOS COMANDOS (mtos desses comandos não importam, na maioria dos casos)...
+
+
+
+
+
+
+
+TEMOS TAMBÉM COMMANDS DO PASSADO,
+
+QUE HOJE 
+
+
+JÁ DEIXAMOS PARA TRÁS... (há maneiras melhores de obter os mesmos resultados)...
+
+
+
+
+
+
+
+
+
+
+
+--> podemos ler as description,
+
+
+mas 
+
+
+
+
+ALGUNS CORE COMMANDS SÃO OS QUE IMPORTAM...
+
+
+
+
+
+
+
+
+
+
+--> HÁ TAMBÉM ALGUNS COMANDOS QUE  PODEM/PODERIAM 
+
+
+SER SUBSTITUÍDOS POR OUTROS COMANDOS,
+
+__ EXECUTADOS DE FORMA DIFERENTE (em geral)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NO DOCKER,
+PARA ALGUMAS OPERATIONS,
+
+
+HÁ MÚLTIPLAS MANEIRAS 
+
+
+DE FAZER A MESMA COISA..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS O PROFESSOR  QUER COMEÇAR COM IMAGES E CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+---> COM 'DOCKER PS',
+
+
+
+VOCÊ PODE MOSTRAR 
+
+
+
+TODOS OS 'RUNNING CONTAINERS'..
+
+
+
+
+
+
+
+
+
+
+
+--> SE VOCÊ COLOCA '-a',
+
+VOCê 
+
+
+VÊ 
+
+TODOS OS CONTAINERS QUE VOCê TEVE NO PASSADO,
+
+
+ATÉ MESMO OS CONTAINERS QUE NÃO ESTÃO MAIS SENDO EXECUTADOS...
+
+
+
+
+
+
+
+
+
+
+
+COm 'docker ps --help',
+
+VOCê 
+
+
+VÊ 
+
+TODA AS OPTIONS 
+
+POSSÍVEIS 
+
+
+
+
+PARA O DOCKER PS.....
+
+
+
+
+
+
+
+
+
+
+
+
+--> 
+
+
+
+
+
+
+
+
+
+
+
+DOCKER PS -A --------> mostra todos os containers, inclusive os containers PARADOS...
+
+
+
+
+
+
+
+
+
+
+
+MAS _ UMA COISA LEGAL QUE VOCÊ PODE FAZER COM O DOCKER,
+
+IMPORATNTE,
+
+
+É 
+
+
+'RESTART 1 CONTAINER STOPPADO'... --> ISSO QUER DIZER QUE 
+
+
+
+
+__ VOCê 
+
+
+NÃO É OBRIGADO 
+
+
+A 
+
+SEMPRE 
+
+
+
+RODAR 'docker run NOVO_CONTAINER' -------> pq, isso é importanet,
+
+
+
+
+
+com 
+
+'DOCKER RUN'
+
+
+VOCÊ 
+
+CRIA 
+
+
+
+
+
+
+
+
+__________ 1 __ _ NOVO __ CONTAINER,
+
+
+COM BASE EM 1 IMAGE... -> e esse __ NOVO CONTAINER É QUE É 
+
+INICIADO,
+
+
+
+EXECUTADO,
+
+NO CASO...
+
+
+
+
+
+
+
+
+
+
+-> àS VEZES ISSO É O QUE VOCê QUER,
+
+MAS ÀS VEZES NÃO...
+
+
+
+
+
+
+
+
+
+--> SE NADA MUDAR SOBRE NOSSO APP,
+
+
+SOBRE AS DEPENDENCIES 
+
+
+DE NOSSO APP E O SOURCE CODE,
+
+
+
+NOSSA __ IMAGE__ NÃO TERÁ SIDO ALTERADA,
+
+
+
+
+
+O QUE QUER DIZER QUE NÃO 
+
+EXISTIRÁ RAZÃO ALGUMA PARA 
+
+'CREATE A BRAND NEW CONTAINER'...
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE PODEMOS 
+
+
+SIMPLESMENTE 
+
+
+'RESTART AN EXISTING CONTAINER' -----> PARA CONSEGUIR ISSO,
+
+
+
+
+
+DEVEMOS 
+
+
+PROCURAR TODOS OS CONTAINERS,
+
+
+
+COM 
+
+
+'docker ps -a',
+
+
+
+
+
+
+
+
+
+
+
+E AÍ __ TEREMOS 1 OUTPUT NO TERMINAL TIIPO ASSIM: 
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED      STATUS                    PORTS  
+                  NAMES
+ef4924fcf7d7   node:alpine       "docker-entrypoint.s…"   5 days ago   Up 30 seconds
+                  tools-dumper-1
+e77e85219b25   node:alpine       "docker-entrypoint.s…"   5 days ago   Exited (143) 5 days ago
+                  tools-workflowsWorker-1
+78bf894ed68f   node:alpine       "docker-entrypoint.s…"   5 days ago   Up 30 seconds
+                  tools-dispatcher-1
+d1a8e01932cc   node:alpine       "docker-entrypoint.s…"   5 days ago   Up 30 seconds
+                  tools-promoterImporter-1
+e235b2500836   node:alpine       "docker-entrypoint.s…"   5 days ago   Up 30 seconds             0.0.0.0:3000->3000/tcp   tools-api-1
+a920c7e0d27f   node:alpine       "docker-entrypoint.s…"   5 days ago   Up 30 seconds             0.0.0.0:3002->3002/tcp   tools-providers-1
+7398e1efabdb   node:alpine       "docker-entrypoint.s…"   5 days ago   Exited (143) 5 days ago
+                  tools-metricsWorker-1
+0de4b13d58f7   postgres:alpine   "docker-entrypoint.s…"   5 days ago   Up 29 seconds             0.0.0.0:5432->5432/tcp   tools-db-1
+cd561fdc9727   redis:alpine      "docker-entrypoint.s…"   5 days ago   Exited (0) 5 days ago
+                  tools-redis-1
+d9de6c9c6aef   node:alpine       "docker-entrypoint.s…"   5 days ago   Exited (0) 5 days ago
+                  tools_migrator_run_24fa92383e20
+e539789aaca7   node:alpine       "docker-entrypoint.s…"   5 days ago   Exited (0) 5 days ago
+                  tools_installer_run_c92023190bd8
+
+A:\projeto15-DOCKER>        
+
+
+
+
+
+
+
+
+
+
+-> com esse comando, temos o histórico dos 
+
+
+dockers com que trabalhamos anteriormente...
+
+
+
+
+
+--> sempre podemos pegar 1 dos CONTAINERS QUE PARAMOS ANTERIORMENTE,
+
+E AÍ 
+
+
+RODAR 
+
+
+
+'docker start'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE ESCREVEMOS ISSO E ENTÃO O NOME/ID DO CONTAINER,
+
+
+
+
+
+
+
+
+ISSO VAI FAZER O CONTAINER IR 'BACK UP'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO VAI STARTAR O CONTAINER EM UM 'MODE'
+
+DIFERENTE...
+
+
+
+
+
+
+
+
+
+
+
+--> 1 MODE DIFERENTE PQ 
+
+
+O CONTAINER NÃO VAI FICAR 'BLOCKING' O TERMINAL,
+
+
+
+
+COMO O CONTAINER DE NODE QUE RODAMOS ANTERIORMENTE... --> 
+
+
+
+
+
+
+MAS AINDA ASSIM, 
+
+ESSE CONTAINER ESTARÁ 'UP AND RUNNING',
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO PODEMOS CONSTATAR COM  O COMANDO DE 'docker ps':
+
+
+
+
+CONTAINER ID   IMAGE             COMMAND                  CREATED      STATUS              PORTS                    NAMES
+ef4924fcf7d7   node:alpine       "docker-entrypoint.s…"   5 days ago   Up 2 minutes
+                        tools-dumper-1
+78bf894ed68f   node:alpine       "docker-entrypoint.s…"   5 days ago   Up 2 minutes
+                        tools-dispatcher-1
+d1a8e01932cc   node:alpine       "docker-entrypoint.s…"   5 days ago   Up 2 minutes
+                        tools-promoterImporter-1
+e235b2500836   node:alpine       "docker-entrypoint.s…"   5 days ago   Up 2 minutes        0.0.0.0:3000->3000/tcp   tools-api-1
+a920c7e0d27f   node:alpine       "docker-entrypoint.s…"   5 days ago   Up 2 minutes        0.0.0.0:3002->3002/tcp   tools-providers-1
+7398e1efabdb   node:alpine       "docker-entrypoint.s…"   5 days ago   Up About a minute    
+                        tools-metricsWorker-1
+0de4b13d58f7   postgres:alpine   "docker-entrypoint.s…"   5 days ago   Up 2 minutes        0.0.0.0:5432->5432/tcp   tools-db-1
+cd561fdc9727   redis:alpine      "docker-entrypoint.s…"   5 days ago   Up 51 seconds       0.0.0.0:6379->6379/tcp   tools-redis-1
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS VER QUE O 'redis:alpine'
+
+AGORA ESTÁ RODANDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> 
+
+
+
+
+
+
+podemos fazer run do nosso container de 'node',
+
+é claro,
+
+
+
+e aí 
+
+O PARAR E ENTÃO 
+
+
+REINICIAR, COM 'start'.... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE FAZEMOS ISSO COM O CONTAINER DE 'NODE',
+
+
+
+PODEMOS 
+
+
+
+FAZER ELE FICAR 'UP AND RUNNING',
+
+
+
+
+tudo graças a esse 'start'.... -------> OK... --> MAS AQUI TEMOS UMA QUESTÃO:
+
+
+
+
+
+
+
+
+
+ESSE RUNNING CONTAINER ESTARÁ 
+
+
+
+
+NESSE 'STRANGE MODE',
+
+
+
+UM MODO ESTRANHO EM QUE 
+
+
+_ELE ESTARÁ RODANDO,
+
+SIM,
+
+
+MAS 
+
+
+
+
+
+
+__ EM _ QUE 
+
+NAÕ 
+
+
+SEREMOS CAPAZES DE INTERAGIR COM ELES OU VER OS LOGS...
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE ELE STARTOU O CONTAINER,
+
+
+MAS AÍ VOLTOU AO TERMINAL ANTES 
+
+
+
+DE 
+
+NOS DEIXAR 'INPUT MORE COMMANDS' (
+
+
+
+
+
+
+    e isso é bem diferente DAQUILO QUE O 'DOCKER RUN' 
+    NOS 
+
+    DEIXAVA FAZER...
+)
+
+
+
+
+
+
+
+
+BEM, ISSO É ALGO QUE EXPLORAREMOS AGORA...
+
+
+
+
+
+
+
+--> mas 1 problema que tenho é que meu container não está sendo rodado no ip/port de '0.0.0.0:3000 -> 80'..
+
+
+
+
+
+
