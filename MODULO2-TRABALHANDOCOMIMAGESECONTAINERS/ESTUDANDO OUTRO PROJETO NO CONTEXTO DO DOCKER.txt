@@ -1,0 +1,1611 @@
+
+
+
+
+
+
+
+
+ATÉ AGORA,
+ 
+
+
+
+ DURANTE O CURSO,
+
+
+ SEMPRE
+
+
+
+
+ ESTUDAMOS ESSE DUMMY NODE APP,
+
+ QUE
+
+
+
+ FAZIA SPIN UP DAQUELE 'WEB SERVER'.... --> E, REALMENTE,
+
+
+ O 
+
+
+
+ WEBDEV 
+
+ E RUN DE WEBSERVERS,
+
+
+ PROCESSOS 
+ QUE 
+
+ LIDAM COM INCOMING REQUESTS E ETC,
+
+
+
+
+ ESSE É O 'MAIN SELLING-POINT DO DOCKER' --> É O USE-CASE MAIS FREQUENTE..
+
+
+
+
+
+
+
+
+
+
+ --> NÃO INTERESSA SE VOCÊ ESTÁ USANDO 
+
+
+ NODEJS,
+
+
+ PHP 
+
+ OU PYTHON,
+
+ OU QUALQUER OUTRA COISA...
+
+
+
+
+
+
+
+
+
+
+
+ CERTO, MAS O DOCKER NÃO SE RESTRINGE A ISSO... 
+
+
+
+
+
+
+
+
+
+
+
+
+ O PROFESSOR CRIOU UM OUTRO EXEMPLO, 1 APP SIMPLES PYTHON....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ISTO :
+
+
+
+
+
+
+
+
+
+
+ from random import randint 
+
+
+
+
+min_number = int(input('Please enter the main number'))
+max_number = int(input('Please enter the max number'))
+
+
+if (max_number < min_number):
+    print('Invalid input - shutting down...')
+else:
+    rnd_number = randint(min_number, max_number)
+    print(rnd_number)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    --> ESSE APP FOI CONSTRUÍDO PARA O 'PYTHON VERSION 3' -->
+    
+
+
+
+
+
+    MAS, MAIS IMPORTANTE DO QUE ISSO,
+
+
+    ESSE APP NÃO FAZ CREATE DE NENHUM WEB SERVER OU COISA DO GÊNERO..--> 
+
+
+
+
+
+
+
+
+    EM VEZ DISSO,
+
+
+    ESSE APP AÍ,
+
+
+    NO CASO,
+
+
+
+
+    FAZ 
+
+    'FETCH' DE __ 2 USER INPUTS (min e max number),
+
+
+
+
+
+
+
+    AÍ ARMAZENA ESSES 2 INPUTS/NUMBERS EM VARIÁVEIS,
+
+
+
+
+
+
+E __ AÍ __ RODA_  UM CHECK RÁPIDO (para ver se o min number realmente é menor do que o max)...
+
+
+
+
+
+
+
+
+
+-->  POR FIM,
+
+
+
+1 VALOR RANDOM É CALCULADO COM 'randint()',
+
+
+
+e aí 
+
+
+OUTPUTTADO COM 'print'...
+
+
+
+
+
+
+
+
+
+
+
+-> OK... VOCÊ PODERIA INSTALAR O PYTHON NO SEU SISTEMA
+ 
+ PARA 
+
+ EXECUTAR
+
+
+ESSE PROJETO...
+
+
+
+
+
+
+
+
+
+
+OU, ENTÃO,
+
+
+
+PODMOS COLOCAR ESSE CÓDIGO EM 1 DOCKER IMAGE E ENTÃO EM 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+FAREMOS ISSO POR 2 MAIN REASONS:
+
+
+
+
+
+
+1) PARA NOS MOSTRAR QUE 'DOCKER' NÃO É SÓ ABOUT NODE E WEBSERVERS --> 
+
+PROFESSOR QUER NOS MOSTRAR ISSO....
+
+
+
+
+
+
+
+
+2) MAS A SEGUNDA RAZÃO 
+
+
+TEM RELAÇÃO 
+
+
+COM AQUILO QUE APRENDEMOS NA ÚLTIMA 
+
+LIÇÃO (attached e detached containers) (CONTAINERS RODANDO NO TERMINAL OU NO BACKGROUND)...
+
+
+
+
+
+
+AQUI, ISSO __ VAI _ 
+
+
+
+TER 1 PAPEL MAIS IMPORTANTE,
+
+
+PQ
+
+
+ESSE APP AÍ__ EXIGE QUE 
+
+
+O 
+
+USER FAÇA 'INTERACT' COM O APP --------> E RODAR ESSE EXEMPLO 
+
+
+NO BACKGROUND__ _ NÃO VAI FUNCIONAR...
+
+
+
+
+
+
+
+
+
+-> MAS VAMOS POR ETAPAS...
+
+
+
+
+
+
+
+DEVEMOS 'DOCKERIZE'
+
+ESSE ARQUIVO...
+
+
+
+
+
+
+
+-_> PARA ISSO,
+
+PRECISAMOS 
+
+
+CRIAR 1 DOCKERFILE...
+
+
+
+
+
+
+
+
+
+
+
+-_> começamos assim:
+
+
+
+
+
+
+
+
+
+
+
+FROM python
+
+
+WORKDIR /app
+
+
+COPY . /app 
+
+
+EXPOSE 80
+
+
+CMD ["python", "rng.py"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+EU _ ACHO __ QUE O CÓDIGO VAI FICAR ASSIM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> ok...
+
+
+
+
+
+agora basta rodar 'docker build .' 
+
+
+PARA 
+
+
+
+CONTEINERIZAR 
+
+
+
+ESSE ARQUIVO DE 'rng.py'...
+
+
+
+
+
+
+
+
+
+
+--> PRECISAMOS DO PYTHON COMO 'BASE IMAGE'...
+
+
+
+
+
+-> PQ QUEREMOS EXECUTAR ESSE ARQUIVO COM A AJUDA DO PYTHON..
+
+
+
+
+
+
+
+
+
+
+
+-_> para conseguir 
+
+
+as IMAGES OFICIAIS DO PYTHON, VÁ PARA O DOCKER_HUB...
+
+
+
+
+
+
+
+
+
+
+--> é por isso que escrevemos 'FROM python'...
+
+
+
+
+
+
+
+
+
+
+
+--> COMO PRÓXIMA ETPAA,
+
+
+O PROFESSOR SETTA O WORKING DIRECTORY COMO '/app'..
+
+
+
+
+
+
+
+
+
+DEPOIS DISSO,
+
+O PROFESSOR COPIA 
+
+
+TODAS AS CODE FILES,
+
+
+com 
+
+'. /app'... 
+
+
+
+(COPIA TUDO PARA DENTRO DO FOLDER DE 'app')...
+
+
+
+
+
+
+
+
+
+
+
+
+POR FIM, TEMOS O COMANDO DE 'CMD',
+
+
+
+
+em que,
+
+
+
+como escrevi,
+
+
+
+rodamos 
+
+
+'python rng.py'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+FROM python
+
+
+WORKDIR /app
+
+
+COPY . /app 
+
+
+EXPOSE 80
+
+
+CMD ["python", "rng.py"] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... E ESSA SERÁ NOSSA DOCKER FILE..
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO CRIADO,
+
+
+RODAMOS 
+
+'docker build .'
+
+
+
+
+PARA CRIAR ESSA IMAGE..
+
+
+
+
+
+
+
+
+
+--> ISSO VAI BAIXAR ESSA PYTHON BASE IMAGE..
+
+
+
+
+
+E ENTÃO A BUILDAR...  
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO BUILDADO,
+PEGAMOS 
+
+O 
+
+ID 
+
+
+
+DA IMAGE 
+para 
+
+rodar 
+
+'docker run id_da_image'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ENTRETANTO, AQUI O PROFESSOR NÃO VAI QUERER FAZER 'PUBLISH'
+
+
+DO NOSSO APP EM QUALQUER PORT...
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO PQ __ NÃO VAMOS EXPOR NENHUMA PORT AO NOSSO LOCAL MACHINE -->
+
+
+
+
+
+
+ISSO PQ NOSSO APP NÃO É UM APP 'NETWORK-BASED'...
+
+
+
+
+
+
+
+
+
+
+
+
+-----> SÓ PRECISAMOS RODAR NOSSO CONTAINER, A PARTIR DESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+BEM, SE TENTAMOS RODAR ESSE CONTAINER,
+
+RECEBEMOS 1 ERROR:
+
+
+n sha256:660aabc439619d03a06eb8c399500c553274b6c0dd5c5c50ec1ae1f24215aa43
+Please enter the main numberTraceback (most recent call last):
+  File "/app/rng.py", line 6, in <module>
+    min_number = int(input('Please enter the main number'))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+EOFError: EOF when reading a line
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ESSE ERROR, NO CASO,
+
+
+
+
+
+
+
+APARECEU PQ ESTAMOS NO 'ATTACHED MODE' (iniciado com 'run docker xxx')..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ENTRETANTO,
+
+ALÉM DESSA ERROR MESSAGE,
+
+
+
+
+
+NÃO 
+
+SOMOS 
+
+CAPAZES DE 'INTERACT COM ESSE RUNNING CONTAINER',
+
+
+
+NEM COM A APPLICATION RODANDO NO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+A RAZÃO PARA ISSO 
+
+É QUE,
+
+SIM, 
+
+QUANDO RODAMOS 'DOCKER RUN',
+
+
+
+
+
+ESTAMOS 'ATTACHED' AO CONTAINER -----> ISSO SIGNIFICA QUE 
+
+PODEMOS 
+
+
+
+
+
+
+
+
+'''LISTEN TO''' O OUTPUT PRINTADO PELO CONTAINER -------> ENTRETANTO,
+
+
+
+NÃO 
+
+
+ESTAMOS ATTACHEADOS A ELE NO SENTIDO DE 'BEING ABLE TO ENTER INPUTS'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> BEM, PARA SERMOS CAPAZES DE 'ENTER INPUTS',
+
+talvez seja necessária a flag de '-it'... (interact)...
+
+
+
+
+
+
+
+
+---> BEM, ERA EXATAMENTE ISSO...
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO2-TRABALHANDOCOMIMAGESECONTAINERS\example-container-2-python> docker run -it sha256:f14298464cf62064101cab2b7e322f2fee4e9002786c5b3721e0be5d38a187d8
+Please enter the min number3
+Please enter the max number10
+6
+
+
+
+
+
+
+
+
+
+
+
+----> AGORA CONSEGUIMOS FAZER INPUT 
+DE ALGO,
+
+
+E QUANDO 
+
+
+DIGITAMOS 2 INPUTS,
+
+ELE IMEDIATAMENTE SAI E NOS DÁ O OUTPUT...
+
+
+
+
+
+
+
+
+
+
+----> O PROFESSOR ESCREVE 'docker run --help' 
+
+PARA 
+
+
+
+
+
+EXAMINAR AS OPTIONS QUE 
+NOS SÃO DADAS,
+
+acerca desse comando..
+
+
+
+
+
+
+
+
+
+
+TEMOS ALGUMAS FLAGS IMPORTANTES:
+
+
+
+
+
+-i  -------> a flag de 'i'  NOS DEIXA 'LAUNCH ESSE CONTAINER NO MODO _ INTERACTIVE'...
+
+
+
+
+
+
+
+
+-i --> 'MANTÉM STDIN ABERTO, AINDA QUE NÃO ESTEJAMOS __attached__ '''->  ISSO SIGNIFICA QUE SEREMOS CAPAZES DE 'INPUT' ALGO NO CONTANIER....
+
+
+
+
+
+
+
+
+
+
+--> ENTRETANTO,
+
+FREQUENTEMENTE 
+
+
+COMBINAMOS O '-i'
+
+COM 
+
+o 
+
+'-t',
+
+
+
+
+
+
+
+PQ O 'T'
+
+
+FAZ ISTO:
+
+
+
+
+
+
+-t ------> CRIA UMA 'tty' --> ISSO SIGNIFICA QUE VOCÊ BASICAMENTE VAI 'CRIAR 1 TERMINAL'
+
+
+
+
+
+
+
+
+
+
+
+
+-> CRIAR 1 TERMINAL ---> 
+
+
+
+
+
+
+
+'INTERACTIVE' + 'CRIAR 1 TERMINAL' -->   COM ISSO, COM '-it',
+
+
+
+FICAMOS CAPAZES DE 'INPUT SOMETHING' (o container vai LISTEN ao nosso input),
+
+
+
+
+E AÍ __ TAMBÉM 
+
+
+VAMOS CONSEGUIR 1 'TERMINAL' EXPOSTO PELO CONTAINER (
+
+
+
+    que é, no final das contas,
+
+    O DEVICE EM QUE 
+
+    COLOCAMOS O INPUT...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE O PROFESSOR ESCREVEU:
+
+
+
+
+
+
+
+
+docker run -it id_do_container...
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO,
+
+
+
+NOSSO APP PYTHON NÃO VAI CRASHAR,
+
+PQ 
+
+
+AGORA 
+
+
+
+ELE VAI 'GET THE INPUT IT NEEDS',
+
+
+input 
+
+colocado por nós,
+
+ 
+
+ E AÍ 
+
+
+
+
+
+
+O DOCKER VAI EXPOR AQUELE 'PSEUDOTERMINAL',
+
+
+EXPOSTO PELO CONTAINER,
+
+
+QUE POR SUA VEZ ESTARÁ 
+
+CONECTADO AO 'CONTAINER PROCESS' 
+
+
+
+
+
+
+QUE FAZ 'LISTEN TO' 
+
+A USER 
+
+INPUT...
+
+
+
+
+
+
+
+
+
+
+
+--> OK..
+
+
+
+
+
+AÍ PODEMOS COLOCAR UM MIN NUMBER E MAX NUMBER,
+
+PARA 
+
+PEGAR UM RANDOM 
+
+NUMBER...
+
+
+
+
+
+
+
+
+
+--> OK, DEPOIS DISSO, NOSSO CONTAINER VAI 'SHUT DOWN'...
+
+
+
+
+
+
+
+
+
+
+
+
+----> PODEMOS REINICIAR NOSSO CONTAINER COM 'docker start',
+
+
+
+MAS ISSO __ RODARIA DE FORMA 'DETACHED' -----> E AÍ 
+
+TERÍAMOS 
+
+
+1 PROBLEMA --> PQ 
+
+O 
+
+'docker start'
+
+COMEÇA 
+
+
+NO MODO DETACHED POR DEFAULT,
+
+
+ O QUE QUER DIZER QUE NÃO VAMOS CONSEGUIR NOS COMUNICAR COM ESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+ -> OK... ENTÃO COMO PODEMOS 'DEAL WITH THAT'....? 
+
+
+
+
+
+
+
+
+
+ --> BEM, HÁ 2 MANEIRAS:
+
+
+
+
+
+
+
+
+
+
+
+
+ PRIMEIRAMENTE,
+ O PROFESSOR FAZ 'STOP' DESSE CONTAINER DETACHEADO...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> 1) PODEMOS REINICIAR O CONTAINER NO 'ATTACHED MODE',
+
+
+ por meio 
+
+ da flag de '-a' (attached)
+  
+
+  NO COMANDO DE 
+
+  'docker start id_do_container',
+
+  TIPO ASSIM:
+
+
+
+
+
+
+
+
+  docker start -a id_do_container
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  OK, COM ISSO COMEÇAMOS EM 'ATTACHED MODE' ------> 
+
+
+
+
+
+
+
+
+
+COM ISSO,
+
+
+SOMOS CAPAZES DE INPUTTAR ALGO 
+
+
+NO TERMINAL,
+
+
+
+
+MAS __ O PROBLEMA É QUE '''ISSO SÓ VAI FUNCIONAR 1 ÚNICA VEZ'''' --> depois disso,
+
+
+
+
+nosso container vai se comportar de forma estranha (não vai mais aceitar inputs/pedir o segundo número)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O PROFESSOR CANCELA ESSE RUN,
+
+E REMOVE O CONTAINER..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... O PROFESSOR QUER MOSTRAR, AGORA,
+
+A MANEIRA CORRETA DE 'REINICIAR ESSE CONTAINER E SEGUIR CAPAZ DE 
+
+COLOCAR INPUTS'...
+
+
+
+
+
+
+
+
+ISSO __ PQ _ 
+
+
+
+
+
+SE ESCREVEMOS 
+
+
+'docker start --help',
+
+
+
+
+
+TEMOS ESTAS OPTIONS:
+
+
+
+
+  -a, --attach               Attach STDOUT/STDERR and forward signals
+      --detach-keys string   Override the key sequence for detaching a
+                             container
+  -i, --interactive          Attach container's STDIN
+
+
+
+
+
+
+
+
+
+
+
+--> TEMOS MAIS DO QUE 'attach',
+
+
+
+
+pq temos '-i' --> que É UTILIZADO PARA JUSTAMENTE 
+
+
+___ SERMOS CAPAZES DE INPUTTAR ALGO NO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+-> AQUI, NO CASO, AINDA NÃO PRECISAREMOS DE '-t',
+
+
+PQ 
+
+
+
+ISSO JÁ SERÁ 
+
+MEMORIZADO PELO DOCKER, O FATO DE QUE RODAMOS O CONTAINER INICIALMENTE COM 
+
+'-t',
+
+
+
+
+
+MAS AINDA 
+
+
+
+É BOM
+
+SEMPRE ESCREVERMOS 
+
+
+
+
+
+'docker start -a -i id_do_container',
+
+
+
+
+
+PARA QUE ENTÃO SEJA POSSÍVEL 
+
+
+INPUTTAR COMMANDOS 
+
+NO TERMINAl...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO2-TRABALHANDOCOMIMAGESECONTAINERS\example-container-2-python> docker start -ai flamboyant_mccarthy
+Please enter the min number4
+Please enter the max number10
+4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... é assim que podemos fazer RESTART de 1 container e ainda fazer 'attach' ao container,
+
+
+
+
+MAS __ 1 ATTACH NÃO APENAS NO MODO 'LISTEN TO',
+
+
+MAS
+
+
+TAMBÉM 
+
+NO MODO 'I WANT TO INPUT SOMETHING'-MODE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> E ISSO TUDO NOS DEU UMA IDEIA SOBRE A DIFERENÇA ENTRE 'ATTACHED' E 'DETACHED',
+
+E QUE 
+
+ALGUNS APPS 
+
+REQUEREM
+ 
+
+
+ QUE FIQUEMOS 'ATTACHED',
+
+
+ PQ 
+
+ VAMOS PRECISAR 
+
+ COLOCAR INPUTS,
+
+
+
+ justamente 
+
+
+
+
+
+ com essas flags de 'start -ai' 
+
+
+
+
+
+ e 
+
+
+
+
+ 'run -it nome_ou_id_do_container'...
+
+
+
+
+
+
+
+
+
+
+
+
+ ISSO PQ __ O DOCKER PODE SER USADO __ 
+
+
+ PARA COISAS ALÉM DE 'WEBAPPS e LONG-RUNNING PROCESSES' --> PODE SER USADO 
+
+
+ TAMBÉM PARA DOCKERIZAR 
+
+
+
+
+ SIMPLES UTILITY-APPS COMO ESSE ..... --> que precisam de input 
+
+
+ e providenciam
+
+ certo output e então 'acabam'... ('be done') --> E ISSO É OUTRA COISA 
+
+
+
+
+ COM QUE VOCÊ PODE USAR O DOCKER... E É ASSIM QUE FAZMOS ISSO..
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> MAS AGORA VAMOS VOLTAR AO NODE APPP,
+
+
+
+ PQ VAMOS CONTINUAR O UTILIZANDO AO LONGO DAS PRÓXIMAS AULAS...
+
+
+
+
+
+
+
+
+
+
+
+ -> ISSO NOS MOSTROU QUE PODEMOS, se precisarmos,
+
+ interagir com os docker containers...
