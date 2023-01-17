@@ -1,0 +1,452 @@
+
+
+
+
+
+
+
+
+O PROFESSOR 
+
+
+
+
+
+
+
+AGORA QUER NOS MOSTRAR COMO MANAGEAR NOSSOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE DIGITAMOS 'ps -a',
+
+
+TEREMOS 
+
+
+1 MONTE DE CONTAINERS --> 1 MONTE DE STOPPED,
+
+
+
+
+
+
+E ALGUNS RUNNING CONTAINERS ---> É CLARO QUE ESSA LIST VAI FICAR CADA VEZ MAIS LONGA..
+
+
+
+
+
+
+
+
+--> DEVEMOS REMOVER CONTAINERS QUE NÃO ESTAMOS MAIS UTILIZANDO/NÃO SÃO MAIS NECESSÁRIOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+DEVEMOS USAR O COMANDO DE 
+
+
+'docker rm' --> ISSO REMOVE CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+-----> escrevemos:
+
+
+
+
+
+
+
+docker rm eloquent_brown --------> GANHAMOS 1 ERROR, PQ É NECESSÁRIO 
+
+FAZER STOP DE 1 CONTAINER PARA ENTÃO O REMOVER...
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O PROFESSOR PARA OS CONTAINERS, E LOGO DEPOIS 
+
+OS REMOVE COM 'docker rm'...
+
+
+
+
+
+
+
+
+
+------->E O PROFESSOR QUER LIMPAR TODOS OS CONTAINERS...
+
+
+
+
+
+
+
+
+
+---> PARA LIMPAR TODOS OS CONTAINERS,
+
+
+DEVEMOS RODAR:
+
+
+
+
+
+
+'docker rm + MÚLTIPLOS CONTAINER NAMES'..
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+docker rm mystifying_dasisaas  ecstatic_rubin 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+ALTERNATIVAMENTE,
+
+VOCÊ PODE RODAR 'docker prune'
+
+
+
+
+
+
+
+
+PARA __ REMOVEr__ TODOS _ OS 
+
+
+DOCKERS PARADOS __ AUTOMATICAMENTE...
+
+
+
+
+
+
+
+
+
+ISSO É MEIO CUMBERSOME,
+
+POR ISSO O PROFESSOR LOGO NOS MOSTRARÁ 
+
+UMA MANEIRA DE REMOVER TODOS OS CONTAINERS AUTOMATICAMENTE,
+
+NO CASO DE NÃO SEREM MAIS ÚTEIS/NECESSÁRIOS..
+
+
+
+
+
+
+
+
+
+
+
+
+-----> OK..
+
+
+
+
+ELE REMOVE TODOS ESSES CONTAINERS,
+
+E AÍ 
+
+
+
+digita 'docker ps -a',
+
+
+e constata que todos foram removidos...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO É BEM CUMBERSOME,
+
+POR ISSO O PROFESSOR TEM 1 MANEIRA MAIS ELEGANTE DE REMOVER CONTAINERS AUTOMATICAMENTE,
+
+QUANDO NÃO SÃO MAIS NECESSÁRIOS...
+
+
+
+
+
+
+
+
+
+
+->  docker images --> ISSO LISTA TODAS AS IMAGES QUE VOCÊ TEM --> 
+
+
+
+
+
+veremos a image
+
+
+
+de antes...
+
+
+
+
+
+
+
+--> temos 'repository' --> isso mostra o repositório de onde tiramos 
+
+esse negócio..
+
+
+
+
+
+
+
+
+
+
+--> aí temos 'size',
+
+que é o QUANTO 
+
+
+ESSE NEGÓCIO OCUPA, NO SEU HARD DRIVE...
+
+
+
+
+
+
+
+
+
+
+
+-> E O 'NODE', A IMAGE QUE ESTAMOS USANDO,
+
+
+
+
+
+ELA TAMBÉM 
+
+
+
+
+ESTÁ USANDO 1 'LINUX IMAGE',
+
+
+
+
+é isso que 
+
+compõe todo o espaço de '1gb'
+
+ocupado pelo node...
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS REMOVER IMAGES COM O COMANDO 'rmi'...
+
+
+
+
+
+
+
+
+--> ISSO RMEOVE IMAGES..
+
+
+
+
+
+
+
+
+
+--> OK... PASSAMOS O IMAGE ID 
+
+
+ao rmi -> isso apaga a image, e todos os layers dentro da image...
+
+
+
+
+
+
+
+
+
+
+
+-_> MAS 1 NOTE IMPORTANTE SOBRE O REMOVE DE IMAGES --> VOCÊ SÓ PODE 
+
+
+REMOVER IMAGES SE ELAS NÃO ESTÃO SENDO USADAS POR MAIS NENHUM CONTAINER (stopped ou running)...
+
+
+
+
+
+
+
+--> OU SEJA,
+
+NÃO INTERESSA SE 1 CONTAINER FOI STARTED OU STOPPED,
+
+
+
+O CONTAINER 
+
+
+PRECISA SER REMOVIDO ANTES DE REMOVERMOS A IMAGE..
+
+
+
+
+
+
+
+
+----> BEM... SE QUEREMOS NOS LIVRAR DE TODAS AS IMAGES 
+
+NÃO USADAS EM CONTAINERS,
+
+
+
+devemos rodar 'docker prune',
+
+
+
+
+
+
+PQ ESSE COMANDO REMOVE TODAS AS 'UNUSED IMAGES'...
+
+
+
+
+
+
+
+
+
+
+---> certo... até aí, tudo bem...
+
+
+
+
+
+
+
+
+--> AGORA, É CLARO,
+
+PODEMOS RODAR 1 NOVO CONTAINER 
+
+
+
+COM BASE NA IMAGE 
+
+antiga...
