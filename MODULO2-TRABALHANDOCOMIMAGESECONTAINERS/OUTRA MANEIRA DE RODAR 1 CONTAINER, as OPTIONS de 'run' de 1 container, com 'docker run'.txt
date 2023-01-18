@@ -1,0 +1,374 @@
+
+
+
+
+
+
+
+--> SE DIGITAMOS 'docker run --help',
+
+
+
+
+TEREMOS VÁRIAS OPTIONS...
+
+
+
+
+
+
+
+
+
+
+
+A BOA NOTÍCIA É QUE A GRANDE MAIORIA 
+
+DESSAS OPTIONS NUNCA VAI IMPORTAR (
+
+
+    quando importarem, você vai saber..
+)
+
+
+
+
+
+
+
+
+
+ALGUMAS OPTIONS SÃO IMPORTANTES:
+
+
+
+
+
+
+
+
+-D --> FLAG DE 'detached'...
+
+
+
+
+
+
+
+-p --> 'PUBLISH FLAG' --> é usada para fazer 'LISTEN' a 1 port...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS HÁ 
+
+1 OUTRA FLAG IMPORTANTE QUE O PROFESSOR QUER MENCIONAR...
+
+
+
+
+
+
+
+
+É A FLAG DE '-rm'... 
+
+
+
+
+
+
+
+
+
+
+
+essa flag 'AUTOMATICAMENTE REMOVE O CONTAINER, QUANDO ELE FAZ __ EXIT'...
+
+
+
+
+
+
+
+
+tipo:
+
+
+
+
+
+
+
+
+docker run -rm id_ou_image_do_container...
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO PODE SER MT ÚTIL ---> ISSO PQ __ AÍ VOCÊ NÁO VAI PRECISAR `CLEAN UP' 
+
+
+
+
+
+SEUS 
+
+
+STOPPED CONTAINERS,
+
+DE TEMPOS EM TEMPOS...
+
+
+
+
+
+
+
+
+BASTA COLOCAR ESSA FLAG,
+
+PARA 
+
+QUE 
+
+ENTÃO,
+
+SEMPRE QUE ESSE CONTAINER SEJA 'STOPPED',
+
+
+
+
+ELE SEJA _ REMOVIDO AUTOMATICAMNETE..
+
+
+
+
+
+
+
+
+
+--> basta rodar assim:
+
+
+
+
+
+
+
+
+
+
+
+docker run -p 3000:80 -d --rm  id_do_container...
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO,
+
+
+
+VAMOS:
+
+
+
+
+1) RODAR O CONTAINER COM O PUBLISH DELE EM 'localhost:3000'..
+
+
+
+
+
+2) MODO DETACHED...
+
+
+
+
+
+3) FLAG DE 'rm', PARA QUE 
+
+QUANDO ESSE CONTAINER FOR 'STOPPED',
+
+ELE 
+
+
+SEJA REMOVIDO...
+
+
+
+
+
+
+
+
+
+----> OK... ISSO É ÚTIL, SIM...
+
+
+
+
+
+
+
+
+
+agora se escrevemos 'docker ps -a',
+
+
+VEREMOS QUE 
+
+
+ESSE CONTAINER NÃO FICARÁ MAIS LISTADO, pq ele TERÁ SIDO REMOVIDO... (removido quando parado)...
+
+
+
+
+
+
+
+
+
+E NÃO É DE TODO INCOMUM 
+
+
+O USO 
+
+DESSA FLAG QUANDO FAZEMOS START DE 
+
+
+
+CONTIANERS... --> ESPECIALMENTE ___ SE O SEU CONTAINER 
+
+
+CONTÉM 
+
+ALGO COMO 
+
+1 
+
+'NODE SERVER'... ->  1 NODE SERVER,
+
+
+PQ 
+
+
+
+__VOCê FREQUENTEMENTE 
+
+
+
+''''VAI SÓ PARAR SEU CONTAINER SE SEU CÓDIGO FOI ALTERADo''' -> E, SE SEU 
+
+
+CÓDIGO FOI ALTERADO,
+
+VOCÊ 
+
+
+VAI 
+
+TER 
+
+DE 
+'REBUILD' A IMAGE E RODAR 1 NOVO CONTAINER DE QUALQUER FORMA,
+
+POR ISSO 
+
+
+O 
+
+'MAINTAIN'
+
+
+DOS 
+
+
+CONTAINERS ANTIGOS DE FORMA 'STOPPED'
+
+É COMPLETAMENTE INÚTIL,
+
+
+E É AÍ QUE 
+
+
+
+TEMOS 1 CENÁRIO 
+
+
+EM QUE 
+
+O 
+REMOVE DE CONTAINERS, com a flag de '--rm',
+
+
+quando estão STOPPED,
+
+
+se torna útil...
+
+
+
+
+
+
+
+
+
+
+-----> OK... --> ISSO FAZ MT SENTIDO,
+
+
+
+PQ __ É PROVÁVEL QUE O SEU CONTAINER ANTIGO NUNCA MAIS SERÁ UTILIZADO --> NÓS REUTILIZMAOS 
+
+
+
+OS CONTAINERS ANTIGOS NAS ÚLTIMAS LESSONS,
+
+
+MAS NÃO 
+
+
+
+É INCOMUM QUE VOCê VAI DESCARTAR _ TOTALMENTE CONTAINERS ANTIGOS (
+
+    pq 
+
+
+você 
+
+
+provavelmente vai usar esse comando/flag de '--rm',
+
+para 
+
+AUTOMATICAMENTE REMOVER ESSE CONTAINER, QUANDO ELE ESTIVER 'STOPPED'...
+
+)
