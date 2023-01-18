@@ -1,0 +1,766 @@
+
+
+
+
+OK...
+
+
+
+
+
+
+ANTERIORMENTE,
+
+
+
+NA ÚLTIMA AULA,
+
+VIMOS COMO PODEMOS 'inspect' uma image,
+
+
+com 
+
+
+'docker image inspect id_da_image'...
+
+
+
+
+
+
+
+
+
+
+
+OK, MAS AGORA QUEREMOS 
+
+
+
+
+
+''LOOK INTO A CONTAINER''' -> NA VERDADE, MAIS DO QUE ISSO:
+
+
+
+QUEREMOS 
+
+
+'ADD OU EXTRACT _ ALGO _DE 1 CONTAINER, ENQUANTO O MESMO AINDA ESTÁ RODANDO'''..
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+
+O DOCKER TEM O COMANDO DE 'cp' --> ESSE COMANDO SIGNIFICA 'COPY' -> ELE TE DEIXA 
+
+COPIAR 
+
+FILES/FOLDERS PARA DENTRO DE 1 RUNNING CONTAINER,
+
+
+
+OU 
+
+ENTÃO PARA FORA...
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR CRIA 1 NOVO FOLDER,
+
+
+
+com arquivo 'test.txt'...
+
+
+
+
+
+
+
+
+
+-> E ELE QUER COPIAR _ ESSE ARQUIVO, DENTRO DESSA PASTA,
+PARA 
+
+DENTRO 
+
+DE 
+
+1 'RUNNING CONTAINER'..
+
+
+
+
+
+
+
+
+
+
+
+-> PARA ISSO,
+
+
+O PROFESSOR 
+
+
+RODA 1 CONTAINER,
+
+
+
+
+
+
+E AÍ 
+
+
+rodamos 'docker cp'....
+
+
+
+
+
+
+
+
+
+
+OK... AGORA RODAMOS 'docker cp'-->
+
+
+
+
+
+DEPOIS PRECISAMOS:
+
+
+
+
+
+1) ESPECIFICAR '''''O SOURCE'''' -> O FOLDER/FILE QUE QUEREMOS COPIAR A ALGUM OUTRO LUGAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NESSE CASO,
+
+O PROFESSOR OU:
+
+
+
+1) APONTA A 1 FILE ESPECÍFICA 
+
+
+(
+    tipo 
+
+    'docker cp dummy/test.txt'
+
+    OU 
+
+    ENTÃO 
+
+    um PONTO,
+    para copiar tudo do folder,
+
+    tipo assim:
+
+
+
+'docker cp dummy/.'
+
+
+
+
+)
+
+
+
+
+
+
+
+
+2) DEPOIS DISSO, PRECISAMOS ESCREVER O 'DESTINO'
+
+
+DESSE COPY ->   PRECISAMOAS ADICIONAR 1 ESPAÇO,
+
+
+E AÍ 
+
+
+ESCREVEMOS O 
+
+'PATH A QUE QUEREMOS COPY TO'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É CLARO QUE ESSE PATH 'DEVERÁ SER DENTRO DE SEU CONTAINER'...
+
+
+
+
+
+
+3) PARA ISSO, PARA COPIAR, VOCÊ VAI PRECISAR DO _ NOME__ DO SEU CONTAINER...
+
+
+
+
+
+--> PRECISA DO NOME DO CONTAINER PQ 'O DOCKER PRECISA SABER A QUE CONTAINER VOCÊ QUER COPIAR ISSO'  (pq você pode ter múltiplos containers, rodando ao mesmo tempo)...
+
+
+
+
+
+
+
+
+---> OK... ESPECIFICAMOS O NOME DO CONTIANER,
+
+
+
+E AÍ 
+
+
+
+
+'O PATH DENTRO DO CONTAINER A QUE VOCÊ QUER COPIAR'.
+
+
+
+
+
+tipo assim:
+
+
+
+
+
+
+
+docker cp dummy/. boring_vaughan:/test
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, VAMOS CRIAR ESSA PASTA DE 'test'
+
+
+DENTRO DO RUNNING CONTAINER,
+
+SE ESSA PASTA AINDA NÃO EXISTE...
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+A:\projeto15-DOCKER\MODULO2-TRABALHANDOCOMIMAGESECONTAINERS>docker cp dummy/. strange_grothendieck:/test
+
+
+
+
+
+
+
+
+
+
+--> SE AGORA DAMOS 'ENTER',
+
+
+O CONTEÚDO DESSA PASTA
+
+
+DEVERÁ TER SIDO COPIADO 
+
+
+
+
+
+PARA__ DENTRO _ DO FOLDER DE 'test',
+DENTRO DO CONTAINER..
+
+
+
+
+
+
+
+
+
+CERTO, MAS COMO PODEMOS, AGORA ,VISUALIZAR ISSO?
+
+
+
+
+
+
+
+
+
+
+BEM,
+
+
+PARA VER SE ISSO FUNCIONOU,
+
+O PROFESSOR 
+
+VAI 
+
+LÁ 
+
+
+E __ _DELETA__ ESSE FOLDER DE 'dummy' AQUI,
+
+de nossa MÁQUINA LOCAL..
+
+
+
+
+
+
+-> AÍ,
+
+
+
+NO CASO,
+
+
+
+
+ELE FAZ O CAMINHO INVERSO,
+
+ele coloca 'docker cp',
+
+
+MAS AÍ O PRIMEIRO PARÂMETRO 
+
+
+será 
+o 
+
+CAMINHO 
+
+
+DENTRO DO CONTAINER,
+
+
+e o 
+
+
+SEGUNDO SERÁ O NOSSO PC,
+ 
+ com 
+
+
+
+
+
+
+
+ 'dummy' (a destination desse arquivo aí SERÁ ESSE FOLDER DE 'dummy' local, de nossa própria máquina)...
+
+
+
+
+
+
+
+
+
+ ex:
+
+
+
+
+
+
+
+
+
+ docker cp boring_vaughan:/test dummy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ OK... ISSO FUNCIONOU...
+
+
+
+
+
+
+
+ --> O ARQUIVO DE 'test.txt'
+
+ FOI COPIADO 
+
+
+ PARA 
+
+
+ DENTRO DA PASTA DE 'dummy', QUE FOI CRIADA NO NOSSO SISTEMA..
+
+
+
+
+
+
+
+
+
+
+
+ CERTO.... E SE DIGITAMOS ASSIM:
+
+
+
+
+
+ A:\projeto15-DOCKER\MODULO2-TRABALHANDOCOMIMAGESECONTAINERS>docker 
+ cp strange_grothendieck:/ dummy 3
+
+
+
+
+
+
+
+
+
+
+
+
+--> acabamos copiando _ _TODO O CONTEÚDO DO NOSSO 'CONTAINER' (com as coisas da image, também, acho)
+
+
+
+PARA 
+
+DENTRO DESSE FOLDER..
+(tem as coisas do linux, basicamente... o sistema operacional do linux, em outras palavras)..
+
+
+
+
+
+
+
+
+
+
+
+-->OK...
+
+
+
+
+
+
+MAS NÃO PODEMOS COPIAR __ FOLDERS, EU ACHO...
+
+
+
+
+
+E É ASSIM QUE PODEMOS FAZER COPY DE FILES _ ENTRE_ NOSSO LOCAL MACHINE E RUNNING CONTAINERS..
+
+
+
+
+
+
+
+
+
+
+
+
+ESSE COMANDO PODE SER ÚTIL PARA 1 PUNHADO DE COISAS...
+
+
+
+
+
+
+
+ELE TE DEIXA 'ADD SOMETHING TO A CONTAINER'
+
+
+
+SEM 
+
+TER QUE 
+
+ 
+ REINICIAR O CONTAINER E REBUILDAR A IMAGE ------> DIGAMOS QUE 
+
+
+
+ NOSSO 
+
+ SOURCE CODE MUDOU --> GERALMENTE PRECISAMOS REBUILDAR A IMAGE E RESTARTAR O CONTAINER,
+
+ POR CONTA DISSO..
+
+
+
+
+
+
+
+
+
+ --> PODERÍAMOS, É CLARO,
+
+ JUST COPY 
+
+
+
+
+ O __ CÓDIGO-FONTE PARA DENTRO DO CONTAINER --> 
+
+
+
+
+
+
+
+
+ ISSO É BEM ERROR-PRONE,
+
+ POR ISSO TENTE EVITAR..
+
+
+
+
+
+
+
+
+
+
+
+ TAMBÉM NÃO É POSSÍVEL 
+
+
+
+
+ SUBSTITUIR 
+
+
+ FILES QUE SÃO EXECUTADAS ATIVAMENTE,
+
+ COMO 'server.js' --> É POR ISSO QUE 
+
+
+
+ FAZER COPY DE FILES PARA DENTRO DE 1 CONTANIER NÃO É UMA BOA SOLUÇÃO PARA ISSO --> É POR ISSO 
+
+ QUE 
+
+
+ VAMOS, MAIS TARDE,
+
+
+
+ APRENDER SOBRE 1 MANEIRA MELHOR DE UPDATAR CÓDIGO EM 1 CONTAINER..
+
+
+
+
+
+
+
+
+
+
+
+
+ --> AINDA ASSIM,
+
+ EXISTIRÃO CENÁRIOS EM QUE 
+ O 
+
+
+
+ _ COPY __DE ALGO PARA DENTRO DE 1 CONTAINER PODE SER ÚTIL --> 
+
+
+
+ UM EXEMPLO DISSO 
+
+ É 
+
+
+ 'CONFIGURATION FILES' PARA 1 WEBSERVER,
+
+ O QUAL VOCÊ QUER MUDAR...
+
+
+
+
+
+
+
+
+
+ --> MAS O PROFESSOR DIZ QUE 
+
+
+
+ A COPY 
+
+ DE 
+
+ ALGO __ PARA __FORA __DE 1 CONTAINER PODE SER ÚTIL,
+
+ TAMBÉM..
+
+
+
+
+
+
+
+
+
+ DIGAMOS QUE SEU CONTAINER 
+
+
+ GERA 1 MONTE DE LOG FILES --> VOCÊ PODE USAR 
+ O COMANDO 
+
+ DE 
+ 'cp'
+
+ PARA 
+ COPIAR SEUS 
+
+ LOGS 
+
+
+ PARA __ DENTRO _dE SUA LOCAL MACHINE,
+
+ PARA 
+ QUE 
+ VOCÊ 
+ POSSA 
+
+ OS 
+
+
+ LER..
+
+
+
+
+
+
+
+ -> COM ISSO,
+
+
+
+ DE REPENTE SUA 'BLACK BOX' DO CONTAINER,
+
+ QUE 
+ É 
+ ISOLADA,
+
+ SE 
+
+ TORNA 
+
+
+
+
+ MAIS TRANSPARENTE --> PQ VOCÊ PODE COPIAR FILES E FOLDERS 
+
+
+
+ ,
+
+ DE SEU CONTAINER,
+
+ PARA SEU 
+
+
+
+ LOCAL HOST SYSTME --> ESSE É UM USE-CASE 
+
+ ÚTIL PARA O 'docker cp' --> É UM COMANDO QUE NÃO USAREMOS COM MT FREQUÊNCIA,
+
+ MAS É ÚTIL...
