@@ -449,4 +449,11 @@ PODEMOS RODAR 1 NOVO CONTAINER
 
 COM BASE NA IMAGE 
 
-antiga...
+antiga..
+
+
+-> E É ISSO QUE FAREMOS, MAS NÃO FAREMOS
+
+
+
+DE FORMA COMUM, COM 'docker run id_da_image'...
