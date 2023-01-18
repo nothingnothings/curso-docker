@@ -1,0 +1,794 @@
+
+
+
+
+
+
+A BOA NOTÍCIA É QUE 
+
+
+SOBRARAM APENAS ALGUMAS COISINHAS...
+
+
+
+
+
+
+
+
+
+
+--> A PRIMEIRA COISA 
+
+QUE TEMOS QUE COMPREENDER ESTÁ RELACIONADA COM 'images'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> escrevemos 'docker images'...
+
+
+
+
+
+
+
+
+-- SE DIGITAMOS ISSO, FICAMOS COM TODAS AS IMAGES...
+
+
+
+
+
+
+ex:
+
+
+
+
+A:\projeto15-DOCKER>docker images
+REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+<none>       <none>    f14298464cf6   26 hours ago   932MB
+<none>       <none>    660aabc43961   26 hours ago   932MB
+<none>       <none>    8b41a3f87eac   2 days ago     1GB
+node         latest    51bd6c84a7f2   6 days ago     998MB
+
+
+
+
+
+
+
+
+
+
+
+EM CADA IMAGE, TEMOS O 'APPlication code'
+
+
+E O RUNNING ENVIRONMENT..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O 'CONTAINER' EM SI,
+
+
+
+O RUNNING CONTAINER EM SI,
+
+
+NÃO 
+
+É 
+
+'
+THAT BIG',
+
+PQ 
+
+
+É 
+
+
+JUSTAMENTE 
+
+UM 
+
+'EXTRA-THIN LAYER',
+
+
+O 'COMMAND LAYER' (basicamente)
+
+
+
+ADICIONADO 
+EM CIMA 
+
+
+DA IMAGE... --> OK... ISSO QUER DIZER QUE 
+
+
+ESSE 
+
+'IMAGE CODE' 
+
+
+
+
+
+
+É USADO _ NO RUNNING CONTAINER (
+
+    e ele NÃO COPIA _ ESSA IMAGE... não ocupa 2x o espaço , por assim dizer...
+)
+
+
+
+
+
+
+
+
+
+-> ISSO QUER DIZER QUE 
+
+
+O __ CONTAINER FAZ 'BUILD UP' EM CIMA 
+
+
+DE 1 IMAGE --> E MÚLTIPLOS CONTAINERS, FEITOS COM BASE EM 1 MESMA IMAGE,
+
+
+vão compartilhar o código NO INTERIOR DA IMAGE...
+
+
+
+
+
+
+
+
+
+
+-> é por isso que o CÓDIGO DENTRO DA IMAGE É 'LOCKED-IN' 
+
+E 
+'READ-ONLY'... --> ISSO PQ 
+
+
+
+OS _ CONTAINERS PODEM APENAS 'MAKE CHANGES'
+
+E 
+
+'CREATE FILES'
+
+
+DENTRO 
+
+DAQUELE 
+
+
+
+'NEW, EXTRA-THIN CONTAINER LAYER',
+
+QUE 
+É ADICIONADO POR CIMA DA IMAGE (em cada container)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS SE VOCÊ QUER SABER MAIS SOBRE 1 DETERMINADA IMAGE,
+
+
+
+O DOCKER TEM UM COMANDO PARA ISSO..
+
+
+
+
+
+
+
+
+
+
+
+--> É O COMANDO DE 'docker image inspect id_da_image'...
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+[
+    {
+        "Id": "sha256:f14298464cf62064101cab2b7e322f2fee4e9002786c5b3721e0be5d38a187d8",
+        "RepoTags": [],
+        "RepoDigests": [],
+        "Parent": "",
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2023-01-17T01:41:36.340200264Z",
+        "Container": "",
+        "ContainerConfig": {
+            "Hostname": "",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": null,
+            "Cmd": null,
+            "Image": "",
+            "Volumes": null,
+            "WorkingDir": "",
+            "Entrypoint": null,
+            "OnBuild": null,
+            "Labels": null
+        },
+        "DockerVersion": "",
+        "Author": "",
+        "Config": {
+            "Hostname": "",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "80/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",      
+                "LANG=C.UTF-8",
+                "GPG_KEY=A035C8C19219BA821ECEA86B64E628F8D684696D",
+                "PYTHON_VERSION=3.11.1",
+                "PYTHON_PIP_VERSION=22.3.1",
+                "PYTHON_SETUPTOOLS_VERSION=65.5.1",
+                "PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/66030fa03382b4914d4c4d0896961a0bdeeeb274/public/get-pip.py",
+                "PYTHON_GET_PIP_SHA256=1e501cf004eac1b7eb1f97266d28f995ae835d30250bec7f8850562703067dc6" 
+            ],
+            "Cmd": [
+                "python",
+                "rng.py"
+            ],
+            "ArgsEscaped": true,
+            "Image": "",
+            "Volumes": null,
+            "WorkingDir": "/app",
+            "Entrypoint": null,
+            "OnBuild": null,
+            "Labels": null
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 931796222,
+        "VirtualSize": 931796222,
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/pnw3qdobkn659iutg5azvll06/diff:/var/lib/docker/overlay2/5326e106a6936dbe73712e92368fd73a637e37585a5d456db813466545bb11d6/diff:/var/lib/docker/overlay2/91b0fdc24a18a74bd26638f0d2a091c9f08e72e8cb4ec8241931e1c6e682080e/diff:/var/lib/docker/overlay2/8fb52f97726b81b9766cd8efb220c413c32b2a1595cfd20b9eaec2b43baad75f/diff:/var/lib/docker/overlay2/a4f148c2bdcbd230cc983aa15d877fb7de2822b1189589764035296d9fe766f2/diff:/var/lib/docker/overlay2/bda9caa2d7d0885a94b1b14f9bfa3f6842f7a6001f1f16d7b56ba546ad26e4ee/diff:/var/lib/docker/overlay2/3ff34b63df021a8bd6d6a85793e7fea7dee28b60d94907b85c1e661331b22065/diff:/var/lib/docker/overlay2/5e8e8c76ce0859033268cb077b4335e1d22767a0084ce94e3fc85f0a9a89710e/diff:/var/lib/docker/overlay2/54aa9134b83e0fae741db2a0d85414e0c679b925cdd1dc18ac96315461118af4/diff:/var/lib/docker/overlay2/5ed4c187efbe9809c70717bb7ac218744837c558e39a11e8bb101153ade13636/diff",    
+                "MergedDir": "/var/lib/docker/overlay2/0y5iix6ir19rfdx5mqfflsnf3/merged",
+                "UpperDir": "/var/lib/docker/overlay2/0y5iix6ir19rfdx5mqfflsnf3/diff",
+                "WorkDir": "/var/lib/docker/overlay2/0y5iix6ir19rfdx5mqfflsnf3/work"
+            },
+            "Name": "overlay2"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:a9099c3159f52e46aeed72420924377873529e3f36a80eddbfeb63860d036a04",
+                "sha256:a463dbda46648cc9a3af3f009b2c73035cb068639edb24f1fb5a792b057c6aa8",
+                "sha256:49b333f7bad4d30043c926b2e1270833f419ee03da204f91e09bd7939c68032e",
+                "sha256:9f4f964da72795eddb83aa809dd2b336cb37b93238a18a2e230b0adec951d1a7",
+                "sha256:a4db1a4057634db9daf255df4f001ff04cd7f0018d9b1aac8f56c3cf800f466b",
+                "sha256:dc6462f7bb8b1f906aa41ee08e5950c439fe30ba35c5eb05fba8d4a43d24d47e",
+                "sha256:eaf866df682cc0dd2d1e19bf43586880a5c19925b26c8b75513db28d506e5f66",
+                "sha256:51dde6a94e518d662838872365f1861466959c30e36a2cc63833e51861dcd6c2",
+                "sha256:2127b463e72ad90caa36d5bd01c85767a1daeec8d05a38c77a8ce79fc96767f8",
+                "sha256:93a9215f1e24221ab114ef786ec47d3db53d68e2a3381e1be5f36620b6338fd8",
+                "sha256:0dbd4e1637fbcbbe17aabd1e41446754ac9584c9f406455d37715827b11d9467"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "0001-01-01T00:00:00Z"
+        }
+    }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, TEREMOS 1 LONGO OUTPUT,
+
+
+COM INFO 
+
+SOBRE ESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+VAMOS LER ESSE OUTPUT 
+
+DE CIMA A BAIXO,
+PARA 
+
+APRENDER ALGUMAS COISAS:
+
+
+
+
+
+
+
+
+
+'Id' --> ISSO NOS DÁ O 'FULL ID' da image...
+
+
+
+
+
+
+
+"created" --> ISSO NOS DÁ A 'CREATED DATE' (Quando a image foi criada)...
+
+
+
+
+
+
+
+
+
+"ContainerConfig" -->  TEMOS _ CONFIGURATION PARA OS CONTAINERS QUE SERÃO EXECUTADOS/CRIADOS A PARTIR DA IMAGE....
+
+
+
+
+
+
+
+
+
+
+-> DENTRO DE 'ContainerConfig',
+
+
+
+temos 
+
+'ExposedPorts: {
+    "80/tcp": {}
+}
+
+
+
+
+
+
+
+
+
+
+--> ESSA PORT SERÁ EXPOSTA..
+
+
+
+
+
+
+TEMOS ALGUMAS ENVIRONMENT VARIABLES:
+
+ 
+ "Env": [
+    "PATH"="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" 
+ ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ TAMBÉM 
+
+
+
+
+ __ TEMOS __ O __ ENTRYPOINT,
+
+
+ QUE 
+
+
+
+ POR DEFAULT 
+
+ É 
+
+
+SEU COMANDO (se você não especificou nenhum endpoint)..
+
+
+
+
+
+
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+"Cmd": [
+
+    "ENTRYPOINT ["node" "server.js"]
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VEMOS TAMBÉM QUAL DOCKER VERSION ESTÁ SENDO USADA..
+
+
+
+
+
+
+--> VEMOS ALGUMAS OUTRAS INFOS NÃO TÃO IMPORTANTES,
+
+
+
+MAS MAIS PARA BAIXO TEMOS INFO COMO 
+
+
+
+'O OPERATING SYSTEM' -> AÍ 
+
+
+
+TEMOS O OPERATING SYSTEM DO 'LINUX' --> pq usou essa image para rodar o NODE...
+
+
+
+
+
+
+
+
+
+--> 
+ E, AINDA MAIS PARA BAIXO,
+
+
+
+ temos 
+
+ os 
+
+
+ 'Layers'
+
+
+
+ desse 'RootFS' --> OK... --> TENHA EM MENTE QUE OS DIFERENTES 'COMMANDS'
+
+
+
+
+ FAZEM __ OS __LAYERS _ DESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESCREVEMOS, ANTERIORMENTE, 7 COMMANDS NO DOCKER FILE,
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+COPY package.json /app 
+
+RUN npm install 
+
+COPY . /app
+
+EXPOSE 80 
+
+CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS É CLARO QUE TEMOS 1 NÚMERO MAIOR DE LAYERS DO QUE INSTRUCTIONS...
+
+
+
+
+ex:
+
+
+
+
+
+     "Layers": [
+                "sha256:a9099c3159f52e46aeed72420924377873529e3f36a80eddbfeb63860d036a04",
+                "sha256:a463dbda46648cc9a3af3f009b2c73035cb068639edb24f1fb5a792b057c6aa8",
+                "sha256:49b333f7bad4d30043c926b2e1270833f419ee03da204f91e09bd7939c68032e",
+                "sha256:9f4f964da72795eddb83aa809dd2b336cb37b93238a18a2e230b0adec951d1a7",
+                "sha256:a4db1a4057634db9daf255df4f001ff04cd7f0018d9b1aac8f56c3cf800f466b",
+                "sha256:dc6462f7bb8b1f906aa41ee08e5950c439fe30ba35c5eb05fba8d4a43d24d47e",
+                "sha256:eaf866df682cc0dd2d1e19bf43586880a5c19925b26c8b75513db28d506e5f66",
+                "sha256:51dde6a94e518d662838872365f1861466959c30e36a2cc63833e51861dcd6c2",
+                "sha256:2127b463e72ad90caa36d5bd01c85767a1daeec8d05a38c77a8ce79fc96767f8",
+                "sha256:93a9215f1e24221ab114ef786ec47d3db53d68e2a3381e1be5f36620b6338fd8",
+                "sha256:0dbd4e1637fbcbbe17aabd1e41446754ac9584c9f406455d37715827b11d9467"
+            ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+    --> ISSO ACONTECE PQ 
+
+
+    TEMOS MAIS DO QUE OS 'LAYERS DEFINIDOS NA DOCKERFILE',
+
+
+
+
+    PQ TEMOS 
+
+    TAMBÉM 
+
+
+
+    OS LAYERS PROVIDENCIADOS 
+
+    POR AQUELA BASE IMAGE DE 'node' --> QUE USA AINDA MAIS 
+
+    LAYERS --> 
+
+
+
+
+
+
+
+
+    ISSO QUER DIZER QUE NOSSA IMAGE USA __ TODOS ESSES LAYERS ->
+
+
+
+
+
+
+    E SE A 'NODE IMAGE' 
+
+    (do docker hub) 
+
+    FOSSE ALTERADA,
+
+    ISSO 
+
+    TAMBÉM 
+
+    FORÇARIA
+     
+     NOSSO CÓDIGO 
+
+
+     INTEIRO, OS LAYERS SUBSEQUENTES,
+
+     A 
+
+     SEREM 
+
+ REBUILT...
+
+
+
+
+
+
+
+     ---> ESSE É O COMANDO DE 'inspect',
+
+     QUE NEM SEMPRE É NECESSÁRIO,
+     MAS QUE 
+     PODE SER INTERESSANTE 
+     PARA VER COMO 
+
+     SUA IMAGE ESTÁ CONFIGURED,
+
+     E COMO 
+
+
+     OS CONTAINERS INICIADOS A PARTIR 
+
+     DESSA IMAGE SERÃO CONFIGURED.. --> TALVEZ PQ VOCÊ 
+
+     ESQUECEU A COMPOSIÇÃO DA IMAGE,
+
+
+     OU ENTÃO 
+
+     PQ 
+
+
+     VOCê 
+
+
+     BAIXOU ESSA IMAGE DE OUTRO LUGAR,
+
+     E AÍ VOCê 
+
+     QUER 
+
+     VER QUAL É A GENERAL CONFIGURATION DESSA IMAGE OBTIDA EM 1 MEIO EXTERNO..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     ---> OK...
+
+
+
+
+
+
+     ISSO TUDO FAZ SENTIDO,
+
+     E É ASSIM QUE PODEMOS 'INSPECT' IMAGES 
+
+     E VER COMO 
+
+
+     ELAS FORAM FEITAS,
+
+
+     APÓS ELAS terem sido criadas...
+     
