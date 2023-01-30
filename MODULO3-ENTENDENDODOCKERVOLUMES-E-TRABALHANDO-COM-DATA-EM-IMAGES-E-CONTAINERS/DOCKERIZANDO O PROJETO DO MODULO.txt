@@ -1,3 +1,31 @@
+
+
+
+
+
+
+
+
+VAMOS COMEÇAR PELO DOCKERING DESSE APP AÍ...
+
+
+
+
+
+
+
+
+
+
+
+
+--> EU ESCREVI TIPO ASSIM:
+
+
+
+
+
+
 FROM node 
 
 
