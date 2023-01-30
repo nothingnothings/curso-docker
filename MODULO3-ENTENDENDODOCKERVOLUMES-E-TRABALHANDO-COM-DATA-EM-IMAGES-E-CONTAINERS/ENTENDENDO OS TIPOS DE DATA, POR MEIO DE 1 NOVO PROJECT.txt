@@ -1,0 +1,327 @@
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR PREPAROU UM PROJETO,
+
+
+
+QUE VAMOS 
+
+
+
+DOCKERIZAR POR CONTA PRÓPRIA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É UM EXEMPLO NODEJS,
+
+
+
+
+E É GERALMENTE 1 
+
+SIMPLES APP...
+
+
+
+
+
+
+
+
+
+--> NO NODE SERVER,
+
+O PROFESSOR TEM UM PUNHADO DE ROUTES 
+
+E SUPPORTED REQUESTS...
+
+
+
+
+
+
+
+
+
+
+--> TEMOS PASTSA DE PAGES E PUBLIC,
+
+e aí 
+
+
+
+
+
+1 PACKAGE.JSON e então 1 'server.js'...
+
+
+
+
+
+
+coisa básica..
+
+
+
+DEVEMOS TENTAR ADICIONAR 1 DOCKERFILE MANUALMENET,
+
+e criar 1 image com base nisso...
+
+
+
+
+
+
+
+para isso, faço assim:
+
+
+
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ACHO QUE ISSO VAI FUNCIONAR...
+
+
+
+
+
+
+
+
+
+
+
+
+-> para construir 1 image com base nisso,
+ rodamos 'docker build .' 
+
+
+ no folder em que está o dockerfile...
+
+
+
+
+
+
+
+
+
+
+
+ --> OK...
+
+
+
+
+
+
+
+
+
+
+ MAS AGORA DEVEMOS ANALISAR O CÓDIGO DO SERVER.JS:
+
+
+
+
+
+
+
+   const tempFilePath = path.join(__dirname, 'temp', adjTitle + '.txt');
+
+  await fs.writeFile(tempFilePath, content);
+      await fs.rename(tempFilePath, finalFilePath);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      --> ou seja, temos o 'temporary file path' (data que vai ficar armazenada no container),
+
+
+
+
+      e aí 
+
+      o 
+
+      'final file path' (
+
+        que é onde os arquivos 
+        finais ficarão,
+
+
+
+        e ficarão armazenados com o recurso de 'volumes'...
+      )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, TEMOS OS FOLDERS DE 'temp' 
+
+
+
+e 
+
+'feedback',
+
+que 
+
+
+SÃO VAZIOS, INCIIALMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+A IDEIA É QUE 
+
+
+O FOLDER DE TEMP VAI ARMAZENAR AS FILES TEMPORÁRIAS (
+    até que checamos 
+
+
+    se o ARQUIVO JÁ EXISTE LÁ NO FOLDER DE 'feedback'... se o arquivo 
+
+    não existe 
+
+    no folder de 'feedback',
+
+
+    esse arquivo será copied over...
+)
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR CRIOU ESSE PROJETO PQ TEMOS OS 3 TIPOS DE DATA EM AÇÃO:
+
+
+
+
+1) O SOURCE CODE  (DATA PERMANENTE)
+
+
+
+
+2) DATA TEMPORÁRIA (coisas armazenadas no folder de 'temp')... (files que ficamos OK com o LOSING)...
+
+
+
+
+
+
+3) TEMOS O 'PERMANENT STORAGE', que são as files que ficarão
+
+
+armazenadas no folder de 'feedback'..
+
+
+
+
+
+
+
+
+
+
+
+
+E VAMOS CONTEINERIZAR ESSE APP,
+
+PARA VER QUAIS PROBLEMAS ENCARAREMOS NO MOMENTO... E AÍ 
+
+VAMOS ENFRENTAR ESSES PROBLEMAS,
+
+COM 
+ALGUMAS FERRAMENTAS OFERECIDAS PELO DOCKER...
