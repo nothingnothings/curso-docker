@@ -1,0 +1,449 @@
+
+
+
+
+
+
+
+
+AGORA QUE SABEMOS O PROBLEMA,
+
+
+
+QUAL É A SOLUÇÃO?
+
+
+
+
+
+
+
+
+BEM, O DOCKER TEM UMA BUILT-IN FEATURE CHAMADA DE 'VOLUMES' --> ELA NOS AJUDA A 'PERSIST DATA',
+
+
+E A SOLUCIONAR O PROBLEMA VISTO NA ÚLTIMA LESSON...
+
+
+
+
+
+
+
+
+
+
+--> OK, MAS COMO UTILIZAMOS 'VOLUMES' NO NOSSO APP,
+
+
+NESSE DOCKER APP,
+
+POR EXEMPLO?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PRIMEIRO, DEVEMOS ENTENDER O QUE SÃO 
+
+
+VOLUMES,
+
+
+E COMO FUNCIONAM...
+
+
+
+
+
+
+
+
+
+
+--> VOLUMES --> SÃO FOLDERS NA SUA __ HOST MACHINE...
+
+
+
+
+
+
+''''VOLUMES ARE FOLDERS ON YOUR HOST MACHINE HARD DRIVE WHICH __ ARE MOUNTED__ ("made available", or MAPPED) into 
+
+containers""""...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SÃO FOLDERS NA SUA HOST MACHINE (e não no container, não na image) -----> SÃO 'MOUNTED' (mappeados ou made available) 
+
+
+
+EM DIREÇÃO AOS CONTAINERS ----__> ISSO QUER DIZER QEU 
+
+
+
+
+VOLUMES SÃO FOLDERS NO SEU HOST MACHINE,
+
+NO SEU COMPUTADOR,
+
+
+
+QUE 
+
+
+VOCê 
+
+
+
+FAZ O DOCKER SER 'AWARE OF',
+
+
+E QUE 
+
+
+ENTÃO 
+
+SÃO 
+
+'MAPPED'
+
+A 
+
+FOLDERS _ DENTRO __ DE DOCKER CONTAINERS...
+
+(
+    tipo 
+
+
+    '''/some-path'''' <------------> '''/app/user-data'''''
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> ISSO PODE SOAR 1 POUCO COMO A 'COPY INSTRUCTION' DO 
+
+DOCKER FILE,
+
+
+
+
+
+MAS VOCê DEVE ENTENDER 
+
+QUE ESSA INSTRUCTION, ANTERIORMENTE,
+
+
+
+
+ACTUALLY SÓ TOMAVA 1 'SNAPSHOT'
+
+
+
+
+DO PATH E FILES QUE VOCê PEDIU PARA ELE COPIAR,
+
+
+E AÍ 
+
+
+
+ELE 
+COPIA 
+
+
+ESSES FOLDERS E FILES PARA DENTRO DA IMAGE,
+
+
+E 
+
+AÍ 
+
+'THATS IT' (não há nenhuma ongoing relation/connection, É APENAS UMA ONE-TIME SNAPSHOT, QUE É COPIADA PARA DENTRO DA IMAGE)...
+
+
+
+
+
+
+
+
+
+
+MAS COM VOLUMES, ISSO É DIFERENTE,
+
+PQ 
+
+REALMENTE 
+
+
+VINCULAMOS 1 FOLDER 
+
+DENTRO DO CONTAINER 
+
+
+A 
+
+1 
+
+
+FOLDER __ DO LADO __ DE FORA DO CONTAINER,
+
+
+
+
+NA SUA HOST MACHINE...
+
+
+
+
+
+
+
+
+
+
+(
+
+    E CHANGES_
+
+    EM QUALQUER 
+
+    1 DOS 
+
+    FOLDERS 
+
+    SERÃO
+     
+     REFLETIDAS 
+
+     __ NO OUTRO FOLDER (
+
+        SE VOCê 
+
+        ADICIONAR 1 FILE NA SUA HOST MACHINE,
+
+        ELA FICARÁ 
+
+        DISPONÍVEL
+
+
+
+        DENTRO DO CONTAINER.... E SE VOCÊ ADICIONAR 
+
+
+        ALGO NO CONTAINER,
+
+        ISSO 
+        FICARÁ
+
+        DISPONÍVEL NA HOST MACHINE, TAMBÉM...
+     )
+)
+
+
+
+
+
+
+
+
+
+
+
+E, PORTANTO,
+
+
+POR CAUSA DESSE MECANISMO,
+
+
+VOLUMES TE PERMITEM 'PERSIST DATA' -->  ISSO PQ VOLUMES PERSISTEM E CONTINUAM 
+
+
+A EXISTIR 
+
+MESMO 
+
+
+SE 
+O 
+CONTAINER 
+
+FICA 
+
+'SHUT DOWN'...
+
+
+
+
+
+
+
+IMPORTANTE --> SE VC ADICIONA 1 VOLUME A 1 CONTAINER,
+
+
+
+O __ VOLUME NÃO SERÁ REMOVIDO __ QUANDO O 
+
+
+CONTAINER FOR REMOVED... ( A DATA___ SOBREVIVE)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PORTANTO, A DATA DENTRO DO VOLUME SOBREVIVE --> E CONTAINERS 
+
+PODEM 
+
+TANTO 
+
+'READ'
+
+COMO 
+
+'WRITE'
+
+
+DATA __ 'FROM' E 'TO' 
+
+
+
+1 VOLUME...
+
+
+
+
+
+
+
+
+
+RESUMINDO:
+
+
+
+
+
+''VOLUMES PERSIST IF A CONTAINER SHUTS DOWN.
+
+IF A CONTAINER (RE-)STARTS AND MOUNTS A VOLUME,
+
+ANY DATA INSIDE OF THAT VOLUME IS AVAILABLE IN THE CONTAINER''..
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''A CONTAINER CAN WRITE DATA INTO A VOLUME AND READ DATA FROM IT'''..
+
+
+
+
+
+
+
+
+E ISSO, É CLARO,
+
+
+É UMA FEATURE PODEROSA QUE PODEMOS 
+
+USAR 
+
+PARA 
+
+
+TER FOLDERS QUE 
+
+QUEREMOS
+
+ACESSAR DO LADO DE  FORA DO CONTAINER,
+
+
+
+E/OU PARA 
+
+
+SIMPLESMENTE DATA QUE 
+
+DEVE 
+
+
+SOBREVIVER A 'CONTAINER SHUTDOWN'
+
+E
+ 
+ AO
+  
+
+  REMOVAL 
+
+  DE CONTAINERS... -----> PQ SE A DATA É SALVADA NO LADO DE FORA DO CONTAINER,
+
+  É CLARO QUE 
+
+  ELA 
+
+
+  VAI 
+
+
+  SOBREVIVER AO REMOVAL DO CONTAIINER...

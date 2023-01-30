@@ -1,0 +1,482 @@
+
+
+
+
+
+
+
+
+
+
+
+
+VAMOS CRIAR NOSSO PRIMEIRO CONTAINER...
+
+
+
+
+
+
+
+
+
+NÃO VAMOS ENTENDER TUDO, A ESSE PONTO....
+
+
+
+
+
+
+
+
+
+
+--> MAS VAMOS ESCREVER 1 POUCO DE CÓDIGO E CRIAR 1 
+CONTAINER,
+
+
+
+
+E 
+MAIS TARDE 
+
+
+APRENDEREMOS OS DETALHES 
+
+MAIS APROFUNDADOS...
+
+
+
+
+
+
+
+
+
+
+
+
+-> TEREMOS ESSE EXEMPLO PARA MOSTRAR QUE 'TUDO ESTÁ FUNCIONANDO'...
+
+
+
+
+
+
+
+
+
+
+
+--> TEMOS 1 EXEMPLO ANEXADO--> É UM APP NODEJS BEM SIMPLES...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS SEGUIR O CURSO MESMO SEM SABER NODEJS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS USAR DOCKER PARA QUALQUER PROGRAMMING LANGUAGE,
+
+E PARA QUAISQUER 
+PROJECTS..
+
+
+
+
+
+
+
+
+
+--> É APENAS 1 EXAMPLE PQ 
+
+__PRECISAMOS __ PEGAR __ 
+
+
+
+
+ALGUMA PROGRAMMING LANGUAGE PARA O EXEMPLO, NO FINAL DAS CONTAS...
+
+
+
+
+
+
+
+
+
+
+O CÓDIGO É ESTE:
+
+
+
+
+
+
+
+
+import express from 'express';
+
+import connectToDatabase from './helpers.mjs';
+
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send('<h2>Hi there!/h2>');
+});
+
+await connectToDatabase();
+
+app.listen(3000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ESTE:
+
+
+
+
+
+const connectToDatabase = () => {
+  new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, 1000);
+
+    return dummyPromise;
+  });
+};
+
+export default connectToDatabase;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> temos 1 pouco de código express...
+
+
+
+
+
+
+
+
+
+
+
+--> temos 
+
+
+
+1 route que 
+
+
+vai fazer listen 
+
+to a quaisquer 
+
+requests e então retornar uma response..
+
+
+
+
+
+
+
+
+
+
+
+
+--> o PROFESSOR 
+
+
+COLOCOU 
+
+AQUELE 
+
+'connectToDatabase'
+
+
+ali 
+PARA 
+
+SIMULAR 
+UM 
+
+'TOP LEVEL AWAIT' 
+
+NO NOSSO CÓDIGO...
+
+
+
+
+
+--->  e esse código só funciona 
+
+
+
+
+se vocÊ está usando NODEJS 
+
+versão 
+
+14.3 ou 
+superior...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. esse é o código NODEJS...
+
+
+
+
+
+-> se queremos o rodar localmente,
+
+teremos 
+
+
+
+de 
+
+baixar a versão 
+
+
+
+mais recente do NODEJS...
+
+
+
+
+
+
+
+
+--> e aí teríamos de rodar esse arquivo node com 'node app.mjs'...
+
+
+
+
+
+
+
+
+
+--> antes disso, teríamos de rodar 'npm install',
+
+para instalar todas as dependencies
+
+de que 
+
+esse arquivo mjs 
+
+precisa para rodar corretamente...
+
+
+
+
+
+
+
+
+
+
+--> esses são os steps que teríamos de executar,
+
+sim,
+
+
+se 
+quiséssemos executar esse projeto localmente,
+
+aqui na nossa máquina...
+
+
+
+
+
+
+
+
+
+
+mas a ideia por trás do docker é diferente:
+
+
+
+
+
+
+
+queremos rodar nosso código em 1 'container'...
+
+
+
+
+
+
+
+
+--> e, para isso,
+
+primeiramente precisamos criar aquilo que chamamos de 'images'...
+
+
+
+
+
+
+
+
+--> isso pq _ containers são criados a partir de IMAGES,
+
+
+
+
+E VAMOS APRENDER MAIS SOBRE ISSO E ESSA RELAÇAÕ ENTRE 
+
+IMAGE 
+E CONTAINER 
+
+
+NA PRÓXIMA SECTION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> POR AGORA,
+
+PARA CRIAR 1 IMAGE DESSAS,
+
+
+SIMPLESMENTE CRIAMOS UM ARQUIVO 
+
+
+'Dockerfile'-->  É UM ARQUIVO 
+
+SEM MAIS NADA,
+
+SÓ 
+
+
+'Dockerfile'..
+
+
+
+
+
+
+
+
+
+--> E, DENTRO DESSE ARQUIVO,
+
+
+SIMPLESMENTE 
+
+
+DESCREVEMOS AO DOCKER 'COMO NOSSO CONTAINER DEVE SE PARECER/SER SETTADO'...
+
+
+
+
+
+
+
+
+
+
+
+--> para isso,
+
+
+
+
+PRECISAMOS ADICIONAR ALGUMAS __ INSTRUCTIONS_..
+
+
+
+
+
+
+--> COMO VAMOS 
+
+MERGULHAR EM 'IMAGES'
+
+E 'CONTAINERS'
