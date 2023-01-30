@@ -1,0 +1,798 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... PODEMOS DIZER QUE 
+NOSSO APP ESTÁ FUNCIONANDO..
+
+
+
+
+
+
+
+E TUDO ESTÁ FUNCIONANDO, CERTO? TUDO DE BOM..
+
+
+
+
+
+
+
+
+
+
+BEM, NEM TUDO....
+
+
+
+
+
+
+
+
+
+
+A PRIMEIRA COISA QUE NÃO ESTÁ TÃO LEGAL:
+
+
+
+
+
+
+
+
+
+
+1) PARAMOS NOSSO APP,
+
+com 'docker stop' -> E COMO O PROFESSOR HAVIA RODADO O CONTAINER COM '--rm',
+
+
+ESSE CONTAINER VAI SER AUTOMATICAMENTE REMOVIDO... (esse é o efeito dessa flag, remoçaõ após o stop)..
+
+
+
+
+2) REINICIAMOS NOSSO APP COM 1 CONTAINER,
+
+
+
+por meio de 
+
+
+
+'docker run -p 3000:80 -d --name feedback-app feedback-node' 
+
+
+
+
+
+
+
+
+
+OK,
+
+O APP É REEXECUTADO, AGORA SEM O 'remove',
+
+
+e agora com 1 nome de 'feeback-app'...
+
+
+
+
+
+
+
+
+
+
+
+
+RECARREGAMOS O APP, E ELE FUNCIONA....
+
+
+
+
+
+
+
+
+
+MAS SE TENTAMOS VISITAR O ARQUIVO DE 'awesome.txt',
+
+por meio de 
+
+
+
+
+localhost:3000/feedback/awesome.txt,
+
+
+
+
+
+
+
+
+
+
+
+FALHAMOS... -- E É CLARO QUE 
+
+ISSO 
+
+
+ACONTECEU 
+
+JUSTAMENTE 
+
+PQ 
+
+'DELETAMOS O CONTAINER',
+
+
+
+
+quando 
+
+
+
+o paramos da primeira vez...
+
+
+
+
+
+
+
+
+
+
+
+--> SE, POR EXEMPLO,
+
+AQUI O 
+PROFESSOR 
+
+ADICIONA 
+
+
+ESSE ARQUIVO 
+
+
+
+NO CONTAINER RECÉM-INICIADO,
+
+
+PODEMOS 
+
+
+
+
+
+VISUALIZAR ESSE ARQUIVO MAIS UMA VEZ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E, SE PARAMOS ESSE CONTAINER,
+
+
+
+DESSA VEZ ____ SEM O REMOVER__,
+
+
+
+
+VEREMOS QUE 
+
+O 
+
+ARQUIVO 
+
+
+ 
+
+
+QUE CRIAMOS ANTERIORMENTE,
+
+DENTRO DO CONTEXTO DO CONTAINER,
+
+
+AINDA 
+
+
+
+
+ESTARÁ VIVO DENTRO DELE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+isso quer dizer que 
+
+
+
+o arquivo 
+
+
+
+
+
+__ NÃO VAI SER PERDIDO __ SE PARARMOS O CONTAINER;
+
+
+
+
+
+
+
+
+SERÁ PERDIDO __ APENAS__ SE __ REMOVERMOS _ O CONTAINER,...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ISSO FAZ BASTANTE SENTIDO... --> PQ O PROFESSOR 
+
+FALOU 
+
+BASTANTE 
+
+SOBRE 
+
+ESSE CONCEITO DE 'ISOLAMENTO' --> O PROFESSOR HAVIA EXPLICADOC
+
+QUE 
+
+
+
+COM 
+
+O 
+
+'DOCKER FILE'
+
+CRIAMOS 1 IMAGE,
+
+
+E QUE 
+
+A IMAGE 
+
+TEM 
+
+SEU SISTEMA 
+
+DE ARQUIVOS 
+
+
+PRÓPRIO,
+INTERNO,
+
+QUE 
+É 
+
+DETACHED DO 
+
+
+FILE SYSTEM DA HOST MACHINE... --> E, QUANDO RODAMOS 1 DOCKER CONTIANER 
+
+
+
+COM BASE NA IMAGE,
+
+
+O CONTAINER 
+É 
+
+ADICIONADO COMO 
+
+1 
+
+'EXTRA THIN 
+
+
+READ-WRITE LAYER',
+
+
+
+EM CIMA DA IMAGE.... --> ISSO QUER DIZER QUE O CONTAINER TEM ACESSO 
+
+AO FILE SYSTEM DESSA IMAGE,
+
+
+
+
+
+__e TAMBEM É CAPAZ DE FAZER 'READ' E 'WRITE' NESSE FILE SYSTEM,
+
+
+TUDO SEM MANIPULAR A ACTUAL IMAGE...
+
+
+
+
+
+
+(
+
+
+MAS REALMENTE É 
+CAPAZ DE FAZER READ E WRITE 
+
+COM BASE NESSE FILE SYSTEM,
+PQ 
+
+TEM SUA PRÓPRIA 'CÓPIA' DESSE FILE SYSTEM,
+MANAGEADA 
+
+
+
+DE 1 FORMA SUPER EFICAZ...
+
+
+
+
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS FAZ SENTIDO QUE PODEMOS FAZER 'READ E WRITE' NESSE 
+
+
+
+
+CONTAINER...
+
+
+
+
+
+
+
+
+
+OK, MAS O PROBLEMA,
+
+AQUI,
+
+
+
+É QUE 
+
+ESSE FILE SYSTEM ESTÁ 'DENTRO DO CONTAINER '-->  ISSO QUER DIZER QUE 
+
+
+
+
+SE PARAMOS E DAMOS 'START' NO CONTAINER MAIS UMA VEZ,
+
+
+NÃO HÁ PROBLEMA,
+
+PQ O 
+
+CONTAINER NUNCA MUDOU... 
+(
+
+    só pq o container mudou,
+
+
+    NÃO QUER DIZER QUE 
+    O FILE SYSTEM FOI CLEARED/ERASED... pq se esse fosse o caso,
+
+
+    nosso APPLICATION CODE 
+    TAMBÉM 
+
+
+    SERIA APAGADO...
+)
+
+
+
+
+
+
+
+
+
+
+
+MAS SE _ REMOVEMOS 1 CONTAINER,
+
+
+ISSO É DIFERENTE --> AÍ TODA A DATA DENTRO DO CONTAINER É CLEARED,
+
+
+
+
+PQ ELE EM SI É DELETADO --> E SE ENTÃO RODAMOS 
+
+1 NOVO CONTAINER,
+
+
+
+
+
+
+AINDA QUE ELE SEJA BASEADO NA ANTIGA IMAGE,
+
+
+
+
+
+TODA A DATA _ PERTENCENTE E ARMAZENADA NO 
+
+
+ÚLTIMO CONTAINER __ SERÁ LOST... --> PQ 
+
+
+
+
+A IMAGE É 
+
+'READ-ONLY' -->     CERTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1 CONTAINER --> QUANDO 1 FILE É GERADA NELE --> ELE NÃO VAI ESCREVER 
+
+
+ESSA FILE NA IMAGE EM SI.... ---> E SIM 
+
+FAZ 
+
+WRITE DA INFO NO SEU PRÓPRIO 'READ-WRITE LAYER',
+
+QUE 
+
+
+É 
+
+ADICIONADO EM CIMA DA IMAGE... 
+
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE,
+
+
+
+SE _ O CONTAINER É REMOVIDO,
+
+
+
+
+FICAMOS 
+
+
+APENAS COM A IMAGE,
+
+QUE NUNCA FOI ALTERADA -->  E __ ENTAO,
+
+SE COMEÇAMOS 
+
+1 
+
+NOVO CONTAINER,
+
+ISSO 
+
+AÍ 
+
+
+VAI FAZER START COM O 
+
+'BASIC FILE SYSTEM' DA IMAGE,
+
+MAIS UMA VEZ,
+
+
+
+
+SEM __ AS CHANGES_ FEITAS PELO CONTAINER ANTERIOR (que pode ter sido executado considerando a mesma image)....
+
+
+
+
+
+
+
+
+
+
+
+
+E ESSA É OUTRA IDEIA CORE DO DOCKER:
+
+
+
+
+
+
+
+MÚLTIPLOS CONTAINERS,
+
+CRIADOS COM BASE EM 1 MESMA BASE IMAGE,
+
+
+SÃO TOTALMENTE ISOLADOS 1 DO OUTRO..
+
+
+
+
+
+
+
+
+
+
+
+MAS É CLARO QUE AQUI ISSO É UM PROBLEMA --> QUER DIZER QUE 
+
+
+
+
+VAMOS PERDER ESSE ARQUIVO 
+
+DE TEXTO SE PARARMOS O CONTAINER E 
+
+
+O REMOVERMOS --> E, EM VÁRIOS APPS,
+
+
+ISSO É UM PROBLEMA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+É UM PROBLEMA PQ 
+
+
+AQUI QUEREMOS 'KEEP'
+
+ESSES ARQUIVOS 
+
+FEEDBACK
+
+
+POR AÍ,
+
+MESMO 
+
+SE ESSE CONTAINER FOR DELETADO...
+
+
+
+
+
+
+
+
+
+
+
+--> TERÍAMOS 1 CENÁRIO COMPARÁVEL SE TIVÉSSEMOS 'USER ACCOUNTS',
+
+OU 
+
+
+
+PRODUCT DATA SUBMITTADA 
+
+
+POR USERS,
+
+
+
+
+OU QUALQUER TIPO 
+
+DE DATA 
+
+QUE 
+
+
+NÃO DEVE/DEVERÁ
+
+
+DESAPARECER 
+
+
+
+SUBITAMENTE,
+
+
+
+E SIM QUE 
+
+DEVEM 
+
+SOBREVIVER AO DELETE DE CONTAINERS --> ISSO PQ,
+
+NO MUNDO 
+
+REAL,
+
+
+VC 
+
+VAI 
+
+REMOVER 
+
+CONTAINERS 
+
+1 
+
+MONTE... -------> SE MUDAMOS ALGO 
+
+
+A RESPEITO DE NOSSO CÓDIGO 
+
+
+
+E __ CONSTRUÍRMOS 
+
+UMA 
+
+NOVA IMAGE,
+
+
+
+E 
+
+AIÍ 
+
+
+
+STARTARMOS 1 NOVO CONTAINER,
+
+NÃO VAMOS STARTAR O CONTAINER VELHO,
+
+
+E SIM 
+
+VAMOS 
+
+
+QUERER 
+
+
+USAR 1 NOVO CONTAINER,
+
+
+COM 
+
+A 
+
+'LATEST CODE SNAPSHOT' --> NESSE CASO,
+
+
+PERDERÍAMOS TODA A DATA--> E 
+
+É 
+
+
+EXATAMENTE ESSE O PROBLEMA.... --> AGORA SABEMOS QUE:
+
+
+
+
+
+
+
+
+
+'''CONTAINERS SÃO CAPAZES __ DE WRITE DATA_, 
+
+MAS APENAS _ 
+
+
+DATA TEMPORÁRIA,
+
+QUE FICA DENTRO DELES,
+
+E QUE 
+
+é 
+PERDIDA QUANDO ELES PRÓPRIOS SÃO REMOVIDOS''' --> AGORA QUE 
+
+SABEMOS 
+
+SOBRE TUDO ISSO,
+
+
+
+TEMOS A PERGUNTA:
+
+'QUAL É A SOLUÇÃO PARA ISSO?'
