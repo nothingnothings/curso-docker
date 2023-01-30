@@ -1,0 +1,6 @@
+
+temos data permanente (Das images), data TEMPORÁRIA (dos containers),
+
+
+
+E data _ QUE __ PERMANENTE QUE EXISTE NO LADO DE FORA (Em 'volumes' ou em databases)....
