@@ -45,3 +45,1495 @@ EXPOSE 3000
 
 
 CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> O PROFESSOR COMEÇA ASSIM, TAMBÉM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node:14
+
+
+
+
+
+
+
+
+(professor pega a version 14)..
+
+
+
+
+
+
+
+DEPOIS DISSO, ELE SETTA O WORKING DIRECTORY COMO 'app'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+DEPOIS,
+
+ELE COPIA O PACKAGE.JSON...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTo...
+
+
+
+
+
+
+
+
+COM ISSO,
+
+O PROFESSOR RODA O 'npm install',
+
+
+PARA 
+CONSEGUIR 
+
+TODAS AS DEPENDENCIES..
+
+
+
+
+
+
+
+
+
+DEPOIS DISSO,
+
+ELE COPIA O RESTO DO CÓDIGO, EXATAMENTE COMO EU FIZ:
+
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 3000
+
+
+CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------> 
+
+
+
+
+
+
+
+
+O PROFESSOR TAMBÉM EXPÕE A PORT DE 80 (eu havia colocado 3000)....
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80
+
+
+CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+por fim, ele coloca o CMD com 'node' e 'server.js'...
+
+
+
+
+
+
+
+
+
+
+
+OK, NADA FANCY,
+
+BASICAMENTE A MESMA COISA QUE FIZEMOS ANTERIORMENTE..
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR RODA 'docker build'
+PARA 
+
+CONSTRUIR ESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+AÍ ELE COLOCA UM NAME DE 'feedback-node',
+
+com 
+
+
+
+
+
+'-t feedback-node',
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+docker build -t feedback-node
+
+
+
+
+
+
+
+
+
+
+
+ok....
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS\projeto-volumes-node>
+
+
+
+ docker build . -t feedback-node
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> AGORA VOU TENTAR ADICIONAR ISSO 
+ AO MEU 
+
+ 'REPOSITORY'
+
+
+ DO DOCKER HUB...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ CONSEGUI...
+
+
+
+
+
+
+
+
+ CRIEI UMA NOVA CONTA,
+ CRIEI 1 NOVO REPOSITORY,
+
+ AÍ 
+
+
+
+
+
+
+ FIZ PUSH DA MINHA IMAGE PARA DENTRO 
+
+
+
+ DO 
+
+
+
+
+ REPOSITORY...
+
+
+
+
+
+
+
+ FICOU TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ PS A:\projeto15-DOCKER\MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS\projeto-volumes-node> docker build . -t nothingnothings/feedback-node
+[+] Building 0.1s (10/10) FINISHED
+ => [internal] load build definition from Dockerfile                                       0.0s 
+ => [internal] load .dockerignore                                                          0.0s 
+ => => transferring context: 2B                                                            0.0s 
+ => [internal] load metadata for docker.io/library/node:latest                             0.0s 
+ => [1/5] FROM docker.io/library/node                                                      0.0s 
+ => [internal] load build context                                                          0.0s 
+ => => transferring context: 257B                                                          0.0s 
+ => CACHED [2/5] WORKDIR /app                                                              0.0s 
+ => CACHED [3/5] COPY package.json .                                                       0.0s 
+ => CACHED [4/5] RUN npm install                                                           0.0s 
+ => CACHED [5/5] COPY . .                                                                  0.0s 
+ => exporting to image                                                                     0.0s 
+ => => exporting layers                                                                    0.0s 
+ => => writing image sha256:a819c75abcb0c52c780bf39f48065043305237dd7a26009327b019941eef1  0.0s 
+ => => naming to docker.io/nothingnothings/feedback-node                                   0.0s 
+
+Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix 
+them
+NERS\projeto-volumes-node> docker push nothingnothings/feedback-node      
+Using default tag: latest
+The push refers to repository [docker.io/nothingnothings/feedback-node]
+2c4ce49255a9: Preparing
+ffa57623e474: Preparing
+0aa01ca8f372: Preparing
+c13086729ae6: Preparing
+bde03692baac: Waiting
+d2989f35f96c: Waiting
+c32c7f13784e: Waiting
+a4db1a405763: Waiting
+9f4f964da727: Waiting
+49b333f7bad4: Waiting
+a463dbda4664: Waiting
+denied: requested access to the resource is denied
+PS A:\projeto15-DOCKER\MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS\projeto-volumes-node> docker login
+Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: arthur.panazolo@acad.pucrs.br
+Password:
+Error response from daemon: Get "https://registry-1.docker.io/v2/": unauthorized: incorrect username or password
+PS A:\projeto15-DOCKER\MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAILogin with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: nothingnothings
+Password:
+Error response from daemon: Get "https://registry-1.docker.io/v2/": unauthorized: incorrect username or password
+PS A:\projeto15-DOCKER\MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS\projeto-volumes-node> docker login 
+Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: nothingnothings
+Password:
+Login Succeeded
+
+Logging in with your password grants your terminal complete access to your account.
+For better security, log in with a limited-privilege personal access token. Learn more at https://docs.docker.com/go/access-tokens/
+PS A:\projeto15-DOCKER\MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS\projeto-volumes-node> docker push nothingnothings/feedback-node      
+Using default tag: latest
+The push refers to repository [docker.io/nothingnothings/feedback-node]
+2c4ce49255a9: Pushed
+ffa57623e474: Pushed
+0aa01ca8f372: Pushed
+c13086729ae6: Pushed
+aa8f35ee94d4: Mounted from library/node
+bde03692baac: Mounted from library/node
+d2989f35f96c: Mounted from library/node
+c32c7f13784e: Mounted from library/node
+a4db1a405763: Mounted from library/python
+9f4f964da727: Mounted from library/python
+49b333f7bad4: Mounted from library/python
+a463dbda4664: Mounted from library/python
+a9099c3159f5: Mounted from library/python
+latest: digest: sha256:ba562291b1c6639371769bf823d7a031f042461a91bcac3e1e6fb5221b800382 size: 3048
+PS A:\projeto15-DOCKER\MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS\projeto-volumes-node>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SITE DA IMAGE:
+
+
+
+
+
+
+
+
+
+
+
+
+https://hub.docker.com/repository/docker/nothingnothings/feedback-node/general
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo..
+
+
+
+
+
+
+
+
+
+---> SE VC N COLOCA NENHUMA TAG,
+
+GANHA A TAG DE 'LATEST'...
+
+
+
+
+
+CERTO, AGORA PODEMOS COMEÇAR 1 CONTAINER COM BASE NESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+ 
+
+
+PS A:\projeto15-DOCKER\MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS\projeto-volumes-node> docker run nothingnothings/feedback-node
+
+
+
+
+
+
+
+
+
+
+
+
+MAS É CLARO QUE TEMOS QUE FAZER 'PUBLISH'
+
+desse container, para podermos interagir com nosso browser...
+
+
+
+
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker run -p 3000:80 nothingnothings/feedback-node
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mas o professor também roda isso em detached mode,
+
+e também 
+
+dá um 
+
+nome 
+
+de 
+'feedback-app' A 
+
+
+ESSE 
+
+
+
+
+
+CONTAINER, COM '--name'...
+
+
+
+
+
+
+
+também coloca '--rm',
+
+PARA QUE 
+
+O 
+
+CONTAINER SEJA AUTOMATICAMENTE REMOVIDO QUANDO FIZERMOS STOP DELE...
+
+
+
+
+
+
+
+
+
+
+FICA TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker run -p 3000:80 -d --name feedback-app-2 --rm nothingnothings/feedback-node
+
+
+
+1c54dee0ff473559d490b6d667edbebee2b09c2215f3180416c2b39f43d4da3b
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ISSO STARTOU ESSE CONTAINER..
+
+
+
+
+
+
+
+
+
+PODEMOS O ACESSAR NO BROWSER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+TEMOS NOSSO APP LÁ NO 'LOCALHOST:3000'...
+
+
+
+
+
+
+
+
+
+
+
+OK.... AÍ O PROFESSOR ADICIONA 1 POUCO DE FEEDBACK,
+
+
+E AÍ 
+
+
+
+
+
+
+
+
+
+O TITLE 
+
+
+
+
+
+é usado como FILE NAME 
+
+do arquivo,
+
+
+
+
+
+
+e aí 
+
+é salvado
+ 
+ lá 
+
+ em 
+
+ 'temp',
+
+ na teoria...
+
+
+
+
+
+
+ --> é um exemplo simples, pq é sobre o docker, e não NODEJS...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> SE ENTRARMOS 
+
+ em 
+
+ 'localhost:3000/feedback/awesome.txt',
+
+
+
+
+ ENCONTRAMOS 
+
+
+
+
+O ARQUIVO QUE CRIAMOS (se colocamos o title de '.txt)'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO NÃO É UM BUG,
+
+E SIM 
+
+
+É UMA FEATURE- -> COMO USER DESSE WEBSITE,
+
+SOMOS 'ALLOWED' A VISITAR FILES NESSA PASTA (pq temos o 'express.static()'...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK..
+
+
+
+
+
+
+
+
+
+
+
+
+MAS, COMO SIDENOTE,
+
+
+SE VOCÊ 
+
+
+
+PROCURAR 
+
+POR ESSE ARQUIVO 
+
+
+'awesome.txt'
+
+
+
+LÁ 
+
+
+
+NO SEU FILESYSTEM,
+
+
+
+LÁ NO FOLDER DE 'feedback',
+
+
+VOCÊ NÃO ENCONTRARÁ ESSE ARQUIVO -->  ISSO PQ 
+
+
+
+
+ESSE ARQUIVO DE 'awesome.txt'
+
+
+
+EXISTE/EXISTIRÁ 
+
+APENAS 
+
+DENTRO 
+
+DO DOCKER 
+
+CONTAINER (
+
+
+e podemos 
+ 
+
+ o visualizar LÁ,
+
+ MAS NÃO NESSA NOSSA MÁQUINA LOCAL...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E A RAZÃO PARA ISSO,
+
+NO CASO,
+
+É QUE 
+
+
+
+
+
+
+LÁ NA DOCKER FILE 
+
+TEMOS ESTE TRECHO AQUI:
+
+
+
+
+
+
+
+
+
+
+
+'COPY . . ' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAIS PRECISAMENTE:
+
+
+
+
+
+
+
+
+COPY . .
+
+
+EXPOSE 80 
+
+
+
+CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO,
+
+
+
+COPIAMOS NOSSO 'LOCAL FOLDER' (em volta do dockerfile)
+
+
+PARA 
+
+
+DENTRO 
+
+DA IMAGE,
+
+
+
+E __O  CONTAINER_ É 
+
+ENTÃO BASEADO
+ 
+
+ NESSA IMAGE.... --> E ISSO, POR SUA VEZ,
+
+ QUER 
+
+
+ DIZER QUE 
+
+
+
+ A IMAGE (e o container também) 
+
+
+
+
+
+
+
+
+ POSSUI SEU PRÓPRIO 
+
+ FILE SYSTEM,
+
+
+ BASEADO 
+
+
+ NO 
+
+ 'LOCAL FOLDER' da docker file,
+
+ justamente pq 
+
+ nós havíamos o copiado para dentro,
+
+
+
+
+
+
+ mas depois disso não há NENHUMA CONEXÃO ENTRE NOSSO LOCAL FOLDER/MACHINE
+
+
+
+ E 
+
+
+ ESSE FILE SYSTEM INTERNO 
+
+ DA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> E É ASSIM QUE AS COISAS DEVEM FUNCIONAR:
+
+
+
+
+
+
+
+ O CONTAINER DEVE SER REALMENTE ISOLADO  DE TUDO,
+
+
+
+
+
+ PQ SERIA 
+
+ BEM 'BAD'
+
+
+ SE AS 
+
+ FILES 
+
+ QUE 
+
+ FOSSEM
+
+ CRIADAS 
+
+
+ DENTRO 
+
+
+ DO CONTAINER 
+
+
+
+
+
+
+
+ _ de repente __ aparecessem/afetassem 
+
+
+ o hard drive 
+
+ de nossa local machine... (ok, mas o que é o fidelizou-me, então???) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> NÃO É ESSA A IDEIA POR TRÁS DO DOCKER, AT ALL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> E ESSA É A MESMA IDEIA  QUE 
+
+ VIMOS ANTERIORMENTE,
+
+
+
+ NO CURSO,
+
+
+
+ QUANDO ALTERAMOS 
+
+ NOSSO SOURCE CODE,
+
+ LOCALMENTE,
+
+
+ NA LOCAL MACHINE,
+
+ E A CHANGE 
+
+ NÃO FOI APLICADA 
+
+ AO 
+
+ 'RUNNING DOCKER CONTAINER'... -> DEVEMOS NOS LEMBRAr: FOMOS FORÇADOS
+
+
+
+
+ A RE-BUILD A IMAGE,
+
+ PARA AÍ COPIAR O CHANGED CODE PARA DENTRO,
+
+
+ E __ PARA ENTÃO 
+
+
+
+
+ ENTÃO 
+
+ CRIAR 1 NOVA 
+
+ IMAGE COM BASE NISSO,
+
+
+
+E AÍ 
+
+
+
+__ CRIAR 1 CONTAINER COM BASE NESSA IMAGE (para ver as code changes aplicadas)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PELA MESMA RAZÃO,
+
+
+QUANDO COPIAMOS CÓDIGO PARA __ DENTRO __ DE 1 IMAGE,
+
+
+
+ESSE CÓDIGO PASSA A VIVER EM 1 'SPECIAL FILE SYSTEM' DENTRO DA IMAGE,
+
+
+
+
+
+
+ESSE FILE SYSTEM É 'LOCKED-IN',
+
+
+
+
+NÃO HÁ NENHUMA CONEXÃO À LOCAL MACHINE,
+
+
+
+
+
+E PORTANTO ESSE 
+
+CONTAINER 
+
+
+TAMBÉM 
+
+TEM 
+
+
+ESSE 'ISOLATED FILE SYSTEM',
+
+EM QUE 
+
+APENAS 
+
+ESSA 
+
+SNAPSHOT (da máquina local)
+FOI 'COPIED IN',
+
+
+QUANDO BUILDAMOS A IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... E ISSO TUDO É ALGO QUE JÁ COBRIMSO,
+
+MAS SEMPRE DEVEMOS TER ISSO EM MENTE:
+
+
+
+NÃO HÁ NENHUMA CONEXÃO ENTRE SEU CONTAINER (OU IMAGE) E O LOCAL FILE SYSTEM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> vc apenas INICIALIZA ESSA IMAGE 1 ÚNICA VEZ,
+
+
+
+_ AÍ __ VOCE PODE COPIAR 1 'SNAPSHOT' DO SEU LOCAL FOLDER 
+
+E FILES (com 'COPY . .'),
+
+
+
+mas depois 
+
+
+disso 
+
+
+realmente 
+
+
+acabou,
+
+
+
+
+
+
+
+realmente não há conexão,
+
+
+
+
+
+
+
+e _ é por isso que 
+
+
+
+
+não vemos 
+
+
+o arquivo '.txt'
+
+
+
+
+
+no folder de 'feedback' na nossa host machine...
+
+
+
+
+
+
+
+
+--> SÓ ENXERGAREMOS ESSE ARQUIVO DENTRO DO DOCKER CONTAINER QUE ESTAMOS 
+
+RODANDO,
+PQ 
+
+ESSE ARQUIVO REALMENTE SÓ EXISTE LÁ, no momento...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. MAS SE AGORA VOLTAMOS ÀQUELA PÁGINA E ENVIAMOS O MESMO FEEDBACK DNV,
+
+
+
+VEREMOS 
+
+
+
+
+
+1 outra página, de 'exists already',
+
+
+VEREMOS QUE 
+
+
+
+O FILE NÃO ESTARÁ MAIS 
+
+
+ARMAZENADO NO FOLDER DE 'FEEDBACK',
+
+
+
+
+e sim 
+
+terá sido armazenado no folder de 'temp'...
+
+
+
+
+
+
+
+O ARQUIVO De 'awesome.txt'
+
+
+dentro de 'feedback'
+
+NÃO TERÁ 
+
+SIDO 
+
+OVERWRITTEN,
+
+
+
+pq 
+
+
+
+O PROFESSOR ADICIONOU 
+
+AQUELA LÓGICA 
+PARA 
+
+
+
+'CREATE A TEMP FILE FIRST',
+
+
+
+E AÍ 
+
+
+APENAS COPIAR 
+
+
+
+ESSA FILE PARA DENTRO DO 'FINAL FOLDER' (feedback folder)
+
+
+SE 
+
+1
+
+ARQUIVO COM AQUELE NOME
+
+REALMENTE NÃO EXISTIR 
+
+NAQUELE 
+
+FOLDER DE 'feedback' ainda...
