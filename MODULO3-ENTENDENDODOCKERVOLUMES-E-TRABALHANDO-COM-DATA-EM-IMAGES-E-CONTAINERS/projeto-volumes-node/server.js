@@ -19,12 +19,14 @@ app.get('/', (req, res) => {
 
 app.get('/exists', (req, res) => {
   const filePath = path.join(__dirname, 'pages', 'exists.html');
+  console.log('SOMETHING');
   res.sendFile(filePath);
 });
 
 app.post('/create', async (req, res) => {
   const title = req.body.title;
   const content = req.body.text;
+  console.log('ENTERED');
 
   const adjTitle = title.toLowerCase();
 
@@ -36,7 +38,10 @@ app.post('/create', async (req, res) => {
     if (exists) {
       res.redirect('/exists');
     } else {
-      await fs.rename(tempFilePath, finalFilePath);
+      // await fs.rename(tempFilePath, finalFilePath);
+      /// COM ISSO, MANUALMENTE COPIAMOS (pára o folder de 'feedback')__ E DELETAMOS O ARQUIVO ORIGINAL (em temp)
+      await fs.copyFile(tempFilePath, finalFilePath);
+      await fs.unlink(tempFilePath);
       res.redirect('/');
     }
   });
