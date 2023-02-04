@@ -1,0 +1,1297 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK ,MAS COMO PODEMOS ADICIONAR 1 DESSES 'VOLUMES' 
+
+A 
+
+1 CONTAINER?
+
+
+
+
+UMA DAS MANEIRAS MAIS FÁCEIS DE ADICIONAR 1 VOLUME 
+
+
+
+É 
+
+
+'ADICIONAR 1 INSTRUCTION ESPECIAL'  
+
+
+
+
+NA 
+
+DOCKER FILE (que cria a image) __ QUE_ _ MAIS TARDE_ SERÁ USADA __ PARA CRIAR OS CONTAINERS (que usarão esse volume)...
+
+
+
+
+
+
+
+
+
+
+
+
+É A INSTRUCTION DE 'VOLUME'',
+
+
+que é escrita assim:
+
+
+
+
+
+
+---------------------
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80
+
+
+VOLUME
+
+
+CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ESSA INSTRUCTION EXIGE UM ARRAY CHEIO DE STRINGS,
+
+
+EM QUE ESPECIFICAMOS 
+
+
+
+
+
+__ OS __DIFERENTES 'PATHS',
+
+
+DENTRO DO CONTAINER FILE SYSTEM (
+
+
+que serão usados dentro do CÓDIGO DE NOSSO APP
+)
+
+
+
+
+QUE VAMOS 
+
+QUERER 
+
+
+QUE PERSISTAM..
+
+
+
+
+
+
+
+
+
+
+--> NO CASO DE NOSSO APP,
+
+
+ESTAMOS SALVANDO OS ARQUIVOS ACTUALLY PERMANENTES
+
+
+DENTRO DO FOLDER DE 'feedback'...
+
+
+
+
+
+
+
+
+--> já no folder de 'temp' 
+
+
+
+SALVAMOS ARQUIVOS, SIM, 
+
+MAS APENAS ARQUIVOS TEMPORÁRIOS (
+
+
+    existirão dentro dos containers,
+
+    essencialmente, mas não no lado de fora...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. MAS TUDO DENTRO DO FOLDER DE 'FEEDBACK' DEVERÁ SER SALVO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NO NOSSO CÓDIGO DO APP,
+
+QUEREMOS 
+
+
+
+
+
+ESCREVER A DATA DENTRO DO FOLDER DE 'feedback',
+
+QUE NO FINAL DAS CONTAS 
+
+FICA DENTRO 
+
+DO 
+
+FOLDER DE 
+
+'/app' (pq é o workdir)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E É EXATAMENTE POR ISSO QUE O PATH QUE VAMOS QUERER COLOCAR, O PRIMEIRO DELES,
+
+
+LÁ EM 'VOLUME',
+
+SERÁ 
+
+
+
+'/app/feedback'...
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80
+
+# QUEREMOS QUE APENAS OS ARQUIVOS DENTRO DO FOLDER DE 'feedback' sejam permanentes...
+VOLUME ["/app/feedback"]
+
+
+CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->  PQ ESSE SERÁ O PATH, DENTRO DO NOSSO CONTAINER/CONTAINERS,
+
+QUE 
+
+DEVERÁ 
+
+SER 
+
+
+'MAPPED' A 1 FOLDER NO LADO DE FORA DO CONTAINER,
+
+E EM QUE A DATA DEVERÁ ACTUALLY SOBREVIVER (nesse folder externo)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+MAS VOCê DEVE ESTAR SE PERGUNTANDO:
+
+
+
+
+
+
+
+
+
+'''COMO CONTROLAMOS "A QUE _ FOLDER _DE NOSSA LOCAL MACHINE ESSE FOLDER DO CONTAINER SERÁ MAPPED?" '''
+
+
+
+
+
+
+
+
+
+O PROFESSOR VOLTARÁ A ESSA PERGUNTA MAIS TARDE... ----> POR ENQUANTO,
+
+NÃO CONTROLAMOS/CONTROLAREMOS ISSO,
+
+E DEIXAREMOS
+
+
+O DOCKER EM SI 
+
+
+
+DECIDIR 'ONDE ARMAZENAR ESSA DATA'...
+
+
+
+
+
+
+
+
+
+
+
+
+---_> O PROFESSOR 
+
+DEPOIS NOS EXPLICARÁ A RAZÃO DE ISSO FAZER SENTIDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR SALVA ISSO, SALVA ESSA DOCKER FILE COM ESSA INSTRUCTION ADICIONADA...
+
+
+
+
+
+
+
+
+
+
+
+
+AÍ O PROFESSOR RODA 
+
+
+'docker build . '--> 
+
+
+
+
+
+
+
+
+
+
+
+
+DEPOIS DISSO, ELE ADICIONA 1 FLAG DE TAG/NAME,
+
+PARA NOMEAR 
+
+
+ISSO COMO 'feedback-node:volumes'...
+
+
+
+
+
+
+
+
+--> ELE COLOCA ESSA TAG FINAL DE 'volumes' PQ 
+JÁ TÍNHAMOS 1 TAG DE 
+
+'latest',
+
+
+
+
+
+
+
+PQ _ __AGORA ELE QUER TER ESSA 'EDITION ESPECIAL' DE 'volumes' (que é a mesma image de antes, mas agora com essa feature de volumes)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+
+APERTAMOS ENTER,
+
+
+E AÍ A IMAGE É CRIADA E 'TAGGED'..
+
+
+
+
+
+
+
+
+
+
+-> OK, AGORA PODEMOS RODAR 1 CONTAINER, COM BASE NESSA IMAGE...
+
+
+
+
+
+
+
+
+
+basta escrever 
+
+
+
+
+
+docker run feedback-node:volumes,
+
+
+
+
+
+PARA USARMOS ESSA TAG...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> AÍ O PROFESSOR COLOCA AS FLAGS CLÁSSICAS,
+
+
+de 
+
+
+
+
+'-d' (rodar em detached mode),
+
+
+
+
+
+e 
+
+
+
+'-p 3000:80',
+
+
+
+PARA QUE 
+
+
+
+
+
+ESSE DOCKER CONTAINER SEJA MAPPEADO AO PORT '3000' local de nossa máquina....
+
+
+
+
+
+
+
+
+
+
+
+
+ELE TAMBÉM COLOCA A FLAG DE '--rm',
+
+PARA 
+
+REMOVERMOS ESSE CONTAINER 
+
+
+QUANDO ELE FOR STOPPED...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO..
+
+
+
+
+
+
+
+
+RODAMOS ISSO AÍ.. -------_> 
+
+
+
+RODAMOS O NEGÓCIO COM '--rm' JUSTAMENTE 
+
+
+PQ 
+
+NÃO TEREMOS MAIS PROBLEMAS QUANDO 
+
+
+ESSE CONTAINER FOR FECHADO (pq a data PERMANENTE terá sido armazenada na MÁQUINA LOCAL,
+
+
+
+no folder de 'feedback'...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK..
+
+
+
+
+
+
+AGORA TEREMOS ESSE CONTAINER RODANDO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> certo... --> aí o professor faz STOP desse container (e ele então é removido, é claro)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+
+O PROFESSOR PAUSA TUDO E ENTÃO INICIA NOSSO CONTAINER DE ACORDO COM NOSSA IMAGE,
+
+COM AQUELA INSTRUCTION DE 'feedback'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AÍ O PROFESSOR ENTRA NO SITE E ENTÃO TENTA SALVAR 
+
+
+
+
+
+
+a data, com o button de 'save'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS ISSO NOS TRAZ 1 PROBLEMA:
+
+
+
+
+
+
+
+A PARTE DE CIMA DO SITE FICA COMO 'LOADING' (spin infinito),
+
+ 
+ E AÍ 
+
+
+ __ O SITE CRASHA --> ISSO SIGNFIICA QUE 
+
+ ALGO DEU ERRADO....
+
+
+
+
+
+
+
+
+
+
+--> a minha versão do docker só pega e exita imediatamente...
+
+
+
+
+
+já a versão do professor 'starts spinning and then crashes'... -> algo claramente deu errado...
+
+
+
+
+
+
+
+
+
+ -->e para __ VER O QUE DEU ERRADO,
+
+ O PROFESSOR 
+
+
+
+
+ RODA 
+
+
+
+
+
+ 'docker logs feedback_app', (para ver o OUTPUT do container em si)...
+
+
+ PARA VER 
+ O 
+
+ OUTPUT 
+
+ DESSE CONTAINER EM SI...--------->
+
+
+
+
+
+
+
+ E __ ISSO __ NOS DÁ 1 ERROR,
+ SIM,
+
+
+ QUE É 
+
+
+
+ 'UNHANDLED PROMISE REJECTION WARNING'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --------__> E AÍ O PROBLEMA PARECE SER QUE 
+
+
+
+ 'cross-device-link is not permitted'....
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO ACONTECE PQ TENTAMOS MOVER O ARQUIVO 'awesome.txt', criado agora,
+
+para 
+
+
+o 
+
+FOLDER DE 'feedback'.. ->  ISSO AÍ CRASHA O NOSSO APP ... -> E ISSO 
+
+
+
+TEM TUDO A VER COM 
+
+NOSSA OPTION DE 
+
+
+'VOLUMES ["/app/feedback"]'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+BEM, ESSE ERRO ESTÁ ACONTECENDO JUSTAMENTE POR CAUSA DESTA LINHA NO CÓDIGO JS:
+
+
+
+      await fs.rename(tempFilePath, finalFilePath);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> O METHOD DE 'rename' NÃO FUNCIONA_ _ 
+
+
+
+
+SE __ A FILE '''''GETS MOVED ACROSS MULTIPLE DEVICES''''' --> e, graças 
+
+
+
+à instruction de 'volumes',
+
+
+É ISSO QUE 
+
+KIND OF 
+
+ESTÁ ACONTECENDO, AQUI...
+
+
+
+
+
+
+
+--> UNDER THE HOOD,
+
+
+O DOCKER VAI FAZER MAIS DO QUE 
+
+
+
+MOVER O FILE PARA OUTRO FOLDER DENTRO DO 'LOCAL FILE SYSTEM',
+
+
+
+
+PQ _ ELE __ VAI ACABAR REALMENTE 'MOVENDO O ARQUIVO PARA FORA DO CONTAINER'... --> 
+
+
+
+
+
+
+
+
+
+
+E É ESSE METHOD ESPECÍFICO DE 'rename' 
+
+
+que não gosta disso ---------_>  E O WORKAROUND PARA ISSO,
+
+
+AQUI,
+
+
+
+É SIMPLES:
+
+
+
+
+
+
+
+
+
+vocÊ pode SUBSTITUIR 
+
+
+O METHOD DE 'rename()'
+
+
+
+
+COM O METHOD DE 
+
+
+
+'copyFile',
+
+
+
+
+
+
+E DEPOIS 
+
+
+
+ADICIONAR 
+
+
+
+MAIS 1 LINHA, 
+
+
+
+
+
+DE 'fs.unlink' -------> 
+
+
+
+
+
+
+
+
+COM ISSO, O CÓDIGO FICA ASSIM:
+
+
+
+
+
+
+
+
+await fs.copyFile(tempFilePath, finalFilePath);
+await fs.unlink(tempFilePath);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const fs = require('fs').promises;
+const exists = require('fs').exists;
+const path = require('path');
+
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(express.static('public'));
+app.use('/feedback', express.static('feedback'));
+
+app.get('/', (req, res) => {
+  const filePath = path.join(__dirname, 'pages', 'feedback.html');
+  res.sendFile(filePath);
+});
+
+app.get('/exists', (req, res) => {
+  const filePath = path.join(__dirname, 'pages', 'exists.html');
+  res.sendFile(filePath);
+});
+
+app.post('/create', async (req, res) => {
+  const title = req.body.title;
+  const content = req.body.text;
+  console.log('ENTERED');
+
+  const adjTitle = title.toLowerCase();
+
+  const tempFilePath = path.join(__dirname, 'temp', adjTitle + '.txt');
+  const finalFilePath = path.join(__dirname, 'feedback', adjTitle + '.txt');
+
+  await fs.writeFile(tempFilePath, content);
+  exists(finalFilePath, async (exists) => {
+    if (exists) {
+      res.redirect('/exists');
+    } else {
+      // await fs.rename(tempFilePath, finalFilePath);
+      /// COM ISSO, MANUALMENTE COPIAMOS (pára o folder de 'feedback')__ E DELETAMOS O ARQUIVO ORIGINAL (em temp)
+      await fs.copyFile(tempFilePath, finalFilePath);
+      await fs.unlink(tempFilePath);
+      res.redirect('/');
+    }
+  });
+});
+
+app.listen(80);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> isso vai COPIAR A FILE E ENTÃO MANUALMENTE A REMOVER,
+
+APÓS ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... MAS PRECISAMOS REBUILDAR NOSSA IMAGE,
+
+ 
+ PQ ISSO NÃO É FEITO AUTOMATICAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> REMOVEMOS O CONTAINER,
+
+
+ REMOVEMOS A IMAGE...
+
+
+ tudo certo...
+
+
+
+
+
+
+
+ --> buildei 1 nova image, com isso..
+
+
+
+
+
+
+
+
+
+ MAS MEU CONTAINER AINDA CRASHOU...
+
+
+
+
+
+
+
+
+
+
+
+ CERTO.... FINALMENTE CONSEGUI FAZER ISSO FUNCIONAR...
+
+
+
+
+
+
+
+
+
+
+
+
+ E, AGORA,
+
+
+
+
+ SE TENTAMOS ACESSAR 'localhost:3000/feedback/qualquertitle.txt',
+
+
+
+
+
+
+
+
+
+
+ ENCONTRAMOS ESSE NEGÓCIO DENTRO DO CONTAINER, SIM... --> MAS TAMBÉM VAMOS O ENCONTRAR 
+
+
+ NO LADO DE FORA DO CONTAINER,
+
+ NA NOSSA LOCAL MACHINE,
+
+
+ NO FOLDER DE 'feedback'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ PELO MENOS ISSO ERA O QUE DEVERIA ACONTECER... --> O PROFESSOR COLOCOU ESSA OPTION,
+
+ MAS NADA 
+
+ ACONTECEU...
+
+
+
+
+
+ SEGUIMOS 
+
+ SEM 
+
+
+
+ OS ARQUIVOS NA PASTA DE 'FEEDBACK'... --> alguma coisa está faltando...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> OK....
+
+
+
+
+
+
+o professor nos ensinou essa instruction de 'VOLUME',
+
+
+que até agora 
+
+SÓ QUEBRA O NOSSO APP,
+
+
+PQ TENTA MOVER 1 ARQUIVO 
+
+
+
+E NÃO FAZ NADA... (
+
+
+    pq faltou alguma configuração/parâmetro...
+)
+
+
+
+
+
+
