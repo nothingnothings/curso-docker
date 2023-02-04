@@ -1,0 +1,550 @@
+ 
+
+
+ COM O DOCKER,
+
+ 
+ 
+
+
+nós ACTUALLY TEMOS MÚLTIPLOS 
+
+
+`EXTERNAL DATA STORAGE MECHANISMS` (se queremos os chamar assim),
+
+
+
+e esses seriam os 
+'volumes'
+
+
+
+e `BIND MOUNTS`
+
+
+
+
+
+
+
+
+
+
+--> veremos BIND MOUNTS MAIS TARDE,
+
+
+PQ 
+
+AGORA 
+
+VAMOS FOCAR EM 'volumes',
+
+pq 
+
+tudo 
+
+
+indica 
+que 
+
+ 
+ OS VOLUMES 
+
+
+
+ AINDA NÃO ESTÃO FUNCIONANDO COMO DESEJAMOS...
+
+
+
+
+
+
+
+
+
+OK, MAS O QUE INTERESSA É QUE 
+
+
+'''VOLUMES''' --> SÃO MANAGEADOS PELO DOCKER 
+
+
+
+
+
+'''BIND MOUNTS'''' --> SÃO MANAGEADOS POR NÓS....
+
+
+
+
+
+
+
+ops...
+
+
+
+
+
+
+
+
+
+
+mAS PARECE QUE ME PRECIPITEI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR COMEÇA NOVAMENTE:
+
+
+
+
+
+
+
+NÓS ESTAMOS COM 1 PROBLEMA,
+
+
+QUE É 
+
+
+''' QUEREMOS QUE 
+
+NOSSOS STARTED CONTAINERS/REMOVIDOS E NÃO REMOVIDOS
+
+
+SEMPRE __ UTILIZEM 1 MESMO VOLUME, QUE FICARÁ __ ESTÁTICO, PQ 
+
+SERÁ PARTE DE NOSSA LOCAL MACHINE'''...
+
+
+
+
+
+
+
+
+
+
+
+--> ok..
+
+
+
+
+portanto, nesse caso,
+
+
+
+
+perderíamos toda a data, se não tivéssemos volumes...
+
+
+
+
+
+
+
+
+
+
+
+--> como agora conhecemos o problema,
+
+que 
+CONTAINERS 
+
+são capazes, sim,
+
+
+de fazer write de data,
+
+mas fazem 
+
+write em si mesmos,
+
+
+que é precisamente a causa de essa written data ser 
+
+perdida sempre que 
+
+removemos o container.... 
+
+
+
+
+
+
+
+
+
+OK, MAS QUAL É A SOLUÇÃO?
+
+
+
+
+
+
+
+
+
+
+
+BEM, 
+
+AÍ 
+
+
+
+TEMOS 
+
+
+
+
+
+
+A AULA DO PROFESSOR DE AGORA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O DOCKER TEM UMA FEATURE CHAMADA DE 'VOLUMES',
+
+QUE 
+
+NOS AJUDA 
+
+A SOLUCIONAR O PROBLEMA 
+
+
+VISTO NA ÚLTIMA AULA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK, MAS COMO USAMOS 
+
+
+
+VOLUMES 
+
+EM 1 APP,
+
+
+COMO NESSE NOSSO DOCKER APP?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANTES DE MAIS NADA,
+DEVEMOS 
+
+ENTENDER ' O Q SÃO VOLUMES',
+
+
+E COMO FUNCIONAM....
+
+
+
+
+
+
+
+
+
+
+
+
+VOLUMES --> SÃO FOLDERS NA SUA LOCAL MACHINE --> E NÃO 
+
+
+
+NO 
+
+CONTAINER,
+
+
+E SIM 
+
+
+
+
+NO HARD DRIVE DE SUA MACHINE --> E ELES SÃO ENTÃO 
+
+
+MOUNTED/MAPPED NA DIREÇÃO DOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO QUER DIZER QUE 
+
+
+VOLUMES SÃO FOLDERS NO SEU HOME COMPUTER,
+QUE 
+
+
+VOCê FAZ COM QUE O DOCKER FIQUE 'AWARE OF',
+
+E QEU 
+
+
+ENTÃO 
+SÃO CONECTADOS
+ 
+  
+  AOS DOCKER CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ISSO PODE SOAR 1 POUCO COMO A INSTRUÇAÕ DE 'COPY'
+
+
+  LÁ DO 
+
+
+
+  DOCKER FILE -------_> ENTRETANTO,
+
+
+  ESSA INSTRUCTION APENAS FAZ 1 SNAPSHOT ÚNICA (daquele momento) 
+
+
+  E ENTÃO 
+
+  A LANÇA PARA 
+
+  DENTRO DA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MAS COM 'VOLUMES',
+
+  ISSO É DIFERENTE,
+
+  PQ 
+
+
+
+
+
+COM ELES VOCê PODE REALMENTE CONECTAR 
+1 FOLDER 
+
+
+
+DE DENTRO 
+
+DO CONTAINER __ 
+
+
+
+COM ALGO DE FORA,
+
+
+COM 1 PASTA 
+
+
+
+NO LADO DE FORA -------_> E CHANGES EM QUALQUER 1 DOS FOLDERS 
+SERÃO 
+REFLETIDAS 
+
+
+NO OUTRO FOLDER... (no folder real/virtual)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, PORTANTO,
+
+GRAÇAS A ESSE MECANISMO,
+
+
+OS 
+
+
+VOLUMES TE DEIXAM FAZER O 'PERSIST' DE DATA... --> VOLUMES 
+
+PERSISTEM E CONTINUAM 
+
+A EXISTIR,
+
+MESMO QUE O CONTAINER SEJA 'SHUT DOWN'.. ----> E ISSO É IMPORTANTE:
+
+
+
+
+
+
+
+
+SE VOCÊ ADICIONA 1 VOLUME A 1 CONTAINER,
+
+
+O VOLUME __ NÃO SERÁ REMOVIDO _ QUANDO 1 CONTAINER 
+
+
+
+FOR REMOVIDO --> ELE SOBREVIVE,
+
+E A DATA DENTRO DO VOLUME TAMBÉM SOBREVIVE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+E CONTAINERS PODEM FAZER TANTO 'READ' COMO 'WRITE'
+
+
+
+
+__ TO/FROM DE 1 VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+--> E ESSA É UMA FEATURE 
+
+
+PODEROSA,
+
+
+PQ 
+PODEMOS A UTILIZAR PARA ACESSAR DATA DO LADO DE FORA DE NOSSO CONTAINER,
+
+
+
+
+OU 
+
+
+ENTÃO 
+
+A UTILIZAR 
+
+PARA 
+
+
+'MANTER DATA QUE DEVE __ SOBREVIVER AO CONTAINER SHUTDOWN,
+
+E AO REMOVAL DE 1 CONTAINER '--> PQ SE A DATA 
+
+
+
+
+É MANTIDA NO LADO DE FORA DO CONTAINER,
+
+É LÓGICO QUE ELA VAI RESISTIR AO 'REMOVE' DO CONTAINER...
