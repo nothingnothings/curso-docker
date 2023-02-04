@@ -1,0 +1,1900 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM DOCKER,
+
+NÓS ACTUALLY TEMOS 
+
+
+
+
+
+''''MÚLTIPLOS EXTERNAL DATA STORAGE MECHANISMS''' (podem ser chamados assim),
+
+
+
+
+
+
+
+
+
+E ___ ELES __ SÃO CHAMADOS:
+
+
+
+
+
+
+
+
+
+
+1) VOLUMES (manageados PELO DOCKER)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2) BIND MOUNTS (MANAGED BY YOU)
+
+
+
+
+
+
+
+
+
+
+
+
+FOCAREMOS EM VOLUMES, AGORA..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARECE QUE 
+
+OS VOLUMES NÃO ESTÃO FUNCIONANDO COMO QUEREMOS... --> E ISSO ACONTECE 
+
+PQ 
+
+ACTUALLY 
+
+
+
+
+TAMBÉM TEMOS 
+
+2 
+
+TIPOS 
+
+
+DE 
+
+VOLUMES,
+
+
+
+E AMBOS 
+
+
+
+TAMBÉM POSSUEM 
+
+SEUS USE-CASES ESPECÍFICOS E SITUACIONAIS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ATUALMENTE,
+
+
+ESTAMOOS USANDO 
+
+
+
+
+A) 'ANONYMOUS VOLUMES' --> PARA SERMOS MAIS PRECISOS,
+
+
+
+
+
+
+POR MEIO DA OPÇÃO DE 'VOLUME ["/app/feedback"]'
+
+
+
+
+
+
+LÁ NA DOCKERFILE,
+
+ADICIONAMOS 
+
+1 
+
+DESSES 
+
+'ANONYMOUS VOLUMES'
+
+
+
+
+
+
+-----_> ADICIONAMOS 1 ANON VOLUME A ESSA IMAGE,
+
+
+E AOS CONTAINERS 
+
+RODANDO 
+
+
+COM BASE NESSA IMAGE... -> MAS TAMBÉM PODEMOS 
+
+
+
+
+ASSIGNAR  ''NAMED VOLUMES''' ------->  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+B) NAMED VOLUMES --> ISSO NÃO É ALGO QUE ESTAMOS FAZENDO, POR ENQUANTO...
+
+
+
+
+
+
+
+
+
+
+
+MAS EM AMBOS OS CASOS,
+
+NÃO INTERESSA 
+
+
+
+SE 
+
+O VOLUME É 'ANON' OU 'NAMED',
+
+
+
+
+AMBOS FUNCIONAM,
+
+
+
+EM AMBOS 
+
+OS 
+
+CASOS 
+
+
+O 
+
+DOCKER 
+
+
+
+'DOCKER SETS UP A FOLDER/PATH ON YOUR HOST MACHINE, EXACT LOCATION IS UNKNOWN TO YOU (=dev).'
+
+
+
+
+
+
+
+
+
+--> E ESSE VOLUME, POR SUA VEZ, É MANAGEADO POR MEIO DOS COMANDOS 'docker volume'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> O DOCKER SETTA 1 FOLDER E PATH NA SUA HOST MACHINE (voce n sabe que local é esse)
+
+
+
+
+
+
+
+
+
+
+não sabemos o local justamente pq a ÚNICA COISA QUE 
+
+
+ESCREVEMOS 
+
+FOI 
+
+
+'/app/feedback' 
+
+
+
+
+
+
+
+
+
+
+
+->  MAS O QUE INTERESSA É QUE ESSE FOLDER É 'MIRRORED' EM ALGUM LUGAR DE SEU PC..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> e a ÚNICA MANEIRA DE GANHAR ACESSO A ESSES VOLUMES 
+
+
+É 
+
+POR 
+
+MEIO 
+
+
+DO 
+
+
+COMANDO 
+
+
+DE 
+
+
+
+'docker volume'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> com 'docker volume --help',
+
+
+
+
+
+
+OBSERVAMOS NOSSAS OPTIONS...
+
+
+
+
+
+
+Usage:  docker volume COMMAND
+
+Manage volumes
+
+Commands:
+  create      Create a volume
+  inspect     Display detailed information on one or more volumes
+  ls          List volumes
+  prune       Remove all unused local volumes
+  rm          Remove one or more volumes
+
+Run 'docker volume COMMAND --help' for more information on a command.
+arthur@arthur-IdeaPad-3-15ALC6:~/Desktop/PROJETO-DOCKER/curso-docker$ 
+
+
+
+
+
+
+
+
+
+
+
+PODEMOS ESCREVER 
+
+'docker volume ls'  PARA VER 
+
+
+TODOS 
+
+
+
+OS 
+
+
+
+
+VOLUMES ATUALMENTE MANAGEADOS PELO DOCKER...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+arthur@arthur-IdeaPad-3-15ALC6:~/Desktop/PROJETO-DOCKER/curso-docker$ docker volume ls
+DRIVER    VOLUME NAME
+local     2c956e49d5dffcc9b78beb91cb5514520f924c1686c40d4753cb44274dab59ab
+local     5f7c3130fb6f75db7e8dc844b0dc9f6cbe59c8b7d158ea8b4815d4d700f4a3ae
+local     8d2f72fc2680072a009ed679eaa6cd875c081985cbdf2c074970d33b5cd2c3e1
+local     6558f5d314afdfdfa31e1af7a8033624e42062b14e13519e9d3fc42f3fc4f9c6
+local     4645907f962889bb09e300414a812a6ec68fb48e1f64d13096685ebbf12ee952
+local     87876886a845d162358d46b8c53a8eab4aced14eb856f24a2408ce703422a753
+local     558909734f67779d790de989377480c7f122817cb002bbaf45ad3e72b14d6eb0
+local     b88e488c7e6cdbb73a83f468797af71a776d93354ac06447b8229b4fd02982b3
+local     b35451781c785d0789fe3579e3d49e5deb2ed147035c4378940965eb0a5e2fd4
+local     c18ba299c2ec22fb295292f4618837463621839346d4f48f8d2d1d8077cb5bc6
+local     d640f6325e167b602ac6327b4b657e02d6e6d501d1dd93b44c2745abd6c7041d
+local     dcccf4fddfb9882a9aaa16a16516d868d897f0fdbaaeeffcfd871243739b68d6
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VEMOS TODOS OS VOLUMES ATUALMENTE MANAGEADOS 
+
+PELO DOCKER (porra, tenho um monte)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> temos esse nome cryptic,
+
+
+
+
+e é 
+
+cryptic 
+
+assim 
+
+
+JUSTAMENTE 
+
+PQ 
+
+É UM NOME ALEATÓRIO,
+
+
+PQ __ 
+
+
+NÃO ASSIGNAMOS NENHUM NOME A ELE (anon volume)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> o DOCKER ASSIGNOU 1 NOME AUTOMATICAMENTE A ESSE VOLUME 
+
+
+
+
+__ JUSTAMENTE PQ NÃO COLOCAMOS NENHUM NOME NELE...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS AQUI TEMOS O GOTCHA:
+
+
+
+
+
+
+* SE PARAMOS O NOSSO ATUAL RUNNING CONTAINER,
+
+
+
+
+
+SE FIZERMOS ISSO E INSPECIONARMOS
+
+
+
+
+
+
+NOSSOS CURRENT VOLUMES
+
++ UMA VEZ,
+
+
+VEREMOS QUE 
+
+
+
+
+
+__ AQUELE __ ANON VOLUME ESTARÁ 'gone'...
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O MEU NÃO SUMIU... (tenho 1 monte, ainda)....
+
+
+
+
+
+
+
+
+
+
+
+
+--> e realmente NÃO ESTÁ SUMINDO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> realmente, parece que os ANON VOLUMES NÃO ESTÃO SENDO REMOVIDOS POR DEFAULT...
+
+
+
+
+
+
+
+
+
+
+
+-->OK, REMOVI COM 'docker volume prune' (remove volumes não utilizados por containers)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR AFIRMA QUE ''COMO O VOLUME É ANÔNIMO,
+
+
+ELE SÓ EXISTE __ 
+
+
+SE __ NOSSO CONTAINER EXISTIR'' --> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ISSO NÃO NOS AJUDA COM O PROBLEMA DE ANTES  ('nossa data desaparece se nosso container desaparece/é removido')...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> ok, mas no meu caso,
+
+
+os VOLUMES NÃO FORAM REMOVIDOS... --> entretanto,
+
+meu caso é ainda pior,
+
+pq 
+
+
+__ COMO _ _ESSES  VOLUMES SÃO ANÔNIMOS,
+
+ELES NÃO PODEM SER REUTILIZADOS, E CONTINUAM A VIVER 
+
+
+
+NA MEMÓRIA DA MINHA MÁQUINA...(sem poderem ser utilizados)... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> MAIS TARDE O PROFESSOR NOS MOSTRARÁ EXEMPLOS EM QUE OS UNNAMED VOLUMES PODEM 
+
+SER ÚTEIS...
+
+
+
+
+
+
+
+
+
+
+
+--> MAS DEVEMOS VER O CASO 2,
+
+
+
+
+
+
+
+B) NAMED VOLUMES, que devem ser mais úteis...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> ISSO PQ OS NAMED VOLUMES COMPARTILHAM 1 CONCEITO 
+
+IMPORTANTE
+ 
+
+ COM 
+
+
+ 'unnamed volumes' e 'bind mounts',
+
+
+
+
+ 1 CONCEITO
+
+
+
+
+ QUE SERÁ ÚTIL A NÓS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> '""" 1 PATH DEFINIDO EM 1 CONTAINER __ É MAPPEADO ___ 
+
+AO ___ VOLUME/MOUNT _ QUE FOI CRIADO...'''''
+
+
+
+
+
+
+
+
+
+A DEFINED PATH IN THE CONTAINER IS MAPPED TO THE CREATED VOLUME/MOUNT 
+
+
+(
+    ou seja, '/some-path' 
+
+
+    NA SUA HOST MACHINE __ É __ 
+    MAPPEADO __ 
+
+
+    A '/app/data'...
+
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+
+
+ISSO QUER DIZER  QUE 
+
+AQUI,
+
+
+
+
+
+com a escrita de 
+
+
+
+
+
+
+
+'VOLUME ["/app/feedback"]',
+
+
+
+
+
+
+
+
+LÁ NO DOCKERFILE,
+
+
+
+
+MAPPEAMOS 
+
+
+ESSE FOLDER 
+
+A 
+
+1 
+
+FOLDER NA HOST MACHINE (
+
+
+
+    só não sabemos QUE FOLDER É ESSE ,
+
+    PQ 
+
+    ISSO É MANAGEADO PELO DOCKER... 
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR JÁ NOS DIZ QUE 
+
+ISSO (o folder )
+
+
+
+FICA ESCONDIDO 
+
+
+EM ALGUM LUGAR DO SEU PC,
+
+
+
+
+E NÃO É 
+
+'MEANT TO BE'
+
+
+ACESSADO 
+
+
+POR NÓS -----------> É DIFÍCIL ENCONTRAR ESSE LOCAL,
+
+
+
+E MESMO ASSIM NÃO DEVEMOS ENCONTRAR ESSE ARQUIVO E TRABALHAR COM ELE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> OK... É POR ISSO QUE ISSO É 'FINE'..
+
+
+
+
+
+
+
+
+
+MAS ISSO, TEORICAMENTE,
+
+É 
+
+UM 
+
+'PROMISING CONCEPT' -->  ISSO SERIA/É MUITO BOM,
+
+
+
+MAS APENAS 
+
+SE 
+O 
+
+
+
+
+'VOLUME NÃO FOSSE DELETADO/INUTILIZADO'  ASSIM QUE 
+
+
+1 CONTAINER FOSSE SHUT DOWN ----> SE ESSE FOSSE O CASO,
+
+
+
+
+E SE 
+
+O 
+
+VOLUME 
+
+PERSISTISSE NA NOSSA LOCAL MACHINE,
+
+'all would be good'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+BEM, O PROFESSOR TEM BOAS NOTÍCIAS:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM _ NAMED VOLUMES,
+
+
+
+OS VOLUMES VÃO REALMENTE SOBREVIVER AO 'SHUTDOWN',
+
+
+
+E 
+
+
+
+OS __ FOLDERS NO SEU HARDDRIVE 
+TAMBÉM 
+
+
+VÃO SOBREVIVER...
+
+
+
+
+
+
+
+
+
+--> E, PORTANTO,
+
+SE VOCê 
+
+STARTAR NOVOS CONTAINERS POSTERIORMENTE,
+
+
+
+
+
+
+
+OS VOLUMES VÃO ESTAR DE VOLTA,
+
+OS 
+FOLDERS 
+
+VÃO ESTAR DE VOLTA,
+
+E 
+
+
+
+TODA A DATA ARMAZENADA NESSES FOLDERS AINDA 
+
+ESTARÁ 
+DISPONÍVEL ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> ISSO QUER DIZER QUE 
+
+
+
+
+''''NAMED VOLUMES ARE GREAT __ FOR __ DATA_ WHICH SHOULD BE PERSISTENT,
+
+BUT WHICH YOU DONT NEED TO EDIT/VIEW DIRECTLY''...
+
+
+
+
+
+
+
+-----_> voce não vai editar/ver diretamente 
+
+justamente 
+
+pq 
+
+vocÊ 
+
+não terá 
+
+acesso DIRETO 
+
+
+
+A ESSE FOLDER, NA SUA HOST MACHINE... (é escondida em algum lugar, manageada pelo docker, e não deve ser editada por nós)...
+
+
+
+
+
+
+
+
+
+MAIS TARDE O PROFESSOR NOS MOSTRARÁ UMA OPTION QUE PODEMOS ADICIONAR,
+
+QUE PERMITE O EDIT 
+ 
+
+
+DESSES ARQUIVOS... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NAMED VOLUMES --> SÃO MT MAIS INTERESSANTES..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> UNNAMED VOLUMES --> SÃO ÚTEIS EM ALGUNS CASOS, MAS VEREMOS ISSO MAIS TARDE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----_> ENTRETANTO, VOLTANDO à QUESTÃO DOS 'NAMED VOLUMES' --> NÃO É POSSÍVEL
+
+
+
+
+
+
+
+
+ADICIONAR 'NAMED VOLUMES'
+
+DENTRO DE 1 DOCKER FILE...
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE REMOVEMOS O COMANDO DE 
+
+'VOLUMES ["XXX"]''...
+
+
+
+
+
+
+
+
+
+
+
+
+--> EM VEZ DISSO,
+
+
+
+
+
+DEVEMOS 
+
+
+
+
+
+CRIAR 1 'NAMED VOLUME'
+
+
+___ 
+
+NO MOMENTO EM QUE 
+
+
+
+
+___ RODAMOS 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, O PROFESSOR PRIMEIRAMENTE REBUILDA A NOSSA IMAGE,
+
+
+SEM 
+
+
+O COMANDO DE 'VOLUME'... (unnamed volume)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AÍ VAMOS QUERER RODAR O COMANDO DE 'docker run image_id',
+
+
+
+
+MAS AGORA 
+
+
+
+COM OUTRA FLAG...
+
+
+
+
+
+
+
+
+
+ELE ESTÁ ASSIM, POR ENQUANTO:
+
+
+
+
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name example  id_da_image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS AGORA O PROFESSOR  VAI ADICIONAR OUTRA FLAG,
+
+
+QUE É A FLAG DE 
+
+'-v' --> 
+
+
+
+
+
+
+
+
+
+ESSA FLAG ADICIONA VOLUMES...
+
+
+
+
+
+
+
+
+
+--> ISSO NOS PERMITE ADICIONAR 1 VOLUME A ESSE CONTAINER,
+
+
+
+
+MAS _ NÃO 1 ANON VOLUME,
+
+
+
+E SIM 1 'NAMED VOLUME' --> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COMO ISSO FUNCIONA?
+
+
+
+
+
+
+
+
+
+
+
+BEM, NÓS AINDA ESPECIFICAMOS O 'PATH'
+
+DENTRO 
+
+
+DO CONTAINER FILE SYSTEM __ QUE _ QUEREMOS SALVAR...
+
+
+
+
+
+
+
+
+
+--> NO NOSSO CASO, ESSE PATH É 
+
+'/app/feedback' 
+
+
+
+(ou seja, fica exataemtne como antes, com os 'VOLUME []', mas com algumas alterações)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+VAI FICANDO TIPO ASSIM:
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name example -v /app/feedback  id_da_image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ENTRETANTO,
+
+
+ 
+ SOMOS FORÇADOS A COLOCAR _ 1 NOME, A ATRIBUIR 1 NOME,
+
+
+
+ ANTES __ DO PASS__ DESSE PATH dentro do container...
+
+
+
+
+
+
+
+
+
+
+ esse nome será o NOME ATRIBUÍDO AO NOSSO VOLUME (named volume)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ------_> TIPO ALGO ASSIM:
+
+
+
+
+
+
+ docker run -d -p 3000:80 --rm --name example -v feedback-volume /app/feedback  id_da_image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COLOQUEI 'feedback-volume'....
+
+
+
+
+
+
+
+
+
+
+
+
+MAS AINDA É NECESSÁRIO COLOCAR ':' E CONECTAR ISSO COM O PATH,
+
+
+
+
+
+
+
+PQ ESSA É A SINTAXE COMPREENDIDA PELO DOCKER...
+
+
+
+
+
+
+EX:
+
+
+
+
+ docker run -d -p 3000:80 --rm --name example -v feedback-volume:/app/feedback  id_da_image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> COM ISSO,,
+
+
+
+O DOCKER VAI ARMAZENAR 
+
+
+'/app/feedback'
+
+
+
+
+EM 1 MANAGED VOLUME,
+
+
+
+
+
+1 FOLDER CRIADO 
+
+
+
+
+NA NOSSA HOST MACHINE, CONECTADA 
+
+A 
+
+
+ESSE FOLDER, DENTRO DO CONTAINER,
+
+
+
+
+
+
+
+
+
+
+MAS _ VAI _ ARMAZENAR
+
+
+ESSE VOLUME 
+
+
+
+
+
+__SOB 1 NOME ESCOLHIDO POR NÓS --------> A DIFERENÇA
+
+
+
+
+
+ 
+ PRINCIPAL EM RELAÇÃO A 
+
+
+ 'unnamed volumes'
+
+ É QUE 
+
+
+
+
+ OS NAMED VOLUMES NÃO SÃO 'DELETED/INUTILIZADOS' ASSIM QUE 
+
+O CONTAINER CORRESPONDENTE É 
+
+
+REMOVIDO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OS ANON VOLUMES SÃO DELETADOS __ PQ __ 
+
+
+ELES __ SÃO _ 
+
+
+
+RECRIADOS __ SEMPRE Q 1 CONTAINER É 
+
+CRIADO --------_> E É POR ISSO QUE 
+
+
+O KEEP AROUND 
+
+
+DE 
+
+'UNNAMED VOLUMES'
+
+
+
+APÓS 
+
+
+OS CONTAINERS CORRESPONDENTES TEREM SIDO REMOVIDOS FAZ NENHUM SENTIDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ANON VOLUMES --> SÃO 'CLOSELY ATTACHED' A 1 CONTAINER ESPECÍFICO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+JÁ 'NAMED VOLUMES'
+
+
+NÃO SÃO ANEXADOS A 1 SINGLE CONTAINER..
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> É POR ISSO QUE SE RODARMOS NOSSO CONTAINER MAIS 1 VEZ,
+
+
+
+
+
+E ENTRARMOS 
+
+
+
+
+LÁ NO APP,
+
+
+adicionarmos 1 novo FEEDBACK E SALVARMOS,
+
+
+
+
+
+
+testarmos tudo isso,
+
+E
+ AÍ 
+
+
+
+
+
+ _ PARARMOS __ TUDO _ E _ REMOVERMOS__ ESSE 
+
+
+ CONTAINER,
+
+
+ AINDA VEREMOS 
+
+
+
+
+ O VOLUME com nome 'feedback-volume'
+
+
+
+
+
+ LÁ NA LISTA DE VOLUMES,
+
+ COM 
+
+ 'docker volume ls'....
+
+
+
+
+
+
+
+
+
+
+
+ EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ arthur@arthur-IdeaPad-3-15ALC6:~/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS                  NAMES
+c429589c318b   b3656e44241d   "docker-entrypoint.s…"   5 seconds ago   Up 4 seconds   0.0.0.0:3000->80/tcp   example
+arthur@arthur-IdeaPad-3-15ALC6:~/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node$ docker volumes ls
+docker: 'volumes' is not a docker command.
+See 'docker --help'
+arthur@arthur-IdeaPad-3-15ALC6:~/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node$ docker volume ls
+DRIVER    VOLUME NAME
+local     feedback-volume
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ISSO É BOM, PQ 
+
+
+
+
+MESMO COM NOSSO CONTAINER ESTANDO 
+
+'STOPPED',
+
+
+
+
+AINDA TEREMOS ESSE VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok...
+
+
+
+
+BASTA COLOCAR O 
+
+
+mesmo 
+
+
+'-v feedback-volume:/app/feedback' 
+
+
+
+
+
+
+
+
+
+PARA CONECTAR ESSE OUTRO _ CONTAINER (sem relação ao primeiro)
+
+
+
+COM ESSE MESMO VOLUME,
+
+PARA ENTÃO ACESSAR/MANIPULAR A MESMA DATA/VOLUME, que estará existindo na sua máquina local...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... A DATA AINDA ESTARÁ LÁ --> COM ISSO,
+
+
+FINALMENTE CONSEGUIMOS PERSISTIR DATA,
+
+COM A AJUDA DE VOLUMES (
+
+    mais precisamente, com a ajuda de named volumes
+)
