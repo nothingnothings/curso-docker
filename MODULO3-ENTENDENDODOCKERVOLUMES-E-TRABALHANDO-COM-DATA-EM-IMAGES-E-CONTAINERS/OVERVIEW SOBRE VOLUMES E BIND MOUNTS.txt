@@ -1,0 +1,880 @@
+'
+
+
+
+
+FOI MT CONTEÚDO, E MTAS COISAS...
+
+
+
+
+
+
+
+
+
+RAPIDO OVERVIEW SOBRE TUDO:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TEMOS BASICAMENTE 3 MANEIRAS DE USAR A OPÇÃO '-v' QUANDO USAMOS DOCKER RUN:
+
+
+
+
+
+
+
+
+
+1) ---> docker run -v /app/data --> ESSE TIPO, 'unnamed volumes', anon volume, É CRIADO QUANDO VOCÊ NÃO ESPECIFICA NENHUM NOME 
+
+
+
+
+
+
+2) docker run -v nome-do-volume:/app/data --> ESSE TIPO, 'named volume', PQ VOCÊ ASSIGNA 1 NAME..
+
+
+
+
+
+3) BIND MOUNT --> O NAME É ACTUALLY '''1  ABSOLUTE PATH A 1 FOLDER NA SUA LOCAL HOST MACHINE''''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... É SIMPLES, + OU -...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS FALANDO DAS FEATURES DIFERENTES ENTRE OS 3 CONCEITOS,
+
+TEMOS 
+
+ESTA COMPARAÇÃO:
+
+
+
+
+
+
+
+
+
+
+
+1) ANON VOLUME --> VOCE CRIA 1 VOLUME QUE É KINDOF ATTACHED A 1 CONTAINER...
+
+ELE É REMOVIDO SE O CONTAINER É REMOVIDO. 
+
+
+ELE 
+SOBREVIVE AO 'CONTAINER SHUTDOWN AND RESTART',
+
+
+MAS __ SE O CONTAINER_ É REMOVIDO,
+
+ESSE ANON VOLUME É REMOVIDO (
+
+
+
+    ITS GONE
+),
+
+
+
+
+
+
+O QUE QUER DIZER QUE 
+
+SE VOCÊ 
+ADICIONAR O FLAG DE '--rm' 
+
+
+no run de 1 container,
+
+
+esse 
+
+
+
+anon volume também é removido --> 
+
+
+
+
+E, JUSTAMENTE POR 
+
+SER 'ANON VOLUME',
+
+E SER 
+
+ATRIBUÍDO
+
+A APENAS 
+
+1 CONTAINER,
+
+
+
+
+E POR SER REMOVIDO QUANDO 1 CONTAINER É REMOVIDO,
+
+
+
+VOCÊ 
+
+
+
+NÃO PODE O UTILIZAR PARA 'SHARE DATA ACROSS CONTAINERS'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ANON VOLUMES TAMBÉM NÃO PODEM 
+
+
+SER USADOS PARA 'SHARE DATA ACROSS CONTAINER DESTRUCTION AND RE-CREATION' 
+
+
+(
+
+    NÃO PODE SER REUTILIZADO, NEM MESMO COM A MESMA IMAGE...
+
+)
+
+
+
+
+
+
+
+
+
+--> ANON VOLUMES:
+
+
+A) CRIADOS ESPECIFICAMENTE PARA 1 ÚNICO CONTAINER 
+
+B) SOBREVIVEM AO CONTAINER SHUTDOWN/RESTART (a nao ser q --rm é utilizado)
+
+C) NÃO PODEM SER USADOS PARA COMPARTILHAR DATA AO LONGO DE CONTAINERS 
+
+D) NÃO PODE OS UTILIZAR PARA SALVAR DATA AO LONGO DA CRIAÇÃO/RE-CRIAÇÃO DE CONTAINERS (quando container é removido, já era)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... MAS VIMOS QUE HÁ USOS PARA ELES...
+
+
+
+
+
+
+ANON VOLUMES (criados TANTO POR MEIO DA INSTRUCTION DE 'VOLUME' DENTRO DO DOCKER FIle, como também aqueles criados com '-v /path/inside/container')
+
+
+
+
+PODEM SER ÚTEIS PARA 
+
+
+'SECURE/LOCKING-IN 
+
+
+DATA__ JÁ EXISTENTE EM 1 CONTAINER'... --> OU SEJA,
+
+
+
+PODEM 
+
+
+SER ÚTEIS 
+
+PARA 
+
+
+PROTEGER 
+
+
+FILES/FOLDERS DENTRO DE CONTAINERS,
+
+
+
+
+
+IMPEDIR ESSA DATA ESPECÍFICA DE SER 
+
+OVERWRITTEN 
+
+
+POR OUTRO MODULE/VOLUME... --> (como com '/node-modules')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALÉM DISSO,
+
+
+
+
+
+CABE DESTACAR QUE 
+
+ANON VOLUMES 
+
+
+TAMBÉM 
+
+
+AINDA CRIAM 
+
+
+1 COUNTERPART/FOLDER NA SUA HOST MACHINE,
+
+
+QUE 
+
+É 
+
+REMOVIDO 
+
+QUANDO O CONTAINER É REMOVIDO,
+
+
+
+MAS ELE AINDA EXISTE, DESDE QUE O CONTAINER CONTINUE VIVO (SEM SER REMOVIDO)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO QUER DIZER QUE
+
+
+O DOCKER NÃO TEM QUE 
+
+ARMAZENAR TODA A DATA DENTRO DE 1 CONTAINER,
+
+
+
+E 
+
+NÃO TEM QUE MANAGEAR 
+
+
+
+TODA A DATA 
+DENTRO DESSE LAYER 'READ-WRITE' DO CONTAINER,
+
+
+
+
+
+PQ 
+
+
+
+ELE PODE REALMENTE 'OUTSOURCE'
+
+
+
+ALGUMAS DATA 
+
+
+AO SEU 
+
+LOCAL 
+
+
+
+HOST MACHINE FILE SYSTEM ----> E ISSO PODE NOS AJUDAR COM PERFORMANCE 
+
+
+E EFFICIENCY...
+
+
+
+
+
+
+
+
+
+E É POR ISSO 
+
+
+
+QUE __ ANON MODULES PODEM VALER A PENA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, NESSE EXEMPLO,
+
+PODERÍAMOS 
+
+
+CONSIDERAR A CRIAÇÃO 
+
+
+
+DE 
+
+1
+ OUTRO
+
+
+ ANON VOLUME,
+
+
+ PARA 
+
+ O FOLDER DE 'TEMP',
+
+
+
+ PQ 
+
+
+ É 
+
+ OK 
+
+ PERDERMOS 
+
+ ESSE 
+ FOLDER 
+
+ QUANDO 
+
+
+ O 
+
+ CONTAINER É REMOVIDO,
+
+
+
+
+
+
+
+
+
+
+
+
+
+ TIPO ASSIM, LÁ NA DOCKER FILE:
+
+
+
+
+
+
+
+
+ "VOLUME ["/app/temp"]"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO PODE SER ÚTIL PARA 'TINY PERFORMANCE IMPROVEMENTS' --> 
+
+
+
+
+
+COM ISSO,
+
+FAZEMOS COM QUE 
+
+
+
+
+A DATA NÃO SEJA MAIS MANAGEADA DENTRO DO DOCKER CONTAINER,
+
+
+
+
+E SIM 
+
+
+OUTSOURCEADA AO 'LOCAL FILE SYSTEM'...
+
+
+
+
+
+
+
+
+
+--> e isso pode ser útil,
+
+por isso 
+
+podemos 
+
+colocar essa configuração no dockerfile...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TAMBÉM ÚTEIS SÃO OS NAMED VOLUMES...
+
+
+
+
+
+
+
+
+
+
+B) NAMED VOLUMES...
+
+
+
+
+
+
+
+
+
+
+--> ELES NÃO PODEM SER CRIADOS NO DOCKER FILE,
+
+
+
+
+
+MAS PODEM SER CRIADOS QUANDO 
+
+
+
+
+rodamos 
+
+
+
+-v nome-do-volume:/app/feedback 
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> A PRIMEIRA COISA BOA DOS NAMED VOLUMES É QUE 
+
+
+
+
+''''ELES __ SÃO CRIADOS EM GERAL,
+
+NÃO SÃO VINCULADOS ESPECIFICAMENTE A 1 CONTAINER....''''
+
+
+
+
+
+
+
+--> ELES SOBREVIVEM AO CONTAINER SHUTDOWN,
+
+
+
+E __ TAMBÉM __ SOBREVIVEM à REMOÇÃO DE CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+--> ELES SÓ PODEM SER REMOVIDOS POR MEIO DO 'DOCKER CLI'... (
+
+    comando separado 
+
+
+    BUILT-IN NO DOCKER CLI...
+)
+
+
+
+
+
+
+
+
+
+COMO ELES SOBREVIVEM À REMOÇÃO DE CONTAINERS,
+
+
+
+
+VOCÊ _ PODE_ USAR __ 
+
+NAMED VOLUMES PARA 
+
+
+COMPARTILHAR DATA 
+
+AO LONGO DE MÚLTIPLOS 
+
+CONTAINERS... (
+
+
+
+    VOCê PODE MONTAR 1 MESMO NAMED 
+
+    VOLUME 
+
+
+    A MÚLTIPLOS CONTAINERS,
+    PARA 
+
+    COMPARTILHAR 
+
+    ESSA DATA AO LONGO DOS CONTAINERS DIFERENTES..
+)
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, POR FIM, VOCÊ PODE USAR NAMED VOLUMES PARA PERSISTIR A DATA 
+
+AO LONGO DE 
+
+SHUTODOWNS E REMOVALS DE CONTAINERS....
+
+
+
+
+
+
+
+
+
+RESUMO:
+
+
+
+
+NAMED VOLUMES:
+
+
+
+
+A) CRIADOS EM GERAL  - NÃO SÃO VINCULADOS A 1 CONTAINER ESPECÍFICO
+
+
+
+
+B) SOBREVIVEM AO CONTAINER SHUTDOWN/RESTART --> SÓ PODEM SER REMOVIDOS POR MEIO DO DOCKER CLI 
+
+
+
+
+C) PODEM SER COMPARTILHADOS AO LONGO DE CONTAINERS (Diferentes containers)
+
+
+D) PODEM SER RE-UTILIZADOS PARA 1 MESMO CONTAINER (ACROSS RESTARTS)...
+
+
+
+
+
+
+
+
+
+
+
+
+-POR FIM,
+
+
+TEMOS 
+
+
+
+
+
+
+
+'BIND MOUNTS'...
+
+
+
+
+
+
+
+
+
+
+
+3) BIND MOUNTS...
+
+
+
+
+
+
+
+SEU PROPÓSITO É DISTINTO..
+
+
+
+
+
+
+
+
+COM ELES:
+
+
+
+
+
+
+
+A) SABEMOS O __ LOCAL__ EM QUE _ SÃO ARMAZENADOS, ONDE A DATA É ARMAZENADA,
+
+NA HOST MACHINE...
+
+
+
+
+B) BIND MOUNTS NÃO SÃO ATTACHED A 1 ÚNICO CONTAINER (podem ser conectados a múltiplos containers)
+
+
+
+C) SOBREVIVEM AO SHUTDOWN E REMOVAL DE CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+--> SE VOCê QUER DELETAR A DATA DE 1 BIND MOUNT,
+
+
+VOCÊ É FORÇADO A APAGAR ESSA DATA NA LOCAL MACHINE (
+
+
+    OU SEJA,
+
+
+    TERÍAMOS DE DELETAR TODO O CONTEÚDO NA PASTA DO PROJETO 'projeto-volumes-node'
+
+    PARA 
+
+    APAGAR 
+
+
+    A DATA DESSE BIND MOUNT...
+)
+
+
+
+
+
+
+VOCê NÃO TEM COMO DELETAR A DATA DE 1 BIND MOUNT COM 1 COMANDO DOCKER,
+
+ISSO N EXISTE --> JUSTAMENTE PQ 
+
+
+O CONTEÚDO DE 1 BIND MOUNT SERÁ 1 FOLDER NO SEU SISTEMA,
+
+
+E VOCÊ NÃO QUER 
+
+
+APAGAR ISSO ACIDENTALMENTE...
+
+
+
+
+
+D) VOCÊ PODE COMPARTILAHR 1 BIND MOUNT AO LONGO DE VÁRIOS CONTAINERS 
+
+
+
+
+
+
+
+
+
+E) E 1 MESMO BIND MOUNT PODE SER REUTILIZADO 
+
+PARA 
+
+1 MESMO CONTAINER (ACROSS RESTARTS E SHUTDOWNS)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSAS SÃO AS MANEIRAS PRINCIPAIS DE FAZER MANAGE DE DATA DENTRO DE 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+AO LONGO DESTE CURSO TEREMOS VÁRIAS OPORTUNIDADES PARA USAR ESSES VOLUMES...
