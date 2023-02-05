@@ -1,0 +1,313 @@
+
+
+
+
+
+
+BEM, FALANDO SOBRE 'COPY . .' (dentro da docker file),
+
+
+
+
+
+HÁ 
+
+
+
+
+1 
+PEDAÇO 
+
+EXTRA DE CONFIGURATION QUE PODEMOS 
+
+ADICIONAR 
+
+AO NOSSO PROJECT..
+
+
+
+
+
+
+
+
+
+
+
+ATÉ AGORA,
+
+
+
+
+ESSA INSTRUCTION DE 
+
+'COPY . . '
+
+
+
+
+COPIA 
+
+
+TUDO 
+
+PARA 
+
+DENTRO 
+
+
+
+DO CONTAINER (
+
+    antes o professor havia copiado apenas 'COPY package.json',
+
+
+
+
+
+    mas nessa step aí REALMENTE COPIAMOS TUDO...
+)
+
+
+
+
+
+
+
+
+
+
+E A CÓPIA DE TUDO 
+
+
+É VÁLIDA, SIM,
+
+
+
+MAS __ CABE 
+
+RESSALTAR QUE 
+
+
+
+É POSSÍVEL 
+
+
+
+
+__ RESTRINGIR AS COISAS QUE 
+ACABAM COPIADAS, AQUI.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+DEVEMOS ADICIONAR 
+
+
+
+
+1 ARQUIVO DE NOME '.dockerignore'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> É UM CONCEITO SIMILAR AO 'GITIGNORE' -> 
+
+
+
+
+
+DIZEMOS QUAIS 
+
+FOLDERS 
+
+E FILES 
+
+NÃO DEVEM SER EMPURRADOS PARA DENTRO DO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+--> COMEÇAMOS COM O '.gitignore'...
+
+
+
+
+
+
+
+
+
+--> TAMBÉM PODEMOS COLOCAR O 'node_modules' --> 
+
+
+
+
+
+PARA GARANTIR QUE, 
+
+
+SE 
+
+1 
+
+
+NODE_MODULES _ 
+
+
+
+VIR A EXISTIR 
+
+
+
+NA 'LOCAL HOST MACHINE',
+
+
+
+ESSE 
+
+
+
+__ FOLDER NÃO ACABE COPIADO PARA DENTRO DO CONTAINER (
+
+    pq se isso fosse copiado,
+
+    isso 
+
+
+
+
+    OVERWRITTARIA 
+
+    O 
+
+
+
+    folder de 'node_modules'
+
+    CRIADO __ DENTRO DA IMAGE,
+
+    com o 
+
+
+
+    'RUN npm install'...
+)
+
+
+
+
+
+
+
+
+
+
+E ISSO É MT RUIM,
+
+PQ 
+
+O 'node_modules'
+
+
+DE NOSSA LOCAL HOST MACHINE 
+
+
+
+
+
+
+PODERIA:
+
+
+1) ESTAR SEM DEPENDENCIES IMPORTANTES 
+
+
+
+2) ESTAR OUTDATED 
+
+
+
+
+
+3) DEIXAR O PROCESSO DE 'COPY' , PARA DENTRO DO CONTAINER,
+
+
+TOMAR MAIS TEMPO..
+
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE O ADD 
+
+
+
+
+
+DESSE ARQUIVO FAZ SENTIDO -> PARA GARANTIR QUE CERTOS FOLDERS NÃO SÃO COPIADOS PARA DENTRO 
+
+DE SUA
+ 
+ IMAGE,
+
+ SEMPRE QUE VOCÊ RODA A INSTRUCTION DE 'copy'..
+
+
+
+
+
+
+
+
+
+
+
+ FICOU TIPO ASSIM:
+
+
+
+ 
+
+ node_modules 
+.gitignore
+
+
