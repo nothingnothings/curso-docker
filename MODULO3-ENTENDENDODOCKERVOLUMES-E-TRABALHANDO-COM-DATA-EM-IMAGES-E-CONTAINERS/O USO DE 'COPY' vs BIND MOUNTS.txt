@@ -1,0 +1,831 @@
+
+
+
+
+
+
+
+
+ACABADA TODA ESSA INFO SOBRE VOLUMES E BIND MOUNTS,
+
+
+
+
+
+
+
+
+
+HÁ 1 PERGUNTA QUE VOCÊ DEVE TER, AGORA,
+
+
+QUE 
+
+
+
+
+TEM RELAÇÃO COM O DOCKERFILE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+SE RODAMOS 1 CONTAINER,
+
+COM O COMANDO DE 'docker run',
+
+que 
+
+usamos 
+
+o tempo todo,
+
+
+
+
+
+
+
+TIPO ESTE AQUI:
+
+
+
+
+
+ docker run -d -p 3000:80 --rm --name feedback-app 
+ -v feedback-volume-2:/app/feedback 
+ -v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" 
+ -v /app/node_modules
+ -v /app/temp b3656e44241d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO,
+
+BINDAMOS 
+
+
+NOSSO FOLDER INTEIRO DO PROJETO COMO 'BIND MOUNT',
+
+
+PARA QUE 
+
+
+
+CHANGES 
+
+
+NO CODE LOCAL 
+
+SEJAM
+ 
+ AUTOMATICAMENTE 
+
+
+
+
+
+
+ __ REFLETIDAS__ 
+
+
+
+
+
+ NO RUNNING CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ CERTO.... MAS SE É ASSIM,
+
+ PQ 
+
+
+ AINDA ESTAMOS FAZENDO 'COPY INICIAL DE TUDO DO PROJETO __ PARA __ DENTRO DO DOCKER FILE'
+
+
+
+ (
+
+    por meio 
+
+    da instruction de 'COPY . .' 
+ )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ISSO PQ, SE VAMOS USAR O FOLDER INTEIRO COMO BIND MOUNT ANYWAYS,
+
+
+
+ PQ DIABOS TEMOS __ DE FAZER 1 COPY/SNAPSHOT DO CONTEÚDO DO PROJETO/FOLDER 
+
+
+
+ QUANDO A IMAGE __ É CRIADA( 
+
+
+PQ O CONTEÚDO DO FOLDER NESSE CONTAINER 
+
+SERÁ OVERWRITTADO DE QUALQUER FORMA,
+PELO 
+
+CONTEÚDO DA PASTA UTILIZAADA 
+
+
+NO BIND MOUNT...
+
+ )?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ---> CERTO... --> SIM, O FOLDER DE node_modules
+
+ SERÁ MANTIDO,
+ SIM,
+
+
+
+
+
+ MAS ISSO NÃO É ALGO QUE COPIAMOS COM 'COPY . . ',
+
+
+
+E SIM 
+
+É 
+
+ALGO QUE É CRIADO POR MEIO DE 'RUN npm install'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> TODAS AS ETAPAS, RESUMIDAMENTE:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80
+
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OU SEJA,
+NÃO SERIA POSSÍVEL 
+
+REMOVER O COMANDO de 'COPY . .'
+
+
+POR INTEIRO?
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR NOS EXPLICA QUE __ TEORICAMENTE___ PODERÍAMOS FAZER ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEŔIAMOS REMOVER O 'COPY . . '--> SE FAZEMOS ISSO 
+
+
+
+E 
+
+REBUILDAMOS NOSSA IMAGE,
+
+
+
+
+
+tipo 
+
+
+
+
+
+
+
+docker build -t feedback-node:no-copy 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ESSA TAG AÍ,
+
+
+
+se fazemos isso 
+
+
+
+E BUILDAMOS 
+
+A IMAGE,
+
+
+
+
+
+
+
+
+_ DEFINITVAMENTE PODEMOS 
+
+RODAR 
+1 CONTAINER 
+
+
+
+COM ESSA IMAGE,
+
+
+
+
+
+
+
+
+
+
+E _ AÍ _ CONSTATAREMOS QUE 
+
+NOSSO CÓDIGO AINDA FUNCIONARÁ 
+
+COMO ANTES, SEM NENHUM PROBLEMA (e sem esse código de 'COPY . . ')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO QUER DIZER, EM OUTRAS PALAVRAS,
+
+QUE 
+
+
+
+''PODEMOS''
+
+
+
+REMOVER O 'COPY . . '
+
+
+
+
+SE FORMOS USAR 1 BIND MOUNT...
+
+
+
+
+
+
+
+
+
+
+
+
+__MAS____ 
+, E UM GRANDE MAS,
+
+
+
+
+HÁ 
+
+1 COISA IMPORTANTE SOBRE BIND MOUNTS,
+QUE VOCÊ 
+
+N PODE ESQUECER:
+
+
+
+
+
+
+
+
+AQUELE COMANDO GIGANTE,
+
+
+DE 
+
+
+
+''''''
+
+
+
+ docker run -d -p 3000:80 --rm --name feedback-app 
+ -v feedback-volume-2:/app/feedback 
+ -v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app:ro" 
+ -v /app/node_modules
+ -v /app/temp b3656e44241d
+
+
+''''
+
+
+
+
+
+
+
+
+É __ UM __ COMANDO __ QUE 
+
+
+
+
+RODAMOS _ DURANTE__ O DEVELOPMENT...
+
+
+
+
+
+
+
+
+
+-----_> USAMOS DURANTE DEVELOPMENT --> USAMOS 
+
+
+
+O BIND MOUNT 
+
+
+
+
+
+
+
+_________________ EM DEVELOPMENT___ PQ 
+
+
+
+QUEREMOS QUE 
+
+TODAS AS MUDANÇAS 
+
+NO NOSSO SOURCE 
+CODE 
+
+SEJAM REFLETIDAS 
+
+
+NO RUNNING CONTAINER, INSTANTANEAMENTE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ASSIM QUE TERMINAMOS O DEVELOPMENT,
+
+
+E ASSIM QUE 
+
+
+__ 
+ACTUALLY PEGAMOS ESSE CONTAINER E O COLOCAMOS EM 1 SERVER,
+
+
+
+NÓS _ DEFINITIVAMENTE 
+
+NÃO 
+
+
+
+
+VAMOS USAR ESSES COMANDOS TODOS,
+
+NÃO 
+
+VAMOS 
+
+USAR 
+
+ESSAS FLAGS AÍ,
+
+
+E NÃO 
+
+
+VAMOS USAR 
+
+
+
+1 BIND MOUNT...
+
+
+
+
+
+
+
+
+
+
+--> TALVEZ USEMOS, EM 'PRODUCTION',
+
+
+
+__ OUTROS VOLUMES, PARA GARANTIR QUE A DATA SOBREVIVA,
+
+
+MAS DEFINITIVAMENTE NÃO VAMOS 
+
+
+
+USAR BIND MOUNTS...
+
+
+
+
+
+
+
+
+
+
+
+
+--> NÃO VAMOS USAR 
+
+
+
+
+ -v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/
+ MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/
+ projeto-volumes-node:/app:ro" 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO PQ, SE O CONTAINER  ESTÁ RODANDO EM PRODUCTION,
+
+
+EM 
+
+1 SERVER,
+
+NÃO EXISTIRÁ 
+
+1 
+
+CONNECTED 'SOURCE CODE '
+
+QUE 
+
+
+
+
+
+se atualiza/atualiza o server ENQUANTO ELE ESTÁ RODANDO...
+
+
+
+
+
+
+
+
+
+
+--> DEFINITIVAMENTE NÃO FAREMOS ISSO 
+
+
+EM PRODUCTION,
+
+
+
+PQ __ EM PRODUCTION SEMPRE SÓ QUEREMOS TER 1 
+
+
+
+'SNAPSHOT' 
+
+
+DO NOSSO CÓDIGO..
+
+
+
+
+
+
+
+
+
+
+
+E É POR ISSO QUE 
+
+
+
+
+VAMOS DEIXAR 'COPY . . '
+
+
+
+LÁ NA DOCKER FILE,
+
+
+
+
+
+
+___ PQ _ AINDA VAMOS QUERER SER CAPAZES DE CRIAR SNAPSHOT IMAGES (de nosso código),
+
+
+QUE 
+
+ENTÃO 
+
+PODEMOS USAR PARA 
+
+
+FAZER 'SPIN UP'
+
+
+DE 
+
+
+PRODUCTION-READY CONTAINERS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ADICIONALMENTE,
+
+DURANTE O DEVELOPMENT,
+
+
+
+
+
+SE QUEREMOS TER 1 BIND MOUNT,
+ISSO 
+
+É FINE,
+FUNCIONA,
+
+
+
+MAS 
+
+DEFINITIVAMENTE PRECISAMOS DA OPTION DE 'CRIAR 1 SNAPSHOT CONTAINER',
+PARA 
+
+
+PRODUCTION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+AINDA NÃO APRENDEMOS SOBRE O DEPLOY DE CONTAINERS,
+
+MAS 
+
+
+VEREMOS ISSO MAIS TARDE NO 
+
+
+
+
+CURSO...
+
+
+
+
+
+
+
+
+
+MAS AGORA ISSO FICOU CLARO,
+E AGORA 
+
+
+SABEMOS A RAZÃO DE CONTINUARMOS RODANDO 'copy . . '
+
+
+NO CONTEXTo da dockerfile...
