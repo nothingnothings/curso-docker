@@ -1,0 +1,1063 @@
+
+
+
+
+
+
+
+
+
+
+AGORA, COM O BIND MOUNT 
+
+ADICIONADO,
+
+
+
+
+
+
+
+
+
+
+__ AS CHANGES APLICADAS __ AOS ARQUIVOS 
+
+SÃO INSTANTANEAMENTE
+
+
+REFLETIDAS,
+
+
+
+
+
+
+
+QUANDO AS SALVAMOS..
+
+
+
+
+
+
+
+
+
+
+(NÃO PRECISAMOS REBUILDAR A IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TUDO ISSO GRAÇAS A:
+
+
+1) BIND MOUNTS
+
+
+-v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" 
+
+
+
+
+2) NAMED VOLUMES 
+
+
+-v feedback-volume-2:/app/feedback 
+
+
+
+
+3) UNNAMED VOLUMES (anon volumes)
+
+
+-v /app/node_modules 
+
+
+
+
+
+
+
+
+
+
+
+COMANDO COMPLETO:
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app 
+-v feedback-volume-2:/app/feedback 
+-v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" 
+-v /app/node_modules 
+b3656e44241d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> cERTO... AS CHANGES SÃO IMEDIATAMENTE REFLETIDAS,
+SIM,
+
+
+
+
+MAS AINDA TEMOS CERTOS PROBLEMAS....
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSES PROBLEMAS SÃO VISTOS 
+
+
+
+
+QUANDO TENTAMOS EDITAR 
+
+
+
+
+
+E SALVAR ALGO LÁ NO CÓDIGO 'server.js',
+
+
+
+
+NO CÓDIGO JAVASCRIPT EXECUTADO PELO NODE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR SIMPLESMENTE ADICIONA 1 CONSOLE.LOG,
+
+
+
+
+
+
+
+1 CONSOLE.LOG LÁ EM 1 ROTA DE POST (a de 'save feedback')...
+
+
+
+
+
+
+
+
+
+
+--> O CONTAINER NODEJS CONTINUA RODANDO,
+
+SEM PROBLEMAS,
+
+
+
+
+
+
+
+MAS A QUESTÃO É QUE 
+
+
+O ADD DESSE CONSOLE.LOG NÃO 
+
+SERÁ APLICADO 
+
+
+RIGHT AWAY 
+
+
+
+
+AO NOSSO APP.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------__> SE CHECAMOS OS LOGS 
+
+DESSE CONTAINER,
+
+COM 
+
+'docker logs container_id',
+
+
+
+
+
+
+
+
+
+
+
+NÃO VEMOS COISA ALGUMA...
+
+
+
+
+
+
+
+
+
+
+ISSO SIGNIFICA QUE 
+
+
+
+A ALTERAÇÃO NO CÓDIGO NÃO FOI APLICADA RIGHT AWAY..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... E O PROFESSOR NOS EXPLICA QUE A RAZÃO DESSE PROBLEMA É  'UMA QUESTÃO 
+
+
+NODE-SPECIFIC',
+
+
+
+
+
+
+MAS QUE 
+
+
+PODEMOS ENCONTRAR ISSUES PARECIDAS EM OUTROS TIPOS DE APP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----_> BEM... A QUESTÃO 
+
+
+É QUE 
+
+
+
+O CÓDIGO 
+
+
+
+
+
+
+
+
+
+
+
+NO INTERIOR D 'server.js'
+
+
+É EXECUTADA 
+
+
+
+PELO NODE,
+
+
+POR ESSE RUNTIME JAVASCRIPT...
+
+
+
+
+
+
+
+
+
+
+
+
+------> E É ESSE RUNTIME,
+E ESSE 
+
+FILE SENDO EXECUTADO,
+
+
+QUE 
+É 
+RESPONSÁVEL POR ESSA WEBPAGE,
+
+
+E PELO 
+
+
+WORKING WEB SERVER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS, AGORA,
+
+
+PRECISAMOS RESTARTAR O WEB SERVER PARA _ CAPTURAR QUAISQUER 'CHANGES' 
+
+
+
+NO CÓDIGO JAVASCRIPT QUE É USADO POR AQUELE 'server.js'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+__NÃO PRECISAMOS __ RESTARTAR _o  CONTAINER INTEIRO,
+
+E SIM 
+
+APENAS 
+
+O __ WEBSERVER EM SI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> BEM... --> 
+
+
+
+
+SE O CONTAINER JÁ ESTÁ RODANDO,
+
+
+O 
+
+RESTART 'APENAS DO SERVIDOR/APP'
+
+
+
+NO INTERIOR 
+
+
+
+DO CONTAINER 
+
+NÃO 
+
+
+
+É 
+
+ALGO TRIVIAL... --> É POR ISSO QUE 
+
+A MELHOR COISA/MAIS SIMPLES QUE 
+
+
+
+
+
+PODEMOS FAZER 
+
+
+
+
+
+
+É SIMPLESMENTE ''STOP THAT CONTAINER'',
+
+
+E AÍ 
+
+
+
+RECOMEÇAR ESSE CONTAINER POSTERIORMENTE... --> PELO MENOS 
+
+
+
+
+
+
+
+não somos forçados a REBUILDAR A IMAGE,
+
+
+
+
+
+
+
+
+E SIM 
+
+
+
+
+
+
+
+__ BASTA __ COMEÇAR O CONTAINER MAIS 1 VEZ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> POR MEIO DO STOP E RESTART DO CONTAINER,
+
+
+'''ACABAMOS CRIANDO 1 NOVO NODE SERVER''',
+
+
+
+
+
+O QUE, POR SUA VEZ,
+
+VAI PEGAR ESSAS ALTERAÇÕES 
+NO ARQUIVO 
+
+
+
+'server.js'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS COMO __ o PROFESSOR HAVIA ADICIONADO A FLAG DE '--remove',
+
+
+
+
+
+
+
+
+ELE __ É FORÇADO _ A CRIAR 1 NOVO CONTAINER..
+
+
+
+
+
+
+
+
+
+
+
+
+MAS SE PARAMOS O CONTAINER E STARTAMOS DE NOVO, ENXERGAMOS O CONSOLE.LOG,
+
+O QUE É BOM...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS AINDA NÃO É PERFEITO --> NÃO TEMOS QUE REBUILDAR A IMAGE INTEIRA,
+
+
+MAS AINDA NÃO É GREAT..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS, PARA O NODEJS,
+
+ESSE É UM PROBLEMA COMUM...
+
+
+
+
+
+
+
+
+
+
+
+
+--> E VOCê TALVEZ JÁ CONHEÇA O NODEMON...
+
+
+
+
+
+
+
+
+É UM PACKAGE QUE TAMBÉM USAMOS 
+
+
+
+COM DEVELOPMENT NODEJS,
+
+
+
+
+
+
+E QUE 
+
+RECARREGA 
+
+
+NOSSO SERVER SEMPRE QUE
+
+
+UMA CHANGE É FEITA NO PROJETO...
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+
+EM 
+
+
+
+
+'package.json',
+
+
+o professor coloca 
+
+
+
+"devDependencies": {
+    "nodemon": "2.0.4"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+-->  ESSA É UMA DEPENDENCY EXTRA ADICIONADA 
+
+
+
+A ESSE PROJECT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AGORA PODEMOS 
+
+RODAR 
+
+
+O 
+
+
+PROJETO COM O NODEMON 
+
+em vez do 
+
+
+
+
+
+
+node em si... --> 
+
+
+
+
+com isso,
+
+
+o negócio ficará 
+
+aware 
+
+
+das changes na nossa file...
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS PARA ATIVAR O NODEMON,
+
+PRECISAMOS TAMBÉM COLOCAR UMA KEY de 'scripts',
+
+
+
+
+e aí 
+
+colocar 
+
+1 de 'start',
+que 
+
+VAI
+ser 
+
+
+'nodemon server.js' ...
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+{
+  "name": "data-volume-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "author": "Maximilian Schwarzmüller / Academind GmbH",
+  "license": "ISC",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "devDependencies": {
+    "nodemon": "2.0.4"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  }
+}
+
+
+
+
+
+
+
+
+
+
+--> OK.. AGORA PODEMOS RODAR ESSE SCRIPT PARA 
+
+
+
+
+RODAR NOSSO SERVER,
+
+EM VEZ DO NODEMON...
+
+
+
+
+
+
+
+MAS AÍ PRECISAMOS 
+
+
+MUDAR O COMANDO 'cmd'
+ 
+
+
+ no dockerfile...
+
+
+
+
+
+
+
+
+
+
+
+ EX:
+
+
+
+
+
+
+
+
+
+
+ FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... 
+
+ISSO 
+VAI 
+
+
+RODAR O NODEMON,
+
+
+POR 
+
+TRÁS 
+
+DAS CENAS..
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS PRECISAMOS REMOVER NOSSA IMAGE 
+ANTERIOR,
+
+E AÍ 
+
+REBUILDAR 
+
+
+
+A IMAGE...
+
+
+
+
+
+
+
+
+
+OK.... BUILDAMOS ESSA IMAGE,
+
+E AÍ 
+
+USAMOS AQUELE COMANDO 
+
+
+
+DOCKER RUN ENORME MAIS UMA VEZ,
+
+MAS COM 
+
+ESSA LATEST IMAGE...
+
+
+
+
+
+
+
+
+
+certo... buildei essa image...
+
+
+
+
+
+
+
+
+
+--> Agora basta rodar o container 
+
+com ela...
+
+
+
+
+
+
+
+
+
+
+
+
+ESTE COMANDO:
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app -v feedback-volume-2:/app/feedback -v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" -v /app/node_modules c7f1409fdd67
+
+
+
+
+
+
+
+CERTO... FUNCIONOU...
+
+
+
+
+
+
+
+
+NOSSO LOG FICA ASSIM:
+
+
+
+
+
+arthur@arthur-IdeaPad-3-15ALC6:~/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node$ docker logs feedback-app
+
+> data-volume-example@1.0.0 start
+> nodemon server.js
+
+[nodemon] 2.0.4
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: js,mjs,json
+[nodemon] starting `node server.js`
+ENTERED
+ENTERED
+SOMETHING
+[nodemon] restarting due to changes...
+[nodemon] starting `node server.js`
+CHINELO
+
+
+
+
+
+
+
+
+
+
+
+
+E O ARQUIVO ESTÁ SENDO SALVO EM 'temp'...
