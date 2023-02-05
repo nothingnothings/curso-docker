@@ -23,4 +23,6 @@ EXPOSE 80
 ### PARA ADICIONAR __ NAMED __ VOLUMES (geralmente mais úteis do que UNNAMED VOLUMES)
 ###  __ ao contexto de seus __ CONTAINERS, vocÊ deve fazer isso EXTERNAMENTE (e naõ dentro de cada container...)
 
-CMD ["node", "server.js"]
+# CMD ["node", "server.js"] ---- trocamos pela versão do NODEMON...
+
+CMD ["npm", "start"]
