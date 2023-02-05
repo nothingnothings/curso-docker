@@ -1,0 +1,1668 @@
+
+OK... AGORA 
+
+APRENDEMOS SOBRE 'VOLUMES'
+
+
+e
+
+ ESPECIFICAMENTE 'NAMED VOLUMES'...
+
+
+
+
+
+
+
+
+
+
+ OS NAMED VOLUMES SÃO OS MAIS ÚTEIS, SIM,
+
+
+
+
+
+
+ 
+
+
+ E OS 
+
+
+ 'UNNAMED VOLUMES'
+
+
+
+SÃO MENOS USADOS.... SEU USO É MAIS ESPECÍFICO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS O PROFESSOR QUER COMEÇAR COM 'BIND MOUNTS'
+
+ANTES
+
+
+
+DE ___ ESTUDARMOS 'UNNAMED VOLUMES'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+BIND MOUNTS ------> SÃO OS VOLUMES 'MANAGEADOS POR NÓS' --------_> E ELES NOS AJUDAM 
+
+
+COM 1 
+
+
+
+DIFERENTE PROBLEMA QUE PODEMOS ENFRENTAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> O TIPO DE PROBLEMA QUE PODEMOS ENFRENTAR... QUAL É?
+
+
+
+
+
+
+
+BEM, SE MUDAMOS QUALQUER COISA NO NOSSO SOURCE CODE,
+
+
+ 
+ SEJA ISSO 
+
+
+
+
+
+ LÁ NO ARQUIVO 
+
+
+
+ 'server.js'
+
+ ou qualquer outro,
+
+
+
+
+
+
+
+
+ ___ ESSAS CHANGES NÃO SÃO REFLETIDAS 
+
+
+
+
+
+
+ NO ___ RUNNING CONTAINER,
+
+
+ A NÃO SER QUE RECONSTRUAMOS A IMAGE... ----> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> e se voltamos ao 'localhost:3000' 
+
+
+
+
+
+
+e examinarmos o arquivo 
+
+
+
+
+'feedback.html' que é carregado,
+
+
+
+PODEMOS ADICIONAR 1 LINHA NOVA DE CÓDIGO NO HTML,
+
+
+
+SÓ 
+
+
+PARA VER SE ISSO É REFLETIDO 
+
+
+NO RUNNING CONTAINER --> E ISSO 
+
+
+
+NÃO É VISTO APLICADO 
+
+NA PÁGINA --> E É BEM CLARA A RAZÃO 
+
+
+
+DE ISSO 
+
+ACONTECER... (
+
+
+
+
+NÓS APENAS COPIAMOS 1 SNAPSHOT DO FOLDER __ LÁ NA DOCKER IMAGE,
+
+QUANDO ELA É CRIADA,
+
+E SUBSEQUENTES 
+
+CHANGES 
+
+
+A QUAISQUER COISAS NESSE FOLDER NÃO SERÃO REFLETIDAS 
+
+NA IMAGE,
+
+
+E
+
+NÃO SERÃO REFLETIDAS NO CONTAINER, POR SUA VEZ...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS DURANTE O DEVELOPMENT,
+USANDO O DOCKER,
+
+
+
+
+
+SERIA __ IMPORTANTE __ FAZER ALGUMAS CHANGES SEREM REFLETIDAS
+ 
+
+
+
+ NOS  RUNNING CONTAINER --> PQ SE NÃO TIVERMOS ISSO,
+
+
+
+ SEREMOS 
+
+ FORÇADOS 
+
+ A 
+
+ PARAR 
+
+O CONTAINER 
+
+E 
+
+REBUILDAR 
+
+
+SUA IMAGE,
+
+
+PARA SÓ ENTÃO 
+
+
+
+
+RE-RODARMOS O CONTAINER...
+
+
+
+
+
+
+
+
+
+
+--> E É __ AÍ QUE O CONCEITO DE 'BIND MOUNTS'
+
+
+SE TORNA ÚTIL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> BIND MOUNTS --> POSSUEM ALGUMAS SEMELHANÇAS 
+
+
+COM 
+
+VOLUMES,
+
+
+
+MAS HÁ ALGUMAS DIFERENÇAS 
+
+
+IMPORTANTES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----_> A DIFERENÇA PRINCIPAL --> 
+
+
+
+
+
+
+
+
+
+
+
+VOLUMES --> SÃO MANAGEADOS PELO ___ DOCKER_,
+
+E NÃO SABEMOS  COM EXATIDÃO O LOCAL NA NOSSA LOCAL MACHINE EM QUE SE ENCONTRAM...
+
+
+
+
+
+
+
+
+
+
+
+BIND MOUNTS --> SÃO DEFINIDOS __ POR NÓS,
+
+
+E _ NÓS TEMOS CERTEZA DO LOCAL NA NOSSA LOCAL MACHINE EM QUE SE ENCONTRAM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> BIND MOUNTS --> NÓS, COMO DESENVOLVEDORES,
+
+
+
+DEFINIMOS O 'PATH' 
+A 
+
+QUE 
+
+O 
+
+
+
+CONTAINER INTERNAL PATH 
+
+
+DEVERÁ SER MAPPEADO, NA NOSSA LOCAL MACHINE...
+
+
+
+
+
+
+'''''YOU DEFINE A FOLDER/PATH ON YOUR HOST MACHINE''''...
+
+
+
+
+
+
+
+
+
+
+
+-------> COMO TEMOS PLENA CIÊNCIA 
+
+
+
+DO PATH NA NOSSA LOCAL HOST MACHINE,
+
+E COMO ESSE É O CASO,
+
+E COMO 
+
+
+CONTAINERS 
+PODEM 
+
+
+
+FAZER TANTO 'READ' COMO 'WRITE' __ EM __ VOLUMES,
+
+
+
+
+
+É CLARO QUE PODEMOS 
+
+COLOCAR NOSSO 
+
+SOURCE CODE 
+
+
+
+
+DENTRO DE 1 DESSES BIND MOUNT --> E SE FIZÉSSEMOS ISSO,
+
+
+
+
+PODERÍAMOS/PODEMOS FAZER COM QUE O CONTAINER FIQUE 'AWARE' 
+
+DISSO,
+
+
+
+
+
+AWARE DE QUE 
+
+
+O  SOURCE CODE NÃO SERÁ 
+
+
+
+USADO LÁ DAQUELA 'COPIED-IN SANPSHOT',
+
+
+E SIM 
+
+DAQUELE BIND MOUNT (
+
+
+    ou seja,
+
+
+
+    da CONNECTION 
+    A ALGUM FOLDER NA NOSSA HOST MACHINE -->  COM ISSO,
+
+
+    O CONTAINER SEMPRE TERIA/TERÁ 
+
+ACESSO AO 'LATEST CODE',
+
+E NAÕ 
+
+APENAS 
+
+A 
+
+SNAPSHOT 
+
+QUE 
+
+
+COLOCAMOS 
+
+NA NOSSA IMAGE,
+
+QUANDO A CRÍAMOS, NO INÍCIOP...
+
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E É EXATAMENTE POR ISSO QUE 'BIND MOUNTS'
+
+SÃO 
+
+PERFEITOS 
+
+
+PARA 
+
+
+'PERSISTENT, EDITABLE DATA'...  (editável POR NÓS)... --> 
+
+
+
+
+POR DATA,
+
+
+FREQUENTEMENTE QUEREMOS DIZER 'SOURCE CODE',
+
+pq 
+
+
+
+É O NOSSO SOURCE CODE, EM DEVELOPMENT,
+
+QUE SERÁ 
+
+CONSTANTEMENTE 
+
+
+EDITADO 
+
+
+E REPLICADO NESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ESSA É A DIFERENÇA EM RELAÇÃO A 'NORMAL VOLUMES' --> 
+
+
+
+
+
+
+
+PQ 1 'NORMAL, NAMED VOLUME' ------> PODE NOS AJUDAR COM O 'PERSIST DE DATA',
+
+
+
+___ MAS __ O EDIT _ DIRETO NÃO É POSSÍVEL, NELE... (
+
+    NÃO É POSSÍVEL 
+
+    PQ __ NÃO __ SABEMOS O ACTUAL LOCAL EM QUE 
+
+
+    O VOLUME É ARMAZENADO, NA NOSSA LOCAL MACHINE...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK, MAS COMO PODEMOS ADICIONAR 1 DESSES 'BIND MOUNT'
+
+
+
+NO NOSSO 
+
+
+CONTAINER?
+
+
+
+
+
+
+
+
+
+--> BEM, NOVAMENTE,
+
+NÃO 
+
+É 
+
+ALGO QUE 
+
+
+
+
+___ FAZEMOS NO LADO DE DENTRO 
+
+DO DOCKER FILE .... ----> ISSO PQ BIND MOUNTS 
+
+
+
+
+
+NÃO SÃO ESPECÍFICOS A 'IMAGES',
+
+
+
+E SIM 
+
+
+
+
+SÃO ESPECÍFICOS A 'CONTAINERS' EM SI... (instâncias)...
+
+
+
+
+
+
+
+
+
+
+
+PORTANTO,
+
+
+__ DEVEMOS SETTAR 1 DESSAS 'BIND MOUNTS'
+
+
+
+LÁ 
+
+
+
+
+NO NOSSO TERMINAL,
+
+SEMPRE QUE 
+
+RODAMOS 1 CONTAINER..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+O PROFESSOR PARA O CONTAINER COM 'docker stop container_id'...
+
+
+
+
+
+
+
+
+
+
+
+
+--. AÍ ELE VAI CRIAR/RODAR 1 CONTAINER,
+
+
+
+
+
+
+EXATAMENTE COMO ANTES,
+ 
+
+
+ MAS 
+
+ AGORA 
+
+
+
+
+
+COM __ A ADIÇÃO DE MAIS DE 1 VOLUME,
+
+
+
+
+
+
+
+
+
+MAIS DE 1 VOLUME (1 NAMED VOLUME + outra coisa)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+O PROFESSOR ESCREVE ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app -v feedback-volume:/app/feedback 
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ADICIONAR 1 SEGUNDO VOLUME, BASTA ADICIONAR OUTRA FLAG DE '-v',
+
+
+
+
+1 PARA CADA VOLUME A SER ADICIONADO...
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app -v feedback-volume:/app/feedback 
+-v  ( EIS O CÓDIGO EM QUESTÃO)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK, MAS AQUI TEREMOS UMA DIFERENÇA... -> 
+
+
+EM VEZ DE ESCREVERMOS '/app/feedback',
+
+
+
+
+VAMOS ESCREVER 
+
+
+
+SÓ
+
+'/app',
+
+
+
+
+JUSTAMENTE PQ 
+
+
+QUEREMOS 
+COPIAR 
+
+
+
+
+TODO O SOURCE CODE DE NOSSO APP...
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app -v feedback-volume:/app/feedback 
+-v /app ( EIS O CÓDIGO EM QUESTÃO)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PQ QUEREMOS CONTROLAR TODO O 'APP FOLDER', aqui...
+
+
+
+
+
+
+
+
+
+MAS AQUI TEREMOS 1 KEY DIFFERENCE --> EM VEZ DE 
+
+
+ASSIGNAR 1 NOME QUALQUER 
+
+NA FRENTE 
+
+
+
+
+DO ':/app',
+
+
+
+
+
+
+AQUI __ _VAMOS __ COLOCAR__ 1 
+
+
+'PATH NA NOSSA LOCAL MACHINE',
+
+
+
+
+1 PATH NA NOSSA LOCAL MACHINE EM QUE 
+
+
+
+
+
+
+
+
+__ TEREMOS 1 FOLDER __ COM __ TODO O CONTEÚDO QUE 
+
+
+
+'SHOULD GO INTO THIS MAPPED FOLDER'... --> E ___ O PATH _ ESCRITO 
+
+
+
+
+NA FRENTE DE 
+
+':/app' 
+
+
+
+DEVERÁ 
+
+
+SER _ UM ABSOLUTE PATH,
+
+
+E NÃO UM RELATIVE...
+
+
+
+
+
+
+
+
+
+
+
+--> VOCê CONSEGUE 1 'ABSOLUTE PATH'
+
+NO VISUAL STUDIO CODE 
+
+POR MEIO DO CLICK EM ALGUM FILE (botão  direito)
+
+e então 'copy path'...
+
+
+
+
+
+
+
+
+
+
+--> TIPO ASSIM:
+
+
+
+
+/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node/server.js
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SIM, O PATH É BEM LONGO, MAS É DISSO QUE PRECISAMOS, AQUI,...
+
+
+
+
+
+
+
+
+
+
+
+O COMANDO COMPLETO FICA ASSIM:
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app -v feedback-volume:/app/feedback 
+-v /home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app ( EIS O CÓDIGO EM QUESTÃO)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... REMOVEMOS O NOME DA FILE AO FINAL, É CLARO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEIXAMOS SÓ O 'PATH AO PROJECT FOLDER'... (
+
+    por isso que deixo 'projeto-volumes-node' como última coisa, aqui...
+)
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+ISSO NESSE CASO, É CLARO... SE VOCÊ REALMENTE QUISER,
+
+VOCÊ 
+
+PODE BINDAR A 
+
+1 ÚNICA FILE,
+
+ISSO 
+
+SE VOCÊ 
+
+QUER 
+
+
+FAZER SHARE DE APENAS 1 FILE A 1 CONTAINER.. (bem raro)...
+
+
+
+
+
+
+
+
+
+MAS _ AQUI _ QUEREMOS BINDAR A 1 FOLDER INTEIRO,
+
+POR 
+
+ISSO 
+
+
+O PROFESSOR 
+
+
+QUER 
+
+BINDAR 
+
+O FOLDER INTEIRO 
+
+DE 
+
+
+'projeto-volumes-node'
+
+
+
+A ESSE 
+
+CONTAINER... (fazer 1 réplica do código de dentro do container, no nosso local file system, por assim dizer)...
+
+
+
+
+
+
+
+
+
+
+PARA GARANTIR QUE 
+
+SEU PATH NÃO QUEBRE SE TIVER SPECIAL CHARACTERS (ou white space),
+
+
+
+VOCê 
+
+PODE ENVOLVER 
+
+TODA A EXPRESSÃO COM QUOTES,
+
+TIPO ASSIM:
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app -v feedback-volume:/app/feedback -v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS O PROFESSOR QUER NOS RELATAR 1 DETALHE SOBRE BIND MOUNTS E O 'MOUNT DE FOLDERS QUE VOCê JÁ CONHECE' PARA DENTRO DE CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VOCÊ PRIMEIRAMENTE PRECISA ASSEGURAR QUE O DOCKER TEM 'ACESSO'
+
+
+
+
+AO FOLDER QUE VOCÊ ESTÁ COMPARTILHANDO COMO 
+
+BIND MOUNT..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VOCê DEVE FAZER ISSO LÁ NAS CONFIGURAÇÕES DO SEU DOCKER (docker desktop)...
+
+
+
+
+
+
+
+
+
+
+ 
+ ENTRE EM 'RESOURCES' > 'FILE-SHARING'..  --> O FOLDER QUE 
+
+ VOCÊ 
+
+ESTARÁ 'SHARING' AGORA MESMO 
+
+DEVERÁ 
+
+ESTAR 
+
+LISTADO
+ 
+
+ ALI...
+
+
+
+
+
+
+
+
+
+FICOU ESTE CÓDIGO GIGANTE:
+
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app -v feedback-volume-2:/app/feedback -v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" b3656e44241d 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> OK... MAS EU NÃO ACHEI MEU FOLDER ALI...
+
+
+
+
+
+
+
+
+
+(
+
+ E NO WINDOWS VOCÊ NÃO TEM ESSA ÁREA, NAS SETTINGS..
+.   
+)
+
+
+
+
+--------> NO WINDOWS ISSO N EXISTE PQ VOCê NÃO TERÁ PROBLEMAS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK, MAS MINHA VERSÃO, DO LINUX,
+NÃO ESTÁ MOSTRANDO O MEU FOLDER COMPARTILHADO ALI..
+
+
+
+
+
+
+
+
+
+
+
+--> mentira..... --> achei o folder de '/home' ali..- -> e isso está CERTO,
+
+É 
+
+
+ASSIM QUE DEVE APARECER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA NOSSO CONTAINER FOI STARTADO,
+
+
+
+MAS AGORA NOSSO FOLDER DE 'projeto-volumes-node'
+
+
+SERÁ 
+
+
+MONTADO COMO 'VOLUME'
+
+
+
+
+
+NO FOLDER DE 'app',
+
+
+DENTRO DO CONTAINER...
+
+
+
+
+
+
+
+
+
+mas acho que algo deu errado.... (pq não consigo acessar o localhost:3000)
+
+
+
+
+
+
+
+
+
+
+--> meu container abriu e logo fechou, por alguma razão...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR CONSTATA QUE O CONTAINER DELE TAMBÉM CRASHOU...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS SE INSPECIONARMOS 
+
+
+TODOS NOSSOS CONTAINERS,
+
+com 
+
+'docker ps -a',
+
+
+
+VEREMOS QUE 
+
+ESSE CONTAINER TERÁ SUMIDO COMPLETAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+--> NEM PODE SER ENCONTRADO NOS 'STOPPED CONTAINERS' -->  ISSO PQ 
+
+
+COLOCAMOS '--rm' como flag (é removido automaticamente quando para)....
+
+
+
+
+
+
+
+
+ISSO SIGNIFICA QUE 
+
+'HÁ ALGO DE SUPER ERRADO COM ESSE CONTAINER',
+
+
+para 
+
+
+ele CRASHAR INSTANTANEAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+--> o professor 
+
+
+
+RESETTA O CONTAINER,
+
+
+DESSA VEZ SEM A FLAG DE '--rm'..
+
+
+
+
+
+
+
+
+
+
+-> USAMOS 'docker logs feedback-node'
+
+
+
+PARA 
+
+VER 
+
+
+OS LOGS DO CONTAINER,
+
+
+PARA 
+
+
+
+
+VER O ERROR QUE FOI THROWN..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROBLEMA FOI 'CANNOT FIND MODULE EXPRESS'..
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE 
+
+NOSSO CÓDIGO NODE NEM MESMO COMEÇOU A EXECUTAR,
+
+
+ 
+ TUDO 
+
+
+ DEVIDO A 1 DEPENDENCY QUE FICOU COMO 'MISSING'...
+
+
+
+
+
+
+
+
+ ATÉ AGORA,
+
+
+ ISSO
+
+ SEMPRE HAVIA FUNCIONADO,
+
+
+
+
+
+
+
+
+
+
+ ISSO POR CONTA DO CÓDIGO DO DOCKER FILE, QUE É/ERA ASSIM:
+
+
+
+
+ FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80
+
+
+
+
+
+
+
+
+
+CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+----> ISSO PQ AS DEPENDENCIES ERAM 
+
+INSTALADAS POR CONTA DO 'Npm install'
+
+dentro do docker file...
+
+
+
+
+
+
+
+
+
+
+MAS PQ __ ESSAS DEPENDENCIES ESTÃO FALTANDO, AGORA?
+
+
+
+
+
+
+
+
+
+
+
+BEM, ISSO TEM A VER COM O NOSSO RECÉM ADICIONADO 
+
+ 
+
+ 'BIND MOUNT' (que bindou O FOLDER DE 'projeto-volumes-node' ao folder interno de '/app', lá no CONTAINER)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ E VEREMOS A SOLUÇÃO PARA ESSE PROBLEMA __ NA PRÓXIMA AULA...
