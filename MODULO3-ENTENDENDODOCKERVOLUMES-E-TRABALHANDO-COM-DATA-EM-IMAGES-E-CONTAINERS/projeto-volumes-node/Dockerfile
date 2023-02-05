@@ -25,4 +25,11 @@ EXPOSE 80
 
 # CMD ["node", "server.js"] ---- trocamos pela versão do NODEMON...
 
+
+### queremos que ele realmente seja anônimo (vinculado a cada container, e não a outras coisas/containers)
+
+#### PREFIRA ESCREVER seus ANON VOLUMES diretamente no terminal, como flag do 'docker run', pq _ aí a coisa de 'LONG PATH' VS 'SHORT PATH' é respeitada (volumes mais específicos se sobrepõem aos mais gerais, mais gerais como 'bind mounts') 
+# VOLUME [ "/app/temp" ] 
+
+### queremos que o NODEMON seja iniciado, e não o 'node' puro..
 CMD ["npm", "start"]

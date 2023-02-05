@@ -1,0 +1,1304 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS HA'MAIS UM DETALHE SOBRE MODULES,
+
+QUE O PROFESSOR QUER NOS MOSTRAR ,
+
+QUE 
+
+SÃO 
+
+
+
+
+'READ-ONLY VOLUMES'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, USAREMOS O MESMO ___ CONTAINER DE ANTES,
+
+
+
+
+
+
+QUE RODAMOS COM 'DOCKER RUN'...
+
+
+
+
+
+
+
+
+
+o comando de 
+
+
+
+
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app 
+-v feedback-volume-2:/app/feedback 
+-v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" 
+-v /app/node_modules b3656e44241d
+
+
+
+
+
+
+
+RESPECTIVAMENTE,
+
+TEMOS 
+
+
+
+1) NAMED VOLUME 
+
+2) BIND MOUNT 
+
+
+3) ANON VOLUME (para salvar as dependencias, proteger da ação do 'bind mount')...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+MAS AGORA DEVEMOS DAR UMA OLHADA MELHOR NO 'BIND MOUNT'
+
+
+ANTES 
+
+DE 
+
+INICIARMOS 
+
+ESSE CONTAINERR...
+
+
+
+
+
+
+
+
+
+SE PENSARMOS SOBRE O 'BIND MOUNT',
+
+A IDEIA 
+
+É QUE 
+
+
+
+
+
+'''PODEMOS EDITAR NOSSO SOURCE CODE,
+
+E AÍ 
+
+CHANGES SERÃO AUTOMATICAMENTE 
+
+REFLETIDAS NO NOSSO CONTAINER''' ( o que é bom PARA DEVELOPMENT)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... isso é verdade...
+
+
+
+
+
+
+
+
+
+
+
+--> ENTRETANTO, AQUI A IDEIA 
+
+
+É __ QUE __ O 'CONTAINER NÃO DEVE __ sER CAPAZ __ DE 
+
+
+
+ESCREVER PARA _ DENTRO _ DO APP FOLDER'... --> O CONTAINER 
+
+
+NÃO DEVE SER CAPAZ DE ALTERAR 
+
+
+AS FILES 
+
+
+
+
+
+DO FOLDER EXTERNO,
+
+
+
+
+
+
+__ PQ __ APENAS NÓS__, PESSOAS,
+
+DEVEMOS 
+
+SER CAPAZES 
+
+DE ALTERAR 
+
+
+
+_ OS FILES __ NO LOCAL FILE SYSTEM (on our host machine file system, e não de dentro do container)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE A RUNNING APPLICATION _ NÃO 
+
+
+DEVE __ SER CAPAZ __ DE __ ALTERAR ESSES ARQUIVOS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E É EXATAMENTE POR ISSO QUE 
+
+
+É POSSÍVEL _ 'ENFORCE'
+
+ESSA REGRA,
+
+
+
+
+PARA TAMBÉM DEIXAR BEM CLARO ''QUAL É NOSSA INTENÇÃO'',
+
+
+TUDO 
+POR MEIO 
+
+
+
+DA DEFINIÇÃO DE ESSE 
+
+BIND MOUNT DE 
+
+''' -v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" ''
+
+
+
+
+
+EM 1 
+
+
+'READ-ONLY VOLUME'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO PQ, POR DEFAULT,
+
+
+
+
+_ OS VOLUMES SÃO 'READ-WRITE CAPABLE'...
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER, EM OUTRAS PALAVRAS,
+
+
+
+QUE 
+
+O 
+
+CONTAINER É __ CAPAZ_ _ DE FAZER 'READ'
+
+
+E
+ 
+ 'WRITE'
+
+ DE 
+ DATA 
+
+ AOS 
+
+ VOLUMES ... (E COMO O bind-mount existe no nosso local system, o CONTAINER FICA CAPAZ DE ALTERAR NOSSO LOCAL FILE SYSTEM, nesse folder)...
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS PODEMOS RESTRINGIR ESSA CAPACIDADE DE 'WRITE' AO VOLUME/BIND MOUNT,
+
+
+
+
+
+BASTA ADICIONAR UM 
+
+COMANDO EXTRA 
+
+
+AO SEU BIND MOUNT...
+
+
+
+
+
+
+
+
+
+--> PARA FORÇAR O NEGÓCIO A SER 'READ-ONLY',
+
+
+
+
+VOCê 
+
+
+DEVE 
+
+
+
+
+COLOCAR ':ro' 
+
+
+NO FINAL DO PATH DO __ CONTAINER,
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+''' -v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/
+MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS
+/projeto-volumes-node:/app:ro" ''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OU SEJA,
+
+
+
+
+':/app'
+
+
+
+PASSA A SER 
+
+
+':/app:ro' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PQ 'RO'?'
+
+
+
+
+
+
+
+
+
+
+
+
+--> pq 'RO' SIGNIFICA 'READ ONLY'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO GARANTE QUE O DOCKER AGORA NÃO SERÁ CAPAZ DE FAZER 'WRITE'
+
+
+
+NESSE 
+
+
+FOLDER,
+
+OU EM QUALQUER 1 DE SEUS SUBFOLDERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> OK... É CLARO QUE NÓS,
+
+NA NOSSA LOCAL MACHINE,
+
+SEREMOS 
+
+CAPAZES 
+
+
+
+DE EDITAR E REMOVER ESSES ARQUIVOS ... --> PQ ISSO SÓ VAI AFETAR 
+
+
+O RUNNING CONTAINER...
+
+
+
+
+(O CONTAINER E O APP RODANDO NO CONTAINER)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS SÓ ISSO N BASTA, NESSE CENÁRIO ATUAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PQ _ QUEREMOS QUE CERTOS ARQUIVOS SEJAM SALVADOS...
+
+
+
+
+
+
+
+--> OK... ISSO PQ __    __ NÓS FIZEMOS BIND DE 'TODO NOSSO PROJECT FOLDER'
+
+
+
+COMO 1 BIND MOUNT --> ISSO QUER DIZER QUE TODOS OS FOLDERS E FILES 
+
+
+FORAM ASSIGNADOS NESSE BIND MOUNT..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS ISSO É 1 PROBLEMA,
+
+
+PQ AÍ TAMBÉM RESTRINGIRÍAMOS A 'WRITABILITY' 
+
+
+
+DAS PASTAS DE 'FEEDBACK' E 'TEMP',
+
+
+QUE 
+
+
+SÃO 
+
+
+
+2 PASTAS QUE 
+
+QUEREMOS 
+
+
+
+REALMENTE 
+
+
+'WRITE FROM INSIDE OUR SOURCE CODE'...
+
+
+
+
+
+
+
+
+PQ TEMOS ESSAS LINHAS, NO CÓDIGO NODE:
+
+
+
+
+
+
+
+  await fs.writeFile(tempFilePath, content);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --> É POR ISSO QUE 
+
+  DEVEMOS 
+
+
+
+  GARANTIR QUE 
+
+
+  O WRITE É POSSÍVEL 
+
+  NESSES FOLDERS...
+
+
+
+
+
+
+
+
+
+
+
+
+  BEM, E A LÓGICA AQUI É A MESMA 
+
+  DAQUELA USADA 
+
+  COM O ANON VOLUME DE '/node_modules', 
+
+
+
+
+
+
+
+  QUE É 
+
+
+
+
+  ''QUANTO MAIS LONGO/DEEP O CAMINHO,
+
+  MAIS 
+
+  ELE SE SOBREPÕE AOS OUTROS CAMINHOS''''..
+  
+
+
+
+
+
+
+
+
+
+  OU SEJA,
+
+
+  RECAPITULE OS VOLUMES ATUAIS:
+
+
+
+
+
+
+
+-v feedback-volume-2:/app/feedback (named)
+-v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app:ro" (bind mount) 
+-v /app/node_modules b3656e44241d (anon)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE QUISERMOS DEIXAR AQUELE FOLDER DE 'TEMP'
+
+
+como ANON VOLUME (vinculado a cada container, atrelado a ele),
+
+
+
+
+DEVEMOS OU ESCREVER ISTO:
+
+
+
+-v /app/temp b3656e44241d (anon)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OU COLOCAR AQUELA INSTRUCTION DE 'VOLUME ["/app/temp"]'
+
+
+
+LÁ 
+
+
+NO dockerfile....
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80
+
+# QUEREMOS QUE APENAS OS ARQUIVOS DENTRO DO FOLDER DE 'feedback' sejam permanentes... (ou seja, que existam no lado de FORA do container)..
+# ---> ESSE COMANDO SIMPLES --> ADICIONA 1 'ANONYMOUS VOLUME' (é o primeiro tipo de volume) ---> O OUTRO TIPO DE VOLUME É 'NAMED VOLUME'
+# VOLUME ["/app/feedback"]
+
+
+### PARA ADICIONAR __ NAMED __ VOLUMES (geralmente mais úteis do que UNNAMED VOLUMES)
+###  __ ao contexto de seus __ CONTAINERS, vocÊ deve fazer isso EXTERNAMENTE (e naõ dentro de cada container...)
+
+# CMD ["node", "server.js"] ---- trocamos pela versão do NODEMON...
+
+
+### queremos que ele realmente seja anônimo (vinculado a cada container, e não a outras coisas/containers)
+VOLUME [ "/app/temp" ] 
+
+### queremos que o NODEMON seja iniciado, e não o 'node'
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS AÍ, SE QUISERMOS QUE 
+
+
+A
+ PASTA 
+
+
+
+ DE 'feedback' 
+
+ TAMBÉM 
+
+
+
+ SEJA 'WRITABLE',
+
+
+
+
+
+que se SOBREPONHA AO ':ro'
+
+
+
+
+DO BIND MOUNT,
+
+DEVEMOS 
+
+
+
+ASSIGNAR OUTRO VOLUME A ELA,
+
+
+DESSA VEZ 1 NAMED VOLUME, PROVAVELMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SE ESPECIFICAMOS ESSE 'SUB-VOLUME', MAIS ESPECÍFICO,
+
+ELE 
+VAI 
+
+SE SOBREPOR A ESSE 'VOLUME MAIS GERAL', do bind mount....
+
+
+
+
+
+
+
+
+
+RECAPITULANDO :
+
+
+
+
+
+-v feedback-volume-2:/app/feedback (named)
+-v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app:ro" (bind mount) 
+-v /app/node_modules b3656e44241d (anon)
+
+
+
+
+
+
+
+
+
+
+--> MAS, PELO VISTO, JÁ ESTAMOS 'GOOD'
+
+
+
+em relação a esse volume mais específfico,
+
+pq 
+
+
+já havíamos definido o subvolume/named volume de '
+
+
+'''''
+-v feedback-volume-2:/app/feedback (named)
+'''''
+
+
+
+
+
+
+
+
+E COMO ESSE 
+
+
+NAMED VOLUME NÃO TEM ':ro',
+
+
+
+
+
+
+ESSE FEEDBACK FOLDER SERÁ WRITABLE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA SÓ TEMOS QUE FAZER ALGO SIMILAR COM 
+
+
+
+
+O FOLDER DE 'TEMP' ---> PRECISAMOS ADICIONAR 
+1 VOLUME 
+
+ADICIONAL,
+
+
+
+
+NO CASO 1 ANON VOLUME,
+
+
+
+
+
+
+
+EXATAMENTE  COMO FALEI ANTES..
+
+
+
+
+
+
+
+
+
+
+
+---> É UMA BOA IDEIA DEIXAR ESSE FOLDER 
+
+COMO 
+
+
+1 FOLDER TEMPORÁRIO,
+
+
+
+
+PQ 
+
+
+
+
+APESAR DE ISSO NÃO SOBREVIVER AO CONTAINER REMOVAL E RESTARTS,
+
+ISSO 
+VAI 
+
+GARANTIR QUE 
+
+
+ O CONTAINER CONSEGUIRÁ ESCREVER ISSO 
+
+
+ NO HOST FILE SYSTEM,
+
+ O QUE 
+
+
+
+
+VAI DEIXAR 
+ELE 
+
+
+1 POUCO MAIS EFICIENTE,
+
+INTERNAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR JÁ HAVIA FALADO SOBRE ISSO ANTES,
+
+ E JÁ HAVÍAMOS ESCRITO ISSO 
+ LÁ 
+
+
+
+
+ NO DOCKERFILE,
+
+
+
+ com 
+
+
+ "VOLUME ["/app/temp"]"
+
+
+
+
+
+
+
+
+
+
+
+ --> MAS O PROFESSOR DIZ  QUE DEVEMOS REMOVER A OPTION DE 'VOLUME' 
+
+ LÁ 
+
+ DO DOCKERFILE,
+
+
+ PQ __ AS DEFINIÇÕES DE 
+
+
+ '''VOLUMES MAIS ESPECÍFICOS'''
+
+
+
+ EM RELAÇAÕ A VOLUMES MAIS GERAIS (BIND MOUNTS, geralmente)
+
+
+
+
+ SOMENTE FUNCIONAM 
+
+ SE VOCÊ 
+
+ OS 
+
+ ESCREVER 
+
+
+ DIRETAMENTE NO COMANDO DO TERMINAL,
+
+
+
+ E NÃO FUNCIONAM 
+
+ SE 
+ VOCÊ 
+
+
+ ESCREVE 
+
+
+
+ NO DOCKERFILE, com 'VOLUME [xxx]'  
+
+
+
+
+
+
+
+
+ É POR ISSO QUE 
+
+
+
+
+
+
+
+ A VERSÃO IDEAL DO CÓDIGO É TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ docker run -d -p 3000:80 --rm --name feedback-app 
+ -v feedback-volume-2:/app/feedback (named)
+ -v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" (bind mount) 
+ -v /app/node_modules (anon)
+ -v /app/temp (anon)
+ b3656e44241d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. AGORA TERMINAMOS...
+
+
+
+
+
+
+
+
+COM ISSO,
+
+
+
+ASSEGURAMOS:
+
+
+
+
+1) QUE TODOS OS VOLUMES QUE PRECISAM SER 'WRITTEN'
+ DE DENTRO DO CONTAINER FICAM COMO WRITABLE (as pastas de TEMP e FEEDBACK)
+
+
+2) E TODOS OS VOLUMES QUE NÃO PRECISAM SER WRITTEN
+ DE DENTRO DO CONTAINER (resto do source code) FICAM SEM O SER... (o bind mount em si)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> ok...
+
+
+
+
+
+
+
+AGORA TUDO ESTÁ FUNCIONANDO COMO ANTES,
+
+MAS 
+AGORA 
+
+
+
+
+TEMOS ESSA 'CLARIDADE EXTRA'
+
+
+EM RELAÇÃO AO NOSSO BIND MOUNT..
+
+
+
+
+
+
+
+
+--> E, É CLARO,
+
+NESSE APP NUNCA TENTAMOS 
+
+FAZER WWRITE 
+
+
+
+
+AO NOSSO LOCAL HOST FOLDER (do bind mount),
+
+
+
+
+MAS ESSA É SIMPLESMENTE UMA BOA PRACTICE,
+
+1 BOA IDEIA,
+
+PQ 
+
+
+AÍ 
+VOCÊ 
+
+NÃO 
+
+
+
+ACABA MUDANDO/ALTERANDO
+ 
+
+
+ FILES NO INTERIOR DO BIND MOUNT (local file system) ACIDENTALMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ E É POR ISSO QUE ESSE É UM BOM PATTERN, QUE 
+
+ PODEMOS 
+
+ USAR NOS NOSSOS PROJETOS...
