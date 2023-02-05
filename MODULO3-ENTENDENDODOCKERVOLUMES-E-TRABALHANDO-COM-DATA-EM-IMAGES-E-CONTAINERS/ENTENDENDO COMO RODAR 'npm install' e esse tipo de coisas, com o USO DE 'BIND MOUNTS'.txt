@@ -1,0 +1,2375 @@
+
+
+
+
+
+
+
+
+
+
+
+
+----> NA ÚLTIMA AULA,
+
+
+RECEBEMOS 1 ERROR DE 
+
+
+
+'EXPRESS COULD NOT BE FOUND'
+
+
+
+
+QUANDO 
+
+TENTAMOS 
+
+RODAR O CONTAINER QUE 
+
+TINHA 1 BIND MOUNT (
+    ou seja,
+
+    que 
+
+
+    tinha o FILE STORAGE DE NOSSA MÁQUINA VINCULADO A 1 FOLDER 
+
+    LÁ 
+
+
+
+    NO CONTAINER, no caso o folder de '/app' INTEIRO... 
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... MAS SE CONSIDERARMOS ESSE ERROR QUE FOI THROWN,
+
+
+PODEMOS NOS PERGUNTAR:
+
+
+
+
+
+
+
+
+
+
+
+''QUAL É O PROBLEMA EM RELAÇÃO A ESSE RECÉM ADICIONADO BIND-MOUNT?'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> BEM, DEVEMOS TER EM MENTE QUE ESTAMOS  BINDANDO 
+
+TODO O FOLDER DE 
+
+
+'projeto-volumes-node'
+
+
+
+AO FOLDER DE 
+
+'/app'...
+
+
+
+
+(dentro do container)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO, EM OUTRAS PALAVRAS,
+
+QUER DIZER QUE 
+
+ESTAMOS 
+
+KIND OF OVERWRITTANDO 
+
+
+TODO O CONTEÚDO NO INTERIOR DE '/app'
+
+
+
+COM 
+
+
+NOSSO FOLDER EXISTENTE 
+
+
+NA LOCAL MACHINE...
+
+
+
+
+
+
+
+
+
+--> SIM.... E NÓS, DE FATO,
+
+
+
+
+
+COPÍAMOS TUDO DA PASTA 'projeto-volumes-node'
+
+PARA DENTRO 
+
+DAQUELE CONTAINER,
+
+
+INICIALMENTE,
+POR MEIO 
+
+
+DA INSTRUÇÃO, NA DOCKER FILE,
+
+DE 
+
+
+
+'COPY . .   '...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, ANTES DESSE COPY,
+
+
+NÓS 
+
+INSTRUÍMOS A RODAR 'NPM INSTALL' PARA 
+
+
+CONSEGUIR TODAS 
+
+AS 
+
+DEPENDENCIES...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS O QUE INTERESSA,
+AQUI,
+
+
+
+
+
+
+
+É QUE 
+NÓS 
+BASICAMENTE 
+
+
+
+'DEIXAMOS COMPLETAMENTE INÚTEIS'
+
+
+
+
+_ AS _ ETAPAS ___ DE 
+
+
+
+
+'COPY package.json 
+
+
+RUN npm install 
+
+COPY . . '
+
+
+
+
+
+
+,
+
+
+
+
+
+
+
+
+
+
+
+ESSAS ETAPAS QUE SÃO RODADAS/ERAM RODADAS DURANTE A 'IMAGE CREATION'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> ESSAS ETAPAS FICAM 'WORTHLESS'
+
+
+SE FAZEMOS 
+
+O 
+
+
+BIND 
+
+
+
+DESSE MOUNT (o mount de '/projeto-volumes-node')
+
+
+
+
+__ AO CONTAINER (à pasta de '/app', no container, que basicamente é o CONTAINER EM SI, pq contém todo o código em seu interior)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO PQ TUDO NO INTERIOR DO FOLDER DE 'app'
+
+É OVERWRITTADO 
+
+
+DE QUALQUER FORMA,
+
+
+
+
+
+ 
+ COM NOSSO LOCAL FOLDER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> E ESSE 'LOCAL FOLDER'
+
+
+
+
+ NÃO  
+
+
+
+ TEM 
+
+
+ O FOLDER 
+ DE 
+
+
+ 'NODE MODULES',
+
+ que 
+
+
+
+ contém/conterá 
+
+
+ todas as dependencies 
+
+ necessárias ao nosso app....
+
+
+
+
+
+
+
+
+
+
+
+ >>>> E ESSA (falta de node_modules)
+  
+  É JUSTAMENTE 
+
+  A RAZÃO 
+
+  DO 
+
+  ERRO DE '''express''
+
+  que 
+
+  estamos recebendo agora...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --> O ARQUIVO 'server.js'
+
+
+  PRECISA 
+
+
+
+  DA PACKAGE/DEPENDENCY DE 'express.js',
+
+
+
+
+  E 
+
+  ESSA DEPENDENCY EXISTIA NO CONTAINER POR CONTA DE 'npm install',
+
+
+
+  E NÃO EXISTE NO NOSSO LOCAL SETUP (na máquina local)
+
+
+
+  PQ 
+
+
+  O PROFESSOR REALMENTE NÃO HAVIA RODADO 'npm install'
+
+
+
+
+  localmente...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --> E COMO FIZEMOS O MOUNT DO 'LOCAL FOLDER'
+
+  AO 
+
+
+
+  FOLDER DE 'app' dentro do container,
+
+
+
+
+
+
+
+
+NÓS FIZEMOS OVERWRITE 
+
+
+
+
+DE TODO O TRABALHO QUE FIZEMOS ALI (quando settamos a image e também o container),
+
+
+
+
+PQ TUDO 
+
+FOI 
+
+OVERWRITTADO 
+
+
+
+
+COM O CONTEÚDO DO LOCAL FOLDER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ESSE É O PROBLEMA, AQUI..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS COMO PODEMOS SOLUCIONAR ESSE PROBLEMA?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PRIMEIRAMENTE,
+DEVEMOS 
+
+ENTENDER
+
+
+
+
+
+
+
+
+
+
+
+
+'''COMO CONTAINERS INTERAGEM COM 
+
+VOLUMES E BIND MOUNTS'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+SE TEMOS 1 CONTAINER,
+
+
+
+E AÍ 
+
+
+TEMOS 
+
+
+
+1 VOLUME E 1 BIND-MOUNT,
+
+
+
+PODEMOS 
+
+
+FAZER 
+
+BIND DE AMBOS AO NOSSO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I 
+     volume         I   ---------       V
+                    I   
+                    I 
+                    I 
+-----------------------
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I    ----------    V 
+    BIND MOUNT      I 
+                    I 
+                    I 
+                    I 
+-----------------------
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I                   I 
+      CONTAINER     I  -------------    I
+                    I 
+                    I 
+                    I 
+-----------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+ESSES 2 TIPOS DE VOLUMES SÃO BINDADOS AO CONTAINER, POR MEIO DE '-v'...
+
+
+
+
+
+
+
+
+
+
+
+VOLUMES --> usamos 'docker run -v nome-do-volume:/caminho/no/container 
+
+
+
+
+
+
+
+
+
+
+BIND MOUNT --> usamos 'docker run -v absolute/path/caminho/na/local/machine:/caminho/no/container
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----_> OK...
+
+
+
+
+
+
+
+
+
+DIGAMOS QUE OS CAMINHOS SÃO 
+
+
+
+
+VOLUME --> '/some-path' 
+
+
+
+
+
+
+BIND MOUNT --> '/some-other-path' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE 
+
+
+
+
+
+
+
+
+
+
+ALGUNS FOLDERS DENTRO DO CONTAINER SÃO MONTADOS/CONECTADOS 
+
+A FOLDERS 
+NA HOST MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS DIGAMOS QUE JÁ EXISTIAM ALGUNS ARQUIVOS NO INTERIOR DO CONTAINER, TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I 
+     volume         I   ---------       V
+                    I   
+                    I 
+                    I 
+-----------------------
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I    ----------    V 
+    BIND MOUNT      I 
+                    I 
+                    I 
+                    I 
+-----------------------
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I                   I 
+      CONTAINER     I  -------------    I
+                    I 
+                    I 
+                    I 
+
+    /app/data 
+    V 
+    V--> some-file.txt 
+    V --> file2.txt 
+
+
+
+    /app/code 
+
+-----------------------
+
+
+
+
+
+
+
+
+
+
+
+
+OK, TÍNHAMOS ESSES 2 FOLDERS  ( o de 'code' e o de 'data', ambos dentro do container)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... NESSE CASO,
+
+
+
+ESSES 2 FOLDERS 
+
+
+
+
+
+
+
+_ TAMBÉM EXISTIRÃO NO VOLUME __ EXISTENTE NO LADO DE FORA (o volume mesmo, não o  BIND MOUNT)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''CONTAINER DATA IS STORED IN VOLUME'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FICA TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I 
+     volume         I   ---------       V
+                    I   
+        some-file.txt            I 
+        file2.txt          I 
+-----------------------
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I    ----------    V 
+    BIND MOUNT      I 
+                    I 
+                    I 
+                    I 
+-----------------------
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I                   I 
+      CONTAINER     I  -------------    I
+                    I 
+                    I 
+                    I 
+
+    /app/data 
+    V 
+    V--> some-file.txt 
+    V --> file2.txt 
+
+
+
+    /app/code 
+
+-----------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+E SE ESCREVERMOS 1 NOVO ARQUIVO ,
+
+
+
+
+
+
+
+
+ESSE ARQUIVO TAMBÉM É ESCRITO LÁ NO FOLDER 
+
+
+DA HOST MACHINE,
+
+
+
+
+no 'volume'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+E SE O CONTAINER 'STARTS UP'
+
+
+
+
+__ E ENCONTRA FILES__ DENTRO DO VOLUME , E SE O CONTAINER 
+
+
+NÃO TIVER NENHUMA 'INTERNAL FILE'
+
+
+AINDA,
+
+
+
+
+__ ELE _ VAI LOAd__ ESSAS FILES _ LÁ DO VOLUME... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ESSE MECANISMO DE 'NÃO TÍNHAMOS NADA NO INTERIOR DO CONTAINER,
+
+POR ISSO 
+
+CARREGAMOS 
+
+FILES LÁ DA LOCAL MACHINE'
+
+
+
+
+É O QUE TAMBÉM UTILIZAMOS 
+
+LÁ COM OS 
+
+
+'BIND-MOUNT',
+
+
+
+
+
+
+
+
+PQ LÁ 
+
+
+
+
+
+__ ERA POSSÍVEL NÃO TER COISA ALGUMA NO 'CONTAINER',
+
+
+
+
+
+MAS TER COISAS LÁ NA 'LOCAL MACHINE'. --> E, NESSE CASO,
+
+
+
+
+AS FILES 
+
+LÁ 
+
+
+
+DA LOCAL MACHINE 
+
+
+TAMBÉM 
+
+
+PASSAM A SER USÁVEIS DENTRO DO CONTAINER..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I 
+     volume         I   ---------       V
+                    I   
+        some-file.txt            I 
+        file2.txt          I 
+-----------------------
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I    ----------    V 
+    BIND MOUNT      I 
+                    I 
+    script.js       I  ---> VOLUME DATA _ É ACESSÍVEL NO CONTAINER...
+                    I 
+-----------------------
+
+
+
+
+
+---------------------
+                    I 
+                    I 
+                    I                   I 
+      CONTAINER     I  -------------    I
+                    I 
+                    I 
+                    I 
+
+    /app/data 
+    V 
+    V--> some-file.txt 
+    V --> file2.txt 
+
+
+
+    /app/code 
+
+    script.js 
+
+-----------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS AGORA __ TEMOS 'KIND OF' 
+
+
+__ OS 2 TIPOS DE COISAS ACONTECENDO...
+
+
+
+
+
+
+
+
+
+
+---> ISSO PQ:
+
+
+
+
+
+
+
+1) TEMOS ARQUIVOS DENTRO DO CONTAINER, LÁ NO FOLDER DE 'app',
+
+
+
+TUDO POR CONTA 
+
+
+DAS 
+
+INSTRUCTIONS, na docker file,
+
+de 
+
+
+
+
+'COPY package.json 
+
+RUN npm install 
+
+COPY . .' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+2) E TEMOS __ FILES _ E FOLDERS
+
+
+
+NO LADO DE FORA 
+
+DO CONTAINER,
+
+
+NAQUELE 
+
+
+
+
+
+
+'''FOLDER NA NOSSA LOCAL HOST MACHINE'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E, AGORA,
+
+A BOA NOTÍCIA É QUE O 
+
+'DOCKER NÃO COMEÇA A __ FAZER __ OVERWRITE 
+____ DAS __ FILES __ NA NOSSA LOCAL HOST MACHINE'..
+
+
+
+
+
+
+
+
+
+
+-------> SERIA BEM RUIM SE O DOCKER FIZESSE ISSO (fizesse com que os arquivos/file system do CONTAINER overwritasse coisas ARMAZENADAS NESSE FOLDER BINDADO, LÁ NA LOCAL MACHINE)...
+
+
+
+
+
+
+
+
+--> SERIA RUIM __ PQ __ 
+
+PODERÍAMOS DELETAR 1 MONTE DE COISAS 
+IMPORTANTES NO NOSSO COMPUTADOR,
+
+TUDO POR ACIDENTE -->  E É POR ISSO QUE 
+
+
+
+
+ISSO NÃO ACONTECERÁ,
+
+O DOCKER 
+
+NÃO 
+
+VAI 
+APAGAR/OVERWRITTAR 
+
+
+COISAS 
+
+
+
+
+DO _ NOSSO LOCAL __ HOST FOLDER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> EM VEZ DISSO,
+
+
+
+AQUI,
+
+
+
+O 'LOCAL HOST FOLDER'
+
+
+
+VAI _ OVERWRITTAR O QUE __ EXISTE DENTRO DO DOCKER CONTAINER... (menos pior)...
+
+
+
+
+
+
+
+
+
+
+
+--> MAS ESSE É PRECISAMENTE O ERRO QUE ESTAMOS ENCONTRANDO, AGORA,
+
+PQ 
+
+ESTAMOS 
+
+NOS LIVRANDO DOS 
+
+NODE_MODULES,
+
+
+QUE 
+contÊM 
+
+NOSSAS DEPENDENCIES..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> PARA SOLUCIONAR ESSE PROBLEMA,
+
+
+PRECISAMOS ESSENCIALMENTE 
+
+'COMUNICAR AO DOCKER'
+
+
+
+QUE 
+
+EXISTEM _ CERTAS __ PARTES___ 
+
+
+
+
+NO 'INTERNAL FILE SYSTEM' 
+
+
+DO CONTAINER 
+
+QUE 
+NÃO 
+
+DEVERÃO 
+
+
+SER SUBSTITUÍDAS 
+
+PELO 
+
+
+FILE SYSTEM 
+
+DO LADO DE FORA (da local host machine),
+
+
+
+EM CASO DE CLASHES (
+
+    como este que temos aqui...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ISSO PODE _ SER OBTIDO __ POR MEIO DO ADD _dE OUTRO 
+
+
+VOLUME 
+
+
+A 
+
+ESSE DOCKER CONTAINER.. --> NO CASO,
+
+
+
+
+
+
+
+
+AQUI ESTAMOS FALANDO 
+
+DE 
+
+1 
+
+
+'ANON VOLUME' ---------> SÃO JUSTAMENTE OS 
+
+
+'ANON VOLUMES'
+
+
+QUE 
+
+
+NOS SALVAM,
+
+
+
+
+
+
+EM CASOS COMO ESSES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU SEJA,
+
+
+
+O PROFESSOR VAI NOS MOSTRAR 1 USE-CASE 
+
+
+
+EM QUE 
+
+
+
+ANON VOLUMES PODEM SER ÚTEIS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+O PROFESSOR ADICIONA 1 TERCEIRA FLAG DE '-v'...
+
+
+
+
+
+
+
+
+
+--> COM ELA,
+
+
+
+
+
+
+ELE VAI QUERER ADICIONAR 1 ANON VOLUME,
+
+
+por isso ele escreve assim:
+
+
+
+
+
+
+
+
+
+
+-v /app/node_modules  
+
+
+
+
+
+
+
+
+
+
+--> É ANON JUSTAMENTE PQ NÃO DEFINIMOS NOME ALGUM A ELE... (só o path)...
+
+
+
+
+
+
+
+
+
+
+
+
+ELE SERÁ CONSIDERADO 1 'ANON VOLUME',
+
+
+
+
+
+
+
+
+
+
+E É ESSENCIALMENTE __ A MESMA COISA QUE 
+
+ESCREVER 
+
+
+
+'VOLUME ["/app/node_modules"]' 
+
+
+
+
+
+
+
+
+
+
+LÁ DENTRO DA DOCKERFILE...
+
+
+
+
+
+
+
+
+
+
+
+
+E É UM ANON VOLUME PQ _ NÃO TEM NENHUM NOME... -----> 
+
+
+
+
+
+
+
+
+
+
+
+SE ADICIONÁSSEMOS 'algumNome:',
+
+
+
+
+ISSO SERIA UM NAMED VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... 
+
+
+
+
+
+
+
+
+
+
+E ESCREVER 
+
+
+
+
+
+
+
+
+'-v /app/node_modules'
+
+
+
+
+
+
+
+
+
+
+
+É A MESMA COISA QUE ESCREVER 
+
+
+
+''''
+'VOLUME ["/app/node_modules"]' 
+'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR DIZ QUE PODERÍAMOS FAZER OS 2,
+
+
+MAS ELE VAI USAR A VERSÃO DA FLAG,
+PQ ESTÁ COM PREGUIÇA 
+
+
+
+_DE __ REBUILDAR A IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, O CÓDIGO INTEIRO FICA ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app
+ -v feedback-volume-2:/app/feedback (NAMED VOLUME)
+ -v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" (BIND MOUNT)
+ -v /app/node_modules (ANON VOLUME)
+  b3656e44241d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... MAS PQ ISSO NOS AJUDARIA, AQUI?
+
+
+
+
+
+
+
+
+
+
+
+------> BEM, ISSO NOS AJUDA 
+PQ 
+
+
+
+O DOCKER 'SEMPRE EVALUATES __ TODOS OS __ VOLUMES EXISTENTES EM 1 CONTAINER'...
+
+
+
+
+
+
+
+
+
+
+e se existem QUAISQUER CLASHES,
+
+
+
+
+
+
+
+O 'LONGER INTERNAL PATH'
+
+
+
+
+
+
+VENCE ...
+
+
+
+
+
+
+
+
+(O PATH INTERNO MAIS LONGO SEMPRE VENCE)..
+
+
+
+
+
+
+
+
+
+
+
+
+--> NESSE NOSSO CASO ESPECÍFICO, TEMOS 1 CLASH, pelo visto...
+
+
+
+
+
+
+
+
+
+
+
+o clash é entre 
+
+
+O PATH MAIS CURTO (que é '/app/', usado com o BIND MOUNT)
+
+E 
+
+
+
+
+
+
+O PATH MAIS LONGO (que é '/app/node_modules', usado com esse ANON VOLUME)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. ENTÃO É UM CLASH ENTRE O VOLUME COM PATH MAIS CURTO E O VOLUME COM PATH MAIS LONGO...
+
+
+
+
+
+
+
+
+
+------> NÃO BINDAMOS NENHUM NAME ÀQUELE ANON VOLUME,
+
+
+MAS O QUE INTERESSA É QUE ELE É MANAGEADO PELO DOCKER,
+
+
+
+E __ QUE __ EXISTE ALGUM MAPPED FOLDER, EM ALGUM LUGAR DE NOSSA MÁQUINA (que é 
+
+
+QUE É CLEARED QUANDO O CONTAINER É REMOVIDO, MAS O QUE INTERESSA É QUE 
+
+ESSE FOLDER EXISTE, AINDA QUE SEJA 1 ANON VOLUME...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ESSE VOLUME MAPPEADO AO FOLDER DE '/app/node_modules' --> O CAMINHO 
+
+
+MAIS ESPECÍFICO/LONGO VENCE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO QUER DIZER, EM OUTRAS PALAVRAS,
+
+QUE 
+AINDA PODEMOS 
+
+BINDAR AO 
+
+
+
+FOLDER DE '/app',
+
+
+
+
+
+
+
+MAS O FOLDER DE 'node_modules',
+
+
+
+dentro 
+
+do 
+
+
+folder de '/app',
+
+
+
+
+
+
+
+
+_ ELE VAI SOBREVIVER ... --> E _ ELE _ VAI 'OVERWRITE'
+
+
+O 
+
+FOLDER 
+
+QUE 
+
+
+VEM DO LADO DE FORA,
+
+
+
+
+
+POR CONTA DESSE FOLDER DE 'node_modules'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E COMO NENHUM FOLDER DE 'node_modules'
+
+
+
+VAI VIR 
+
+DO LADO DE FORA,
+
+
+O 
+
+
+NODE_MODULES
+
+
+FOLDER DE DENTRO 
+
+
+DO 
+
+
+CONTAINER,
+
+
+
+VINCULADO ÀQUELE 'anon volume',
+
+
+
+
+VAI SOBREVIVER E ACTUALLY COEXISTIR 
+
+
+JUNTO COM 
+
+O 'BIND MOUNT'
+
+DO FOLDER DE 'app' inteiro,
+
+
+QUE AINDA VAI FUNCIONAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+----_> É ŚO O 'NODE_MODULES'
+
+
+QUE SERÁ KIND OF EXCLUDED 
+
+
+
+
+DE ESSE BIND MOUNT..
+
+
+
+
+
+
+
+
+
+
+
+----_> OK...
+
+
+
+
+
+AGORA SE RODARMOS ESSE CONTAINER,
+
+COM 
+
+ESSE EXTRA VOLUME,
+
+
+
+
+
+
+
+
+
+
+
+
+VEREMOS QUE ISSO STARTA,
+
+E NOSSO APP VAI REALMENTE FUNCIONAR.. (sem o erro de express)... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+MAS AGORA TEREMOS GANHADO MAIS 1 BENEFÍCIO --> SE ALTERAMOS ALGO NO NOSSO ARQUIVO 
+
+HTML ENQUANTO O CONTAINER ESTÁ RODANDO,
+
+
+
+
+
+
+
+
+
+
+
+O CONTAINER SERÁ ALTERADO EM TEMPO real... (o source code DO CONTAINER)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VEREMOS ESSA CHANGE INSTANTANEAMENTE,
+SEM 
+
+TER 
+
+DE REBUILDAR A IMAGE...
+
+
+
+
+
+
+
+
+
+
+E A RAZÃO DE ISSO TER FUNCIONADO/ESSA FEATURE FUNCIONAR 
+
+
+É 
+
+JUSTAMENTE O 'BIND MOUNT',
+
+
+
+
+
+
+__ QUE __, NESSE CASO,
+
+
+APENAS 
+
+
+
+FUNCIONA 
+
+SE 
+
+
+
+ADICIONARMOS ESSE 'ANON VOLUME' DE 'node_modules',
+
+
+
+
+
+
+
+
+
+
+
+ESSE 'ANON MODULE',
+
+
+
+TUDO PARA QUE ESSE _NODE_MODULES_
+
+
+NÃO ACABE OVERWRITTEN POR NOSSO CONTEÚDO DO BIND MOUNT....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.. É MEIO COMPLEXO, MAS ACHO QUE COMPREENDI...
