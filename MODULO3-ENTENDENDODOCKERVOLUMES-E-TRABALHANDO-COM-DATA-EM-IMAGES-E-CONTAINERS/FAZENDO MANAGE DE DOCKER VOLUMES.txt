@@ -1,0 +1,1293 @@
+
+
+O PROFESSOR HAVIA FALADO QUE 
+
+
+'''VOLUMES SÃO MANAGEADOS PELO DOCKER'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ISSO É VERDADE:
+
+
+
+
+SEMPRE QUE 
+
+
+
+
+RODAMOS 1 CONTAINER,
+
+
+
+COM 'DOCKER RUN',
+
+
+
+
+
+COM AQUELAS 
+
+
+FLAGS DE 
+
+'-v',
+
+
+
+
+O 
+
+
+DOCKER VAI IR EM FRENTE E CRIAR ESSE VOLUME,
+
+
+
+O QUE 
+
+QUER 
+
+DIZER QUE 
+
+
+ELE 
+
+
+VAI 
+
+
+
+CRIAR 
+
+
+1 FOLDER 
+
+
+NO LOCAL HOST MACHINE,
+
+
+
+
+
+
+
+
+
+
+TUDO DE FORMA AUTOMÁTICA...
+
+
+
+
+
+
+
+
+
+
+
+E ELE FAZ ISSO SEM NÓS 
+
+
+
+ENTREGARMOS QUAISQUER INSTRUCTIONS EXTRAS...
+
+
+
+
+
+
+
+
+
+
+
+
+AINDA ASSIM,
+
+VOCÊ PODE DAR 1 OLHADA 'UNDER THE HOOD',
+
+
+
+E 
+
+VER 
+O QUE 
+
+
+O 
+
+DOCKER ACTUALLY FEZ...
+
+
+
+
+
+
+
+
+
+
+
+
+--> BASTA RODAR 
+
+'docker volume --help',
+
+
+
+
+PARA 
+
+
+
+MOSTRAR OS COMANDOS QUE 
+
+PODEMOS USAR 
+
+
+PARA 
+
+
+
+EXAMINAR 
+
+NOSSOS VOLUMES,
+
+OS VOLUMES MANAGEADOS PELO DOCKER..
+
+
+
+
+
+
+
+
+
+
+
+AQUI TEMOS APENAS 1 CONTAINER,
+
+
+
+
+
+
+
+
+
+MAS PODEMOS TER MÚLTIPLOS CONTAINERS,
+E AÍ 
+
+PODEMOS 
+VER 
+
+OS 
+
+VOLUMES DE TODOS OS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker volume ls --> 
+
+
+
+
+SE RODAMOS ISSO,
+
+
+
+PERCEBEMOS QUE TEMOS 
+
+
+
+
+
+VÁRIOS VOLUMES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1) ANON VOLUMES --> SÃO AQUELES COM UM ID, id super longo...
+
+
+
+
+
+
+2) NAMED VOLUME --> SÃO AQUELES QUE TEM UM 'NAME' DEFINIDO...
+
+
+
+
+
+
+
+DRIVER    VOLUME NAME
+local     41281bd70e863ce2e6ba1e8da9a808246f1d08089563c15c0dccc1155f3365bc
+local     e25bc844857f79f8d85f3ededfc0510e2827630840327eb6e217c967e5dae994
+local     feedback-volume
+local     feedback-volume-2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> ok...
+
+
+
+
+
+
+
+TEMOS 2 NAMED VOLUMES,
+
+
+E 
+
+2 ANON VOLUMES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+recapitulando o comando que rodamos antes:
+
+
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app 
+-v feedback-volume-2:/app/feedback (NAMED VOLUME)
+-v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" (BIND MOUNT) 
+-v /app/node_modules (ANON VOLUME)
+-v /app/temp b3656e44241d (ANON VOLUME)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E O __ _'BIND MOUNT' Não aparece nessa lista 
+
+
+
+
+JUSTAMENTE PQ 
+
+
+
+OS BIND MOUNTS __ NÃO SÃO _ MANAGEADOS __ PELO DOCKER,
+
+
+E SIM 
+
+
+SÃO 
+
+MANAGEADOS 
+POR NÓS...
+
+
+
+
+
+
+
+
+
+
+
+CONFORME O PROFESSOR MENCIONOU ANTERIORMENTE,
+
+
+O BIND MOUNT NÃO É MANAGEADO PELO DOCKER,
+
+
+E 
+O BIND MOUNT 
+
+
+__ BINDA __ 1 FOLDER QUE 'CONHECEMOS' (NÓS CONHECEMOS)
+
+
+
+A __ 1 _ FOLDER__ LÁ NO CONTAINER... --> E É POR ISSO, PORTANTO,
+
+
+QUE 
+
+O 
+
+DOCKER NÃO FAZ MANAGE DISSO (
+
+
+    NÓS QUE FAZEMOS,
+
+    PQ __ NÓS É QUE TEMOS CONTROLE SOBRE ESSE FOLDER,
+
+    o docker não o 'conhece'..., NÃO CONHECE ESSE FOLDER NA NOSSA LOCAL MACHINE...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O RESTO DOS VOLUMES, AQUI,
+
+
+REALMENTE É MANAGEADO PELO DOCKER...
+
+
+
+
+
+
+
+
+
+
+E 'MANAGEADO PELO DOCKER'
+
+
+QUER DIZER QUE 
+
+
+
+__ O DOCKER _ TAMBÉM VAI CRIAR __ ESSE VOLUME,
+
+
+
+SE __ ELE __ NÃO EXISTIR,
+
+
+QUANDO VOCÊ 
+
+RODAR 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS RODAR 
+
+
+'docker volume create'
+
+
+PARA CRIAR 1 VOLUME POR CONTA PRÓPRIA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker volume create --help --> 
+
+
+
+
+
+
+
+
+
+ISSO NOS MOSTRA QUE 
+
+
+
+__ PODEMOS ESPECIFICAR 1 PUNHADO DE OPTIONS,
+
+
+APESAR DE N EXISTIREM MTAS (e serem avançadas)...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS USAR 
+
+
+docker volume create feedback-files ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-_> ISSO VAI CRIAR 1 VOLUME DE NOME 'feedback-files'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E AÍ, SE VOCê FOR RODAR SEU CONTAINER,
+
+
+VOCÊ 
+
+
+PODE 
+
+
+
+
+ATRIBUIR 
+
+
+SEU CONTAINER A ESSE VOLUME QUE FOI CRIADO COM 'docker volume create'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, SE VOCê ENTÃO RODA 
+
+O COMANDO DE 
+
+'docker run' 
+
+
+E ENTÃO 
+
+ESPECIFICA 
+
+
+
+QUE 
+
+QUER USAR 
+
+
+
+
+
+ESSE '-v feedback-files/app/feedback',
+
+
+
+
+ISSO VAI FUNCIONAR,
+
+VOCÊ 
+
+VAI REALMENTE 
+
+ACABAR 
+
+USANDO 
+
+
+
+ESSE 
+
+
+
+VOLUME,
+
+
+
+
+CHAMADO POR ESSE NOME...
+
+
+
+
+
+
+
+
+
+
+MAS SE VOCÊ N CRIAR O VOLUME ANTECIPADAMENTE,
+
+
+O DOCKER AINDA VAI CRIAR ELE _ QUANDO VOCÊ RODAR '-v xxxxxxx',
+
+
+
+
+
+
+
+_ AUTOMATICAMENTE...
+
+
+
+
+
+
+
+
+
+--> OU SEJA,
+
+O CREATE MANUAL DE VOLUMES É OPCIONAL,
+
+
+PQ 
+
+FREQUENTEMENTE 
+
+
+VAMOS 
+
+'LET IT UP TO DOCKER',
+
+
+
+
+pq não há mtas razões para fazer isso manualmente (dá na mesma)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO..
+
+
+
+
+
+
+
+
+MAS COM 'docker volume' 
+
+
+PODEMOS 
+
+FAZER MAIS COISAS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+1) DOCKER VOLUME rm --> ISSO PODE REMOVER 1 VOLUME ...
+
+
+
+
+
+
+2) DOCKER VOLUME PRUNE --> ISSO NOS DEIXA REMOVER TODOS OS UNUSED VOLUMES...
+
+
+
+
+
+
+
+
+
+
+
+------_> AÍ TAMBÉM TEMOS 
+
+
+
+docker volume inspect id_do_volume...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TEMOS ESTE EXEMPLO:
+
+
+
+
+
+arthur@arthur-IdeaPad-3-15ALC6:~/Desktop/PROJETO-DOCKER/curso-docker$ docker volume inspect feedback-volume-2
+[
+    {
+        "CreatedAt": "2023-02-05T14:57:23Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/feedback-volume-2/_data",
+        "Name": "feedback-volume-2",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+--> AÍ TEMOS ALGUMA INFORMATION SOBRE ESSE VOLUme:
+
+
+
+DATA DE SUA CRIAÇAÕ,
+
+
+QUAL DRIVER FOI UTILIZADO,
+
+
+seu name,
+
+
+
+
+OPTIONS (nada de mais) 
+
+
+
+
+
+
+
+
+
+
+
+
+E AÍ 
+
+
+O 
+
+
+'MOUNTPOINT',
+
+QUE 
+
+É 
+
+ACTUALLY o PATH NA NOSSA HOST MACHINE 
+
+
+EM QUE 
+
+
+
+ESSE 
+
+
+NEGÓCIO FOI ARMAZENADO (
+
+
+
+
+
+
+
+
+
+PQ O PROFESSOR HAVIA MENCIONADO QUE O DOCKER CRIA ISSO AUTOMATICAMENTE 
+
+PARA NÓS,
+
+
+
+pois bem,
+
+aqui está o folder em si...
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+AINDA ASSIM,
+
+
+ESSE É UM PATH QUE 
+
+
+VOCê 
+
+NÃO ENCONTRARÁ 
+
+NO SEU SISTEMA,
+
+
+PQ __ 
+
+
+
+ISSO É ACTUALLY DENTRO DE 1 PEQUENA 'VIRTUAL MACHINE'
+
+QUE 
+
+
+O 
+
+
+DOCKER __ SETTUPA NO SEU SISTEMA..
+
+
+
+
+
+
+
+
+
+
+--> HÁ 1 VIRTUAL MACHINE BÁSICA EM QUE 
+O DOCKER RODA,
+
+
+
+
+E __ ESSE É O PATH NAQUELA MÁQUINA,
+
+E NÃO 
+
+NA SUA LOCAL HOST MACHINE'...
+
+
+
+
+
+
+
+
+
+
+
+--> E É EXATAMENTE POR ISSO QUE 
+
+É 'DIFÍCIL DIZER O LOCAL EM QUE 
+
+
+O FOLDER DO VOLUME MANAGEADO PELO DOCKER ESTÁ',
+
+
+
+
+
+
+
+
+PQ 
+
+
+
+ESSE FOLDER VIRTUAL É MAPPEADO A SUA LOCAL MACHINE, SIM, 
+
+MAS É DIFÍCIL 
+
+DETERMINAR ISSO...
+
+
+
+
+
+
+
+
+
+PORTANTO,
+
+SE VOCÊ 
+SÓ 
+
+INSPECIONAR 
+
+
+
+O VOLUME, PARA QUERER DESCOBRIR ONDE O VOLUME ESTÁ ARMAZENADO,
+
+
+
+
+
+NÃO VAI GANHAR INFORMAÇÕES MT ÚTEIS..
+
+
+
+
+
+
+
+
+
+
+
+
+MAS  SE VOCê QUER INSPECIONAR SE ESSE VOLUME É 'READ-ONLY',
+
+VOCê 
+
+
+
+VERÁ 
+
+
+ISSO 
+
+
+DESCRITO NA OPTION DE 'Options' (se for um READ-ONLY VOLUME)...
+
+
+
+
+
+
+
+
+
+
+ESSE VOLUME N É READ ONLY,
+
+POR ISSO 
+
+NÃO ENCONTRAMOS NADA EM 'OPTIONS'...
+
+
+
+
+
+
+TAMBÉM 
+
+TEMOS 
+
+O 
+
+COMANDO DE 
+
+
+
+'docker volume rm id_do_volume',
+
+
+
+
+
+
+
+E AÍ PODEMOS 
+
+REMOVER 
+
+
+ 
+
+
+ O VOLUME DE 'feedback-files'
+
+ QUE 
+
+ CRIAMOS 
+
+ MAIS CEDO...
+
+
+
+
+
+
+
+
+
+ SE TENTAMOS REMOVER QUALQUER VOLUME,
+
+ GANHAMOS 1 ERROR,
+
+ PQ 
+
+
+ 'O VOLUME JÁ ESTÁ EM USO, COM UM CONTAINER'..
+
+
+
+
+
+
+ MAS SE PARAMOS o CONTAINER,
+
+
+
+
+
+
+ TORNAMO-NOS CAPAZES DE REMOVER O VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS TENHA EM MENTE QUE, SE VOCÊ REMOVER O VOLUME,
+
+
+
+__ VOCÊ VAI _ REMOVER __ TODOS OS 
+
+TEXT FILES QUE FORAM CRIADOS COM NOSSO APP (
+
+
+vamos remover todos os text files que foram criados com nosso app,
+
+e remover toda essa data que queríamos salvar ao longo de 'container restarts'...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ISSO VOCÊ DEVE TER EM MENTE:
+
+
+
+
+
+''' SE VOCê REMOVE 1 VOLUME,
+
+TODA __ A DATA_ DENTRO DO VOLUME É PERDIDA'''..
+
+
+
+
+
+
+
+
+
+
+E SE VOCÊ 
+
+CRIA 1 VOLUME, MAIS TARDE,
+
+COM O MESMO NOME,
+
+ESSA DATA AINDA NÃO SERÁ TRAZIDA DE VOLTA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... O PROFESSOR FAZ EXATAMENTE ISSO.... --> ELE PARA 1 CONTAINER,
+
+E AÍ 
+
+REMOVE O CONTAINER 
+DE 
+
+
+'feedback-volume',
+
+
+
+
+E __ DEPOIS _ 
+PERCEBE QUE 
+
+
+,
+
+AO RESETTAR O CONTAINER,
+
+
+
+TODA A DATA DO __ VOLUME REMOVIDO __ 
+
+
+FOI REMOVIDA JUNTO COM ELE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+
+
+
+
+E, COM 'docker volume prune',
+
+
+
+PODEMOS 
+
+REMOVER TODOS OS UNUSED VOLUMES,
+
+
+
+
+NO CASO DE VOCÊ TER MÚLTIPLOS VOLUMES NÃO UTILIZADOS E INÚTEIS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... OS ANON VOLUMES SÃO SEMPRE REMOVIDOS __ QUANDO O CONTAINER QUE 
+
+OS CRIOU É REMOVIDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO,
+
+ACABAMOS COM VOLUMES,
+
+
+
+
+
+
+E É BASTANTE COISA...
+
+
+
+
+
+
+
+
+
+
+
+É IMPORTANTE ENTENDER COMO OS UTILIZAR,
+
+
+
+
+
+E COMO '1 OVERWRITTA O OUTRO' (regra do 'path longo (mais específico) vs path curto (mais geral)' )
+
