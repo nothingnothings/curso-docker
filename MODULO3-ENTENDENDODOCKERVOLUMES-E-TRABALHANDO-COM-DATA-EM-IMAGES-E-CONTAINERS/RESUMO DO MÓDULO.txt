@@ -1,0 +1,751 @@
+
+
+
+
+
+
+
+
+
+
+TERMINAMOS ESTE MÓDULO... 
+
+
+
+
+
+
+
+
+
+
+vimos 1 monte de conceitos essenciais...
+
+
+
+
+
+
+
+
+
+APRENDEMOS:
+
+
+
+
+
+
+
+
+1) QUE CONTAINERS PODEM FAZER READ-WRITE DE DATA,
+
+
+
+
+
+MAS TAMBÉM QUE 
+
+
+
+VOLUMES _ SÃO __ ESSENCIAIS __ 
+
+
+
+
+PARA A DATA STORAGE --> NOS AJUDAM COM O STORE DE DATA,
+
+
+PRINCIPALMENTE DATA QUE 
+
+DEVE SOBREVIVER A CONTAINER REMOVAL...
+
+
+
+
+
+
+
+
+
+
+2) TAMBÉM VIMOS 'BIND MOUNTS',
+
+QUE 
+
+PODEM NOS AJUDAR COM DIRECT CONTAINER INTERACTION,
+
+
+COMO POR EXEMPLO NOSSO SOURCE CODE,
+
+QUE 
+DEVE 
+SER ATUALIZÁVEL POR NÓS,
+
+
+
+
+
+
+E EM QUE O LATEST SOURCE CODE SEMPRE DEVE ESTAR DISPONÍVEL, NO INTERIOR DO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS VAMOS ETAPA-POR-ETAPA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3) CONTAINERS SÃO O CORAÇÃO DO DOCKER,
+E JÁ SÃO CAPAZES DE 'READ-WRITE' DATA,
+
+
+
+
+
+
+MAS _ A DATA __ QUE VOCÊ ESCREVE DENTRO DE 1 CONTAINER 
+
+
+É 
+
+REMOVIDA 
+
+
+SEMPRE QUE 
+O 
+CONTAINER É REMOVIDO --> ÀS VEZES ISSO É ÚTIL,
+
+
+MAS MTAS VEZES ATRAPALHA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> QUASE TODO APP _ TEM CERTO__ TIPO DE DATA __ QUE DEVE SOBREVIVER,
+QUE 
+DEVE PERSIST --> 
+
+
+
+
+
+
+4) É EXATAMENTE POR ISSO QUE EXISTEM OS VOLUMES,
+
+
+
+
+
+
+VC PODE ADICIONAR VOLUMES --> VOLUMES SÃO 
+
+FOLDERS NA SUA LOCAL MACHINE,
+
+QUE 
+SÃO 
+
+MANAGEADOS PELO 
+
+DOCKER,
+
+
+E QUE SÃO 'MOUNTED'
+
+EM 
+
+
+DOCKER CONTAINER/CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+5) HÁ ESSA CONEXÃO 
+
+ENTRE OS PATHS MAPPEADOS _ DENTRO DO CONTAINER 
+
+E 
+
+OS 
+
+'AUTOMATICALLY CREATED FOLDER IN YOUR HOST MACHINE' --> 
+
+
+E TUDO 
+
+que 
+
+é 
+
+escrito 
+
+
+
+DENTRO DAQUELE MAPPED PATH 
+
+
+
+NO CONTAINER É 
+
+ARMAZENADO 
+
+TAMBÉM NA HOST MACHINE --> e é por isso que 
+
+
+a 
+
+data 
+
+sobrevive À remoção do container (
+
+
+PQ 
+
+A DATA É MIRRORED/COPIED
+ 
+ NA HOST MACHINE,
+
+
+ 
+
+
+ ACONTECE MAIS DO QUE O SIMPLES STORE DENTRO DO CONTAINER... 
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+6) ESPECIFICAMENTE,
+
+
+
+APRENDEMOS SOBRE 2 TIPOS DE VOLUMES...
+
+
+
+
+
+
+
+
+7) NAMED VOLUMES --> SÃO OS 
+
+VOLUMES QUE SOBREVIVEM 
+
+
+AOS 
+
+CASOS EM QUE 
+
+OS 
+
+CONTAINERS SÃO REMOVIDOS --> SÃO OS CONTAINERS QUE 
+
+SÃO UTILIZADOS 
+
+QUANDO PRECISAMOS QUE 
+
+A 
+
+DATA 
+
+PERSISTA 
+
+INDEFINIDAMENTE...
+
+
+
+
+(
+    DATA PERMANENTLY...
+)
+
+
+
+
+
+
+
+8) ANON VOLUMES --> SÃO VOLUMES ANEXADOS A 1 CONTAINER,
+
+
+E QUE 
+SÃO 
+REMOVIDOS
+
+
+
+SE 
+
+
+
+1 CONTAINER É REMOVIDO...
+
+
+
+
+
+
+
+
+--> NÃO SÃO ÚTEIS PARA
+
+ARMAZENAR PERMANENT DATA,
+
+
+DATA QUE DEVE PERSISTIR..
+
+
+
+
+
+
+
+
+
+
+AINDA PODEM SER ÚTEIS PARA:
+
+
+SAVE TEMPORARY DATA 
+
+
+
+DEIXAR O CONTAINER MAIS  EFICIENTE (PQ MENOS DATA TEM QUE SER ARMAZENADA NO CONTAINER, E MAIS DATA PODE SER OUTSOURCEADA NO LOCAL SYSTEM)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> TAMBÉM VIMOS QUE OS 'ANON VOLUMES'
+
+
+PODEM 
+
+NOS AJUDAR COM 'BIND MOUNTS'..
+
+
+
+
+
+
+
+
+
+
+
+9) BIND MOUNTS --> NOS DEIXAM BINDAR 
+
+LOCAL FOLDERS NA 
+
+
+HOST MACHINE (que conhecemos)
+
+
+
+
+
+
+
+A __ INTERNAL FOLDERS NO CONTAINER.. (
+
+    por exemplo PARA EXPOR NOSSO 
+
+    SOURCE CODE AO CONTAINER...
+)
+
+
+
+
+
+
+
+
+
+
+10) AÍ PODEMOS COMBINAR OS 
+
+BIND MOUNTS 
+
+
+COM 
+
+'ANON VOLUMES',
+
+
+PARA 
+
+
+
+NÃO FAZER OVERWRITE ACIDENTAL
+
+
+DE 
+FOLDERS 
+
+
+QUE 
+JÁ EXISTIAM NO 
+
+CONTAINER, e que não queríamos overwritar (como 'node_modules')...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+11) BIND MOUNTS SÃO ACTUALLY PARECIDOS 1 POUCO 
+
+
+COM 'NAMED VOLUMES',
+
+
+
+
+MAS A DIFERENÇA PRINCIPAL É QUE 
+'SABEMOS 
+O PATH 
+
+
+NA HOST MACHINE EM QUE A DATA É MIRRORED' (
+
+    e não sabemos isso no named volume..
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, COM O BIND MOUNTS,
+
+USAMOS 
+
+ESSE PATH CONHECIDO PARA PASSAR DATA 
+
+PARA DENTRO 
+
+DO CONTAINER --> 
+
+
+
+
+ISSO PARA QUE 
+
+
+A DATA SEJA COPIADA PARA DENTRO 
+
+
+DO CONTAINER,
+
+
+
+
+E PARA QUE 
+
+A LATEST DATA 
+
+
+DA 'LOCAL MACHINE'
+
+SEJA COPIADA PARA DENTRO 
+
+DO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+-----> E PODEMOS SETTAR TODOS ESSES TIPOS DE VOLUME 
+
+COM O COMANDO DE 'docker run',
+
+
+COM A FLAG DE '-v' --------_> E O DOCKER SETTA 
+
+ESSES VOLUMES 
+
+AUTOMATICAMENTE 
+
+
+
+PARA 
+
+
+NÓS,
+
+
+SE ELES AINDA N EXISTEM (se eles já existem, ele usa os que já existiam)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+UM EXEMPLO DE RUN COM VOLUMES É ESTE:
+
+
+
+
+
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app 
+-v feedback-volume-2:/app/feedback  (NAMED VOLUME)
+-v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" (BIND MOUNT)
+-v /app/temp (ANON VOLUME)
+-v /app/node_modules b3656e44241d   (ANON VOLUME)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... POR FIM,
+
+
+
+DEMOS UMA OLHADA EM 'BUILD ARGUMENTS' (ARG)
+
+
+
+E 
+
+'RUNTIME ENVIRONMENT VARIABLES'(ENV)
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSAS COISAS 
+
+
+SIMPLESMENTE DEIXAM NOSSAS IMAGES 
+
+
+E CONTAINERS MAIS DINÂMICAS E CONFIGURABLE,
+
+
+
+
+
+
+
+
+
+
+ISSO PQ 
+
+
+
+
+COM 'ARGS' 
+
+
+PODEMOS 
+
+
+PASSAR CERTAS PIECES DE 
+
+
+DATA 
+
+DO LADO DE FORA (quando buildamos a image),
+
+
+
+
+
+
+A MESMA COISA COM 
+
+
+'ENVIRONMENT VARIABLES' (ENV),
+
+
+
+
+SÓ QUE COM A DIFERENÇA DE ISSO SER APLICADO DURANTE O RUNTIME (com o 'Docker run' e com O CÓDIGO DE DENTRO DO NOSSO APP, com coisas como 'process.env.PORT")..
+
+
+
+
+
+
+
+
+
+
+
+
+-----> E AÍ NÃO PRECISAMOS HARDCODAR TUDO 
+
+
+
+
+NA NOSSA DOCKERFILE OU NO SOURCE CODE,
+
+
+
+
+pq EM VEZ DISSO PODEMOS CONFIGURAR ISSO QUANDO RODAMOS O container (E 
+
+isso pode ser bem útil)...
+
+
+
+
+
+
+
+
+
+
+
+NOS PRÓXIMOS MÓDULOS, VEREMOS AINDA MAIS COISAS SOBRE O DOCKER..
+
+
+
+
+
+
+VEREMOS COMO USAR MÚLTIPLOS CONTAINERS,
+
+
+RODANDO DIFERENTES APPS,
+
+
+
+E 
+COMO 
+
+PODEMOS 
+GARANTIR QUE 
+
+
+ESSES CONTAINERS CONSIGAM TRABALHAR EM CONJUNTO...
