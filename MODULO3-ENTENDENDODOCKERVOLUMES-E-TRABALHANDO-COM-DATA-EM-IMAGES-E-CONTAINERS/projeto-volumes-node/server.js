@@ -49,4 +49,7 @@ app.post('/create', async (req, res) => {
 
 console.log("CHINELO")
 
-app.listen(80);
+// app.listen(80);
+
+
+app.listen(process.env.PORT);  /////SERÁ SUBSTITUÍDO PELO VALUE DA ENVIRONMENT VARIABLE DE 'PORT', que por sua vez será MANIPULADA/DEFINIDA PELA INSTRUCTION DE 'ENV PORT 80' LÁ NO DOCKERFILE, E TAMBÉM PELO PASS DE 1 VALUE COMO ENVIRONMENT VALUE LÁ NO COMANDO 'DOCKER RUN', POR MEIO DA FLAG '--env' (tipo ''--env PORT=8000', que vai substituir o VALUE lá em 'EXPOSE PORT', no dockerFIle, e também VAI SUBSTITUIR ESSE VALUE DO 'app.listen(process.env.PORT)')

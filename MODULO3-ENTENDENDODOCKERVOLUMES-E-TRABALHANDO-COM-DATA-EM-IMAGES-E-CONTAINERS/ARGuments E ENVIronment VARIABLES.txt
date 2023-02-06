@@ -1,0 +1,2127 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, DEVEMOS DEIXAR O MUNDO 
+
+
+DOS VOLUMES,
+
+IMAGES,
+
+
+FOLDERS, FILES 
+
+E 
+
+
+'COPYING AROUND'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DEVEMOS PASSAR PARA O CONCEITO MAIS FÁCIL QUE O PROFESSOR QUER NOS MOSTRAR,
+
+
+NESSE MÓDULO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É O CONCEITO DE 
+
+'ARGUMENTS' E 'ENVIRONMENT VARIABLES'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARG 
+
+
+
+
+e 
+
+
+ENV 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SÃO 2 OPTIONS QUE 
+
+VOCê 
+
+PODE 
+
+DEFINIR 
+
+
+NA SUA DOCKERFILE
+
+
+
+E 
+
+
+
+
+
+NOS SEUS COMMANDOS 
+
+DE 
+
+'DOCKER BUILD' 
+
+
+E 'DOCKER RUN'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO PQ O DOCKER SUPORTA 
+
+'BUILD-TIME __ ARGUMENTS'____ 
+
+
+
+
+
+E 
+
+
+
+'RUNTIME ENVIRONMENT VARIABLES'...
+
+
+
+
+
+
+
+
+
+
+
+
+O QUE O PROFESSOR QUER DIZER, POR ISSO?
+
+
+
+
+
+
+
+
+
+ARG (ARGUMENTS) -------> NOS __ DEIXAM __ SETTAR 'FLEXIBLE BITS OF DATA',
+
+
+TIPO VARIÁVEIS,
+
+DENTRO DA SUA DOCKERFILE,
+
+
+
+
+
+
+
+
+
+QUE ___ VOCê _ PODE USAR, DENTRO DALI,
+
+
+PARA 
+'PLUG'
+
+
+
+
+
+DIFERENTES VALUES _ EM DIFERENTES DOCKER INSTRUCTIONS,
+
+
+
+
+COM BASE_ EM ARGUMENTS QUE 
+
+
+SÃO/SERÃO PROVIDENCIADOS POR MEIO 
+
+
+
+
+
+
+DA FLAG DE '--build-arg' (option)
+
+
+QUANDO VOCÊ 
+
+
+RODA O 'docker build .' 
+
+
+
+
+
+
+
+
+
+
+
+
+E VEREMOS ISSO EM AÇÃO,
+
+
+EM ALGUNS SEGUNDOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+JÁ 'ENVIRONMENT VARIABLES', POR SUA VEZ,
+
+
+
+FICAM DISPONÍVEIS DENTRO DE DOCKERFILE,
+
+como o 'ARG',
+
+
+
+
+
+
+
+__ MAS, ADICIONALEMNTE,
+
+
+FICAM DISPONÍVEIS 
+
+
+'''AO LONGO DE TODO SEU APPLICATION CODE''',
+
+
+ao longo 
+
+
+
+DE TODO SEU APP CODE (running application)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> E VOCê PODE SETTAR OS 'ENV' POR MEIO DE 2 MANEIRAS:
+
+
+
+
+
+
+
+1) POR MEIO DA ESCRITA DE 'ENV', DENTRO DA DOCKERFILE 
+
+
+(assim você comunica ao docker QUE VOCê ESPERA QUE ESSA ENVIRONMENT VARIABLE SERÁ 'EXISTENT')
+
+
+2) --env FLAG, lá no docker run --> 
+
+
+
+COM ISSO,
+
+
+__ VOCê PROVIDENCIA VALORES CONCRETOS,
+
+
+
+COM A FLAG DE '--env',
+
+lá 
+
+
+NO DOCKER RUN..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+e 'ARGS' 
+
+
+
+E 
+
+
+'ENV' VARIABLES 
+
+
+
+TE DEIXAM CRIAR IMAGES E CONTAINERS MAIS FLEXÍVEIS,
+
+PQ 
+
+VOCê 
+
+NÃO VAI TER 
+DE 
+HARDCODAR 
+TUDO ISSO 
+
+
+
+
+__ DENTRO _DESSES CONTAINERS E IMAGES,
+
+PQ 
+
+
+VOCê 
+
+VAI 
+
+PODER 
+
+SETTAR  
+
+
+TUDO ISSO DINAMICAMENTE QUANDO VOCÊ BUILDA 1 IMAGE,
+
+
+
+
+OU QUANDO VOCÊ RODA 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+TUDO ISSO PODE PARECER MEIO ABSTRATO, POR ISSO O PROFESSOR VAI NOS MOSTRAR NA PRÁTICA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok....
+
+
+
+
+
+
+
+
+
+
+
+ARG -->  ARGUMENTOS DISPONÍVEIS SOMENTE DENTRO DO DOCKER FILE,
+
+
+E INACESSÍVEIS 
+
+
+
+
+NO 'CMD' OU EM QUALQUER APPLICATION CODE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ENV --> ARGUMENTOS DISPONÍVEIS DENTRO DO DOCKERFILE E EM QUALQUER APPLICATION CODE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK, VEREMOS ISSO EM PRÁTICO..
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR QUER COMEÇAR COM 1 EXEMPLO SIMPLES,
+
+O 'PORT'
+
+PELO QUAL ESTAMOS 'LISTENING'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PORT QUE O PROFESSOR COLOCOU É '80' --> E ESSE É O PORT DEFAULT PARA 
+
+
+
+HTTP REQUESTS,
+
+
+MAS 
+
+
+PARA __ DEVELOPMENT 
+
+
+
+
+
+
+PODEMOS COLOCAR COISAS DIFERNETES,
+
+
+OU POR QUALQUER OUTRA RAZÃO... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU TALVEZ TENHAMOS 
+
+
+BLOCOS DE CÓDIGO 
+
+
+
+
+__ MAIORES DENTRO DE NOSSO APP,
+
+
+
+
+QUE _ DEVEM _ RODAR __ DE FORMA DIFERENTE,
+
+
+
+A DEPENDER DO INPUT 
+
+
+RECEBIDO ___ 
+
+
+
+DO LADO __ DE FORA (
+
+
+ou seja,
+
+
+devem atingir PORTS DIFERENTES, A DEPENDER DO INPUT RECEBIDO DO LADO DE FORA...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO AINDA PARECE MT CRYPTIC,
+
+MAS 
+
+
+DEVEMOS 
+
+
+
+VER ISSO NA PRÁTICA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+O QUE INTERESSA,
+
+AQUI,
+
+
+
+
+É __ QUE __ 
+
+O NODE 'EMBRACES'
+
+O CONCEITO DE ENVIRONMENT VARIABLES,
+
+
+E VOCÊ 
+
+
+PODE ACESSAR 
+
+
+
+
+ESSAS VARIÁVEIS DENTRO DO CÓDIGO NODE,
+
+
+
+
+
+
+
+
+
+
+QUE SÃO ACESSADAS POR 
+
+
+
+MEIO 
+
+
+DE UM OBJETO 'PROCESS' GLOBAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É ACESSADO COM 'process'...
+
+
+
+
+
+
+
+
+
+
+
+--> DENTRO DESSE OBJECT,
+
+TEMOS A KEY DE 'env',
+
+ 
+
+
+
+
+ __ E NESSA KEY,
+ PODEMOS 
+
+ ACESSAR ENVIRONMENT VARIABLES QUE FORAM SETTADAS 
+
+ PARA O ENVIRONMENT EM QUE ESSE CODE É EXECUTADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ex:
+
+
+
+
+
+
+
+
+
+
+ app.listen(process.env)
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> E ESSA É __ JUSTAMENTE A PARTE QUE PODEMOS FAZER COM O DOCKER:
+
+
+
+
+
+
+
+ PODEMOS SETTAR ESSAS 'GLOBALLY AVAILABLE ENVIRONMENT VARIABLES'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ E A MAIOR PARTE DAS LINGUAGENS DE PROGRAMAÇÃO POSSUI SUPORTE A ESSE CONCEITO 
+
+
+
+ DE 'ENVIRONMENT VARIABLES'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> NESSE CASO, POR EXEMPLO,
+
+ PODEMOS 
+
+ ESPERAR 
+
+
+
+ CONSEGUIR 1 
+
+
+
+ ENVIRONMENT VARIABLE DE 'PORT',
+
+
+ QUE 
+
+ vai 
+
+
+ conter, nesse caso,
+
+
+ A 'ACTUAL PORT NUMBER'
+
+
+ a que 
+ faremoos listen to...
+
+
+
+
+
+
+
+
+
+
+
+ tipo assim:
+
+
+
+
+
+
+
+
+
+
+
+
+ app.listen(process.env.PORT);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -----> OK... MAS SE SALVÁSSEMOS ISSO, ESSE ARQUIVO,
+
+
+ ISSO AINDA NÃO FUNCIONARIA...
+
+
+
+
+
+
+
+
+
+
+ NÃO FUNCIONARIA 
+
+
+
+
+
+
+
+ PQ, NO MOMENTO,
+
+ ESSA ENVIRONMENT VARIABLE AINDA NÃO ESTÁ SETTADA...
+
+
+
+
+
+
+
+
+ MAS PODEMOS SETTAR/ANUNCIAR ESSA 'ENVIRONMENT VARIABLE'
+
+
+ LÁ 
+
+
+ DE DENTRO 
+
+
+
+ DA DOCKER FILE...
+
+
+
+
+
+
+
+
+
+
+--> LÁ,
+
+
+
+
+PODEMOS ESPECIFICAR ESSA ENVIRONMENT VARIABLE,
+
+
+TUDO 
+
+POR MEIO 
+
+
+
+
+DA DEFINIÇÃO DA INSTRUCTION DE 'ENV'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+##É ASSIM QUE DEFINIMOS ENVIRONMENT VARIABLES, como 'process.env.PORT' --> essas variables são então ACESSADAS DENTRO DO CÓDIGO de 'server.js' (ou de seu container, em termos gerais)...
+ENV
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----_> ok...
+
+
+
+
+
+
+
+
+
+
+essa instruction de 'ENV'...
+
+
+
+
+
+
+
+
+
+E, DEPOIS DE 'ENV',
+
+
+
+PROVIDENCIAMOS O __ NOME _ 
+
+
+
+
+___ DA ENVIRONMENT VARIABLE QUE VOCÊ QUER ANUNCIAR..
+
+
+
+
+
+
+
+
+
+NESSE CASO,
+
+QUEREMOS 
+
+
+DECLARAR 'PORT' como nome da environment variable...
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO SEGUNDO PARÂMETRO,
+
+DEVEMOS SETTAR 1 'DEFAULT VALUE' 
+
+
+PARA __ ESSA ENVIRONMENT VARIABLE... como, por exemplo, 80... (nesse caso específico )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO,
+
+
+
+GARANTIMOS QUE 
+
+
+ESSA ENVIRONMENT VARIABLE 
+
+
+DE 
+
+'PORT'
+
+
+FICA 
+
+DISPONÍVEL 
+
+AO LONGO 
+
+
+DE TODO O ENVIRONMENT 
+DE NOSSO APP,
+
+
+
+
+
+e que 
+
+TERÁ UM VALUE DEFAULT DE '80'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E A PARTE LEGAL É QUE 
+
+
+JÁ PODEMOS USAR __ ESSA VARIABLE DE 'PORT'
+
+
+ALI 
+
+
+no 'EXPOSE', NA INSTRUCTION LOGO ABAIXO,
+
+
+
+
+
+PQ __ AÍ _ _ESSE 'EXPOSE' VAI SER DINÂMICO (vai ser sempre 'PORT', que é a nossa environment variable, que pode/poderá ser '80', mas também outros values)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ENV PORT 80   
+
+
+EXPOSE PORT
+
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> OK...
+
+
+
+
+
+
+
+
+MAS O DOCKER VAI RECLAMAR DESSA SINTAXE... VAI RECLAMAR PQ 
+
+
+
+A SINTAXE EXIGE QUE VOCê 
+
+
+ESCREVA 1 '$' 
+
+
+
+NA FRENTE DO 'PORT',
+
+
+
+
+pq isso COMUNICA AO DOCKER 
+
+QUE 
+
+
+
+
+'''A COISA DEPOIS DO DOLLAR SIGN É O __ NOME _ DE 1 ENVIRONMENT VARIABLE'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO,
+
+O 
+
+DOCKER VAI PROCURAR PELA ENV VARIABLE 
+
+de nome 'PORT' (por causa do '$'),
+
+
+
+
+E AÍ VAI INSERIR O VALOR CERTINHO NO LOCAL DESSE 'EXPOSE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. AGORA BUILDAMOS ESSA IMAGE,
+
+
+E AÍ 
+
+RODAMOS 
+
+
+
+
+
+
+NOSSO CONTAINER 
+
+
+
+
+PARA VER SE ISSO FUNCIONA...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS N PARECE SER MT VANTAJOSO, ISSO AÍ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PROFESSOR ESPECIFICA:
+
+
+
+
+
+
+
+
+
+
+''' A VANTAGEM DE USAR ENVIRONMENT VARIABLES É QUE 
+
+
+
+AGORA ___ PODEMOS __ CONFIGURAR __ ISSO_ QUANDO 
+
+RODAMOS ESSE CONTAINER'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO QUER DIZER, EM OUTRAS PALAVRAS,
+
+QUE 
+
+__ NÃO SEREMOS 
+
+RESTRITOS 
+
+
+AO VALUE DE 'PORT 80'
+
+
+
+QUANDO 
+
+
+RODARMOS ESSE CONTAINER..
+
+
+
+
+
+
+
+
+
+
+
+
+SIM, TEMOS 1 DEFAULT VALUE 
+
+DESSA PORT, QUE É 
+'80',
+
+
+
+COMO ESPECIFICADO LÁ EM 
+
+
+'ENV PORT 80'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS NÃO SOMOS OBRIGADOS A _ SEGUIR __ ESSE VALUE AÍ...
+
+
+
+
+
+
+
+
+
+-------_> PARA ALTERAR O VALUE DESSA VARIABLE __ 
+
+
+DE 'PORT'/'$PORT' 
+
+
+
+DEFINIDA 
+
+
+
+NO NOSSO DOCKER FILE (e usada com 'EXPOSE'),
+
+
+
+
+
+
+
+O PROFESSOR 
+
+
+
+SIMPLESMENTE PASSA 1 OPTION EXTRA 
+
+
+
+
+NO COMANDO 'DOCKER RUN'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+É JUSTAMENTE A OPTION DE '--env'...
+
+
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app 
+--env 
+-v feedback-volume-2:/app/feedback 
+-v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" 
+-v /app/temp
+-v /app/node_modules b3656e44241d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... DEPOIS DE '--env',
+
+
+DEVEMOS DEFINIR 
+
+1 ENVIRONMENT VARIABLE 
+
+
+_KEY-VALUE__ PAIR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+
+
+--env PORT=8000
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO VAI BASICAMENTE DEFINIR 
+
+
+O 
+
+
+NOSSO PORT 
+
+
+COMO '8000', no run desse container específico...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app 
+--env PORT=8000
+-v feedback-volume-2:/app/feedback 
+-v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" 
+-v /app/temp
+-v /app/node_modules b3656e44241d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> E É CLARO QUE 
+
+
+
+PODEMOS __ DEFINIR MÚLTIPLAS ENVIRONMENT VARIABLES,
+AQUI,
+
+
+
+
+apesar de eu não fazer isso, agora...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK...
+
+
+
+
+
+
+
+
+
+
+E COMO HAVÍAMOS DEFINIDO 
+
+
+
+
+A VARIABLE DE PORT LÁ EM 
+
+
+'EXPOSE PORT',
+
+
+
+
+e lá 
+
+
+
+
+NO PRÓPRIO CÓDIGO 'node.js',
+
+
+LÁ 
+
+
+NAQUELE 'app.listen()'
+
+
+
+DE 
+
+
+
+'app.listen(process.env.PORT);'
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+app.listen(process.env.PORT);  /////SERÁ SUBSTITUÍDO PELO VALUE DA ENVIRONMENT VARIABLE DE 'PORT', que por sua vez será MANIPULADA/DEFINIDA PELA INSTRUCTION DE 'ENV PORT 80' LÁ NO DOCKERFILE, E TAMBÉM PELO PASS DE 1 VALUE COMO ENVIRONMENT VALUE LÁ NO COMANDO 'DOCKER RUN', POR MEIO DA FLAG '--env' (tipo ''--env PORT=8000', que vai substituir o VALUE lá em 'EXPOSE PORT', no dockerFIle, e também VAI SUBSTITUIR ESSE VALUE DO 'app.listen(process.env.PORT)')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok...
+
+
+
+
+
+COMO SETTAMOS O VALUE DE 'EXPOSE' como sendo a port,
+
+
+
+
+
+ELA SERÁ SETTADA COMO '8000'
+
+AUTOMATICAMENTE... (
+
+
+    tanto 
+
+
+    NO DOCKERFILE,
+
+    COMO NO 'server.js'...
+)
+
+
+
+
+
+
+
+
+
+A VANTAGEM AQUI É QUE NÃO PRECISAMOS REBUILDAR TODA A IMAGE,
+
+
+
+E __ SIM _ 
+
+
+APENAS __ PRECISAMOS USAR O COMANDO 'RUN',
+
+E AÍ 
+
+PASSAR 
+
+O  VALUE 
+
+
+DAS ENVIRONMENT VARIABLES COM A FLAG DE '--env' 
+
+
+
+
+
+
+
+
+
+
+
+--> 
+
+
+
+
+CERTO... A CONFIGURAÇÃO/DEFINIÇÃO DO VALUE DESSA PORT COM 'RUN' 
+
+FOI BEM SUCEDIDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E PODEMOS ADICIONAR MÚLTIPLAS 
+
+
+
+
+
+ENVIRONMENT VARIABLES,
+
+BASTA 
+
+
+
+
+
+escrever múltiplas flags de '--env'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+e '--env' pode ser substituído por '--e', que é A MESMA COISA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------> ALÉM DE TUDO ISSO,
+
+
+
+TAMBÉM 
+
+PODEMOS 
+ESPECIFICAR '''1 FILE _ CONTENDO __ TODAS NOSSAS ENVIRONMENT VARIABLES'''..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É COMUM 1 ARQUIVO DESSES SER CHAMADO DE '.env'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, NESSE FILE,
+
+
+
+
+PODEMOS SETTAR NOSSOS KEY-VALUE PAIRS DE 'ENVIRONMENT VARIABLES' e 'VALUES'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, SE DESEJAMOS USAR ESSE ARQUIVO, EM VEZ DE PASSAR TUDO LÁ NO 
+
+TERMINAL,
+
+
+
+
+com o comando de '--env',
+
+
+
+
+
+
+DEVEMOS USAR 
+
+
+
+
+
+
+A FLAG DE '--env-file',
+
+
+
+
+
+
+
+
+__ E AÍ _ APONTAR AO ARQUIVO QUE CONTEḾ 
+
+
+SEUS ENV FILES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O PROFESSOR ESCREVE SIMPLESMENTE ASSIM:
+
+ 
+
+
+
+
+
+
+
+docker run -d -p 3000:80 --rm --name feedback-app 
+--env-file .env 
+-v feedback-volume-2:/app/feedback 
+-v "/home/arthur/Desktop/PROJETO-DOCKER/curso-docker/MODULO3-ENTENDENDODOCKERVOLUMES-E-TRABALHANDO-COM-DATA-EM-IMAGES-E-CONTAINERS/projeto-volumes-node:/app" 
+-v /app/temp
+-v /app/node_modules b3656e44241d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+com ISSO,
+
+
+
+OS VALUES DE NOSSOS ENVIRONMENT VARIABLES 
+
+SERÃO LIDOS DESSA FILE ESPECÍFICA,
+
+
+
+
+EM VEZ DO TERMINAL EM SI...
+
+
+
+
+
+
+
+
+
+
+
+--> A VANTAGEM DISSO, EM RELAÇÃO AO USO/PASS NO TERMINAL,
+
+
+
+
+
+
+
+É QUE __ VOCê PODE SEMPRE _ RE-RODAR 
+
+O MESMO COMANDO,
+
+
+
+
+
+
+BASTANDO EDITAR/MUDAR OS VALUES NAQUELA FILE ALI,
+
+
+EM VEZ 
+
+DE 
+
+TER DE FAZER TUDO ISSO 
+
+
+NO COMANDO DE 'DOCKER RUN' (Que é o approach mais bothersome, pq voce tem de fazer isso várias vezes, teoricamente)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------> MAS OS 2 APPROACHES SÃO ÚTEIS...
+
+
+
+
+
+É POR ISSO QUE TVZ SEJA ÚTIL USAR 1 FILE DESSAS..
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. ISSO NOS MOSTRA A RAZÃO DE ENV FILES SEREM ÚTEIS --> 
+
+
+
+
+
+
+
+
+
+ELES NOS AJUDAM A RODAR 1 E O MESMO CONTAINER,
+
+COM BASE 
+
+EM 1 
+
+MESMA 
+
+IMAGE,
+
+
+TUDO EM DIFERENTES MODES,
+
+DIFERENTES CONFIGURATIONS, POR ASSIM DIZER...
+
+
+
+
+
+
+
+
+
+
+
+
+OK, MAS AGORA DEVEMOS CONTINUAR COM O FINAL DESTE MÓDULO...
