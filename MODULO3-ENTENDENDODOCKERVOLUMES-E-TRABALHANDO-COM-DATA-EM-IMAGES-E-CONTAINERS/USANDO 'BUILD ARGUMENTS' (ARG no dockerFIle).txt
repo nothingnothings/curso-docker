@@ -1,0 +1,1342 @@
+
+
+
+
+
+
+
+
+
+
+
+OK... VIMOS 'ENVIRONMENT VARIABLES',
+
+
+
+LÁ 
+
+
+
+NO DOCKERFILE,
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+
+
+ENV PORT 80   
+
+
+
+EXPOSE $PORT
+
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AS ENVIRONMENT VARIABLES PODEM TER SEUS VALUES DEFINIDOS 
+
+
+
+POR MEIO 
+
+
+
+
+DA FLAG DE '--env' (
+
+    tipo 
+
+    ''--env PORT=8000'', para 
+
+    SUBSTITUIR O VALUE DEFAULT DE '80' PARA '8000', 
+
+
+    nesse caso específico...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ESSAS ENVIRONMENT VARIABLES SÃO DEFINIDAS 
+
+DURANTE O 'RUNTIME',
+
+
+
+
+
+
+
+
+
+POR MEIO DO COMANDO DE '--env' junto de 'docker run'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AS ENVIRONMENT VARIABLES PODEM SER ÚTEIS, EU ADMITO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O QUE SÃO 'BUILD-TIME ARGUMENTS'?
+
+
+
+
+
+
+
+QUAL É A DIFERENÇA 
+
+
+
+DE 'BUILD-TIME' ARGUMENTS 
+
+
+
+
+
+
+__ EM RELAÇÃO A 'RUNTIME VARIABLES/ARGUMENTS'?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bem, a diferença é que 
+
+
+
+COM BUILD-TIME 
+
+
+ARGUMENTS 
+
+PODEMOS 
+
+
+
+
+INSERIR VALUES DINÂMICOS 
+
+
+DENTRO DO NOSSO DOCKERFILE,
+
+
+
+
+OU NA NOSSA IMAGE,
+
+QUANDO 
+BUILDAMOS 
+
+ESSA IMAGE,
+
+
+
+
+TUDO ISSO SEM TER DE FAZER HARDCODE 
+
+DESSES 
+
+
+
+VALUES 
+
+
+
+
+NO INTERIOR DA DOCKERFILE...
+
+
+
+
+
+
+
+
+
+
+1 EXEMPLO,
+
+
+
+NESSE EXEMPLO AQUI,
+
+
+
+
+
+SERIA/É 
+
+
+
+NOSSO 'PORT NUMBER',
+
+
+
+
+
+
+ALI COM O 
+
+
+
+
+
+
+'ENV PORT 80'...
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO PQ, SIM, 
+
+
+
+
+
+
+ESTAMOS USANDO 'ENVIRONMENT VARIABLES'
+
+
+
+com esse negócio,
+
+e por isso 
+
+
+
+ele é bem flexível... --> NO ENTANTO,
+
+
+
+
+AQUI AINDA TEMOS 
+
+
+UMA 'ÁREA DE IMPROVEMENT' -->  ISSO 
+
+
+
+
+
+
+PQ _ O VALUE DE '80'
+
+
+
+
+
+AINDA __ 
+
+
+
+
+
+É TIPO 1 VALUE HARDCODADO,
+
+
+
+
+ESSE VALUE DEFAULT AINDA ESTÁ HARDCODADO COMO '80'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... ISSO PODE FAZER SENTIDO,
+
+E PODE NEM MESMO SER 1 PROBLEMA... -> MAS TALVEZ EXISTA 1 HIPÓTESE 
+
+
+
+
+EM QUE 
+
+_ 
+QEUREMOS 
+
+
+DEIXAR ESSE DEFAULT VALUE FLEXÍVEL TAMBÉM... ->  ISSO  PARA QUE ,
+
+
+SEMPRE QUE 
+BUILDEMOS 
+
+A IMAGE,
+
+
+
+
+
+FAÇAMOS 
+
+
+
+BUILD _ DA IMAGE_ COM _ BASE EM 'ONE AND THE SAME, unchanged__ DOCKERFILE'
+
+
+
+
+
+
+MÚLTIPLAS VEZES,
+
+
+TUDO COM DIFERENTES DEFAULT VALUES..
+
+
+
+
+
+
+
+
+
+
+
+e_  isso _ pode 
+
+
+SER 
+
+
+
+
+
+
+OBTIDO __ POR MEIO DE 'BUILD-TIME ARGUMENTS' (ARGs)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARA CONSEGUIR ESSE EFEITO,
+
+
+O PROFESSOR 
+
+COLOCA 1 NOVA INSTRUCTION NO DOCKERFILE,
+
+
+
+que será 1 argument..
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR COLOCA ISSO LÁ NO INÍCIO,
+
+
+E ASSIGNA 
+
+
+
+
+
+1 NOME _a  ESSE ARGUMENT...
+
+
+
+
+
+
+
+
+
+
+
+será de nome 'DEFAULT_PORT.'..
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARG DEFAULT_PORT 
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, ALI NO 'ARG',
+
+
+
+PODEMOS 
+
+TAMBÉM 
+
+DEFINIR 1 'DEFAULT VALUE',
+
+por meio do uso de '=',
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+ARG DEFAULT_PORT=80
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... 
+
+
+
+
+
+
+
+
+MAS O INTERESSANTE, AQUI, É QUE 
+
+ESSE ARGUMENTO (arg)
+
+
+
+NÃO VAI PODER 
+
+
+SER UTILIZADO 
+
+
+NO SEU CÓDIGO/APPLICATION CODE,
+
+ 
+
+
+
+
+
+
+
+
+ E SIM 
+
+ SÓ PODERÁ 
+
+ SER USADO 
+
+
+
+
+ NA SUA DOCKER FILE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ E, MESMO ASSIM,
+
+
+
+
+ ESSE 'ARGUMENT'
+
+ NÃO PODERÁ SER USADO COM QUALQEUR 
+ 
+
+ INSTRUCTION...  (não pode ser usado dentro de 'CMD', por exemplo, pq O CMD __ É UM RUNTIME COMMAND, E NÃO 1 BUILD-TIME COMMAND)...
+
+
+
+
+(CMD É UM RUNTIME COMMAND PQ É EXECUTADO APENAS QUANDO O CONTAINER STARTA)
+
+
+
+
+
+
+
+
+
+
+------> MAS PODEMOS USAR NOSSO 'ARG'
+
+
+EM TODAS AS OUTRAS INSTRUCTIONS -->  E É EXATAMENTE POR ISSO QUE 
+
+
+
+PODEMOS TAMBÉM O UTILIZAR NA INSTRUCTION DE 'ENV',
+
+
+PARA 
+
+DEFINIR 
+
+
+O 
+
+DEFAULT 
+
+
+VALUE 
+DESSA 
+
+ENVIRONMENT VARIABLE 
+
+COMO 
+SENDO 
+
+
+
+'DEFAULT_PORT' (Que é 80, no caso, se nada for settado)...
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+FROM node 
+
+
+ARG DEFAULT_PORT=80
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+
+
+ENV PORT $DEFAULT_PORT
+
+
+
+EXPOSE $PORT
+
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NOVAMENTE, PRECISAMOS DE UM '$" na frente 
+
+
+da referência a essa variable,
+
+
+PQ 
+O  DOCKER PRECISA SABER QUE 
+
+
+
+
+
+
+
+ESTAMOS NOS REFERINDO A 1 ARGUMENT/ENVIRONMENT VARIABLE COM 
+
+
+ESSA MENÇÃO AÍ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...  COM ISSO, PODEMOS SETTAR 1 'DYNAMIC ARGUMENT',
+
+QUE 
+
+ENTÃO É SETTADO COMO DEFAULT VALUE PARA 
+
+
+
+A 
+
+
+'ENVIRONMENT VARIABLE' DINÂMICA DE 'PORT'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS AGORA O PROFESSOR BUILDA A IMAGE, MAIS UMA VEZ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... QUANDO BUILDAMOS 
+
+
+
+
+
+ESSA IMAGE,
+
+NÃO PRECISAMOS ESPECIFICAR COISA ALGUMA,
+
+
+
+PQ 
+
+
+
+
+__ TEMOS JUSTAMENTE AQUELE DEFAULT VALUE DE '80'
+
+PARA 
+
+
+
+O ARG DE 'DEFAULT_PORT',
+
+
+
+como visto com 
+
+
+
+'
+ARG DEFAULT_PORT = 80'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SIM, TEMOS A OPÇÃO DE RODAR 'docker  build . ' 
+
+
+ASSIM MESMO,
+
+
+
+SEM 
+
+PASSAR NENHUM PARâMETRO/FLAG...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS TAMBÉM  _ PODEMOS PASSAR 1 VALUE CONCRETO ÀQUELA VARIABLE DE 'DEFAULT_PORT'..
+
+
+
+
+
+
+
+
+
+
+BASTA USAR A FLAG DE '--build-arg'
+
+QUANDO RODAMOS O BUILD,
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+
+
+docker build --build-arg .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> E, ENTÃO, COM ESSA FLAG DE 'build-arg',
+
+
+DEVEMOS 
+
+
+PASSAR OS 'KEY-VALUE PAIRS'
+
+
+QUE 
+
+SÃO NOSSOS ARGS,
+
+TIPO ASSIM:
+
+
+
+
+
+
+docker build --build-arg DEFAULT_PORT=8000 .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO,
+
+
+NOVAMENTE,
+
+
+ESTAMOS BUILDANDO 1 IMAGE,
+
+
+MAS 1 IMAGE COM 
+
+1 'ARG VALUE'
+
+
+DISTINTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, TEREMOS 2 IMAGES DIFERENTES...
+
+
+
+
+
+
+2 IMAGES, COM BASE NA MESMA DOCKER FILE,
+
+
+EM QUE __ NÃO TIVEMOS DE ALTERAR CÓDIGO ALGUM ( a docker file continua igual),
+
+
+
+
+MAS QUE 
+
+
+ACABARAM COMO 
+
+2 IMAGES 
+
+
+
+
+
+DISTINTAS (1 com a port de '80' como default, e a outra com a port de '8000' como o default)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ESSE É APENAS 1 EXEMPLO,
+
+
+
+MAS ISSO JÁ NOS MOSTRA QUE 'ARGs' (build-time args)
+
+
+
+
+PODEM SER ÚTEIS PARA __ SERMOS CAPAZES DE 'LOCK SOME VALUES IN'
+
+QUANDO 
+
+
+BUILDAMOS CERTAS IMAGES --> AÍ SOMOS CAPAZES DE BUILDAR DIFERENTES 
+
+IMAGES,
+
+
+DE 
+
+1 FORMA FLEXÍVEL,
+
+SEM TER DE EDITAR A DOCKERFILE TODA HORA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1 NOTE SOBRE __ O LOCAL/ORDEM  EM QUE _ VOCÊ 
+
+ESPECIFICA 
+
+
+
+
+
+
+OS 'ARG 
+
+E 
+
+'ENV'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> 
+TALVEZ SEJA INTERESSANTE 
+
+
+__ COLOCAR O 'ARG' E 'ENV' 
+
+
+
+
+_ EM 1 LUGAR EM QUE __ SÃO NECESSÁRIOS
+
+
+
+MAIS TARDE (depois do 'npm install'),
+
+
+
+
+
+
+ISSO 
+
+
+PQ 
+
+
+ESSAS INSTRUCTIONS 
+
+
+
+
+
+
+SÃO CONSIDERADAS COMO 'LAYERS' (como todas as outras instructions) --> isso significa que 
+
+SEMPRE QUE 
+
+ALGO 
+
+MUDA SOBRE 
+
+ESSAS INSTRUCTIONS,
+
+TODAS AS 
+
+SUBSEQUENT INSTRUCTIONS/LAYERS SÃO 
+RE-EXECUTADAS/REBUILT...
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE É MELHOR COLOCAR 
+
+
+
+
+ESSES ARG/ENV LÁ EMBAIXO,
+
+
+
+PQ 
+
+O
+ 
+ COMANDO 'npm install' 
+
+ NÃO DEVE SER 
+ RE-RODADO SEMPRE QUE 
+
+
+ MUDAMOS A NOSSA PORT... 
+
+
+
+
+
+
+
+
+
+ FICA TIPO ASSIM,
+
+
+ NO FINAL:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ FROM node 
+
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ARG DEFAULT_PORT=80 
+
+
+
+
+
+ENV PORT 80
+
+
+
+
+
+
+
+
+
+
+
+EXPOSE $PORT
+
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE VEREMOS MAIS EXEMPLOS DISSO AO LONGO DO CURSO...

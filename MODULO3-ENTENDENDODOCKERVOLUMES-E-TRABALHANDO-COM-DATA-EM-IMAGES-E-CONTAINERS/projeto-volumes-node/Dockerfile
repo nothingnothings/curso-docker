@@ -1,6 +1,7 @@
 FROM node 
 
 
+
 WORKDIR /app 
 
 
@@ -34,8 +35,20 @@ COPY . .
 ### queremos que o NODEMON seja iniciado, e não o 'node' puro..
 
 
+
+
+
+
+
+
+## é quase 'inception' de arguments/environment variables, pq essa variable é usada logo abaixo, com 'ENV'...
+ARG DEFAULT_PORT=80 
+
+
+
 ##É ASSIM QUE DEFINIMOS ENVIRONMENT VARIABLES, como 'process.env.PORT' --> essas variables são então ACESSADAS DENTRO DO CÓDIGO de 'server.js' (ou de seu container, em termos gerais)...
-ENV PORT 80   
+# ENV PORT $DEFAULT_PORT
+ENV PORT 80
 
 ##COM ISSO, DEFINIMOS QUE A ENVIRONMENT VARIABLE de 'process.env.PORT' vai render 1 value de '80' quando for escrita...
 
