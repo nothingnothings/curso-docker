@@ -1,0 +1,123 @@
+
+
+
+
+
+
+
+
+
+
+
+BEM, PARA COLOCAR ISSO EM 1 CONTAINER,
+
+
+PRIMEIRAMENTE 
+
+VAMOS QUITTAR NOSSO RUNNING SERVER (que rodava na nossa local machine)...
+
+
+
+
+
+
+
+
+
+
+
+--> DELETAMOS 'NODE_MODULES' 
+
+
+E 'package-lock.json'...
+
+
+
+(
+
+    PQ VAMOS DOCKERIZAR ESSE APP...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... E O PROFESSOR TAMBÉM JÁ TEM 1 DOCKERFILE,
+QUE FICOU ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+CMD ["node", "app.js"]
+
+
+
+
+
+
+
+----------------------------------
+
+
+
+
+
+
+
+
+OK... É UMA DOCKERFILE STRAIGHTFORWARD,
+
+
+
+USADA PARA DOCKERIZAR ESSE APP....
+
+
+
+
+
+
+
+
+
+E ELA FAZ O QUE JÁ FIZEMOS VÁRIAS VEZES DURANTE O CURSO:
+
+
+ 
+
+
+
+ PORTANTO,
+ 
