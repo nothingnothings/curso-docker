@@ -1,0 +1,110 @@
+
+
+
+
+
+
+
+
+
+
+
+-> TEMOS VÁRIOS TIPOS DE COMUNICAÇÕES, COM NETWORKS,
+
+ENVOLVENDO CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+1o tipo --> CONTAINER EM DIREÇÃO À WEB... (request deve sair do container e alcançar a web, para conseguirmos fazer POST e GET de data)...
+
+
+
+
+
+
+
+
+
+2o tipo ---> CONTAINER EM DIREÇÃO A NOSSA 'LOCAL HOST MACHINE' --> para contatarmos coisas como 'databases rodando no nosso pc', além de outros elementos.
+
+
+
+
+
+
+
+3o tipo --> COMUNICAÇÃO ENTRE CONTAINERS (1 container pode conter a database, outro nossa api, etc  etc)...
+
+
+
+
+
+
+--------------------------
+
+
+
+
+
+
+
+
+DEVEMOS ESTUDAR NOSSO DEMO APP,
+
+
+E NO TRABALHO DE NETWORK 
+
+
+
+
+COM 
+
+O DOCKER...
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR QUER NOS MOSTRAR 
+
+ESSE PEQUENO DEMO APP..
+
+
+
+
+
+
+
+
+-------> o app usa node,
+
+
+e tem um PUNHADO DE DEPENDENCIES...
+
+
+
+
+(axios, body-parser e mongoose)..
+
+
+
+
+
+
+
+
+--> 
