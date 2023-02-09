@@ -107,4 +107,793 @@ e tem um PUNHADO DE DEPENDENCIES...
 
 
 
---> 
+--> OK...
+
+
+
+
+
+
+
+ESSE APP USA TODAS AS DEPENDENCIES 
+
+
+
+E O CÓDIGO PARA 
+
+CONSTRUIR UMA 
+
+'WEB API' --> 
+
+ISSO 
+
+QUER DIZER QUE 
+
+
+ESSE 
+
+
+É 
+
+UM 
+
+WEB APP 
+
+
+QUE 
+
+
+APENAS 
+
+RETORNA 
+
+
+DATA,
+
+
+E NÃO 
+
+RETORNA 
+
+INDEX.HTML...
+
+
+
+
+
+
+
+
+
+
+
+--> E ESSE WEB API 
+
+
+
+TEM 
+4 ENDPOINTS --> 
+
+
+
+
+
+
+
+FAZ GET E POST REQUESTS 
+
+
+
+
+
+EM DIREÇÃO À API WEB..
+
+
+
+
+
+
+
+
+
+--> VAMOS USAR A DUMMY API DO STAR WARS,
+
+
+
+
+
+
+
+
+
+E ESSE API 
+
+
+NÃO É MANTIDO POR NÓS ( o do star wars)..
+
+
+
+
+
+
+
+
+
+--> FAZEMOS ISSO 
+
+
+PARA 
+
+CONSEGUIRMOS 
+
+
+UMA 
+
+
+RESPOSTA 
+
+DA 
+
+
+API 
+
+
+
+A NOSSA 
+
+
+
+
+
+API ...
+
+
+
+
+
+
+
+
+
+
+--> MAS, ENTÃO,
+
+VAMOS 
+
+
+TAMBÉM 
+
+
+ESTABELECER 
+
+1 CONEXÃO 
+
+A 
+
+UMA 
+DATABASE 
+
+MONGODB (para isso, precisamos de uma runninng mongodb database)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E COM ESSA DATA CONNECTION ESTABELECIDA,
+
+
+
+NOS 
+
+
+OUTROS 2 
+
+
+
+ENDPOINTS (DE post request),
+
+
+
+
+
+
+FAZEMOS O __ STORE__ DE NOSSA DATA 
+
+
+NA DATABASE (
+
+    ARMAZENAMOS UMA BASIC DATA 
+
+    SOBRE 
+
+    NOSSO MOVIE E CHARACTER FAVORITO,
+
+
+    E FAZEMOS ISSO NA DATABASE,
+
+
+    POR MEIO 
+
+    DE 
+
+    1 
+
+    PACOTE 
+
+    CHAMADO DE MONGOOSE...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+PARA '/favorites' de tipo 'GET',
+
+
+
+
+
+FETCHEAMOS UM PCO DE DATA 
+
+
+LÁ 
+
+
+DA API,
+
+MAIS PRECISAMENTE 
+
+
+TODOS 
+
+
+
+OS FAVORITES QUE 
+
+FORAM 
+
+
+ARMAZENADOS COM A AJUDA 
+
+DESSE 
+
+ENDPOINT DE 'POST FAVORITES'...
+
+
+
+
+
+
+
+
+
+
+
+
+É ISSO QUE 
+
+ESSE APP FAZ...
+
+
+
+
+
+
+
+PARA VER TUDO ISSO EM AÇÃO,
+
+O PROFESSOR FAZ ALGO QUE NÃO FUNCIONARÁ 
+
+
+NO NOSSO SISTEMA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> OK... -> ELE VAI COMEÇAR ESSE APP,
+
+
+E ELE N VAI FUNCIONAR NO NOSSO SISTEMA (
+    pq 
+
+    você 
+
+    precisa que 
+
+    O 
+
+    MONGODB
+     
+
+    ESTEJA INSTALADO 
+
+    NA SUA MÁQUINA...
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+PRECISAMOS INSTALAR O MONGODB..
+
+
+
+
+
+
+
+
+
+
+SE QUEREMOS RODAR ESSE APP MSM,
+LOCALMENTE,
+
+
+
+SEM TER O DOCKER ANTES,
+
+
+
+DEVEMS 
+
+
+
+
+PROCURAR 
+
+
+
+OS DOCS DE INSTALAÇÃO DO DOCKER,
+
+PARA VER COMO INSTALAR NO LINUX/WINDOWS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS NÃO PRECISAMOS  INSTALAR ISSO, PQ VAMOS O DOCKERIZAR DE QUALQUER 
+
+FORMA...
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+SE VC INSTALOU O 
+
+
+
+MONGODB,
+
+
+
+
+
+VOCê 
+
+DEVE 
+
+
+RODAR 
+
+
+o
+
+
+NPM INSTALL 
+
+
+
+para ter isso localmente (o professor quer nos mostrar o funcionamento desse app localmente, sem os containers)...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA TESTAR ISSO,  
+
+
+
+ESSA API,
+
+
+O PROFESSOR 
+
+USA 
+
+O POSTMAN...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ELE TESTA A COMUNICAÇÃO COM O POSTMAN..
+
+
+
+
+
+
+
+
+
+AÍ ELE ESCREVE 1 REQUEST...
+
+
+
+
+ENVIAMOS 1 HTTP REQUEST,
+
+
+1
+ GET REQUEST,
+
+
+ AO 
+
+
+ 'localhost:3002' (pq nosso local app está fazendo listen to nessa port)...
+
+
+
+
+
+
+
+
+
+
+-> OK...
+
+
+
+
+
+aí 
+
+
+temoos 
+
+
+
+'localhost:3002/movies'..
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+AÍ TEMOS, COM O POSTMAN,
+
+
+AQUELA DATA DOS MOVIES (fetcheada da dummy ap do starwars)..
+
+
+
+
+
+
+
+
+----> OK, AÍ DIGAMOS QUE GOSTAMOS DO MOVIE DE 'new hope'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> BEM, AÍ ESCREVEMOS 1 POST REQUEST ASSIM::
+
+
+
+
+
+
+
+
+
+
+
+localhost:3002/favorites 
+
+
+
+
+
+
+--> DE TIPO 'POST'...
+
+
+
+
+AÍ COLOCAMOS O BODY DE TIPO 'JSON',
+
+E AÍ 
+
+
+
+
+COLOCAMOS ESTA DATA:
+
+
+
+
+
+
+
+
+
+{
+
+ "name": "",
+ "type: "",
+ "url": ""
+
+}
+
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+{
+
+ "name": "A New Hope",
+ "type: "movie",
+ "url": "https://swapi.dev/api/films/1"
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE ENVIAMOS ISSO AÍ,
+
+GANHAMOS UMA RESPONSE DE 
+
+
+'THE MOVIE WAS SAVEd',
+
+
+
+e o 
+
+
+
+FILME REALMENTE TERÁ 
+
+SIDO 
+
+
+ARMAZENADO NA NOSSA LOCAL DATABASE..
+
+
+
+
+
+
+
+
+
+
+
+-> E, POR 'LOCAL DATABASE',
+
+
+QUEREMOS 
+
+
+
+
+DIZER ESSA DATABASE MONGODB,
+
+QUE ESTÁ RODANDO 
+
+NA NOSSA
+
+
+HOST MACHINE...
+
+
+
+
+
+POR ENQUANTO,
+
+ESTAMOS 
+RODANDO TUDO NA NOSSA 'LOCAL MACHINE'...
+
+
+
+
+
+
+
+NÃO TEMOS NADA EM 1 CONTAINER, ATÉ AGORA...
+
+
+
+
+
+
+
+
+
+--> NÃO ESTAMOS RODANDO ESSE NODE APP EM 1 CONTAINER, ATÉ AGORA...
+
+
+
+
+
+
+
+
+
+
+
+'LOCAL DATABASE '--> MONGODB QUE INSTALAMOS NA NOSSA MÁQUINA, ANTES DE COMEÇAR ESSE MÓDULO...
+
+
+
+
+
+
+
+
+
+
+
+
+OK... 
+
+
+
+FICOU CLARO O QUE ESSE APP FAZ,
+ E O QUE PODEMOS FAZER COM ELE...
+
+
+
+
+
+
+
+
+
+AGORA PRECISAMOS 
+
+
+
+
+
+COLOCAR 
+
+ESSE APP 
+
+EM 1
+ CONTAINER,
+
+ E AÍ 
+
+ VER 
+
+
+ COMO FAZER 
+
+ ELE 
+
+ RODAR EXATAMENTE COMO 
+
+ AGORA, mas com containers...
+
+
+
+ 
