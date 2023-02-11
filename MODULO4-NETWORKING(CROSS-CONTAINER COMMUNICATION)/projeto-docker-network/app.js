@@ -82,6 +82,8 @@ app.get('/people', async (req, res) => {
 
 app.listen(3000)
 
+
+////CÓDIGO SEM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'LOCAL HOST MACHINE' (coisas como UMA DATABASE LOCAL, RODANDO NA NOSSA MÁQUINA)...
 // mongoose.connect(
 //   'mongodb://localhost:27017/swfavorites',
 //   { useNewUrlParser: true },
@@ -93,3 +95,19 @@ app.listen(3000)
 //     }
 //   }
 // );
+
+
+// CÓDIGO COM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'LOCAL HOST MACHINE' (coisas como UMA DATABASE LOCAL, RODANDO NA NOSSA MÁQUINA)...
+///sintaxe especial (que se refere a coisas NA SUA LOCAL MACHINE) -- 'host.docker.internal'
+mongoose.connect(
+  'mongodb://host.docker.internal:27017/swfavorites',
+  { useNewUrlParser: true },
+  (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      app.listen(3000);
+    }
+  }
+);
+

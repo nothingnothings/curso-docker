@@ -1,0 +1,1084 @@
+
+
+
+
+
+
+
+
+O SEND  DE HTTP REQUESTS A 
+
+
+
+
+APIs EXTERNAS (na web)
+
+
+
+FUNCIONA 
+
+OUT OF THE BOX...
+
+
+
+
+
+
+
+
+
+
+
+CERTO, 
+
+
+
+
+
+
+
+
+
+
+MAS __ ISSO NÃO FUNCIONA OUT OF THE BOX 
+
+PARA 
+
+
+__ 
+
+
+
+COISAS RODANDO NA NOSSA LOCAL MACHINE..
+
+
+
+
+
+
+
+
+É POR ISSO QUE TÍNHAMOS REMOVIDO ESTA LINHA AQUI>:
+
+
+
+
+
+
+// mongoose.connect(
+//   'mongodb://localhost:27017/swfavorites',
+//   { useNewUrlParser: true },
+//   (err) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       app.listen(3000);
+//     }
+//   }
+// );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+MAS AGORA O PROFESSOR QUER ASSEGURAR QUE 
+
+NOSSA DOCKERIZED 
+
+
+APPLICATION 
+
+
+CONSEGUIRÁ 
+
+
+__ 
+
+
+
+FALAR COM NOSSA 'LOCAL MONGODB DATABASE'...
+
+
+
+
+
+
+
+
+
+
+
+VOCê SÓ SERÁ CAPAZ 
+
+
+
+
+
+DE _ ACOMPANHAR A AULA, NESTE MOMENTO,
+
+SE VOCÊ 
+
+INSTALAR 
+
+O 
+
+MONGODB 
+
+database  LOCALMENTE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAIS TARDE,
+
+COLOCAREMOS TAMBÉM O MONGODB EM 1 CONTAINER..
+
+
+
+
+
+
+
+
+
+ENTRETANTO,
+
+POR ENQUANTO 
+
+ELE 
+
+
+ESTÁ 
+
+RODANDO NA NOSSA LOCAL MACHINE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ACHO QUE NÃO TENHO O MONGODB 
+
+INSTALADO LOCALMENTE (apenas o mongodb compass, e o mongodb atlas,, que é da cloud)...
+
+
+
+
+
+
+
+OK.. INSTALAREI ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> rodei 'mongod' --> isso me mostra se a database está rodando...
+
+
+
+
+
+
+
+
+--> 'mongo' --> se digitar isso em OUTRO TERMINAL,
+
+
+saberei 
+
+se 
+
+
+
+HÁ 
+como se conectar a essa instância mongodb..
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+MongoDB shell version v5.0.6
+connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+Error: network error while attempting to run command 'isMaster' on host '127.0.0.1:27017' 
+ :
+connect@src/mongo/shell/mongo.js:372:17
+@(connect):2:6
+exception: connect failed
+exiting with code 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> OK... MAS 
+
+
+
+MESMO 
+
+
+
+
+
+FUNCIONANDO A DATABASE MONGODB,
+
+
+
+NÃO VAMOS CONSEGUIR NOS CONECTAR COM ESSE CONTAINER DESSA FORMA AÍ..
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR PARA O CONTAINER,
+
+
+
+
+
+
+__ E AÍ _ DECIDE __ ALTERAR ALGUMAS 
+COISAS...
+
+
+
+
+
+
+
+
+
+
+
+VAMOS ALTERAR OU O NOSSO CÓDIGO DE 'app.js',
+
+OU A MANEIRA 
+
+PELA QUAL 
+
+
+
+___'STARTAMOS' ESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR EXPLICA QUE, PARA A COMUNICAÇÃO ENTRE SEUS DOCKERIZED APPS/CÓDIGO NO DOCKER CONTAINER 
+
+
+
+E __ SEU LOCAL HOST MACHINE,
+
+PARA 
+
+
+
+
+ESSE TIPO DE COMMUNICATION,
+
+
+
+
+
+
+
+
+A __ _ÚNICA COISA QUE VOCÊ PRECISA FAZER É ALTERAR O CÓDIGO 
+
+QUE VOCÊ 
+
+TEM DENTRO DO CONTAINER/APP,
+
+
+ou seja,
+
+
+este ´codigo aqui:
+
+
+
+
+
+// mongoose.connect(
+//   'mongodb://localhost:27017/swfavorites',
+//   { useNewUrlParser: true },
+//   (err) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       app.listen(3000);
+//     }
+//   }
+// );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO SIGNIFICA QUE 
+
+
+NÃO É NECESSÁRIO __ 
+INICIAR 
+
+NOSSO CONTAINER DE FORMA DIFERENTE..
+
+
+
+
+
+
+
+
+
+
+
+--> EM VEZ DISSO,
+
+HÁ 
+
+UMA 
+
+
+
+
+
+
+INSTRUÇÃO/DICA ESPECIAL QUE VOCê 
+
+PODE 
+
+DAR 
+
+AO DOCKER,
+
+
+
+
+
+
+__ DENTRO DO SEU CÓDIGO... --> 
+
+
+
+
+
+
+
+
+OU SEJA,
+
+HÁ 
+UM 
+
+
+'ADDRESS' ESPECIAL QUE VOCê 
+
+
+PODE USAR 
+
+PARA SEUS REQUESTS..
+
+
+
+
+
+
+
+
+
+
+
+E ESSE ADDRESS,
+
+PROVAVELMENTE,
+
+
+É 
+
+
+
+'127.0.0.1'...
+
+
+
+(EM VEZ DE LOCALHOST)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ERRADO....
+
+
+
+
+
+
+
+
+
+NÃO É 
+
+
+
+'127.0.0.1',
+
+
+
+
+E SIM 
+
+
+
+É 
+
+
+
+
+
+'host.docker.internal'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'host.docker.internal'
+
+
+
+É 
+
+
+O CAMINHO 
+
+QUE VOCê DEVE UTILIZAR QUANDO QUER _ 
+
+
+SE COMUNICAR 
+
+
+
+
+COM ALGUMA COISA 
+
+
+NA SUA 'LOCAL HOST MACHINE'..
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+
+
+// mongoose.connect(
+//   'mongodb://localhost:27017/swfavorites',
+//   { useNewUrlParser: true },
+//   (err) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       app.listen(3000);
+//     }
+//   }
+// );
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+// mongoose.connect(
+//   'mongodb://localhost:27017/swfavorites',
+//   { useNewUrlParser: true },
+//   (err) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       app.listen(3000);
+//     }
+//   }
+// );
+
+
+// CÓDIGO COM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'LOCAL HOST MACHINE' (coisas como UMA DATABASE LOCAL, RODANDO NA NOSSA MÁQUINA)...
+///sintaxe especial (que se refere a coisas NA SUA LOCAL MACHINE) -- 'host.docker.internal'
+mongoose.connect(
+  'mongodb://host.docker.internal:27017/swfavorites',
+  { useNewUrlParser: true },
+  (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      app.listen(3000);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSE DOMAIN ESPECIAL É COMPREENDIDO PELO DOCKER,
+
+E É 
+
+TRADUZIDO COMO O 'IP ADDRESS DE SUA LOCAL HOST MACHINE',
+
+
+
+
+o ip address como OBSERVADO DE DENTRO DE SEU 'LOCAL DOCKER CONTAINER'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E VOCÊ 
+
+PODE 
+
+USAR 
+
+
+ESSA ESCRITA DE 
+
+
+
+'host.docker.internal'
+
+
+
+
+
+EM __ QUALQUER LUGAR __ 
+
+
+
+EM QUE 
+É 
+
+
+NECESSÁRIO UM 'DOMAIN'/'URL',
+
+
+
+
+
+
+
+
+
+___  TIPO ASSIM:
+
+
+
+
+  'mongodb://host.docker.internal:27017/swfavorites',
+
+
+
+
+  (
+
+
+    PARA 1 __ TIPO DE REQUEST 'MONGODB'...
+  )
+
+
+
+
+
+
+
+
+
+  MAS VOCê TAMBÉM PODERIA 
+
+
+  TER a 
+  MESMA 
+
+
+  COISA PARA 1 REQUEST DE TIPO HTTP,
+
+  tipo assim:
+
+
+
+
+  
+  'http://host.docker.internal:27017/swfavorites',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE VOCÊ TIVESSE 1 WEBSERVER RODANDO NA SUA MÁQUINA,
+
+
+
+E SE FOSSE NECESSÁRIO CONECTAR SEU DOCKER CONTAINER A ISSO,
+ 
+
+ VOCê 
+
+ USARIA 1 ESCRITA 
+ COMO 
+
+ essa,
+
+ 'http://host.docker.internal:27107'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ OK... MAS O QUE INTERESSA É QUE 
+
+
+ ESSE NEGÓCIO VAI SER 'TRANSFORMADO' NESSE IP ADDRESS... (de sua local host machine, como observado do lado de DENTRO DO SEU CONTAINER)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> BASTA USAR ESSE DOMAIN ESPECIAL,
+
+ E O DOCKER VAI FAZER O RESTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ISSO FEITO, BASTA REBUILDAR ESSA IMAGE...
+
+ (pq mudamos o source code)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> DEPOIS QUE REBUILDARMOS ESSA IMAGE,
+
+
+
+ PODEMOS RE-RODAR NOSSO CONTAINER, COM BASE NESSA 
+
+REBUILT IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... CONSEGUI FAZER CONNECT à DATABASE 
+
+
+MONGODB,
+
+LOCALMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, AGORA,
+
+
+
+RECRIEI 1 IMAGE COM ESSE CÓDIGO DO 'host.docker.internal',
+
+
+
+
+
+
+
+
+
+
+
+
+E __ REALMENTE CONSEGUI __ CONECTAR NA MINHA DATABASE LOCAL MONGODB, de dentro do container...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... AÍ, LÁ NO POSTMAN,
+
+
+
+
+
+
+
+
+
+
+
+EU DISPARO 1 REQUEST CONTRA 
+
+
+
+
+
+'localhost:3000/favorites'...
+
+
+
+
+
+
+
+--> AÍ GANHO DE VOLTA 1 DATA,
+
+
+
+
+
+
+
+DATA 
+
+
+COM 1 FAVORITE QUE ARMAZENAMOS EM 1 AULA PASSADA..
+
+
+
+
+
+
+COM ISSO,
+
+
+ESTAMOS 
+
+
+CONSEGUINDO 
+
+CONVERSAR 
+COM 
+
+1 
+
+DATABASE 
+
+
+
+ MONGODB RODANDO NA NOSSA LOCAL MACHINE,
+
+
+
+ FAZENDO COM QUE ESSE CONTAINER/app dentro do container 
+
+ CONSIGA 
+
+ CONVERSAR COM ELA...
+
+
+
+
+
+
+
+
+
+
+
+
+ ISSO PQ 
+
+
+ ESSA 
+
+
+ DATABASE ESTÁ RODANDO NA NOSSA LOCALMACHINE...
+
+
+
+
+
+
+
+
+
+
+ --> OK... ISSO SIGNIFICA QUE 
+
+ NOSSA CONEXÃO 
+
+
+ COM 
+
+ A LOCAL HOST MACHINE É POSSÍVEL,
+
+ por meio 
+ 
+
+
+
+
+
+DO USO DE 'host.docker.internal'
+
+
+COMO DOMAIN/URL,
+
+
+
+
+para que 
+
+
+
+
+O 
+
+DOCKER CONSIGA 
+
+
+
+REALIZAR TRANSFORMATIONS DE URLS,
+
+
+
+
+e para que consiga garantir a CONEXÃO 
+
+
+entre container e local machine....
