@@ -112,12 +112,1163 @@ USADA PARA DOCKERIZAR ESSE APP....
 
 
 
-E ELA FAZ O QUE JÁ FIZEMOS VÁRIAS VEZES DURANTE O CURSO:
 
+
+
+
+OK, CONSTRUÍMOS ESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+AGORA PODEMOS RODAR 1 DOCKER CONTAINER COM BASE NESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+basta escrever assim:
+
+
+
+
+
+
+
+
+
+
+docker run favorite-films-node -p 3000:3000 --name favorites  
+
+
+
+
+
+
+
+
+
+
+
+TAMBÉM COLOCO A FLAG DE DETACHED...
+
+
+
+
+
+
+
+ex:
+
+
+
+docker run favorite-films-node -p 3000:3000 --name favorites  -d --rm
+
+
+
+
+
+
+
+
+
+
+-> TAMBÉM A FLAG DE REMOVE QUANDO FIZER SHUTDOWN...
+
+
+
+
+
+
+
+
+--> O PROFESSOR TAMBÉM QUER FAZER O PUBLISH DE 1 PORT,
+
+
+
+
+
+
+
+
+E AÍ ELE DIZ QUE PODERÍAMOS USAR ENV VARIABLES,
+
+
+
+
+MAS QUE 
+
+ELE VAI KEEP IT SIMPLE... -> 
+
+
+
+VAI EXPOR A PORT DE '3000'
+
+
+
+
+NA LOCAL MACHINE,
+
+E A PORT 3000 NO CONTAINER INTERNO...
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 3000
+
+
+CMD ["node", "app.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+E ASSIM:
+
+
+
+
+
+docker run favorite-films-node -p 3000:3000 --name favorites  -d --rm 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODERÍAMOS ADICIONAR 1 BIND MOUNT, SIM,
+
+
+
+MAS O PROFESSOR QUER DEIXAR 
+
+
+
+AS COISAS SIMPLES,
+
+PQ 
+
+ESSE 
+
+APP 
+
+
+
+NÃO 
+
+
+VAI 
+
+
+ESCREVER NADA EM NENHUM ARQUIVO,
+
+
+NENHUM 
+
+
+ARQUIVO/FOLDER 
+
+PREICSA 
+
+
+
+SOBREVIVER AO CONTAINER 
+
+SHUTDOWN E REMOVAL,
+
+
+
+
+
+
+PQ NADA PRECSIA SOBREVIER A ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TEMOS A DATABASE, ONDE SÃO ARMAZENADOS OS FAVORITES,
+
+
+
+
+MAS 
+
+COMO A DATABASE NÃO FAZ 
+
+PARTE 
+
+
+
+
+DO CONTAINER (
+    A installation 
+
+    do mongodb e a database em si não faz parte desse container...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR QUER ENFATIZAR QUE ESSE CONTAINER REALMENTE SÓ 
+
+CONTEM 
+
+O 
+
+
+'NODE APP',
+
+
+E NAÕ 
+
+CONTÉM
+
+
+
+A MONGODB DATABASE...
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR RODA ISSO,
+
+
+E AÍ FUNCIONA..
+
+
+
+
+
+
+
+-_> MAS SE OBSERVAMOS 
+
+
+
+
+
+
+NOSSOS RUNNING CONTAINERS, COM 'docker ps',
+
+
+
+VEREMOS QUE 
+
+NENHUM 
+
+
+CONTAINER ESTARÁ ATIVADO (sinal que algo DEU ERRADO)...
+
+
+
+
+
+
+
+
+
+
+--> PARA SABER O QUE DEU ERRADO,
+
+
+
+
+DEVEMOS VER OS LOGS DESSE CONTAINER....
+
+
+
+
+docker logs id_do_container...
+
+
+
+
+
+
+
+
+
+
+
+NÃO CONSIGO VER OS LOGS,
+
+PQ 
+
+
+
+
+O CONTAINER FOI REMOVIDO INSTANTANEAMENTE (por causa de '--rm')...
+
+
+
+
+
+
+
+
+--> PARA EXAMINARMOS O QUE HOUVE DE ERRADO,
+
+
+DEVEMOS 
+
+TIRAR 
+
+AS FLAGS DE '--rm' (para não remvoer o container)
+
+
+
+e 
+
+
+'-d',
+
+
+para 
+
+
+
+AÍ 
+
+
+
+
+
+CONSEGUIRMOS 
+
+ENXERGAR A MENSAGEM DE ERRO....
+
+
+
+
+
+
+
+
+A MINHA MENSAGEM DE ERRO FOI ESTA:
+
+
+Error: Cannot find module './models/favorite'
+Require stack:
+- /app/app.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1053:15)
+    at Module._load (node:internal/modules/cjs/loader:898:27)
+    at Module.require (node:internal/modules/cjs/loader:1120:19)
+    at require (node:internal/modules/helpers:112:18)
+    at Object.<anonymous> (/app/app.js:6:18)
+    at Module._compile (node:internal/modules/cjs/loader:1239:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1293:10)
+    at Module.load (node:internal/modules/cjs/loader:1096:32)
+    at Module._load (node:internal/modules/cjs/loader:935:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:84:12) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ '/app/app.js' ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É PQ EU NÃO AINDA NÃO HAVIA CODADO OS MODELS DO MONGOOSE...
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... AGORA COLOQUEI ESSE FOLDER... --> preciso rebuildar a image,
+pq 
+
+
+ela não 
+
+tem esse arquivo, ainda...
+
+
+
+
+
+
+
+
+
+
+
+ok... reexecutei isso aí..
+
+
+
+
+
+
+
+
+
+
+
+
+--> NO CASO DO PROFESSOR, ELE RECEBEU UM 'MONGO CONNECTION ERROR'...
+
+
+
+
+
+
+
+
+
+
+--> mas eu não recebi 1 error...
+
+
+
+
+
+
+
+
+
+
+
+ops.... agora recebi 1 erro, na verdade...
+
+
+
+
+
+MongooseServerSelectionError: getaddrinfo ENOTFOUND mongodb
+
+
+
+
+
+
+
+
+
+
+
+mongoose.connect(
+  'mongodb://localhost:27017/swfavorites',
+  { useNewUrlParser: true },
+  (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      app.listen(3000);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> GANHEI 1 ERRO PQ NÃO CONSEGUI CONECTAR MEU APP À 
+
+
+DATABASE MONGODB --> E ISSO É 
+
+
+RUIM,
+
+
+É 
+
+
+1 
+
+PROBLEMA,
+
+PQ 
+
+ISSO 
+
+SIGNIFICA QUE 
+O 
+
+'CONNECT'
+
+À NOSSA 
+
+LOCAL MACHINE __ FALHOU__....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O MONGODB ESTÁ RODANDO NA NOSSA LOCAL MACHINE, ISSO É UM FATO...
+
+
+
+
+
+
+
+
+
+---> ok... 
+
+
+
+
+
+
+
+
+E É BOM SABER ISSO:
+
+
+
+
+
+
+
+
+'OUT OF THE BOX,
+
+
+TENTAR CONECTAR A NOSSA LOCAL MACHINE DESSA FORMA,
+
+POR 
+
+
+MEIO 
+
+de 
+
+''   'mongodb://localhost:27017/swfavorites' ```,.
+
+
+
+
+
+VAI FALHAR...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS ANTES 
+
+
+DE SEGUIRMOS TENTANDO CONECTAR A NOSSA LOCAL HOST MACHINE,
+
+O 
+
+
+PROFESSOR QUER 
+
+
+VERIFICAR SE O ' SEND DE HTTP REQUESTS A OUTRO WEBSITE'
+
+
+
+
+FUNCIONA...
+
+
+
+
+
+
+
+
+
+
+
+para isso,
+
+
+
+O PROFESSOR COPIA O 'app.listen(3000)'
+
+
+
+
+
+E ___ COMENTA PARA ___ FORA AQUELE CÓDIGO DO MONGOOSE (
+
+
+    para que 
+
+
+
+    consigamos usar esse  container sem 
+
+
+    USAR O DATABASE LOCAL,
+
+
+
+
+    com apenas a funcionalidade sem uso de database,
+
+
+
+    PARA _ VER SE __ O DISPARO DE UM HTTP REQUEST _ A ESSE CONTAINER,
+
+
+    POR MEIO 
+
+    DO 
+
+
+    POSTMAN, funciona...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AÍ O PROFESSOR 
+
+
+
+RODA O CÓDIGO, QUE FICOU ASSIm:
+
+
+
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+const mongoose = require('mongoose');
+
+const Favorite = require('./models/favorite');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+app.get('/favorites', async (req, res) => {
+  const favorites = await Favorite.find();
+  res.status(200).json({
+    favorites: favorites,
+  });
+});
+
+app.post('/favorites', async (req, res) => {
+  const favName = req.body.name;
+  const favType = req.body.type;
+  const favUrl = req.body.url;
+
+  try {
+    if (favType !== 'movie' && favType !== 'character') {
+      throw new Error('"type should be "movie" or "character"!');
+    }
+
+    const existingFav = await Favorite.findOne({ name: favName });
+
+    if (existingFav) {
+      throw new Error('Favorite already exists.');
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+
+  const favorite = new Favorite({
+    name: favName,
+    type: favType,
+    url: favUrl,
+  });
+
+  try {
+    await favorite.save();
+
+    res.status(200).json({
+      message: 'Favorite saved!',
+      favorite: favorite.toObject(),
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Something went wrong.' });
+  }
+});
+
+app.get('/movies', async (req, res) => {
+  try {
+    const response = await axios.get('https://swapi.dev/api/films');
+
+    res.status(200).json({ movies: response.data });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong.',
+    });
+  }
+});
+
+app.get('/people', async (req, res) => {
+  try {
+    const response = await axios.get('https://swapi.dev/api/films');
+
+    res.status(200).json({ movies: response.data });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong.',
+    });
+  }
+});
+
+
+
+
+app.listen(3000)
+
+// mongoose.connect(
+//   'mongodb://localhost:27017/swfavorites',
+//   { useNewUrlParser: true },
+//   (err) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       app.listen(3000);
+//     }
+//   }
+// );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E NOSSO CÓDIGO NÃO CRASHA,
+
+É CLARO,
+
+
+
+
+
+
+
+
+PQ __ NÃO ESTAREMOS MAIS TENTANDO CONECTAR A NOSSA 'LOCAL DATABASE' 
 
  
 
+ (E SIM NOSSO APP APENAS _ FICA TENTANDO CONTATAR 1 API EXTERNA NA WEB, A DO STARWARS, QUE RETORNA DATA)...
 
 
- PORTANTO,
- 
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  -> E, COM O POSTMAN,
+
+
+  SE O PROFESSOR TENTA ENVIAR 1 GET REQUEST À 
+
+
+  rota de 
+
+  'localhost:3000/people,'
+
+
+
+  ISSO FUNCIONA 
+
+
+  BEM, O QUE É ESTRANHO..
+
+
+
+
+
+
+
+
+
+
+
+  E ESSE GET REQUEST DISPARA O CÓDIGO DESTA ROTA:
+
+
+
+
+
+  app.get('/movies', async (req, res) => {
+  try {
+    const response = await axios.get('https://swapi.dev/api/films');
+
+    res.status(200).json({ movies: response.data });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong.',
+    });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO FUNCIONA BEM,
+
+
+E TUDO USANDO A API RODANDO NO NOSSO container..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... RESUMINDO: ISSO FUNCIONA...
+
+
+
+
+
+
+
+E ISSO 
+
+
+
+
+
+DEIXA BEM CLARA 1 COISA:
+
+
+
+
+
+
+
+
+
+''''OUT OF THE BOX,
+
+
+
+CONTAINERS __ _PODEM ENVIAR__ REQUESTS__ 
+
+
+À WWW  (world wide web)....''''  VOCê PODE, SIM,
+
+
+
+SE COMUNICAR COM WEB APIS 
+
+
+
+
+E _ WEB PAGES,
+
+
+DE DENTRO DE SEUS DOCKERIZED APPS... -------> E VOCÊ NÃO PRECISA 
+
+
+
+DE NENHUM 
+
+SETUP ESPECIAL,
+
+
+NEM 
+
+NENHUMA 
+
+CHANGE NO SEU CÓDIGo...
+
+
+
+
+
+
+
+
+
+
+O CÓDIGO 'JUST WORKS'...
+
+
+
+
+
+
+
+
+--> O SEND DE HTTP REQUESTS DE DENTRO DE SEU DOCKERIZED APP 
+
+
+__ FUNCIONA__ EXATAMENTE _ COMO FUNCIONA SEM CONTAIENRS,
+
+E SEM O DOCKER...
+
+
+
+
+
+
+
+
+
+
+E É EXTREMAMENTE VITAL COMPREENDER ISSO:
+
+
+
+
+
+
+
+
+
+'''ENVIAR REQUESTS NO SENTIDO  CONTAINER --> WORLD-WIDE-WEB'''' ------> JUST WORKS..
+
+
+(
+
+    FUNCIONA OUT OF THE BOX,
+
+
+    SEM NENHUMA SETTING ESPECIAL...
+)
+
+
+
+
+
+
+
+
+
+
+
+OK... E, APARENTEMENTE, AS RESPONSES TAMBÉM SÃO RECEBIDAS SEM PROBLEMAS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS AGORA DEVEMOS DAR 1 OLHADA NAS OUTRAS 2 
+
+
+
+MANEIRAS DE 'COMMUNICATION' DOS CONTAINESR....
+
+
+
+
+
+
+
+(
+    em direção 
+
+
+    AO 'LOCAL HOST MACHINE'
+
+
+    e 
+
+    EM DIREÇÃO A OUTROS CONTAINERS...
+)
+
+
+
+
+
+
+
+
+
+DEVEMOS ENTENDER COMO PROCEDER PARA FAZER ESSES OUTROS TIPOS FUNCIONAREM....
