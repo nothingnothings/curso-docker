@@ -1,0 +1,1422 @@
+
+
+
+
+
+
+
+
+
+COM O DOCKER, VOCÊ PODE CRIAR AQUILO QUE 
+
+
+CHAMAMOS DE 'CONTAINER NETWORKS' (
+
+
+que também são chamadas de 'networks'...
+
+)
+
+
+
+
+
+
+
+
+
+MAS O QUE SÃO 
+
+ELAS?
+
+
+
+
+
+
+
+
+
+
+--> A IDEIA É:
+
+
+
+VOCÊ 
+
+PODE TER MÚLTIPLOS CONTAINERS,
+
+
+E AÍ 
+
+
+
+VOCÊ 
+
+
+
+VAI QUERER TER COMMUNICATION ENTRE ESSES CONTAINERS...
+
+
+
+
+
+ESSENCIALMENTE,
+
+É O CENÁRIO
+
+
+QUE 
+TIVEMOS 
+
+COM 
+
+
+
+
+O CONTAINER DE 'NODE API' E 'mongo db'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E, COM O DOCKER,
+
+PODEMOS COLOCAR TODOS ESSES CONTAINERS EM 1 MESMA NETWORK,
+
+ 
+
+
+
+
+
+
+ __ POR MEIO DO COMANDO DE 
+
+
+
+
+ '''--network''
+
+
+
+
+
+
+
+
+ NO COMANDO DE 'docker run'...
+
+
+
+
+
+
+
+
+ --> COM ISSO,
+
+
+
+ PODEMOS 
+
+
+
+
+ SUBDIVIDIR 
+
+NOSSAS COMBINAÇÕES DE CONTAINERS EM DIFERENTES NETWORKS,
+
+
+
+
+
+
+
+
+
+
+PQ AÍ 
+
+'TEREMOS 1 NETWORK EM QUE TODOS OS CONTAINERS 
+
+CONSEGUEM FALAR 1 COM O OUTRO'...
+
+
+
+
+
+
+
+
+
+
+--> E O DOCKER  ___ AUTOMATICAMENTE__ FARÁ 
+
+
+ESSE 'IP LOOK-UP AND RESOLVING STUFF',
+
+
+esse que fizemos manualmente,
+
+alguns minutos atrás (com o 'docker inspect id_do_container', e depois a cópia do valor do IPAddress)...
+
+
+
+
+
+
+
+
+
+
+
+'''WITHIN A DOCKER NETWORK,
+
+ALL CONTAINERS CAN COMMUNICATE WITH EACH OTHER AND IPs are 
+AUTOMATICALLY RESOLVED'''...
+
+
+
+
+
+
+
+
+
+
+
+
+---->  E ESSA É UMA FEATURE MT ÚTIL PARA 
+
+
+
+TER 'MULTIPLE, ISOLATED CONTAINERS, WITH THEIR OWN DUTIES AND TASKS',
+
+
+QUE AINDA 
+
+
+PODERÃO 
+COMUNICAR-SE ENTRE SI... ---> E É EXATAMENTE ISSO QUE DESEJAMOS FAZER, AGORA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK, MAS COMO PODEMOS FAZER ISSO, AGORA?
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR QUER UTILIZAR NETWORKS..
+
+
+
+
+
+
+
+
+ELE PARA OS CONTAINERS DE 'FAVORITES'
+
+E 
+
+DE 
+'MONGODB'..
+
+
+
+
+
+
+--> ISSO PQ ELE QUER RESTARTAR 
+
+AMBOS,
+
+MAS 
+
+DE 
+
+1 
+
+MANEIRA DIFERENTE..
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+AÍ VAMOS EXPLORAR COMO USAMOS NETWORK...
+
+
+
+
+
+
+
+
+
+
+
+
+
+COMEÇAMOS PELO CONTAINER DE MONGODB...
+
+
+
+
+
+
+
+ANTES, STARTAMO-NO 
+
+
+COM ESTE COMANDO:
+
+
+
+
+
+
+
+
+docker run -d --name mongodb mongo 
+
+
+
+
+
+
+
+
+
+
+--> OK.... COLOCAMOS O NOME DE 'mongodb',
+
+e aí usamos a image de 'mongo'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS PODEMOS ADICIONAR 1 OPTION EXTRA, QUE 
+
+É A OPTION 
+
+DE 
+
+'--network'...
+
+
+
+
+
+
+
+
+
+
+
+--> com essa flag,
+
+
+podemos 
+
+
+
+ESCOLHER QUALQUER NOME DE NOSSA ESCOLHA,
+
+PARA 
+
+SER 
+a 
+NOVA NETWORK..
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+docker run -d --name mongodb --network favorites-net mongo 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO,
+
+SERÁ CRIADA UMA NETWORK 
+
+
+
+
+de nome 'favorites-net'...
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE SERÁ O NETWORK NAME...
+
+
+
+
+
+
+
+
+
+
+
+
+
+TENTEI RODAR, E GANHEI ESTE ERROR:
+
+
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker run --name mongodb --network favorites-net mongo
+docker: Error response from daemon: network favorites-net not found.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> GANHEI 1 ERROR -> 
+
+
+
+ESSA NET NÃO EXISTE -----> PQ ISSO ACONTECEU?
+
+
+
+
+
+
+
+
+
+
+
+
+CONTRARIAMENTE AO COMPORTAMENTO DE 'VOLUMES',
+
+
+
+
+COM 
+
+
+
+NETWORKS 
+
+
+O _ DOCKER _ NÃO VAI OS CRIAR AUTOMATICAMENTE para nós,
+
+
+
+o QUE QUER DIZER QUE DEVEMOS CRIÁ-LOS POR CONTA PRÓPRIA...
+
+
+
+
+
+
+
+
+
+
+
+
+---> PARA CRIAR 1 NETWORK,
+
+USAMOS O COMANDO 'docker network'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+com 'docker network --help',
+
+
+
+
+
+ENCONTRAMOS DIVERSAS OPTIONS:
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker network --help
+
+Usage:  docker network COMMAND
+
+Manage networks
+
+Commands:
+  connect     Connect a container to a network
+  create      Create a network
+  disconnect  Disconnect a container from a network
+  inspect     Display detailed information on one or more networks
+  ls          List networks
+  prune       Remove all unused networks
+  rm          Remove one or more networks
+
+Run 'docker network COMMAND --help' for more information on a command.
+
+
+
+
+
+
+
+
+
+COMEÇAMOS COM 
+
+
+
+
+'docker network create'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker network create 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO,
+
+PODEMOS CRIAR 1 NOVA DOCKER NETWORK --> E, AÍ,
+
+
+VOCÊ 
+NÃO PRECISA DE NENHUMA CONFIG 
+
+
+
+ESPECÍFICA,
+
+
+BASTA COLOCAR O NAME DA NETWORK QUE VOCÊ QUER CRIAR..
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker network create favorites-net
+4cdf7684db8a1b06b33d5db4743a7f71b245514a32a539a4fff057acd9d26154
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK... ISSO CRIOU UMA NETWORK,
+
+E AÍ RECEBEMOS ESSE ID..
+
+
+
+
+
+
+
+
+
+
+--> ESSA É UMA ''DOCKER-INTERNAL NETWORK',
+
+
+QUE VOCÊ PODE ENTÃO USAR NOS SEUS DOCKER CONTAINERS,
+
+PARA 
+
+FAZER ELES CONVERSAREM ENTRE SI...
+
+
+
+
+
+
+
+
+
+
+
+TODO O HEAVY LIFTING É FEITO PELO DOCKER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok..
+
+
+
+
+
+
+com 'docker network ls',
+
+
+
+
+ENXERGAMOS TODAS AS NETWORKS DO DOCKER, ATUALMENTE EXISTENTES...
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker network ls
+NETWORK ID     NAME            DRIVER    SCOPE
+06b38597a9da   bridge          bridge    local
+4cdf7684db8a   favorites-net   bridge    local
+05fc68fe31bb   host            host      local
+0cee244c8d32   none            null      local
+
+
+
+
+
+
+
+
+
+
+--> TEMOS NOSSA PRÓPRIA NETWORK,
+
+
+ASSIM COMO ALGUMAS 
+
+DEFAULT NETWORKS... (que podemos ignorar)...
+
+
+
+
+
+
+
+
+
+
+-_> BEM, MAS COM ESSA NETWORK DE    'favorites-net'
+
+
+CRIADA,
+
+
+
+
+PODEMOS, AGORA SIM,
+
+
+USAR 
+
+
+AQUELA 
+
+FLAG 
+
+DE 
+
+
+
+'--network favorites-net',
+
+
+
+
+PARA UTILIZAR ESSA NETWORK RECÉM CRIADA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... RODEI ISSO AÍ...
+
+
+
+
+
+
+
+
+--> AGORA O CONTAINER DE 'mongodb' 
+
+ESTÁ RODANDO,
+
+
+
+
+RODANDO NO CONTEXTO DA NETWORK DE 'favorites-net'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> E, AGORA, QUALQUER 
+
+
+
+CONTAINER PODE FAZER PARTE DESSA NETWORK --> E SE MÚLTIPLOS 
+
+
+
+
+CONTAINERS FAZEM PARTE DE 1 MESMA NETWORK,
+
+
+
+
+ELES PODEM CONVERSAR ENTRE SI... 
+
+
+
+
+
+
+
+
+
+
+
+
+MAS A PERGUNTA, AGORA, É:
+
+
+
+
+
+
+
+
+
+'''COMO PODEM COMUNICAR ENTRE SI,
+
+
+QUAL É A KEYWORD/CÓDIGO?''''
+
+
+
+
+
+
+
+
+
+
+
+-> o código, no caso,
+
+
+é o NOME DO CONTAINER,
+
+que é colocado na url...
+
+
+
+
+
+
+
+
+
+
+
+--> TEMOS ESTE CÓDIGO, ATUALMENTE:
+
+
+
+
+mongoose.connect(
+  // 'mongodb://host.docker.internal:27017/swfavorites',
+  'mongodb://172.17.0.2:27017/swfavorites',
+  { useNewUrlParser: true },
+  (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      app.listen(3001);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> N QUEREMOS HARDCODAR ESSE IP AQUI,
+
+
+
+PQ O CERTO É O __ MONGODB__ FAZER __ O RESOLVE AUTOMÁTICO 
+
+
+DESSE IP...
+
+
+
+
+
+
+
+
+
+
+
+A COISA LEGAL É QUE 
+
+
+__ SE __ OS 2 CONTAINERS FAZEM PARTE 
+
+
+
+DE 1 MESMA NETWORK,
+
+PODEMOS 
+
+
+
+SIMPLESMENTE 
+
+COLOCAR O NOME 
+
+
+DO OUTRO CONTAINER 
+
+
+
+
+DENTRO 
+
+
+
+
+DAQUELA URL..
+
+
+
+
+
+
+
+--> tipo ASSIm:
+
+
+
+
+mongoose.connect(
+  // 'mongodb://host.docker.internal:27017/swfavorites',
+  'mongodb://mongodb:27017/swfavorites',
+  { useNewUrlParser: true },
+  (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      app.listen(3001);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COMO O NOME DE NOSSO CONTAINER É 'mongodb',
+
+
+
+
+ESSE NOME DE 'mongodb' 
+
+É TRADUZIDO PARA O INTERNAL IP ADDRESS DESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+// CÓDIGO COM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'DOCKER CONTAINER' (sendo que esse outro docker container ESTÁ RODANDO 1 IMAGE DE 'MONGODB', o que quer dizer que COLOCAMOS/rodamos NOSSA DATABASE EM OUTRO CONTAINER...)...
+///sintaxe especial (que se refere ao NOME DE OUTRO CONTAINER, no caso "mongodb", que é o outro container que criamos, para esse app aí) --
+mongoose.connect(
+  // 'mongodb://host.docker.internal:27017/swfavorites',
+  'mongodb://mongodb:27017/swfavorites',
+  { useNewUrlParser: true },
+  (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      app.listen(3001);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+// CÓDIGO COM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'DOCKER CONTAINER' (sendo que esse outro docker container ESTÁ RODANDO 1 IMAGE DE 'MONGODB', o que quer dizer que COLOCAMOS/rodamos NOSSA DATABASE EM OUTRO CONTAINER...)...
+///sintaxe especial (que se refere ao NOME DE OUTRO CONTAINER, no caso "mongodb", que é o outro container que criamos, para esse app aí) --
+////OBS::: PARA QUE ESSA SINTAXE FUNCIONE, VOCÊ PRECISA FAZER COM QUE AMBOS OS CONTAINERS PERTENÇAM À MESMA NETWORK... (criada com 'docker network create nome_da_network')... -> e podemos fazer eles pertencerem a 1 network já criada por meio da flag de 'docker run --network nome_da_network_ja_criada' 
+mongoose.connect(
+  // 'mongodb://host.docker.internal:27017/swfavorites',
+  'mongodb://mongodb:27017/swfavorites',
+  { useNewUrlParser: true },
+  (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      app.listen(3001);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ESSA 
+
+
+
+
+TRANSFORMAÇÃO AUTOMÁTICA FUNCIONA, DE FATO,
+
+SE 
+
+
+AMBOS 
+
+OS CONTAINERS 
+
+
+FIZEREM 
+
+PARTE 
+
+
+
+
+DA MESMA NETWORK...
+
+
+
+
+
+
+
+
+
+
+
+
+--> RODAMOS 
+
+
+
+A MESMA COISA NO COMANDO 
+
+
+
+
+DO CONTAINER DO 'NODE APP',
+
+
+por meio 
+
+
+
+
+desta escrita:
+
+
+
+
+
+
+
+
+
+docker run --name favorites --network favorites-net -d -p 3001:3001 favorites-node 
+
+
+
+
+
+(COLOCAMOS A FLAG DE '--network favorites-net' para INCLUÍ-LO NESSA NETWORK em que o mongodb está sendo rodado)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ambos os containers 
+
+
+
+
+
+
+DEVERÃO FAZER PARTE DA MESMA NETWORK...
+
+
+
+
+
+
+
+
+--> OK... O NODE APP 
+
+
+FOI CAPAZ DE SE CONECTAR 
+
+
+à DATABASE MONGODB RODANDO NO OUTRO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+SE RODAMOS ISSO COM O POSTMAN,
+
+NOVAMENTE CONSEGUIMOS 
+
+1 ARRAY 
+VAZIO DE FAVORITES,
+
+QUE É O QUE IMPORTA...
+
+
+
+
+
+
+
+
+
+
+OK... ISSO FUNCIONA, E PROVA QUE 
+
+
+AMBOS OS CONTAINERS SÃO CAPAZES DE SE COMUNICAR,
+
+
+
+
+MAS AGORA COM ESSA SIMPLIFICATION 
+
+
+
+
+
+DA BUILT-IN NETWORK FEATURE...
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ISSO É IMPORTANTE:
+
+
+
+
+''''2 CONTAINERS GERALMENTE __ NÃO SÃO CAPAZES DE CONVERSAR ENTRE SI....
+
+
+
+___A  NÃO SER __ QUE VOCê CRIE 1 CONTAINER NETWORK'''' (
+
+
+    ou a não ser que 
+
+    VOCÊ MANUALMENTE BUSQUE O INTERNAL IP ADDRESS,
+
+    como observamos...
+
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+MAS COM 
+
+
+1 CONTAINER NETWORK DESSAS,
+ISSO 
+
+FUNCIONA,
+
+
+E PORTANTO É ASSIM QUE 
+
+ASSEGURAMOS QUE 
+
+MÚLTIPLOS CONTAINERS
+
+
+
+
+CONSEGUIRÃO
+
+
+FALAR ENTRE SI...
+
+
+
+
+
+
+
+
+
+
+
+
+ESSE NÃO É UM CENÁRIO NICHO;
+
+
+
+
+DE FATO,
+
+É BEM COMUM A NECESSIDADE 
+
+DE COMUNICAÇÃO ENTRE 2 OU MAIS CONTAINERS...
+
+
+
+
+
+
+
+
+E COM A CRIAÇÃO DE 1 DOCKER NETWORK,
+ISSO É FÁCIL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, COM O USO 
+
+DOS CONTAINER NAMES 
+
+NO SEU CÓDIGO,
+
+ISSO SE TORNA BEM FÁCIL DE FAZER...

@@ -108,9 +108,28 @@ app.listen(3000);
 
 // CÓDIGO COM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'DOCKER CONTAINER' (sendo que esse outro docker container ESTÁ RODANDO 1 IMAGE DE 'MONGODB', o que quer dizer que COLOCAMOS/rodamos NOSSA DATABASE EM OUTRO CONTAINER...)...
 ///sintaxe especial (que se refere ao IP INTERNO DE OUTRO CONTAINER, obtido por meio de 'docker inspect id_do_container') --
+// mongoose.connect(
+//   // 'mongodb://host.docker.internal:27017/swfavorites',
+//   'mongodb://172.17.0.2:27017/swfavorites',
+//   { useNewUrlParser: true },
+//   (err) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       app.listen(3001);
+//     }
+//   }
+// );
+
+
+
+
+// CÓDIGO COM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'DOCKER CONTAINER' (sendo que esse outro docker container ESTÁ RODANDO 1 IMAGE DE 'MONGODB', o que quer dizer que COLOCAMOS/rodamos NOSSA DATABASE EM OUTRO CONTAINER...)...
+///sintaxe especial (que se refere ao NOME DE OUTRO CONTAINER, no caso "mongodb", que é o outro container que criamos, para esse app aí) --
+////OBS::: PARA QUE ESSA SINTAXE FUNCIONE, VOCÊ PRECISA FAZER COM QUE AMBOS OS CONTAINERS PERTENÇAM À MESMA NETWORK... (criada com 'docker network create nome_da_network')... -> e podemos fazer eles pertencerem a 1 network já criada por meio da flag de 'docker run --network nome_da_network_ja_criada' 
 mongoose.connect(
   // 'mongodb://host.docker.internal:27017/swfavorites',
-  'mongodb://172.17.0.2:27017/swfavorites',
+  'mongodb://mongodb:27017/swfavorites',
   { useNewUrlParser: true },
   (err) => {
     if (err) {
