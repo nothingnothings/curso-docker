@@ -1,0 +1,142 @@
+ 
+
+
+
+
+
+
+
+
+ OK... ACABAMOS COM ESTE MÓDULO...
+
+
+ ERA SOBRE CONTAINER COMMUNICATION E NETWORKS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ BEM, MAS HÁ MAIS COISAS QUE PODEMOS FAZER PARA 
+
+ MELHORAR ESSE APP,
+
+
+ E MELHORAR 
+
+
+  
+  A MANEIRA PELA QUAL OS CONTAINERS SÃO STARTADOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  POR EXEMPLO, POR ENQUANTO,
+
+
+
+  __ NÓS SEMPRE _ PERDEMOS 
+
+  'ALL THE DATABASE DATA'
+
+QUANDO FAZEMOS 
+
+O 
+
+
+STOP 
+
+
+
+
+
+DA MONGODB DATABASE... --> E ISSO É ALGO QUE PODEMOS 
+RESOLVER 
+
+COM VOLUMES, COMO VEREMOS  NO PRÓXIMO MÓDULO..
+
+
+
+
+
+
+
+
+
+----> DAREMOS 1 OLHADA NISSO,
+
+JUNTO DE OUTRAS COISAS,
+
+
+NO PRÓXIMO MÓDULO,
+
+
+QUANDO 
+
+ESTUDARMOS O BUILD DE 'MULTI-CONTAINER APPLICATIONS'..
+
+
+
+
+
+(
+    pq a grande maioria dos apps é multi-container...
+)
+
+
+
+
+
+
+
+
+
+
+MAS É IMPORTANTE QUE VOCê TENHA COMPREENDIDO QUE:
+
+
+
+
+
+
+1) REQUESTS A WEBSERVERS SÃO SEMPRE POSSÍVEIS, EM CONTAINERS..
+
+
+
+
+
+
+
+2) REQUESTS à LOCAL HOST MACHINE, com 'host.docker.internal' como address/domain name 
+
+
+
+3) E QUE 'cross-container communication' É FÁCIL SE VOCÊ FIZER ou look-up do ip, 
+
+OU, AINDA MELHOR,
+
+SE VOCÊ 
+
+CRIAR 1 CONTAINER NETWORK,
+INCLUIR OS CONTAINERS NELA E ENTÃO PASSAR A REFERêNCIA DO NAME DE CADA container no seu código... (o docker faz o trabalho sujo)...
