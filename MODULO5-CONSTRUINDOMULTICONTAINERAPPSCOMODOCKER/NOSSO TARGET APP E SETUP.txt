@@ -1,0 +1,575 @@
+
+
+
+
+EIS O QUE VAMOS CONSTRUIR:
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR MOSTRARÁ O PROJETO EM AÇÃO, DAQUI A POUCO...
+
+
+
+
+
+
+
+
+
+
+
+TEREMOS 3 MAIN BUILDING BLOCKS:
+
+
+
+
+
+
+1) MONGODB DATABASE .. ->  ESTARÁ LÁ PARA ARMAZENAR A DATA GERADA POR NOSSO APP..
+
+
+
+
+
+
+
+
+2) BACKEND WEB APP --> TEREMOS NOSSO NODEJS REST API --> É APENAS 1 WEB APP CONSTRUÍDO COM NODEJS, QUE ACTUALLY EXPÕE NENHUMA GUI (graphical user interface), e que 
+
+
+NÃO RESPONDE COM HTML,
+
+MAS 
+
+ACEITA E RESPONDE JSON DATA...
+
+
+
+
+
+
+--> MAS AÍ TEMOS UM TERCEIRO BUILDING BLOCK,
+
+
+
+
+
+
+3) FRONTEND --> 1 FRONTEND, SPA, CONSTRUÍDO COM REACT...
+
+
+
+
+
+
+--> VOCÊ TVZ NÃO SAIBA O QUE EXATAMENTE É UMA REST API,
+
+OU SPA,
+
+
+MAS 
+
+O PROFESSOR MOSTRARÁ COMO ISSO FUNCIONA...
+
+
+
+
+
+
+
+
+
+--> MAS ESSE É UM SETUP BEM 
+
+TÍPICO DE CONSTRUÇÃO DE UM WEB APP MODERNO...
+
+
+
+
+
+
+
+
+
+
+--> É BEM TÍPICO TER ASSIM:
+
+
+
+
+
+
+1) DATABASE 
+
+
+
+2) BACKEND,
+ 
+
+ QUE INTERAGE COM O FRONTEND (o frontend traz a parte visual aos seus users)...
+
+
+
+
+
+
+
+
+3) FRONTEND --> SERÁ A COISA QUE FARÁ A COMMUNICATION 
+
+
+
+
+
+
+COM O BACKEND...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O BACKEND VAI CONVERSAR COM A DATABASE, PARA ARMAZENAR 
+
+
+E RETRIEVAR DATA...
+
+
+
+
+
+
+
+
+
+JÁ O FRONTEND VAI FALAR COM NOSSO BACKEND..
+
+
+
+
+
+
+
+
+
+
+--> INDIRETAMENTE,
+ 
+
+ O FRONTEND VAI FALAR COM A DATABASE...
+
+
+
+
+
+
+
+
+
+
+
+ --> AGORA DEVEMOS VER ESSE PROJETO EM AÇÃO..
+
+
+
+
+
+
+
+
+
+ --> TEMOS 2 PASTAS, 'backend' e 'frontend'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> O PROFESSOR VAI RODAR ESSE APP LOCALMENTE --> 
+
+
+
+
+
+
+O MONGODB PRECISA ESTAR INSTALADO PARA RODAR ISSO 
+
+
+LOCALMENTE..
+
+
+
+
+
+
+
+
+
+
+
+COMO VAMOS DOCKERIZAR O MONGODB DE QUALQUER FORMA,
+
+
+
+NÃO É NECESSÁRIO RODAR ISSO LOCALMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS REPLICAR ESSE CÓDIGO...
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+vai ficando assim:
+
+
+
+
+
+
+
+
+
+const fs = require('fs');
+const path = require('path');
+
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+
+const Goal = require('./models/goal');
+
+const app = express();
+
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, 'logs', 'access.log'),
+  { flags: 'a' } ////'a' for append...
+);
+
+app.use(morgan('combined', { stream: accessLogStream }));
+
+app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
+app.get('/goals', async (req, res) => {
+  console.log('TRYING TO FETCH GOALS');
+
+  try {
+    const goals = await Goal.find();
+
+    res.status(200).json({
+      goals: goals.map((goal) => {
+        return {
+          id: goal.id,
+          text: goal.text,
+        };
+      }),
+    });
+    console.log('FETCHED GOALS');
+  } catch (err) {
+    console.error('ERROR FETCHING GOALS');
+    console.error(err.message);
+    res.status(500).json({ message: 'Failed to load goals.' });
+  }
+});
+
+app.post('/goals', async (req, res) => {
+  console.log('TRYING TO STORE GOAL');
+  const goalText = req.body.text;
+
+  if (!goalText || goalText.trim().length === 0) {
+    console.log('INVALID INPUT - NO TEXT');
+    return res.status(422).json({ message: 'Invalid goal text.' });
+  }
+
+  const goal = new Goal({
+    text: goalText,
+  });
+
+  try {
+    await goal.save();
+
+    res.status(201).json({
+      message: 'Goal saved',
+      goal: { id: goal.id, text: goalText },
+    });
+    console.log('STORED NEW GOAL');
+  } catch (err) {
+    console.error('ERROR FETCHING GOALS');
+    console.error(err.message);
+    res.status(500).json({
+      message: 'Failed to save goal.',
+    });
+  }
+});
+
+app.delete('/goals/:id', async (req, res) => {
+  console.log('TRYING TO DELETE GOAL');
+
+  try {
+    await Goal.deleteOne({ _id: req.params.id });
+    res.status(200).json({ message: 'Deleted goal!' });
+    console.log('DELETED GOAL');
+  } catch (err) {
+    console.error('ERROR FETCHING GOALS');
+    console.error(err.message);
+    res.status(500).json({
+      message: 'Failed to delete goal.',
+    });
+  }
+});
+
+mongoose.connect(
+  'mongodb://localhost:27017/course-goals',
+
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB');
+      console.error(err);
+    } else {
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+ESSE É O CÓDIGO INICIAL...
+
+
+
+
+
+
+
+
+VAMOS BUILDAR 1 DEMO APP EM QUE USERS PODEM TRACKAR SEUS GOALS PARA ESSE COURSE..
+
+
+
+
+
+
+
+
+TEMOS TODA A LÓGICA PARA O GET, DELETE 
+
+
+E POST DE GOALS...
+
+
+
+
+
+
+
+E ESSES GOAL SERÃO DEPOSITADOS NA DATABASE...
+
+
+
+
+
+
+
+
+
+
+ALÉM DISSO,
+
+O PROFESSOR TAMBÉM ESTÁ COM 1 LOGGING,
+POR CONTA DO 'MORGAN',
+
+EM QUE 
+
+
+
+ALGUNS LOGS SERÃO ESCRITOS 
+
+
+EM 1 FOLDER DE 'logs'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> JÁ O FRONTEND É 1 REACT APP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+REACT --> É UMA JAVASCRIPT LIBRARY QUE RODA NO BROWSER,
+
+
+
+
+
+--> RODO 'npx create-react-app' para criar 1 novo react app 
+
+
+que 
+
+será o frontend desse app aí...
+
+
+(INSTALO REACT, REACT-DOM, REACT-SCRIPTS )
+
+
+
+
+
+
+
+
+
+
+
+
+-> É CÓDIGO DE FUNCTIONAL COMPONENTS...
+
+
+
+
+
+
+
+-> TEMOS OS DISPAROS DE REQUEST PARA 
+FAZER 
+
+GET DE GOALS,
+
+POST,
+
+
+E DELETE....
+
+
+
+
+
+
+
+
+
+
+
+E O SEU CÓDIGO É ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PARA RODAR O BACKEND NODE,
+
+
+
+
+
+basta rodar 'node app.js'...
+
+
+
+
+
+
+
+
+-> CERTo...
