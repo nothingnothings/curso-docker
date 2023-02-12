@@ -573,3 +573,1539 @@ basta rodar 'node app.js'...
 
 
 -> CERTo...
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+O PROFESSOR 
+
+
+
+
+
+RODOU O FRONTEND E O BACKEND EM TERMINAIS SEPARADOS...
+
+
+
+
+
+
+(
+
+
+  com 'npm start' --> frontend do react 
+
+
+
+
+  'node app.js' --> para o backend...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO..
+
+
+
+
+
+
+
+temos 2 diferentes webservers,
+
+rodando 
+
+no backend e no frontend..
+
+
+
+
+
+
+
+
+DEPOIS DISSO,
+
+PODERÍAMOS ACESSAR ESSE APP EM 'localhost:3000' ( o react app)
+
+
+
+
+
+
+
+
+
+
+--> JÁ O NODE APP ESTÁ RODANDO NA PORT 80...
+
+
+
+
+
+
+
+
+
+
+
+
+SE TUDO FUNCIONA, SOMOS CAPAZES DE CRIAR GOALS COMO 'LEARN DOCKER',
+
+
+
+E AÍ 
+
+
+
+PODEMOS 
+RETRIEVAR 
+
+ESSES 
+
+
+
+ITEMS DA DATABASE,
+
+
+
+
+tudo por meio 
+
+da combinação front+back..
+
+
+
+
+
+
+
+
+
+
+OK... MAS PARA FAZER A COMUNICAÇÃO 
+
+
+ENTRE ESSES 
+
+
+3 COMPONENTS,
+
+
+
+BACKEND + FRONT + DATABASE,
+
+
+
+
+
+
+
+TEREMOS DIFERENTES 'REQUIREMENTS'/COISAS 
+
+
+
+
+
+A TER EM MENTE,
+
+ESPECIALMENTE 
+
+
+
+
+
+ACERCA DE SUA DOCKERIZAÇÃO..
+
+
+
+
+
+
+
+
+
+
+
+
+VAMOS DOCKERIZAR TUDO ISSO JUNTO DO PROFESSOR,
+
+
+MAS 
+
+
+
+
+PODEMOS COMEÇAR TENTANDO FAZER ISSO POR CONTA PRÓPRIA...
+
+
+
+
+
+
+
+
+--> MAS VAMOS TAMBÉM 
+
+DOCKERIZAR O FRONTEND...
+
+
+
+
+
+
+
+
+
+
+''''IF YOU DO THIS ON YOUR OWN::: DOCKERIZING THE REACT APP 
+WILL BE CHALLENGING! FOCUS ON THE NODE BACKEND + MONGODB, THEREFORE'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS O QUE É IMPORTANTE DE SE TER EM MENTE,
+
+QUANDO VOCÊ DOCKERIZAR TUDO ISSO,
+
+
+
+
+É QUE:
+
+
+
+
+
+
+
+
+
+
+1) SE VOCÊ COLOCAR O MONGODB EM 1 CONTAINER,
+
+A DATA __ DEVERÁ _ PERSIST;
+
+NÃO PODERÁ SER 'LOST' SE O SEU CONTAINER 
+
+
+
+FOR REMOVED E RE-CREATED...
+ (
+  e isso aconteceu 
+
+  NA ÚLTIMA 
+
+  COURSE SECTION...
+ ) -----------------> PARA FAZER A DATA PERSISTIR,
+
+
+ PROVAVELMENTE PRECISAREMOS CRIAR 1 'NAMED VOLUME' (ou, então
+ ,
+ 
+ a depender do use-case/quanto queremos que o negócio persista, 
+ 
+ 
+ 
+ devemos criar 1 BIND MOUNT)
+
+
+
+
+
+
+
+
+ 2) ADICIONALMENTE,
+
+
+ TALVEZ 
+
+
+ QUEIRAMOS 
+
+ __RESTRINGIR_ ACESSO 
+
+
+ A ESSA DATABASE.. ----> E, PARECE 
+
+
+ QUE 
+
+
+ A IMAGE OFICIAL DO MONGODB 
+
+
+ __ TAMBÉM 
+
+
+ NOS DÁ 
+
+ UMA MANEIRA
+  
+
+
+  DE 
+
+  ADICIONAR 
+
+
+  1 
+  USER E PASSWORD 
+
+
+
+à DATABASE QUE É CRIADA NAQUELA MONGODB IMAGE E CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+--> JÁ PARA NOSSO 
+
+'NODE BACKEND API',
+
+
+
+
+A DATA TAMBÉM DEVERÁ PERSIST --> 
+
+
+
+
+
+
+MAS QUAL DATA?
+
+
+
+
+
+
+QUAL DATA DEVERÁ PERSISTIR?
+
+
+
+
+
+
+
+
+
+--> NÃO SERÃO OS GOALS (pq eles vão existir DENTRO DA MONGODB DATABASE)..
+
+
+
+
+
+
+
+
+
+
+-> A DATA QUE DEVERÁ 'PERSIST' 
+
+
+SERÁ 
+
+
+
+
+AQUELES LOG FILES,
+
+
+AQUELE FOLDER DE 'logs',
+
+
+
+
+
+no ARQUIVO DE 'access.log' --> ESSE ARQUIVO NÃO DEVE SER DELETADO
+ 
+ QUANDO 
+
+
+ O 
+
+
+ CONTAINER DO BACKEND FOR STOPPADO E REMOVIDO... (precisamos de um BIND MOUNT)...
+
+
+
+
+
+
+
+
+
+ 3) UM TERCEIRO REQUISITO, NO CASO,
+
+
+ PARA TER 
+
+
+ 1 DEVELOPMENT 
+
+
+ MAIS LEGAL,
+
+ É QUE 
+
+
+
+
+QUEREMOS 
+
+'LIVE SOURCE CODE UPDATE'--> 
+
+
+CHANGES 
+
+
+AO SOURCE CODE DEVEM SER REFLETIDAS INSTANTANEAMENTE (
+
+  atualmente, não é esse o case...
+)
+
+
+
+
+
+
+
+
+
+
+
+--> PARA TER 'LIVE SOURCE CODE UPDATE',
+
+
+SÃO NECESSÁRIAS 2 COISAS:
+
+
+
+
+1) BIND-MOUNT NA PASTA INTEIRA DO PROJETO..
+
+
+
+
+
+2) UMA THIRD-PARTY PACKAGE,
+
+QUE SERÁ O 'nodemon'... --> VAI RECARREGAR NOSSO SERVER SEMPRE QUE 
+
+
+
+O SOURCE-CODE FOR ALTERADO...
+
+
+
+
+
+
+
+
+--> COM ISSO, o código do container será alterado 
+
+SEM
+
+PRECISARMOS REBUILDAR A IMAGE E REINICIAR O CONTAINER..
+
+
+(
+  já vimos isso, nesse curso...
+)
+
+
+
+
+
+
+
+
+
+
+
+--> E PARA O REACT APP,
+
+
+TAMBÉM VAMOS QUERER TER ESSES 'LIVE UPDATES' 
+
+
+QUANDO NOSSO APP FRONT FOR ALTERADO...
+
+
+
+
+
+
+
+
+
+SÃO MTAS COISAS 
+
+
+PARA FAZER....
+
+
+
+
+
+
+
+
+
+MAS DEVEMOS TENTAR FAZER ISSO POR CONTA PRÓPRIA...
+
+
+
+
+
+
+DEVEMOS VER ATÉ QUE PONTO CONSEGUIMOS CHEGAR...
+
+
+
+
+O PROFESSOR VAI NOS MOSTRAR 
+
+
+
+COMO FAZER TUDO ISSO, NA PRÓXIMA AULA...  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... VOU COMEÇAR...
+
+
+
+
+
+
+
+
+
+
+
+
+1o PASSO --> REMOVER TODOS OS CONTAINERS E IMAGES DO PC...
+
+
+docker ps -a 
+
+
+
+
+EX:
+
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker ps -a
+CONTAINER ID   IMAGE       COMMAND                  CREATED       STATUS
+          PORTS     NAMES
+c276b1fdb1db   mongo       "docker-entrypoint.s…"   3 hours ago   Exited (0) 38 minutes ago             mongodb
+7bc37fa61516   favorites   "docker-entrypoint.s…"   4 hours ago   Exited (137) 3 hours ago              favorite-films
+
+A:\projeto15-DOCKER>docker images
+REPOSITORY                      TAG       IMAGE ID       CREATED       SIZE
+favorites                       latest    42af2c60141a   4 hours ago   1.05GB       
+mongo                           latest    a440572ac3c1   9 days ago    639MB        
+nothingnothings/feedback-node   latest    a819c75abcb0   13 days ago   1GB
+<none>                          <none>    f14298464cf6   3 weeks ago   932MB        
+<none>                          <none>    660aabc43961   3 weeks ago   932MB        
+<none>                          <none>    8b41a3f87eac   3 weeks ago   1GB
+node                            latest    51bd6c84a7f2   4 weeks ago   998MB        
+
+A:\projeto15-DOCKER>docker rm mongodb
+mongodb
+
+A:\projeto15-DOCKER>docker rm favorite-films
+favorite-films
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DEPOIS...
+
+
+
+
+
+
+
+
+remover as images....
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker images
+REPOSITORY                      TAG       IMAGE ID       CREATED       SIZE
+favorites                       latest    42af2c60141a   4 hours ago   1.05GB       
+mongo                           latest    a440572ac3c1   9 days ago    639MB        
+nothingnothings/feedback-node   latest    a819c75abcb0   13 days ago   1GB
+<none>                          <none>    f14298464cf6   3 weeks ago   932MB        
+<none>                          <none>    660aabc43961   3 weeks ago   932MB        
+<none>                          <none>    8b41a3f87eac   3 weeks ago   1GB
+node                            latest    51bd6c84a7f2   4 weeks ago   998MB        
+
+A:\projeto15-DOCKER>docker rmi favorites 
+Untagged: favorites:latest
+Deleted: sha256:42af2c60141a227f4757eb0198971ebc142b73e5f4b0ba5d385037e696376c4b
+
+A:\projeto15-DOCKER>docker rmi mongo
+Untagged: mongo:latest
+Untagged: mongo@sha256:134e3f2db743d46bdb7f3eb6bcfa4b8e3dde578c9ff8a10742ce29d706acf9b2
+Deleted: sha256:a440572ac3c10fdc02c51d46a2dcbf3760d10faf3f6a2784054e6e1057f0d92a    
+Deleted: sha256:acd3b1c0975edc0b84f85a4ad79c1750ca974d714b56f4b82459d7c5e06a8fe5    
+Deleted: sha256:b986c1a31e69f3b7e6bdc608061f4dc3c19c984cc1f7e493fab61aa04db2acd0    
+Deleted: sha256:dc7308c033611fec539c99532ddfbc49d58d4bdca2257acfa3e8a8899f845c78    
+Deleted: sha256:7230d63176872a58f3c077299984ec385a60323640cbcc845f7eb4eb472a3916    
+Deleted: sha256:b13f757b0dae38e4cfc23adb41406e2a32708502d6256929b366bf0b9b77ed41    
+Deleted: sha256:c4409d8286f8969b0b481c3573b51584d0db956d9b5049b1e33857a98d82e277    
+Deleted: sha256:8ca836fbf35a7390fb0bce6d5d9e4609e950ddcff6efad913b3109c6bc65a272    
+Deleted: sha256:b683fe72893c9b9be42387981dfafab81de2a72f574ee6f1e3a39ff46386105b    
+Deleted: sha256:c5ff2d88f67954bdcf1cfdd46fe3d683858d69c2cadd6660812edfc83726c654    
+
+A:\projeto15-DOCKER>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2o PASSO -> CRIAR A NETWORK...
+
+
+
+
+--> será a 'goal-network'...
+
+
+
+
+EX:
+
+
+
+
+
+A:\projeto15-DOCKER>docker network ls
+NETWORK ID     NAME            DRIVER    SCOPE
+06b38597a9da   bridge          bridge    local
+4cdf7684db8a   favorites-net   bridge    local
+05fc68fe31bb   host            host      local
+0cee244c8d32   none            null      local
+
+A:\projeto15-DOCKER>docker network remove favorites-net
+favorites-net
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->  A:\projeto15-DOCKER>docker network list
+NETWORK ID     NAME      DRIVER    SCOPE
+06b38597a9da   bridge    bridge    local
+05fc68fe31bb   host      host      local
+0cee244c8d32   none      null      local
+
+
+
+
+
+
+
+
+
+
+--> ok...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker network create  goal-network 
+b3ae28c01a5f3219aca42ced304099b37e8d387b29a476bd1097b6a484cb6ce1
+
+A:\projeto15-DOCKER>docker ls
+docker: 'ls' is not a docker command.
+See 'docker --help'
+
+A:\projeto15-DOCKER>docker network ls
+NETWORK ID     NAME           DRIVER    SCOPE
+06b38597a9da   bridge         bridge    local
+b3ae28c01a5f   goal-network   bridge    local
+05fc68fe31bb   host           host      local
+0cee244c8d32   none           null      local
+
+A:\projeto15-DOCKER>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... 
+
+
+AGORA 
+
+
+PRECISAMOS ESCREVER DOCKER FILES...
+
+
+
+
+
+
+
+
+
+COMEÇAMOS PELO BACKEND...
+
+
+
+
+
+
+
+
+
+
+
+
+O CÓDIGO INICIAL DO DOCKERFILE FICOU ASSIM:
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80 
+
+
+CMD ["nodemon", "app.js"]
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+AGORA PRECISO PENSAR NO CONTEXTO DOS VOLUMES...
+
+
+
+
+
+
+
+
+--> VOU COLOCAR 1 BIND MOUNT PARA 
+
+A PASTA DO PROJETO INTEIRA...
+
+
+
+-> MAS TAMBÉM PRECISO 
+
+
+DE 
+
+1 NAMED VOLUME, PARA A PASTA DE 'logs'...
+
+
+
+
+
+
+--> ENTRETANTO, PRIMEIRO PRECISO:
+
+
+
+
+1) RODAR A IMAGE DO MONGODB, com a image original,
+
+
+e aí definir 1 NAME para esse container... ---> E PRECISO RODAR ESSA 
+
+IMAGE 
+
+
+COM A FLAG DE '--network',
+para 
+
+poder a incluir dentro da network 
+
+do 
+
+
+'goals-network'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> TAMBÉM PRECISO FAZER COM QUE 
+
+
+essa image 
+
+
+
+
+TENHA 1 VOLUME ATRIBUÍDO A ELA,
+
+1 'NAMED VOLUME', para que 
+a data 
+
+do volume sempre PERSISTA..
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+ESCREVO ASSIM:
+
+
+
+
+
+
+docker run --name mongodb-pure -v mongo-volume:/app mongo
+
+
+
+( OU ALGO ASSIM, PARA QUE 1 VOLUME DE NOME 'mongo-volume' seja criado)...
+
+
+
+
+OPS.... MAS ESQUECI A FLAG 
+
+
+
+DE '--network',
+
+que também é essencial...
+
+
+
+
+
+--> O COMANDO FICA TIPO ASSIM:
+
+
+
+
+docker run --name mongodb-pure -v mongo-volume:/app --network goal-network mongo
+
+
+
+
+
+
+
+
+
+
+
+
+
+será que isso será suficiente?
+
+
+
+
+
+
+
+bem, o negócio iniciou, o que é um bom sinal...
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA, PARA 
+
+
+
+A IMAGE DO NODE,
+
+
+
+
+
+
+
+
+O CÓDIGO SOURCE TERÁ DE FICAR ASSIm:
+
+
+
+
+
+
+
+mongoose.connect(
+  'mongodb://mongodb-pure:27017/course-goals',
+
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB');
+      console.error(err);
+    } else {
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+(COLOCO O REFERENCIAL 'mongodb-pure' ali no lugar do localhost)....
+
+
+
+
+
+
+
+
+
+
+--> CERTo...
+
+
+
+
+
+
+
+
+PARA RODAR ESSE NEGÓCIO COMO OUTRO CONTAINER,
+
+
+EM 1 TERMINAL SEPARADO (ou fora do terminal),
+
+
+
+
+
+
+
+PRIMEIRAMENTE DEVO BUILDAR ESSA IMAGE DO NODE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PEGO A DOCKERFILE, QUE ESTÁ ASSIM:
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80 
+
+
+CMD ["nodemon", "app.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> e aí rodo:
+
+
+docker build -t node-goals .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+
+
+buildada essa image,
+
+
+
+
+
+basta executá-la com 'docker run',
+
+
+com as flags adequadas...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> as flags ficarão assim:
+
+
+
+
+
+
+
+docker run node-goals 
+--name node-multi 
+-v logs-volume:/logs
+-v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app:ro
+
+
+
+
+
+
+
+
+
+
+(COM ISSO, FICO COM 1 'named volume' e com 'bind mount' com READ-ONLY, que é o ':ro'...)
+
+
+
+
+
+
+
+
+BASTA ADICIONAR O COMANDO DE 'network',
+
+e depois o PUBLISH 
+
+na port de '80'...
+
+
+
+
+
+ex:
+
+
+
+docker run 
+--name node-multi 
+-v logs-volume:/logs
+-v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app:ro
+--network goal-network
+-p 80:80
+node-goals
+
+
+
+
+
+
+
+
+
+docker run --name node-multi -v logs-volume:/logs -v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app:ro --network goal-network -p 80:80 node-goals
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS GANHEI 1 ERRO DO NODE/NODEMON:
+
+
+
+
+Error: EROFS: read-only file system, open '/app/logs/access.log'
+Emitted 'error' event on WriteStream instance at:
+    at emitErrorNT (node:internal/streams/destroy:151:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {     
+  errno: -30,
+  code: 'EROFS',
+  syscall: 'open',
+  path: '/app/logs/access.log'
+}
+
+
+
+
+
+
+
+
+
+
+
+--> acho que ocorreu por conta do ':ro'...
+
+
+
+
+
+
+
+
+
+EDITEI O COMANDO DO RUN, ELE FICOU ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+docker run 
+--name node-multi 
+-v logs-volume:/logs
+-v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app
+--network goal-network
+-p 80:80
+node-goals
+
+
+
+
+
+
+
+E ASSIM:
+
+
+
+
+
+
+
+docker run --name node-multi -v logs-volume:/logs -v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app --network goal-network -p 80:80 node-goals
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... NÃO CRASHOU, O QUE É UM BOM SINAL...
+
+
+
+
+
+
+
+
+
+--> AGORA DEVO TESTAR AS 
+
+
+
+
+ROUTES, COM O POSTMAN...
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEU CERTO O CONNECT COM MONGODB, PQ APARECEU ISTO NO TERMINAL:
+
+
+
+
+
+
+(node:37) [MONGOOSE] DeprecationWarning: Mongoose: the `strictQuery` option will be switched back to `false` by default in Mongoose 7. Use `mongoose.set('strictQuery', false);` if you want to prepare for this change. Or use `mongoose.set('strictQuery', true);` to suppress this warning.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+CONNECTED TO MONGODB!!
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA BASTA TESTAR ESSAS ROUTES COM O POSTMAN...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... TESTEI AS ROUTES COM O POSTMAN,
+
+E ESTÃO FUNCIONANDO...
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+{
+    "message": "Goal saved",
+    "goal": {
+        "id": "63e9548af1355c5152aee2b7",
+        "text": "TERMINAR O CURSO"
+    }
+}
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+CONNECTED TO MONGODB!!
+TRYING TO FETCH GOALS
+FETCHED GOALS
+TRYING TO STORE GOAL
+STORED NEW GOAL
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA 
+
+
+
+
+BASTA VER SE ESSA DATA PERSISTE, MESMO PARANDO E RE-RODANDO 
+
+
+O CONTAINER 
+
+
+DO 
+
+
+
+mongodb...
+
+
+
+
+
+
+
+
+
+
+
+
+--> FUNCIONOU!!!
+
+
+
+
+
+--> a data continua, mesmo quando PARO e REINICIO
+
+
+
+o container que está com o mongodb...
