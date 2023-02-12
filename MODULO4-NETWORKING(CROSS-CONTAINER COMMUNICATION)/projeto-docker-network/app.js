@@ -77,11 +77,7 @@ app.get('/people', async (req, res) => {
   }
 });
 
-
-
-
-app.listen(3000)
-
+app.listen(3000);
 
 ////CÓDIGO SEM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'LOCAL HOST MACHINE' (coisas como UMA DATABASE LOCAL, RODANDO NA NOSSA MÁQUINA)...
 // mongoose.connect(
@@ -96,18 +92,31 @@ app.listen(3000)
 //   }
 // );
 
+// // CÓDIGO COM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'LOCAL HOST MACHINE' (coisas como UMA DATABASE LOCAL, RODANDO NA NOSSA MÁQUINA)...
+// ///sintaxe especial (que se refere a coisas NA SUA LOCAL MACHINE) -- 'host.docker.internal'
+// mongoose.connect(
+//   'mongodb://host.docker.internal:27017/swfavorites',
+//   { useNewUrlParser: true },
+//   (err) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       app.listen(3000);
+//     }
+//   }
+// );
 
-// CÓDIGO COM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'LOCAL HOST MACHINE' (coisas como UMA DATABASE LOCAL, RODANDO NA NOSSA MÁQUINA)...
-///sintaxe especial (que se refere a coisas NA SUA LOCAL MACHINE) -- 'host.docker.internal'
+// CÓDIGO COM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'DOCKER CONTAINER' (sendo que esse outro docker container ESTÁ RODANDO 1 IMAGE DE 'MONGODB', o que quer dizer que COLOCAMOS/rodamos NOSSA DATABASE EM OUTRO CONTAINER...)...
+///sintaxe especial (que se refere ao IP INTERNO DE OUTRO CONTAINER, obtido por meio de 'docker inspect id_do_container') --
 mongoose.connect(
-  'mongodb://host.docker.internal:27017/swfavorites',
+  // 'mongodb://host.docker.internal:27017/swfavorites',
+  'mongodb://172.17.0.2:27017/swfavorites',
   { useNewUrlParser: true },
   (err) => {
     if (err) {
       console.log(err);
     } else {
-      app.listen(3000);
+      app.listen(3001);
     }
   }
 );
-

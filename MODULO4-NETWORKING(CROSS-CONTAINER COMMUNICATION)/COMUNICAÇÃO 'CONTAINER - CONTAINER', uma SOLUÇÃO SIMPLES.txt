@@ -1,0 +1,1390 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+AGORA QUE ESTUDAMOS 2 TIPOS DE COMMUNICATION (
+
+
+'''CONTAINER --> MUNDO DA WEB'''' (já vem out of the box, funciona direto)
+
+
+
+e 
+
+
+
+
+''''CONTAINER --> LOCAL HOST MACHINE''' (funciona, mas precisamos usar o domain/url de 'host.docker.internal' para se comunicar com as coisas da nossa própria máquina, como bancos de dados e apis locais)... 
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS HÁ UM ÚLTIMO TIPO DE COMMUNICATION,
+
+QUE 
+
+É 
+
+ENTRE CONTAINERS... 
+
+
+
+
+
+
+
+
+
+PARA ISSO, PRIMEIRAMENTE PRECISAREMOS DE 1 NOVO CONTAINER,
+
+
+PQ 
+
+ATÉ AGORA 
+
+
+
+
+TRABALHAMOS COM APENAS 1 CONTAINER... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA QUEREMOS TER:
+
+
+
+
+
+
+
+1) 1 CONTAINER PARA O NODE APP...
+
+
+
+
+
+
+2) 1 CONTAINER PARA A MONGODB DATABSAE...
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO PQ,
+
+CONFORME O PROFESSOR MENCIONOU ANTERIORMENTE,
+
+
+É 
+
+UMA BOA 
+
+PRÁTICA 
+
+FAZER COM QUE 
+
+
+
+CADA CONTAINER FOQUE EM APENAS 1 COISA (
+
+    1 container para a web api,
+
+
+    outro container para a database...
+)
+
+
+
+
+
+
+
+
+
+
+
+PARA ISSO,
+
+O PROFESSOR PARA O CONTAIER RODANDO A NODE APPLICATION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+AGORA ELE QUER COLOCAR ESSA DATABASE MONGODB DENTRO DE 
+
+1 CONTAINER... 
+
+
+
+
+
+
+
+
+
+
+
+--> PODERÍAMOS ATÉ MESMO DESINSTALAR 
+
+
+
+
+
+NOSSO 
+MONGODB 
+
+DATABASE 
+
+
+
+DE NOSSO PC...
+
+
+
+
+
+
+
+
+
+-----> AGORA É A PARTE EM QUE __ 
+
+SETTAREMOS 1 MONGODB ,
+
+
+MAS 
+
+VAMOS 
+
+SETTAR 
+
+ISSO 
+
+DENTRO 
+
+DE 1
+
+
+ CONTAINER...
+
+
+
+
+
+
+
+
+
+ USAREMOS 2 CONTAINERS, EM VEZ DE 1 SÓ, AGORA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> PARA ISSO,
+
+ COMEÇAREMOS 
+
+
+
+ COM 
+
+ O CREATE DE 1 NOVO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+ --> para isso,
+
+
+ VOCÊ 
+
+
+ PODERIA 
+
+ PENSAR 'bem, vamos criar uma outra dockerfile...'..
+
+
+
+
+
+
+
+
+
+
+
+ --> ENTRETANTO,
+
+ PARECE QUE O PROFESSOR VAI SIMPLESMENTE CRIAR 1 MONGODB DATABASE 'PRONTA',
+
+
+
+ por meio 
+
+
+
+ do uso DIRETO DA IMAGE...
+
+
+
+
+
+
+
+
+
+
+ --> basta procurar por 'docker mongodb'...
+
+
+
+
+
+
+
+
+
+
+ ENCONTRAMOS UMA IMAGE OFICIAL DO MONGO,
+
+ LÁ 
+
+
+
+ NO DOCKER HUB...
+
+
+
+
+
+
+
+ --> PARA A ACESSAR , PODEMOS RODAR 
+
+
+ 'docker pull mongo'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CONFORME VIMOS ANTERIORMENTE,
+
+COM 
+
+
+AS IMAGES DE PYTHON 
+
+
+
+
+
+E NODE OFICIAIS,
+
+
+
+
+
+
+ESSA É UMA 
+
+IMAGE OFICIAL DO MONGODB --> TEMOS 
+
+
+
+
+INSTRUÇÕES OFICIAIS 
+
+NESSA PÁGINA,
+
+
+
+
+MAS 
+
+O 
+
+PROFESSOR VAI 
+
+
+MOSTRAR 
+
+
+COMO FAZER ISSO,
+
+ETAPA-POR-ETAPA...
+
+
+
+
+
+
+
+
+
+
+EM VEZ DISSO,
+
+O QUE O PROFESSOR VAI FAZER 
+
+
+É 
+
+
+__RODAR__ 1 CONTAINER__ COM BASE NESSA MONGO IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PARA ISSO,
+
+ELE ESCREVE NO TERMINAL APENAS ISTO:
+
+
+
+
+
+
+
+
+
+docker run mongo...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO ESSA IMAGE JÁ EXISTE NO DOCKERHUB,
+
+
+
+
+
+
+__ ESSE NOME É BUSCADO LÁ,
+
+
+E ENTÃO A IMAGE É RETRIEVADA...
+
+
+
+
+
+
+
+
+
+--> ISSO VAI CRIAR 
+
+1 NOVO CONTAINER,
+
+COM BASE NESSA IMAGE,
+
+
+
+
+
+
+
+
+
+
+E ESSA IMAGE/CONTAINER 
+
+
+
+
+
+__ 
+
+
+VAI _SPIN UP _ 
+
+1 MONGO DB 
+
+DATABASE...
+
+
+
+
+
+
+
+
+--> O PROFESSOR APERTA 
+
+ENTER,
+
+
+E AÍ 
+
+TEMOS 
+
+1  POUCO 
+
+DE 
+
+
+
+
+OUTPUT 
+
+NO CONSOLE... --> 
+
+
+
+
+
+
+
+
+
+
+
+MAS O PROFESSOR VAI RE-RODAR ESSE NEGÓCIO COM '-d',
+
+para 
+
+
+
+
+deixar DETACHED DO TERMINAL,
+
+e também 
+
+
+
+
+'--name', para 
+
+dar 1 nome de mongodb a esse container...
+
+
+
+
+
+A:\projeto15-DOCKER>docker run --name mongodb -d mongo
+Unable to find image 'mongo:latest' locally
+latest: Pulling from library/mongo
+10ac4908093d: Download complete
+685504455d09: Download complete
+ebd36404f329: Download complete
+3abd9b25affb: Download complete
+2d7fde532eae: Download complete
+24fc70e4c7d7: Download complete
+ffc2353072f7: Download complete
+560de8e3a6c7: Downloading  21.03MB/189.7MB
+0748cd1d792c: Download complete
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+
+
+AGORA, NO CASO,
+
+
+QUEREMOS 
+
+
+ALTERAR 
+
+NOSSO CÓDIGO
+
+
+
+NODEJS 
+
+__ DE FORMA__ 
+
+A CONSEGUIR 
+
+SE CONECTAR 
+
+
+COM ESSE MONGODB DATABASE..
+
+
+
+
+
+
+
+
+
+
+E, AGORA,
+
+ESSA É A TRICKY PART..
+
+
+
+
+
+
+
+
+NOSSO CÓDIGO ESTÁ ASSIm:
+
+
+
+
+
+
+// CÓDIGO COM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'LOCAL HOST MACHINE' (coisas como UMA DATABASE LOCAL, RODANDO NA NOSSA MÁQUINA)...
+///sintaxe especial (que se refere a coisas NA SUA LOCAL MACHINE) -- 'host.docker.internal'
+mongoose.connect(
+  'mongodb://host.docker.internal:27017/swfavorites',
+  { useNewUrlParser: true },
+  (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      app.listen(3000);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+-> esse 'host.docker.internal' não vai mais funcionar,
+
+
+
+
+
+
+pq __ ISSO SE REFERE AO MEU LOCAL HOST MACHINE ADDRESS,
+
+E NAÕ 
+
+AO 
+
+IP
+
+
+ADDRESS 
+
+DE ALGUM OUTRO CONTAINER..
+
+
+
+
+
+entretanto, em vez disso,
+
+
+
+
+
+
+PODEMOS 
+
+RODAR 
+
+
+OUTRA COISA..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS RODAR O COMANDO DE 'docker container inspect'..
+
+
+
+
+
+RODAMOS ISSO PARA CHECAR 
+
+
+ESSE MONGODB CONTAINER QUE RECÉM STARTAMOS...
+
+
+
+
+EX:
+
+
+
+
+
+
+
+A:\projeto15-DOCKER>docker inspect mongodb
+[
+    {
+        "Id": "8ac5d44fd541ee5ffc005ecb1caf7b414ac1f66a0ed89942aeedda9b74c35b5b",
+        "Created": "2023-02-12T14:53:28.412760681Z",
+        "Path": "docker-entrypoint.sh",
+        "Args": [
+            "mongod"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1596,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2023-02-12T14:53:44.74017924Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:a440572ac3c10fdc02c51d46a2dcbf3760d10faf3f6a2784054e6e1057f0d92a",
+        "ResolvConfPath": "/var/lib/docker/containers/8ac5d44fd541ee5ffc005ecb1caf7b414ac1f66a0ed89942aeedda9b74c35b5b/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/8ac5d44fd541ee5ffc005ecb1caf7b414ac1f66a0ed89942aeedda9b74c35b5b/hostname",
+        "HostsPath": "/var/lib/docker/containers/8ac5d44fd541ee5ffc005ecb1caf7b414ac1f66a0ed89942aeedda9b74c35b5b/hosts",
+        "LogPath": "/var/lib/docker/containers/8ac5d44fd541ee5ffc005ecb1caf7b414ac1f66a0ed89942aeedda9b74c35b5b/8ac5d44fd541ee5ffc005ecb1caf7b414ac1f66a0ed89942aeedda9b74c35b5b-json.log",
+        "Name": "/mongodb",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "default",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "host",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "ConsoleSize": [
+                20,
+                102
+            ],
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "KernelMemory": 0,
+            "KernelMemoryTCP": 0,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": false,
+            "PidsLimit": null,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/9ae580fda26685d7b4af008827018a68f75e300ef7694700eb9bb8f4ea84529a-init/diff:/var/lib/docker/overlay2/07eeff1ea28c93bcb87940ad24cdcf244fe9cede2fccfd62dbde9c3bcf731582/diff:/var/lib/docker/overlay2/9e285e302c83678c17d54925efe6b222428675bcccefd0bbdd9c685f99a671f0/diff:/var/lib/docker/overlay2/bbe40b4d77b9654572b350288d724a7d7d956053fb649af91091bdb8a11505d8/diff:/var/lib/docker/overlay2/9ea227fecac16308744e8091ad4565d395d9052437602ef0a27873f911c4254c/diff:/var/lib/docker/overlay2/798a8f1126d9bc5344aa8fec3e794a5dc8815c537f7a6264f6e8b372029dc9bb/diff:/var/lib/docker/overlay2/eff45a5228db775b475af4f8a3082c2cfa6bcdb6590504b1169762d81ffbbf04/diff:/var/lib/docker/overlay2/977d81635d29b1c39e05d5a7337db858020224b0661e9a383a3924de9efd98cd/diff:/var/lib/docker/overlay2/95ed0e4f207301feeebe3334365ce3de982e9e2dd28655c1d8da173f81348478/diff:/var/lib/docker/overlay2/f4628f969c372291c7d48cf77ec89f44d9d3b7e8042ca02469685b11c0812ebc/diff",
+                "MergedDir": "/var/lib/docker/overlay2/9ae580fda26685d7b4af008827018a68f75e300ef7694700eb9bb8f4ea84529a/merged",
+                "UpperDir": "/var/lib/docker/overlay2/9ae580fda26685d7b4af008827018a68f75e300ef7694700eb9bb8f4ea84529a/diff",
+                "WorkDir": "/var/lib/docker/overlay2/9ae580fda26685d7b4af008827018a68f75e300ef7694700eb9bb8f4ea84529a/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "50497eab95cca2a2b356ce9c2c70f346336d9962ec0bc36c1260dd81dc93730d",
+                "Source": "/var/lib/docker/volumes/50497eab95cca2a2b356ce9c2c70f346336d9962ec0bc36c1260dd81dc93730d/_data",
+                "Destination": "/data/configdb",
+                "Driver": "local",
+                "Mode": "",
+                "RW": true,
+                "Propagation": ""
+            },
+            {
+                "Type": "volume",
+                "Name": "2ba1c6f4c6ac3c60a4fe9d34814cc15013b334674ac9f2f6dd18c85f30f8d03d",
+                "Source": "/var/lib/docker/volumes/2ba1c6f4c6ac3c60a4fe9d34814cc15013b334674ac9f2f6dd18c85f30f8d03d/_data",
+                "Destination": "/data/db",
+                "Driver": "local",
+                "Mode": "",
+                "RW": true,
+                "Propagation": ""
+            }
+        ],
+        "Config": {
+            "Hostname": "8ac5d44fd541",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "27017/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "GOSU_VERSION=1.16",
+                "JSYAML_VERSION=3.13.1",
+                "MONGO_PACKAGE=mongodb-org",
+                "MONGO_REPO=repo.mongodb.org",
+                "MONGO_MAJOR=6.0",
+                "MONGO_VERSION=6.0.4",
+                "HOME=/data/db"
+            ],
+            "Cmd": [
+                "mongod"
+            ],
+            "Image": "mongo",
+            "Volumes": {
+                "/data/configdb": {},
+                "/data/db": {}
+            },
+            "WorkingDir": "",
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {
+                "org.opencontainers.image.ref.name": "ubuntu",
+                "org.opencontainers.image.version": "22.04"
+            }
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "d8d3d5bb842661e1e8bf0c8ccbeb3ea98f42866f2b451f846d6459fefc7863c6",
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "Ports": {
+                "27017/tcp": null
+            },
+            "SandboxKey": "/var/run/docker/netns/d8d3d5bb8426",
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "2469bfac5f6acee33bfb76a690db44a9f8d7cb5e76c7ecd8dbc67e5b1986ae17",
+            "Gateway": "172.17.0.1",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "172.17.0.2",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "MacAddress": "02:42:ac:11:00:02",
+            "Networks": {
+                "bridge": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "NetworkID": "06b38597a9da4c122dc6b5545b6530657242485774594a522d3a3f28c002772e",  
+                    "EndpointID": "2469bfac5f6acee33bfb76a690db44a9f8d7cb5e76c7ecd8dbc67e5b1986ae17", 
+                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.2",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "MacAddress": "02:42:ac:11:00:02",
+                    "DriverOpts": null
+                }
+            }
+        }
+    }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GANHAMOS UM MONTE DE INFO 
+
+SOBRE 
+
+
+ESSE CONTAINER..
+
+
+
+
+
+
+
+A PARTE INTERESSANTE É O 'IPAddress'...
+
+
+
+
+
+
+
+-_> ESSE É O IP ADDRESS 
+
+
+DESSE CONTAINER,
+
+
+E PODE 
+
+
+SER USADO PARA O CONTATAR..
+
+
+
+
+
+
+
+
+
+--> BASTA COPIAR ESSE ID ADDRESS 
+
+
+E O 
+
+COLOCAR 
+
+
+
+no lugar de 'host.docker.internal'...
+
+
+
+
+
+
+
+
+
+
+
+SE COLOCAMOS ISSO,
+
+ESSE 
+
+APP 
+
+SERÁ
+
+
+CAPAZ
+
+
+
+DE 
+
+
+
+CONECTAR 
+
+
+
+COM ESSE OUTRO CONTAINER,
+
+E COM 
+
+
+A MONGODB DATABASE NO SEU INTERIOR..
+
+
+
+
+
+
+
+--> 
+
+
+
+
+
+
+BASTA ESCREVER ASSIM:
+
+
+
+
+// CÓDIGO COM COMUNICAÇÃO ENTRE 'DOCKER CONTAINER' e 'DOCKER CONTAINER' (sendo que esse outro docker container ESTÁ RODANDO 1 IMAGE DE 'MONGODB', o que quer dizer que COLOCAMOS/rodamos NOSSA DATABASE EM OUTRO CONTAINER...)...
+///sintaxe especial (que se refere ao IP INTERNO DE OUTRO CONTAINER, obtido por meio de 'docker inspect id_do_container') --
+mongoose.connect(
+  // 'mongodb://host.docker.internal:27017/swfavorites',
+  'mongodb://172.17.0.2:27017/swfavorites',
+  { useNewUrlParser: true },
+  (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      app.listen(3000);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> ok...
+
+
+
+
+
+
+
+
+AGORA PODEMOS 
+BUILDAR ESSA IMAGE MAIS UMA VEZ,
+
+E AÍ 
+
+
+TENTAR RODÁ-LA,
+
+
+
+
+
+FAZENDO A CONEXÃO COM ESSA DATABASE 
+
+
+
+
+CRIADA NO OUTRO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA TEMOS 2 CONTAINERS RODANDO,
+
+
+
+'favorites'
+
+e 
+
+
+'mongo'...
+
+
+
+
+
+
+devemos testar alguma route de nosso app...
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... FUNCIONOU... GANHAMOS UM ARRAY VAZIO DE 'favorites' --> isso faz sentido,
+
+
+
+pq 
+
+
+NOSSA DATABASE 
+
+
+NO CONTAINER ESTÁ VAZIA...
+
+
+
+
+
+
+
+
+
+
+--> ok...
+
+
+
+ESSA É UMA DATABASE ISOLADA DO CONTEXTO 
+
+
+DA NOSSA LOCAL HOST MACHINE..
+
+
+
+
+
+
+
+--> É UMA 
+
+DATABASE COMPLETAMENTE ISOLADA/SEPARADA (
+
+
+
+    core reasons/principles do docker...
+)
+
+
+
+
+
+
+
+
+--> PODEMOS NOS COMUNICAR, SIM... -> NÃO GANHAMOS 1 ERROR --> 
+
+
+
+OS 2 CONTAINERS CONSEGUEM CONVERSAR ENTRE SI..
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS TENTAR ARMAZENAR 1 FAVORITE, ISSO TBM FUNCIONA..
+
+
+
+
+
+
+
+
+
+
+
+
+ESSA COMMUNICATION 'CROSS-CONTAINER' FUNCIONA,
+
+SIM...
+
+
+
+
+
+
+
+
+
+
+MAS ISSO N É MT CONVENIENTE... --> 
+
+
+
+PQ 
+
+
+FOMOS OBRIGADOS 
+
+
+A PROCURAR O IP ADDRESS DO OUTRO CONTAINER, PARA PODER O UTILIZAR AQUI...
+
+
+
+
+
+
+
+
+
+
+
+--> E ISSO TBM SIGNIFICA QUE '''TEMOS QUE CONSTRUIR UMA NOVA IMAGE,
+
+SEMPRE QUE 
+
+O __ IP __ DA NOSSA OUTRA MÁQUINA DOCKER MUDAR''' (pq o ip MUDA quando re-rodamos os containers, não é fixo)..
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE A MELHOR ALTERNATIVA É 
+
+ESCREVER SÓ 
+
+o 
+
+___ NOME__ DO _ DOCKER CONTAINER 
+
+
+
+no lugar do ip... (
+
+
+    é a maneira bem mais fácil...
+)
