@@ -1,0 +1,868 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK... DEVEMOS 
+
+TRABALHAR NO FRONTEND,
+
+FAZER COM QUE 
+
+
+ELE FUNCIONE EM 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEPOIS DISSO,
+
+VEREMOS COMO FAZER:
+
+
+1) DATA PERSIST  (algumas partes de nosso app, como logs, poderão se beneficiar disso)... 
+
+
+
+
+
+
+
+
+2) LIVE UPDATE DE NOSSO CÓDIGO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS TRABALHAR NA DOCKERIZAÇÃO DE NOSSO FRONTEND APP..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AINDA NÃO FIZEMOS ISSO, AO LONGO DO CURSO..
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEVEMOS COMEÇAR PELO WRITE DE 1 DOCKER FILE...
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR COMEÇOU POR ESTE CÓDIGO:
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 3000 
+
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PARA DOCKERIZAR ESSE REACT APP,
+
+
+PRECISAMOS 
+
+
+DE 1 POUCO DE BASIC  KNOWLEDGE 
+
+SOBRE 
+
+ESSE REACT PROJECT SETUP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> É POR ISSO QUE A DOCKERIZAÇÃO 
+
+
+DO FRONTEND SERIA OPCIONAL...
+
+
+
+
+
+
+
+
+
+--> VC PRECISA SABER QUE 
+
+
+O 
+
+
+
+FRONTEND SETUP DEPENDE DE NODE... --> NÃO É UM NODE APP,
+
+
+MAS PRECISA DO NODE 
+
+PARA 
+
+FAZER 
+
+
+SPIN-UP DO 
+
+
+
+DEV SERVER (que serve o react app),
+
+E TAMBÉM PARA  
+
+
+
+OPTIMIZAR O CÓDIGO REACT QUE VC ESCREVE,
+
+E PARA 
+
+
+
+COMPILAR EM CÓDIGO COMPREENDIDO 
+
+PELO 
+
+
+NAVEGADOR...
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE USAMOS 'FROM node',
+
+PQ 
+
+NOSSO PROJECT SETUP REQUER 
+
+NODE...
+
+
+
+
+
+
+
+
+
+--> DEPOIS USAMOS 'WORKDIR /app',
+
+
+
+
+PQ 
+
+VAMOS QUERER 
+
+
+
+1 FOLDER INTERNO DE 'app'...
+
+
+
+
+
+
+
+
+
+--> DEPOIS DISSO,
+COPIAMOS 
+
+O PACKAGE.JSON PARA DENTRO DO 
+
+WORKING DIRECTORY,
+
+E DEPOIS RODAMOS NPM INSTALL...
+
+
+
+
+
+
+
+
+
+
+DEPOIS DISSO, COPIAMOS O CÓDIGO RESTANTE PARA DENTRO DO WORKING DIRECTOR.Y..
+
+
+
+
+
+
+
+
+
+
+POR FIM,
+
+
+
+O PROFESSOR VAI QUERER 
+
+
+RODAR 1 COMMAND QUE SEMPRE 
+
+VAI SER 
+
+
+EXECUTADO _ 
+
+
+
+QUANDO CRIARMOS 1 CONTAINER COM BASE NESSA IMAGE..
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+O PROFESSOR COLOCA 'CMD ["npm", "start" ]' 
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO VAI USAR UMA DAS DEPENDENCIES INSTALADAS PARA 
+
+RODAR 
+ESSE 
+
+REACT APP 
+DURANTE 
+
+O DEVELOPMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+->  MAIS TARDE, NO CURSO,
+
+FALAREMOS SOBRE DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... ESSE APP TAMBÉM EXPÕE UMA PORT....
+
+
+
+
+
+
+
+
+
+
+
+--> NÃO VEMOS ISSO DIRETAMENTE,
+
+
+MAS 
+O 
+REACT 
+APP 
+
+EXPÕE, 
+
+POR DEFAULT,
+
+
+
+
+
+A PORTA 3000...
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O PROFESSOR COLOCA 'EXPOSE 3000'
+
+NESSA DOCKERFILE,
+
+TIPO ASSIM:
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 3000 
+
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EU JÁ HAVIA FEITO ISSO, APARENTEMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+SE SALVAMOS ISSO,
+
+PODEMOS 
+
+FAZER DOCKER BUILD DESSA DOCKER FILE E DO CONTEÚDO 
+
+
+
+DA PASTA, 
+
+
+PARA TER 
+
+
+
+
+
+O CONTAINER DE 'react-frontend'...
+
+
+
+
+docker build -t react-frontend .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> DEPOIS VAMOS RODAR NOSSO FRONTEND APP...
+
+
+
+
+
+
+--> VAMOS RODAR EM 1 CONTAINER...
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+-> docker run --name goals-frontend --rm -d -p 3000:3000 react-frontenddocker run --name goals-frontend --rm -d -p 3000:3000 react-frontend
+
+
+
+
+
+
+
+
+
+
+ok... MAS FALTOU A NETWORK DE `goal-network`
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+docker run --name goals-frontend --network goal-network --rm -d -p 3000:3000 react-frontenddocker run --name goals-frontend --rm -d -p 3000:3000 react-frontend
+
+
+
+
+
+
+---------------------------------
+
+
+
+
+
+
+
+
+
+
+ok....
+
+
+
+
+
+
+
+
+
+
+OK, AGORA TEMOS OS 3 CONTAINERS RODANDO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS A VERSÃO DO PROFESSOR DEU PROBLEMA, POR ISSO ELE RRODA EM 'ATACHED MODE',
+
+PARA 
+
+
+PODERMOS OBSERVAR TODOS OS LOGS..
+
+
+
+
+
+
+
+
+--> O FRONTEND PAROU DE FUNCIONAR IMEDIATAMENTE
+
+
+DEPOIS DE SER EXECUTADO..
+
+
+
+
+
+
+-> O PROFESSOR DIZ QUE ISSO ACONTECEU JUSTAMENTE POR CONTA DO 'REACT SETUP'...
+
+
+
+
+
+
+
+
+
+-> SOMOS OBRIGADOS A RODAR O REACT 
+
+NO MODO '-it',
+
+INTERACTIVE MODE,
+
+
+
+PRA __ DEIXAR BEM CLARO AO DOCKER QUE 
+
+
+''VC QUER QUE O CONTAINER SAIBA QUE VC TAMBÉM VAI QUERER ENTER 
+
+COMMANDS E INTERAGIR COM O CONTAINER' -->  NÓS NÃO VAMOS INTERAGIR 
+
+DE VERDADE 
+
+
+COM O PROJETO,
+
+MAS 
+O 
+
+
+REACT PROJECT É SETTADO DE 
+
+MODO QUE 
+
+_ SE ELE __ NÃO RECEBER ESSE 'INPUT TRIGGER',
+
+
+
+ELE IMEDIATAMENTE PARA O SERVER (pq 
+
+
+'ninguém estaria interessado', ou algo assim)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+
+NO MEU APP NÃO OCORREU ESSE PROBLEMA, POR ALGUMA RAZÃO...
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+O SITE ABRE NORMAL,
+
+E TUDO FUNCIONA...
+
+
+
+
+
+
+
+
+
+-> O COMANDO QUE UTILIZEI FOi 
+
+
+
+
+
+ docker run --name goals-frontend --network goal-network --rm -p 3000:3000 react 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ISSO QUER DIZER QUE TODO NOSSO APP ESTÁ DOCKERIZADO,
+
+ E O FRONTEND ESTÁ RODANDO EM SEU PRÓPRIO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> COLOCANDO OS 3 BUILDING BLOCKS 
+
+
+
+ NOS SEUS PRÓPRIOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+ --> AGORA DEVEMOS POLIR ESSE APP,
+
+
+ COLOCAR TODAS AS FEATURES EXTRAS NECESSÁRIAS NO MUNDO REAL,
+
+
+ MAS TAMBÉM COISAS COMO 
+ 
+ 'PERSISTING DATA',
+
+
+
+
+ communication, etc...
+
+
+
+
+
+
+ --> NO MOMENTO, 
+
+ NOSSOS CONTAINERS CONSEGUEM COMUNICAR-SE ENTRE SI,
+
+ SIM,
+
+
+ MAS __ ESTÃO SE COMUNICANDO ATRAVÉS DE NOSSA LOCAL HOST MACHINE (
+
+
+    pq SEMPRE ESTAMOS 
+    PUBLICANDO SUAS 
+
+    PORTS,
+
+    COM '-p 3000:3000'    e 'EXPOSE 3000'...
+ )
+
+
+
+
+
+
+
+
+
+ ESSE EXPOSE DE PORTAS FUNCIONA, SIM,
+
+
+ MAS É BEM MELHOR FAZER O SETUP DE NETWORKS,
+
+ PQ 
+
+ AÍ 
+
+ OS CONTAINERS PODERÃO SE COMUNICAR ATRAVÉS DOS SEUS 'CONTAINER NAMES',
+
+
+ conforme estudamos 
+
+
+
+ no último módulo...
+
+
+
+
+
+
+
+
+
+
+
+
+ CERTO....
+
+ PARAMOS TODOS OS CONTAINERS, E SÃO REMOVIDOS (por conta da flag de '--rm')...
