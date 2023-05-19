@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import CourseGoals from './components/goals/CourseGoals';
+import GoalInput from './components/goals/GoalInput';
+import ErrorAlert from './components/UI/ErrorAlert';
 
 function App() {
   const [loadedGoals, setLoadedGoals] = useState([]);
@@ -10,7 +13,7 @@ function App() {
       setIsLoading(true);
 
       try {
-        const response = await fetch('http://localhost/goals');
+        const response = await fetch('http://node-multi:80/goals');
 
         const resData = await response.json();
 
@@ -35,7 +38,7 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost/goals', {
+      const response = await fetch('http://node-multi:80/goals', {
         method: 'POST',
         body: JSON.stringify({
           text: goalText,
@@ -74,7 +77,7 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost/goals/' + goalId, {
+      const response = await fetch('http://node-multi:80/goals/' + goalId, {
         method: 'DELETE',
       });
 

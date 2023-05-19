@@ -49,7 +49,7 @@ app.get('/goals', async (req, res) => {
 });
 
 app.post('/goals', async (req, res) => {
-  console.log('TRYING TO STORE GOAL');
+  console.log('TRYING TO STORE GOAL 55');
   const goalText = req.body.text;
 
   if (!goalText || goalText.trim().length === 0) {
@@ -86,7 +86,7 @@ app.delete('/goals/:id', async (req, res) => {
     res.status(200).json({ message: 'Deleted goal!' });
     console.log('DELETED GOAL');
   } catch (err) {
-    console.error('ERROR FETCHING GOALS');
+    console.error('ERROR FETCHING GOALS 12');
     console.error(err.message);
     res.status(500).json({
       message: 'Failed to delete goal.',
@@ -97,7 +97,6 @@ app.delete('/goals/:id', async (req, res) => {
 mongoose.connect(
   // 'mongodb://localhost:27017/course-goals',
   'mongodb://mongodb-pure:27017/course-goals',
-
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -108,6 +107,7 @@ mongoose.connect(
       console.error('FAILED TO CONNECT TO MONGODB');
       console.error(err);
     } else {
+      console.log('STARTED APP');
       console.log('CONNECTED TO MONGODB!!');
       app.listen(80);
     }

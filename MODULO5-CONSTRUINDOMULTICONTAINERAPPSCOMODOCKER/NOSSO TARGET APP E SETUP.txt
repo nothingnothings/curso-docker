@@ -2120,3 +2120,1194 @@ mongodb...
 
 
 o container que está com o mongodb...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... mas estou com 1 problema.... meu app não está com LIVE RELOAD na parte do backend...
+
+
+
+
+
+
+
+
+-> acho que fiz algo errado com os VOLUMES...
+
+
+
+
+SINTAXE ALTERNATIVA DE BIND MOUNTS:
+
+
+
+
+
+echo 'Very important text' > ~/file.txt
+docker run -d --rm --name mountTest --mount type=bind,source=/root/file.txt,target=/file.txt alpine sleep 5000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+na verdade, usando 
+
+
+''' docker exec -it a2955accc998 cat app.js  '',
+
+
+
+é possível perceber que 
+
+
+O ARQUIVO DE 'app.js' ESTÁ SENDO ATUALIZADO, SIM,
+
+
+MAS 
+
+
+
+PARECE QUE O SERVIDOR NÃO ESTÁ 'REBOOTANDO'... (talvez algum problema com o 'nodemon'?)...
+
+
+
+
+
+
+
+
+
+ok.... mas e quanto ao FRONTEND?
+
+
+
+
+
+
+
+
+
+como podemos fazer ele ser INICIADO COM O DOCKER?
+
+
+
+
+
+
+
+
+BEM, ANTES DE MAIS NADA, PRECISAREMOS DE UM DOCKERFILE...
+
+
+
+
+
+
+
+
+
+O DOCKERFILE PODE FICAR COM ESTA FORMA:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80 
+
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+AGORA PRECISAMOS RODAR 
+
+
+'docker build -t react-frontend .'  (para buildar nossa image do frontend)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... isso  construiu nossa image...
+
+
+
+
+
+
+
+
+
+
+
+agora preciso RODAR ESSA IMAGE, PROVAVELMENTE COM ALGO COMO 
+
+
+
+
+
+
+
+
+
+
+'docker run --name react-app --network goal-network -p 3000:3000' 
+
+
+
+
+
+
+
+(ISSO VAI EXPOR ESSA PORT DE NOSSO FRONTEND APP NO DOCKER, E TAMBÉM VAI EXPOR ESSA PORT A NÓS)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+mas é claro que o código de nossa docker image do frontend 
+
+
+
+vai DISPARAR REQUESTS A ALGUM BACKEND...
+
+
+
+
+
+
+
+
+
+NO NOSSO APP, TEMOS ESSES REQUESTS SENDO DISPARADOS:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      try {
+        const response = await fetch('http://localhost/goals');
+
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(resData.message || 'Fetching the goals failed.');
+        }
+
+        setLoadedGoals(resData.goals);
+      } catch (err) {
+        setError(
+          err.message ||
+            'Fetching goals failed - the server responsed with an error.'
+        );
+      }
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  async function addGoalHandler(goalText) {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost/goals', {
+        method: 'POST',
+        body: JSON.stringify({
+          text: goalText,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Adding the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = [
+          {
+            id: resData.goal.id,
+            text: goalText,
+          },
+          ...prevGoals,
+        ];
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Adding a goal failed - the server responsed with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  async function deleteGoalHandler(goalId) {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost/goals/' + goalId, {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ok... 3 requests com 'localhost'
+
+
+
+        como 
+
+        target...
+
+
+
+
+
+
+
+
+
+
+
+preciso trocar 'localhost' por alguma outra coisa...
+
+
+
+
+
+
+
+
+
+
+
+preciso trocar pelo NOME DE MEU CONTAINER DO BACKEND...
+
+
+
+
+
+
+
+
+é por isso que ele ficará assim:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+
+function App() {
+  const [loadedGoals, setLoadedGoals] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(function () {
+    async function fetchData() {
+      setIsLoading(true);
+
+      try {
+        const response = await fetch('http://node-multi/goals');
+
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(resData.message || 'Fetching the goals failed.');
+        }
+
+        setLoadedGoals(resData.goals);
+      } catch (err) {
+        setError(
+          err.message ||
+            'Fetching goals failed - the server responsed with an error.'
+        );
+      }
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  async function addGoalHandler(goalText) {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://node-multi/goals', {
+        method: 'POST',
+        body: JSON.stringify({
+          text: goalText,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Adding the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = [
+          {
+            id: resData.goal.id,
+            text: goalText,
+          },
+          ...prevGoals,
+        ];
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Adding a goal failed - the server responsed with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  async function deleteGoalHandler(goalId) {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://node-multi/goals/' + goalId, {
+        method: 'DELETE',
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Deleting the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = prevGoals.filter((goal) => goal.id !== goalId);
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Deleting the goal failed - the server responded with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  return (
+    <div>
+      {error && <ErrorAlert errorText={error} />}
+      <GoalInput onAddGoal={addGoalHandler} />
+      {!isLoading && (
+        <CourseGoals goals={loadedGoals} onDeleteGoal={deleteGoalHandler} />
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TALVEZ ISSO FUNCIONE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... o comando 
+
+
+
+de run de nosso app frotend provavelmente será 
+
+
+
+
+
+
+
+
+
+'docker run --name react-app --network goal-network -p 3000:3000 react-frontend' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... isso startou o app, sim,
+
+
+MAS RECEBI VÁRIOS ERRORS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->   Line 102:18:  'ErrorAlert' is not defined   react/jsx-no-undef
+  Line 103:8:   'GoalInput' is not defined    react/jsx-no-undef
+  Line 105:10:  'CourseGoals' is not defined  react/jsx-no-undef
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  também fiz outra cagada, que foi a ausência de 'bind-mount' nesse meu docker container...
+
+
+  (container sem 'file reload')...
+
+
+
+
+  para remediar isso, escrevo 
+
+
+  ISTO:
+
+
+
+
+
+
+
+  docker run --name react-app -v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\frontend:/app  --network goal-network -p 3000:3000 react-frontend
+
+
+
+
+
+
+
+
+  docker run --name react-app  --network goal-network -p 3000:3000 react-frontend
+
+
+
+
+
+
+
+  MAS GANHEI ESTE ERROR:
+
+
+
+
+  > frontend@0.1.0 start
+> react-scripts start
+
+sh: 1: react-scripts: not found
+
+
+
+
+
+
+
+
+
+
+
+
+isso não faz muito sentido... pq meu app deveria ter esse 'react-scripts' já instalado, por conta do 'npm install'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+o problema foi precisamente meu BIND MOUNT... ele está INTERFERINDO COM O FUNCIONAMENTO DE MEU PROJETO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> para fazer o bind mount funcionar, PROVAVELMENTE PRECISAMOS DEIXAR O 'NODE_MODULES' como 1 'anon volume' ou algo assim, para que ele não 
+
+sofra interferência do bind mount em si....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... mas não é só isso... nosso app FRONTEND TAMBÉM NÃO CONSEGUIU SE CONECTAR COM O BACKEND...
+
+
+
+
+
+PROVAVELMENTE É ALGUM PROBLEMA NO NOSSO CÓDIGO REACT,
+
+
+
+aquela url de 
+
+
+'''http://node-multi/goals' '''
+
+
+
+
+
+
+
+
+
+
+
+PROVAVELMENTE PRECISAMOS TAMBÉM DA PORT, NESSE LOCAL AÍ...
+
+
+
+
+
+
+TIPO ALGO ASSIM:
+
+
+
+
+
+
+ const response = await fetch('http://node-multi:80/goals/' + goalId, {
+
+
+
+
+----------------------
+
+
+
+
+
+
+
+
+
+mas isso não funcionou...
+
+
+
+
+
+
+
+
+
+OK... TEMOS ESSES 3 BUILDING BLOCKS,
+
+
+
+A DATABASE,
+
+
+
+O BACKEND SERVER E O REACT APP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR COMEÇA PELA MONGODB DATABASE..
+
+
+
+
+
+
+
+
+
+--> ELE ABRE 1 NOVO TERMINAL...
+
+
+
+
+
+
+
+
+
+--> E AÍ ELE VAI QUERER CRIAR 1 CONTAINER PARA O MONGODB,
+
+
+
+
+COM QUE PODEREMOS CONVERSAR COM NOSSO 
+
+
+
+
+BACKEND NODE...
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR PEGA A OFFICIAL IMAGE DO 'mongo',
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+
+
+
+docker run --name mongodb-pure --rm -d mongo 
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO, COM ESSAS OPTIONS, FAZEMOS:
+
+
+
+
+1) COM QUE O CONTAINER MONGODB SEJA _ rEMOVIDO_ _ AUTOMATICAMENTE 
+SE FOR PARADO...
+
+
+
+
+
+2) VAI SER RODADO EM 'DETACHED MODE'...
+
+
+
+
+
+
+
+--> É ISSO QUE FAREMOS COM ESSE CONTAINER, A FORMA MAIS BÁSICA 
+
+DE UTILIZAÇÃO DO CONTAINER...
+
+
+
+
+
+
+
+--> AINDA NÃO ADICIONAMOS ESSE CONTAINER A 1 NETWORK, MAS VEREMOS 
+ISSO MAIS TARDE...
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+ 
+
+
+MAS O PROFESSOR QUER FAZER MAIS 1 COISA, AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR QUER 'PUBLICAR'
+
+1 DAS PORTS__ QUE _ 
+
+
+
+DEVE FICAR DISPONIBILIZADA POR ESSA MONGODB IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO PQ A NODE API 
+
+AINDA CONVERSA 
+
+
+COM A DATABASE COMO SE ESTIVESSE 
+
+
+RODANDO NA NOSSA LOCAL MACHINE....
+
+
+
+(
+
+  COM ESTE CÓDIGO:
+
+
+
+  'mongodb://localhost:27017/course-goals'...
+)
+
+
+
+
+
+
+
+
+
+--> OK... PARA CONSEGUIRMOS FAZER 
+
+ESSE DOCKER CONTAINER FUNCIONAR,
+
+
+PRECISAMOS 
+
+EXPOR 
+
+ESSA PORT DE '27017',
+
+de nosso docker container,
+
+
+
+PARA QUE SEJA 
+
+possível 
+CONECTAR 
+
+
+
+
+
+COISAS DE NOSSA LOCAL MACHINE A ELE...
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS DE ACORDO COM 
+
+
+OS DOCS DA IMAGE  DO MONGO,
+
+
+
+
+PODEMOS 
+
+
+
+
+
+FAZER EXPORT COM 
+
+
+ESTE CÓDIGO:
+
+
+'-p 27017:27017'..
+
+
+
+
+
+
+
+
+
+
+COM ISSO, GARANTIMOS QUE O MONGODB VAI RODAR EM 1 CONTAINER,
+
+
+
+
+
+
+SIM,
+
+
+
+
+
+MAS ISSO NÃO VAI IMPEDIR NOSSOS 'RUNNING PROCESSES'
+
+DE CONVERSAR COM ELE (bem útil, para testar coisas sem settar 
+bancos de dados a parte...)
+
+
+
+
+
+
+
+
+
+
+
+--> é por isso que o comando fica assim:
+
+
+docker run --name mongodb-pure --rm -d -p 27017:27017 mongo
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSE É O COMANDO QUE DEVEMOS RODAR...
+
+
+
+
+
+
+
+
+
+
+
+professor roda 'docker container prune',
+
+para remover todos os stopped containers...
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+DEPOIS DISSO, RODAMOS ESSE COMANDO..
+
+
+
+
+
+
+
+
+--> CERTO, NOSSO BANCO DE DADOS AGORA ESTÁ 
+RODANDO NESSE CONTAINER...
+
+
+
+
+
+
+
+
+--> OK... 
+
+
+
+
+
+
+
+
+ISSO SIGNIFICA QUE CONSEGUIMOS NOS CONECTAR A ESSE 
+
+RUNNING 
+
+
+MONGODB CONTAINER...
+
+
+
+
+
+
+--> PODEMOS VER ISSO NO DETACHED TERMINAL DO MONGODB CONTAINER...
+
+
