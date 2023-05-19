@@ -1,0 +1,1198 @@
+
+
+
+
+
+
+
+
+
+
+
+
+ANTES DE GARANTIRMOS QUE NOSSA DATA PERSISTA E TUDO MAIS,
+
+
+
+DEVEMOS 
+
+
+DOCKERIZAR NOSSO BACKEND...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS ATÉ O TERMINAL,
+
+
+
+
+E VAMOS NAVEGAR ATÉ 
+
+
+
+O FOLDER DE 'backend'...
+
+
+
+
+
+
+
+
+
+-->  QUEREMOS CONSTRUIR NOSSO PRÓPRIO CONTAINER 
+
+PARA ESSE PROJETO NODE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MEU DOCKERFILE HAVIA FICADO ASSIM:
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80 
+
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+USAMOS O NODE COMO BASE IMAGE,
+
+
+E AÍ 
+
+colocamos 
+
+'WORKDIR'
+
+como o 
+
+
+
+
+
+directory de '/app'...
+
+
+
+
+
+
+
+--> DEPOIS DISSO, COPIAMOS O ARQUIVO PACKAGE.JSON 
+PARA DENTRO 
+
+DESSE WORKING DIRECTORY,
+
+E DEPOIS RODAMOS 'NPM INSTALL' 
+PARA 
+
+INSTALAR TODAS AS DEPENDENCIES 
+
+DESSE PROJECT..
+
+
+
+
+
+
+
+--> DEPOIS COPIAMOS TODO NOSSO 
+
+CÓDIGO RESTANTE A ESSE CONTAINER,
+
+
+E POR FIM 
+
+EXPOMOS A PORT DE '80'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+POR FIM, ESPECIFICAMOSO  O COMANDO QUE 
+
+DEVE SER EXECUTADO  
+
+
+
+QUANDO 
+
+
+ESSE CONTAINER COMEÇAR, COM BASE NESSA IMAGE...
+
+
+
+
+
+
+
+--> rodamos 'node, app.js',
+
+ou 
+
+
+'nodemon, app.js'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+ESSE É O NOSSO DOCKERFILE PARA 
+
+
+
+
+
+
+
+ESSE BACKEND...
+
+
+
+
+
+
+
+
+
+
+
+NÃO É MT FANCY,
+
+
+
+
+
+MAS 
+
+
+É UM DOCKERFILE PARA 1 APP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO ADICIONADO, PODEMOS BUILDAR UMA IMAGE...
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, O PROFESSOR REMOVE TODAS AS IMAGES ANTERIORES..
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEPOIS DISSO, COM '
+
+
+
+
+'docker build -t goals-node ',
+
+
+
+
+
+
+
+
+
+
+CONSTRUÍMOS ESSA BACKEND IMAGE,
+
+
+A PARTIR DO DOCKERFILE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O NEGÓCIO VAI CRIAR TODOS OS LAYERS...
+
+
+
+
+
+
+
+
+--> DEPOIS DISSO, PODEMOS RODAR 1 CONTAINER 
+
+COM 
+
+BASE NESSA IMAGE..
+
+
+
+
+
+
+
+
+--> OK.. 
+
+
+
+
+
+
+PARA ISSO, O PROFESSOR VAI ESCREVER ASSIM:
+
+
+
+
+
+
+docker run --name goals-backend --rm goals-node
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR NÃO VAI QUERER RODAR EM 'DETACHED MODE',
+
+
+inicialmente...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO VAI COMEÇAR, 
+
+
+
+VAI PARECER QUE ESTÁ FUNCIONANDO,
+
+
+MAS 
+
+VAI 
+
+DAR 1 ERRO... -> VAI DAR 1 ERRO 
+
+
+PQ ELE VAI FALHAR NA CONEXÃO AO MONGODB...
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO FAZ MT SENTIDO, PQ 
+
+
+
+NÓS TEMOS O MONGODB RODANDO EM 1 CONTAINER,
+
+SIM,
+
+
+E EXPONDO SUA PORT,
+
+
+MAS  
+
+
+
+NO APP DOCKERIZADO,
+
+
+
+ESTAMOS FAZENDO 'REACH OUT'
+ 
+ AO LOCAL HOST...
+
+
+
+
+
+
+
+
+
+
+ --> ISSO QUER DIZER QUE ESTAMOS TENTANDO 
+
+ ALCANÇAR 
+
+
+
+ 1 'RUNNING SERVICE'
+
+ NO PRÓPRIO 
+
+
+
+ RUNNING CONTAINER DO BACKEND,
+
+ E NÃO NA MINHA LOCAL HOST MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> É POR ISSO QUE O CÓDIGO DEVE FICAR ASSIM:
+
+
+
+
+
+ 
+mongoose.connect(
+  'mongodb://mongodb-pure:27017/course-goals',
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB');
+      console.error(err);
+    } else {
+      console.log('STARTED APP');
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+EU ACHAVA QUE ISSO FUNCIONARIA (e funciona, na verdade)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS O PROFESSOR NOS MOSTROU UMA MANEIRA MAIS ELEGANTE/ADDRESS MAIS ELEGANTE,
+
+QUE É 
+
+
+'host.docker.internal' ---------> ESSE É UM IDENTIFIER 
+
+ESPECIAL,
+
+ 
+
+QUE É 
+
+TRADUZIDO PARA SUA  'REAL LOCAL HOST MACHINE IP',
+
+
+
+
+
+
+
+pelo docker...
+
+
+
+
+
+
+
+
+mongoose.connect(
+  // 'mongodb://localhost:27017/course-goals',
+  // 'mongodb://mongodb-pure:27017/course-goals',
+  // ? 'HOST.DOCKER.INTERNAL' é traduzido para nosso REAL LOCAL HOST MACHINE IP, pelo docker container...
+  'mongodb://host.docker.internal:27017/course-goals',
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB');
+      console.error(err);
+    } else {
+      console.log('STARTED APP');
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... AÍ RODAMOS ESSE CONTAINER MAIS UMA VEZ...
+
+
+
+
+
+
+
+
+
+
+
+ISSO FUNCIONA,
+
+
+E CONSEGUIMOS CONECTAR NOSSO 
+
+
+CONTAINER,
+
+
+
+
+
+
+
+
+rodando-o por meio do código:
+
+
+
+
+
+
+docker run --name goals-backend --rm goals-node
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... CONSEGUIMOS CONECTAR NOSSO BACKEND à DATABASE..
+
+
+
+
+
+
+
+
+
+
+MAS AGORA TEREMOS 1 NOVO PROBLEMA:
+
+
+
+
+
+
+
+
+O APP REACT __ NÃO VAI CONSEGUIR __ CONVERSAR COM ESSE BACKEND...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> SE VOLTAMOS AO NOSSO RUNNING REACT APP 
+
+E TENTAMOS
+
+O EXECUTAR,
+
+
+ALGO DÁ ERRADO (
+
+
+    'CONNECTION REFUSED'....
+)
+
+
+
+
+
+
+
+
+
+
+--> ISSO ACONTECEU PQ O RUNNING REACT APP FALHOU EM SE 
+
+CONECTAR AO BACKEND..
+
+
+
+
+
+
+
+
+
+
+
+
+--> PQ APESAR DO REACT APP SER CAPAZ DE SE CONECTAR A ESSE APP,
+
+
+
+O APP NÃO EXPÔS NENHUMA DAS PORTS USADAS 
+
+
+
+
+
+PELO 
+
+
+REACT APP..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> temos aquela instrução de 'EXPOSE 80'
+
+
+LÁ NA DOCKERFILE DO BACKEND,
+
+MAS ISSO, POR SI SÓ,
+
+NÃO FAZ NADA...
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE 
+PRECISAMOS FAZER 'PUBLISH' 
+
+DAS 
+PORTS 
+
+DO NOSSO BACKEND..
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE NOSSO COMANDO 
+
+
+DOCKER, POR FIM,
+
+FICARÁ ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+docker run --name goals-backend --rm -p 80:80 node-goals
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... ISSO FEZ PUBLISH DE NOSSO CONTAINER...
+
+
+
+
+
+
+
+
+-> ACHO QUE ERA POR ISSO QUE O REACT APP CONTAINERIZADO NÃO ESTAVA FUNCIONANDO,
+
+ANTERIORMENTE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ok... mas e quanto à 'network'? Não seria bom colocar 
+
+
+
+todos nossos containers nela?
+
+
+
+
+
+
+
+
+
+
+-> TENTAR FAZER TIPO ASSIM:
+
+
+
+docker run --name goals-backend --rm --network goal-network -p 80:80 node-goals
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... estou com os 2 negócios rodando... --> com o backend e com a database....
+
+
+
+
+
+
+
+
+
+agora devo checar se o postman funciona, se o disparo de requests funciona contra eles...
+
+
+
+
+
+
+
+
+
+
+
+
+
+falhou... falhou pq não  havia colocado 1 label/nome para o 
+mongodb server....
+
+
+
+
+
+
+
+
+
+
+
+ok.... funcionou...
+
+
+
+
+
+
+
+
+
+
+os comandos foram:
+
+
+
+
+
+
+
+
+
+docker run --name mongodb-pure --network goal-network --rm -d -p 27017:27017 mongo 
+
+
+
+
+docker run --name node-multi --network goal-network --rm -p 80:80 node-goals
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS AGORA A PERGUNTA É:
+
+
+
+
+
+
+
+
+
+O REACT APP CONSEGUE SE CONECTAR A ESSES NEGÓCIOS, DISPARAR REQUESTS AO BACKEND?
+
+
+
+
+
+
+
+
+
+--> vejamos...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEIXEI O CÓDIGO REACT TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import CourseGoals from './components/goals/CourseGoals';
+import GoalInput from './components/goals/GoalInput';
+import ErrorAlert from './components/UI/ErrorAlert';
+
+function App() {
+  const [loadedGoals, setLoadedGoals] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(function () {
+    async function fetchData() {
+      setIsLoading(true);
+
+      try {
+        const response = await fetch('http://localhost:80/goals');
+
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(resData.message || 'Fetching the goals failed.');
+        }
+
+        setLoadedGoals(resData.goals);
+      } catch (err) {
+        setError(
+          err.message ||
+            'Fetching goals failed - the server responsed with an error.'
+        );
+      }
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  async function addGoalHandler(goalText) {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:80/goals', {
+        method: 'POST',
+        body: JSON.stringify({
+          text: goalText,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Adding the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = [
+          {
+            id: resData.goal.id,
+            text: goalText,
+          },
+          ...prevGoals,
+        ];
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Adding a goal failed - the server responsed with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  async function deleteGoalHandler(goalId) {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:80/goals/' + goalId, {
+        method: 'DELETE',
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Deleting the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = prevGoals.filter((goal) => goal.id !== goalId);
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Deleting the goal failed - the server responded with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  return (
+    <div>
+      {error && <ErrorAlert errorText={error} />}
+      <GoalInput onAddGoal={addGoalHandler} />
+      {!isLoading && (
+        <CourseGoals goals={loadedGoals} onDeleteGoal={deleteGoalHandler} />
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E FUNCIONOU, ELE CONSEGUIU SE CONECTAR 
+
+
+AO 'localhost:80',
+
+
+
+PQ 
+
+
+EU FIZ PUBLISH DO MEU APP NODE NESSA PORT ESPECÍFICA MESMOO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+com isso, ficamos com 2 DOCKER CONTAINERS,
+
+
+E COM O REACT APP (que não está dockerizado, ainda)...
+
+
+
+
+
+
+
+
+
+
+PRECISAMOS CONVERTER O FRONTEND TAMBÉM...

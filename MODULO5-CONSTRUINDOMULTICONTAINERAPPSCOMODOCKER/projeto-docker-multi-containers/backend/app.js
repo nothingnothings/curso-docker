@@ -96,7 +96,9 @@ app.delete('/goals/:id', async (req, res) => {
 
 mongoose.connect(
   // 'mongodb://localhost:27017/course-goals',
-  'mongodb://mongodb-pure:27017/course-goals',
+  // 'mongodb://mongodb-pure:27017/course-goals',
+  // ? 'HOST.DOCKER.INTERNAL' é traduzido para nosso REAL LOCAL HOST MACHINE IP, pelo docker container...
+  'mongodb://host.docker.internal:27017/course-goals',
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -104,7 +106,7 @@ mongoose.connect(
 
   (err) => {
     if (err) {
-      console.error('FAILED TO CONNECT TO MONGODB');
+      console.error('FAILED TO CONNECT TO MONGODB 2');
       console.error(err);
     } else {
       console.log('STARTED APP');
