@@ -13,8 +13,8 @@ function App() {
       setIsLoading(true);
 
       try {
-        const response = await fetch('http://localhost:80/goals');
-
+        // const response = await fetch('http://node-multi:80/goals'); //! NÃO FUNCIONA, JUSTAMENTE POR ESSE SER 1 APP REACT (o código javascript vai rodar no BROWSER, e não DIRETAMENTE NO DOCKER CONTAINER, por isso o docker não vai conseguir traduzir nomes como 'node-multi' em addresses dos docker containers) --> é por isso que devemos USAR PORTAS DE NOSSA LOCALHOST MACHINE, como 'localhost:80'... (e fazer o publish delas, de acordo, com '-p port:port')...
+        const response = await fetch('http://localhost:80/goals'); //? LEMBRE-SE DE COLOCAR 'EXPOSE 80' lá na dockerfile do backend...
         const resData = await response.json();
 
         if (!response.ok) {
@@ -38,7 +38,8 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:80/goals', {
+      // const response = await fetch('http://node-multi:80/goals', { //! NÃO FUNCIONA, JUSTAMENTE POR ESSE SER 1 APP REACT (o código javascript vai rodar no BROWSER, e não DIRETAMENTE NO DOCKER CONTAINER, por isso o docker não vai conseguir traduzir nomes como 'node-multi' em addresses dos docker containers) --> é por isso que devemos USAR PORTAS DE NOSSA LOCALHOST MACHINE, como 'localhost:80'... (e fazer o publish delas, de acordo, com '-p port:port')...
+        const response = await fetch('http://localhost:80/goals', {  //? LEMBRE-SE DE COLOCAR 'EXPOSE 80' lá na dockerfile do backend...
         method: 'POST',
         body: JSON.stringify({
           text: goalText,
@@ -77,7 +78,8 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:80/goals/' + goalId, {
+      // const response = await fetch('http://node-multi:80/goals/' + goalId, { //! NÃO FUNCIONA, JUSTAMENTE POR ESSE SER 1 APP REACT (o código javascript vai rodar no BROWSER, e não DIRETAMENTE NO DOCKER CONTAINER, por isso o docker não vai conseguir traduzir nomes como 'node-multi' em addresses dos docker containers) --> é por isso que devemos USAR PORTAS DE NOSSA LOCALHOST MACHINE, como 'localhost:80'... (e fazer o publish delas, de acordo, com '-p port:port')...
+        const response = await fetch('http://localhost:80/goals/' + goalId, { //? LEMBRE-SE DE COLOCAR 'EXPOSE 80' lá na dockerfile do backend...
         method: 'DELETE',
       });
 

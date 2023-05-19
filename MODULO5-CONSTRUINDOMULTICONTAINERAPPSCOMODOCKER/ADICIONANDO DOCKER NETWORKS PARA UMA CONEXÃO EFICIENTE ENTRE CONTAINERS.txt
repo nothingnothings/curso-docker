@@ -1,0 +1,1455 @@
+
+
+
+
+
+
+--> PARA COLOCARMOS NOSSOS CONTAINERS EM UMA NETWORK,
+
+
+A PRIMEIRA COISA QUE PRECISAMOS FAZER É CRIAR UMA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> FAZEMOS ISSO COM 'DOCKER NETWORK CREATE'...
+
+
+
+
+
+
+
+
+
+
+
+
+docker network ls --> nos mostra todas as networks...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA INSPECIONAR UMA NETWORK, ESCREVEMOS 'docker inspect network-name'...
+
+
+
+
+
+
+
+
+
+
+
+--> DENTRO DESSA NETWORK,
+
+TEMOS UMA KEY DE 'Containers',
+COM ISTO:
+
+
+
+
+
+"Containers": {
+            "9cc667f66138b9729676fc1b2e028d061d1dadaeaa5914da15830643e86b3347": {
+                "Name": "goals-frontend",
+                "EndpointID": "dd65c07fa18b80b3e7a08e2c91db466cb53eb9b5e61e22de7ec8d9b371843444",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            },
+            "a3d10d8cc6aaf885d3adcb27cfe270a577e77ec4a970f42b852d5d615e7d453a": {
+                "Name": "mongodb-pure",
+                "EndpointID": "9dece2cf19ac8fedc4b90fa0fb9814a544bda2a9bc386075ee744ee08ff049b6",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            },
+            "c96663567c870e4673f067c9dacb60c819b30c32506078077beba464c00ff3fd": {
+                "Name": "goals-backend",
+                "EndpointID": "6ced50e7d16d4e77f7f9559b514bfbfebf6c9a49fd75eddcec3390696af1999a",
+                "MacAddress": "02:42:ac:12:00:04",
+                "IPv4Address": "172.18.0.4/16",
+                "IPv6Address": ""
+            }
+        },
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+AGORA TODOS NOSSOS CONTAINERS ESTÃO DENTRO DESSA NETWORK...
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+
+PARA COLOCAR 1 CONTAINER EM 1 NETWORK,
+
+DEVEMOS 
+
+
+RODAR COMANDOS COM A OPTION DE '--network network-name'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> SE CONTAINERS ESTÃO EM 1 MESMA NETWORK,
+
+ELES PODEM COMUNICAR ENTRE SI MSM ASSIM,
+
+
+
+
+SEM USAR 'host.docker.internal',
+
+
+por exemplo...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO NÃO VAMOS CONECTAR NOSSA MÁQUINA LOCAL AOS DOCKER CONTAINERS,
+
+NÃO É NECESSÁRIO 
+
+ESCREVER '-p port:port' PARA PUBLICAR  
+
+
+
+
+
+NOSSOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ADICIONAR 1 CONTAINER 
+
+
+A NOSSA NETWORK,
+
+DEVEMOS ESCREVER TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker run --name mongodb --rm -d --network goals-network mongo 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... ISSO VAI ADICIONAR ESSE CONTAINER A NOSSA NETWORK...
+
+
+
+
+
+
+
+
+
+
+
+O MONGODB DATABASE AGORA FARÁ PARTE DE NOSSO NETWORK..
+
+
+
+
+
+
+
+
+
+
+--> FAZEMOS A MESMA COISA PARA O BACKEDN:
+
+
+
+
+
+
+
+
+docker run --name goals-backend --rm -d --network goals-network goals-node
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+MAS ANTES DE FAZERMOS ISSO,
+
+DEVEMOS PENSAR:
+
+
+
+
+
+
+
+
+
+''''POR ACASO ISSO É TUDO QUE PRECISAMOS FAZER?'''
+
+ 
+
+
+
+
+
+
+
+
+BEM, NA VERDADE PRECISAMOS ALTERAR MAIS ALGUMAS COISAS...
+
+
+
+
+
+
+
+
+
+
+
+----> PRECISAMOS TROCAR A URL DE CONNECT AO MONGO,
+
+que estava assim:
+
+
+
+
+mongoose.connect(
+
+  'mongodb://host.docker.internal:27017/course-goals',
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB 2');
+      console.error(err);
+    } else {
+      console.log('STARTED APP');
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+  PRECISAMOS TROCAR O 'host.docker.internal'
+
+
+
+
+
+  __ PELO _ NOME __ DO CONTAINER A QUE QUEREMOS CONECTAR (no caso, 'mongodb-pure:27017')..
+
+
+
+
+
+
+
+
+
+
+
+  EX:
+
+
+
+
+
+
+
+
+  mongoose.connect(
+  // 'mongodb://localhost:27017/course-goals',
+  // 'mongodb://mongodb-pure:27017/course-goals',
+  // ? 'HOST.DOCKER.INTERNAL' é traduzido para nosso REAL LOCAL HOST MACHINE IP, pelo docker container... --> utilize se vc quer MISTURAR DOCKER CONTAINERS COM PROCESSOS DO SEU PRÓPRIO PC/MÁQUINA (localhost, etc) --> se vc quiser fazer isso, vc pode usar 'host.docker.internal' PARA CONSEGUIR CONECTAR SEU CONTAINER A PROCESSOS DO SEU PC
+  'mongodb://mongodb-pure:27017/course-goals', // ? funciona COM DOCKER NETWORKS ()
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB 2');
+      console.error(err);
+    } else {
+      console.log('STARTED APP');
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+);
+
+
+
+
+
+
+------------------------
+
+
+
+
+
+
+
+
+
+
+'host.docker.internal' SE REFERE AO NOSSO LOCAL MACHINE,
+
+
+
+
+
+
+
+
+
+
+
+
+QUE NÃO VAI MAIS ESTAR DISPONÍVEL,
+
+
+
+pq NÃO ESTAMOS MAIS PUBLICANDO NOSSOS CONTAINERS, NO NOSSO APP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO SIGNIFICA QUE PRECISAMOS BUILDAR NOSSAS IMAGES MAIS UMA VEZ,
+
+MAS AGORA 
+
+
+
+
+SEM ESSE USO de 'host.docker.internal'''
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+VAMOS RODAR OS 3 COMANDOS NOVAMENTE:
+
+
+
+
+docker run --name mongodb-pure --network goal-network --rm -d  mongo
+
+
+
+
+
+(sem o publish, sem '-p port:port'...)..
+
+
+
+
+DEPOIS:
+
+
+
+
+docker run --name node-multi --network goal-network --rm node-goals
+
+
+
+
+
+(sem o publish, sem '-p port:port'...)..
+
+
+
+
+
+
+
+E DEPOIS:
+
+
+
+
+
+ docker run --name goals-frontend --network goal-network --rm react 
+
+
+
+
+(sem o publish, sem '-p port:port'...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... rodados todos esses containers, devemos acessar o app em 'localhost:3000'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... isso não funcionou...
+
+
+
+
+
+
+
+
+
+
+
+-> NÃO FUNCIONOU PQ _ NÃO 
+
+
+
+
+EXPOMOS ESSE CONTAINER/APP REACT A NOSSA LOCAL HOST MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O COMANDO PARA O APP REACT VAI CONTER '-p 3000:3000',
+
+pq QUEREMOS SER CAPAZES DE FAZER CONNECT A ESSE APP,
+
+EM NOSSA LOCAL HOST MACHINE..
+
+
+FICA TIPO ASSIM:
+
+
+ docker run --name goals-frontend --network goal-network -p 3000:3000 --rm react 
+
+
+
+
+-----------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... MAS GANHAMOS UM ERROR:
+
+
+
+
+
+
+'ERR_NAME_NOT_RESOLVED' (lá no devtools do chrome)...
+
+
+
+
+
+
+
+
+
+
+
+ISSO ACONTECEU 
+
+
+
+
+
+
+
+PQ ___ NA NOSSA REDE,
+
+O NEGÓCIO FICOU TIPO ASSIM:
+
+
+
+http://node-multi/goals
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO ACONTECEU PQ TODO NOSSO CÓDIGO REACT, FRONTEND, RODA NO browser (e não em algum server)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE O COMANDO 
+
+
+
+
+
+'' CMD ["npm", "start"] '' ,
+
+
+
+
+
+NO CONTEXTO DO REACT,
+
+FAZ APENAS 1 COISA,
+
+QUE É 
+
+STARTAR O DEV SERVER,
+QUE 
+
+VAI 
+
+
+SERVIR 
+
+
+ESSE REACT APP BÁSICO... -------> OK... MAS O CÓDIGO REACT,
+
+EM SI,
+
+
+
+
+NÃO __ É _ EXECUTADO__ DENTRO __ DO CONTAINER... ----> ISSO QUER DIZER QUE 
+
+
+O 
+
+
+
+CÓDIGO NÃO É EXECUTADO PELO DOCKER EM SI... -------> ISSO SIGNIFICA QUE 
+
+
+
+
+
+
+
+O CÓDIGO 
+
+
+
+
+
+
+DE 
+
+
+''
+  useEffect(function () {
+    async function fetchData() {
+      setIsLoading(true);
+
+      try {
+        const response = await fetch('http://node-multi:80/goals');
+
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(resData.message || 'Fetching the goals failed.');
+        }
+
+        setLoadedGoals(resData.goals);
+      } catch (err) {
+        setError(
+          err.message ||
+            'Fetching goals failed - the server responsed with an error.'
+        );
+      }
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+
+  ''
+
+
+
+
+
+
+
+
+
+
+
+
+ele não vai rodar diretamente no container (em que o docker seria capaz 
+
+de traduzir esse trecho de 'http://node-multi:80/goals'
+),
+
+
+
+
+
+
+
+
+
+
+E SIM 
+
+
+RODA __ NO BROWSER, QUE NÃO FAZ NENHUMA IDEIA DE 
+
+
+
+' O QUE É node-multi' ----------> E ISSO NÃO É UM BUG,
+
+
+
+
+
+E SIM 
+
+
+
+
+
+TEM RELAÇÃO COM O REACT ------> PQ ESSA É JUSTAMENTE A MORAL,
+
+
+CONSTRUIR 
+
+
+
+
+APPS QUE RODAM NO BROWSER,
+
+E NÃO NO SERVER... ----------> É POR ISSO QUE USAR  OS CONTAINER 
+
+NAMES 
+
+
+DIRETAMENTE 
+
+
+
+
+
+como 
+
+
+
+''http://node-multi:80/goals''
+
+
+
+
+NÃO VAI FUNCIONAR,
+ 
+
+
+PQ 
+
+
+NÃO 
+
+VAI EXECUTAR NO DOCKER CONTAINER,
+
+E SIM 
+
+VAI 
+
+RODAR NO BROWSER... --> 
+
+
+
+
+
+
+
+
+
+
+E A ÚNICA COISA QUE RODA NO DOCKER CONTAINER, DE FATO,
+
+
+
+É O DEV SERVER QUE ESTÁ SERVINDO ESSE APP.... --> MAS ISSO NÃO É O BASTANTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...... MAS O QUE DEVEMOS FAZER?
+
+
+
+
+
+
+
+BEM, DEVEMOS VOLTAR AO 'localhost'
+
+
+
+NO 
+
+
+
+CÓDIGO DE NOSSO APP REACT...- --> 
+
+
+
+
+
+
+TROCAMOS PARA 'localhost',
+
+COMO ANTES,
+
+
+
+
+PQ LOCALHOST _ É UM _ IDENTIFIER _ COMPREENDIDO PELO BROWSER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO ALTERADO,
+
+PRECISAMOS GARANTIR QUE,
+
+em 
+'localhost',
+
+
+ESSES ENDPOINTS DE 
+
+
+
+
+
+
+'/goals' 
+
+
+
+
+
+
+POSSAM SER ATINGIDOS... ------> E ISSO SIMPLESMENTE QUER DIZER QUE 
+
+
+
+__ AINDA __ PRECISAMOS FAZER PUBLISH DA PORT 
+
+
+
+
+
+'80' 
+
+
+
+LÁ NO BACKEND,
+
+
+
+PARA QUE 
+
+
+ESSE APP BACKEND 
+
+
+TAMBÉM FIQUE DISPONIVEL 
+
+
+NO LOCALHOST,
+
+
+
+
+
+
+
+
+PQ __ NOSSO __ FRONTEND_ _ APP __ PRECISA _ DESSE ACESSO,
+
+É ALGO OBRIGATÓRIO...
+
+
+
+
+
+
+
+
+
+
+--> PRECISAMOS DISSO JUSTAMENTE POR CONTA DA MANEIRA PELA QUAL O REACT FUNCIONA,
+E PQ 
+
+
+
+REACT APPS POSSUEM 'BROWSERSIDE JAVASCRIPT CODE',
+
+
+
+E NAÕ 
+
+
+
+
+CÓDIGO JAVASCRIPT QUE RODA DIRETAMENTE NO DOCKER CONTAINER... 
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE TIVÉSSEMOS ALGO DIFERENTE, 1 OUTRO NODE APP, RODANDO EM 1 
+
+OUTRO CONTAINER,
+
+ISSO PODERIA SER ALGO DIFERENTE, PODERIA SER O 'http://node-multi/goals',
+
+
+PODERIA 
+
+SER O CONTAINER NAME... --> MAS COMO ISSO, NOSSO REACT APP,
+
+
+RODA NO BROWSER,
+
+
+
+
+
+PRECISAMOS ADAPTAR O SETUP DE NOSSO 
+
+APP INTEIRO,
+
+
+E COLOCAR O PUBLISH 
+
+
+
+
+DA PORT '80:80'
+
+LÁ 
+
+
+
+NO NODE APP BACKEND (para que 'localhost:80' fique ocupada por esse app),
+
+
+
+
+
+E TAMBÉM COLOCAR O PUBLISH DA PORT 3000 no nosso react app ( para que 
+ele 
+
+consiga ser atingido por nossa local host machine),
+
+
+
+
+
+
+
+E TAMBÉM COLOCAR O ENDPOINT DE 'http://localhost:80/goals'
+
+
+
+LÁ 
+
+
+
+NO NOSSO APP REACT,
+
+PQ 
+
+ESSE ENDPOINT REALMENTE FICARÁ DISPONÍVEL,
+AGORA...
+
+
+
+
+
+
+
+
+
+
+
+ISSO QUER DIZER QUE NOSSO CÓDIGO FINAL FICA ASSIM:
+
+
+
+
+
+
+
+
+docker run --name mongodb-pure --network goal-network --rm -d  mongo
+
+
+
+docker run --name node-multi --network goal-network -p 80:80 --rm node-goals
+
+
+
+ docker run --name goals-frontend --network goal-network -p 3000:3000 --rm react 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo... agora rodei os 3 containers, novamente...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... AGORA __ FINALMENTE _ FUNCIONOU...
+
+
+
+
+
+
+
+
+
+O SETUP FUNCIONOU,
+
+agora 
+
+
+CONSIGO 
+
+
+ME CONECTAR AO BACKEND COM O FRONTEND,
+
+
+E 
+
+
+
+A DATABASE TAMBÉM ESTÁ FUNCIONANDO (por estar na mesma network dos outros 2 containers)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+o PROFESSOR AINDA ESPECIFICA QUE O ADD 
+
+DE 'network'
+
+
+AO REACT APP É DESNECESSÁRIO,
+
+JUSTAMENTE PQ 
+
+
+
+'REACT APPS, EM APPS DE VERDADE,
+
+
+NÃO PRECISAM ESTAR NA MESMA NETWORK DO BACKEND, JUSTAMENTE POR SEREM __ dETACHED''...
+
+
+
+
+
+
+
+
+
+
+
+
+-> É POR ISSO QUE NOSSO CÓDIGO FINAL PODE FICAR ASSIM:
+
+
+
+
+
+
+
+docker run --name mongodb-pure --network goal-network --rm -d  mongo
+
+
+
+docker run --name node-multi --network goal-network -p 80:80 --rm node-goals
+
+
+
+ docker run --name goals-frontend -p 3000:3000 --rm react 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+OK... AGORA AS PORTAS '80' 
+
+
+E 
+
+'3000'
+
+
+
+
+FICAM EXPOSTAS AO LOCALHOST,
+
+
+COMO 
+
+DEVE SER...
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA TEMOS ESSES 3 CONTAINERS FUNCIONANDO, 1 COM O OUTRO...
+
+
+
+
+
+
+
+
+
+
+
+--> OK... O REACT FOI 1 POUCO TRICKY,
+
+
+JUSTAMENTE PQ 
+
+O CÓDIGO 
+
+
+REACT/JAVASCRIPT RODA NO BROWSER,
+
+E NÃO DIRETAMENTE NO DOCKER CONTAINER --> É POR ISSO QUE 
+
+ O DOCKER NÃO CONSEGUE NOS AJUDAR COM ESSE 
+
+ 'AUTOMATIC HOST IP RESOLVING'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS AINDA NÃO ACABAMOS, É CLARO..
+
+
+
+
+
+
+
+
+
+
+
+TEMOS NOSSOS CONTAINERS, SIM,
+
+E ELES CONSEGUEM COMUNICAR-SE ENTRE SI,
+
+
+MAS AINDA TEMOS AQUELAS FEATURES:
+
+
+
+
+
+
+
+------------------------
+
+NA DATABASE: 
+
+
+1) DATA PERSISTENCE 
+
+
+2) LIMITED ACCESS 
+
+-------------------------
+
+
+
+
+
+
+----------------------
+
+NO BACKEND: 
+
+
+1) DATA PERSISTENCE 
+
+
+
+2) LIVE SOURCE CODE UPDATE
+
+
+-------------------------------
+
+
+
+
+
+
+
+----------------------------
+
+
+
+NO FRONTEND: 
+
+
+1) LIVE SOURCE CODE UPDATE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É ISSO QUE VEREMOS NA PRÓXIMA AULA...
