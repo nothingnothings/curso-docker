@@ -15,6 +15,7 @@ const accessLogStream = fs.createWriteStream(
   { flags: 'a' } ////'a' for append...
 );
 
+
 app.use(morgan('combined', { stream: accessLogStream }));
 
 app.use(bodyParser.json());
@@ -27,7 +28,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/goals', async (req, res) => {
-  console.log('TRYING TO FETCH GOALS');
+  console.log('TRYING TO FETCH GOALSSSSSS');
 
   try {
     const goals = await Goal.find();
@@ -40,7 +41,7 @@ app.get('/goals', async (req, res) => {
         };
       }),
     });
-    console.log('FETCHED GOALS');
+    console.log('FETCHED GOALS 2');
   } catch (err) {
     console.error('ERROR FETCHING GOALS');
     console.error(err.message);
@@ -49,7 +50,7 @@ app.get('/goals', async (req, res) => {
 });
 
 app.post('/goals', async (req, res) => {
-  console.log('TRYING TO STORE GOAL 55');
+  console.log('TRYING TO STORE GOAL 552');
   const goalText = req.body.text;
 
   if (!goalText || goalText.trim().length === 0) {
@@ -98,8 +99,9 @@ mongoose.connect(
   // 'mongodb://localhost:27017/course-goals',
   // 'mongodb://mongodb-pure:27017/course-goals',
   // ? 'HOST.DOCKER.INTERNAL' é traduzido para nosso REAL LOCAL HOST MACHINE IP, pelo docker container... --> utilize se vc quer MISTURAR DOCKER CONTAINERS COM PROCESSOS DO SEU PRÓPRIO PC/MÁQUINA (localhost, etc) --> se vc quiser fazer isso, vc pode usar 'host.docker.internal' PARA CONSEGUIR CONECTAR SEU CONTAINER A PROCESSOS DO SEU PC
-   'mongodb://arthur:senha@mongodb-pure:27017/course-goals?authSource=admin', // ? funciona COM DOCKER NETWORKS
+  //  'mongodb://arthur:senha@mongodb-pure:27017/course-goals?authSource=admin', // ? funciona COM DOCKER NETWORKS
 
+  `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb-pure:27017/course-goals?authSource=admin`,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,

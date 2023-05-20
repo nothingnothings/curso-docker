@@ -1,0 +1,16 @@
+
+docker run 
+--name goals-backend   /// EXEMPLO DE 'TAG' NO CONTAINER
+--network goal-network  //COMO INSERIR O CONTAINER EM 1 NETWORK
+-e MONGODB_USERNAME="arthur" ////COMO INSERIR VALUES PARA AS VARIABLES DE 'ENV', NO PROCESSO DE BUILD (serão passados como 'process.env.MONGODB_USERNAME' e 'process.env.MONGODB_PASSWORD')...
+-e MONGODB_PASSWORD="senha"
+-v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app //// COMO FAZER 1 BIND MOUNT
+-v goals-backend-logs:/app/logs  ////COMO FAZER 1 NAMED VOLUME
+-v /app/node_modules ////COMO FAZER 1 'ANON VOLUME' (necessário, no caso de node_modules)...
+-p 80:80  ///// COMO PUBLICAR O CONTAINER EM ALGUMA PORT (lembre-se de definir 'EXPOSE 80' lá no dockerfile)..
+node-goals
+
+
+
+
+

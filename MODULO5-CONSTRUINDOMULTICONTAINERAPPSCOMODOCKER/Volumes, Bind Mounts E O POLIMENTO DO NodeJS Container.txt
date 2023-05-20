@@ -1,0 +1,1928 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ADICIONAMOS 2 COISAS AO CONTAINER DO MONGODB:
+
+
+
+
+1) DATA PERSISTENCE (com um NAMED VOLUME, com '-v volume-name:/data/db', no caso do mongodb)...
+
+
+
+
+
+
+2) ACCESS SHOULD BE LIMITED (restrição de usuário/senha, por meio de '-e', environment variables no RUN DOS CONTAINERS)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> aGORA QUEREMOS COLOCAR FEATURES NO CONTAINER DO BACKEND...
+
+
+
+
+
+
+
+
+2 COISAS:
+
+
+
+
+
+
+
+
+1) QUEREMOS TER 1 POUCO DE DATA PERSISTENCE...
+
+
+
+
+
+
+---> QUEREMOS TER 1 NAMED VOLUME, 
+
+
+RELATIVO AOS 'LOG FILES' QUE NOSSO APP VAI CRIAR..
+
+
+
+
+
+
+
+
+
+
+
+2) QUEREMOS TER 'LIVE SOURCE CODE UPDATE' -> TUDO QUE MUDARMOS 
+
+
+
+
+NO NOSSO PC 
+
+VAI APARECER NO CONTAINER, 
+
+AO VIVO...
+
+
+(faremos isso por meio de bind mounts)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... PARAMOS NOSSO CONTAINER DE 
+
+
+
+'goals-backend',
+
+
+PQ VAMOS ADICIONAR 2 VOLUMES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS ADICIONAR 2 TIPOS DE VOLUMES, PARA OS LOGS:
+
+
+
+
+
+1) PODEMOS COLOCAR 1 'NAMED VOLUME',
+
+se quisermos APENAS QUE A DATA SOBREVIVA,
+
+SEM QUERERMOS ACTUALLY LER AS LOG FILES...
+
+
+
+
+
+
+2) SE QUISERMOS LER AS LOG FILES DE DENTRO 
+
+
+
+DE NOSSA LOCAL HOST MACHINE,
+
+TEREMOS 
+
+
+DE COLOCAR 1 'BIND MOUNT'... (para que apareça no nosso sistema de arquivos)..
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR QUER 
+
+ADICIONAR 1 NAMED-VOLUME,
+
+
+PQ NÃO VAI SE IMPORTAR COM A LEITURA DOS LOGS...
+
+
+
+
+
+
+
+
+
+-> ELE COMEÇA ESCREVENDO ASSIM:
+
+
+
+docker run 
+--name goals-backend 
+--network goal-network
+-v goals-backend-logs:/app/logs  /////////EIS O CÓDIGO EM QUESTÃO:
+ -p 80:80 node-goals
+
+
+
+
+
+docker run --name goals-backend --network goal-network -v goals-backend-logs:/app/logs -p 80:80 node-goals
+
+
+
+
+
+
+
+
+
+QUEREMOS ISSO PQ 
+
+
+
+NOSSO APP VAI ESCREVER 
+
+
+
+
+
+OS LOGS DENTRO DA PASTA 'logs',
+
+
+POR CONTA DESTE CÓDIGO:
+
+
+
+
+
+
+
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, 'logs', 'access.log'),
+  { flags: 'a' } ////'a' for append...
+);
+
+app.use(morgan('combined', { stream: accessLogStream }));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+
+É ESSE O TRATAMENTO QUE QUEREMOS PARA NOSSOS LOGS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ESSE ERA O PRIMEIRO 
+
+
+VOLUME,
+
+
+
+
+
+
+
+MAS PRECISAMOS DE OUTRA COISA,
+
+
+
+PRECISAMOS DE 1 BIND MOUNT..
+
+
+
+
+
+
+
+
+
+
+
+
+--> QUEREMOS BINDAR, COM 1 BIND MOUNT,
+
+
+
+TODO O CONTEÚDO do file system do app,
+
+
+AO 
+
+NOSSO FILE SYSTEM, DO COMPUTADOR, NA PASTA 'BACKEND'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> a escrita fica tipo assim:
+
+
+
+
+-v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app
+
+
+
+
+
+
+
+
+
+
+
+é POR ISSO QUE NOSSO CÓDIGO FICA ASSIM:
+
+
+
+
+
+
+docker run 
+--name goals-backend
+--network goal-network
+-v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app
+-v goals-backend-logs:/app/logs
+-p 80:80 node-goals
+
+
+
+
+
+
+
+
+
+-----------------------------------
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+docker run --name goals-backend --network goal-network -v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app -v goals-backend-logs:/app/logs -p 80:80 node-goals
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... É CLARO QUE OS LOGS DO CONTAINER, NO NAMED-VOLUME,
+
+
+NÃO SERÃO 
+
+
+OVERWRITTADOS POR MUDANÇAS NO NOSSO FILE SYSTEM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> OK... MAS APRENDEMOS QUE TAMBÉM PRECISAMOS FAZER ALGO PARECIDO COM 
+'node_modules'... -----> 
+
+
+
+
+
+
+
+PARA CONSERTAR A QUESTÃO DOS NODE_MODULES,
+
+PRECISAMOS CRIAR 1 'ANON VOLUME'
+ 
+
+ PARA OS 
+
+ NODE_MODULES,
+
+
+
+
+
+
+
+
+
+ PARA_ _ ESSENCIALMENTE COMUNICAR AO DOCKER QUE 
+
+
+ '''OS NODE_MODULES EXISTENTES DENTRO DO CONTAINER 
+ __DEVEM __ FICAR LÁ,
+
+
+ E NÃO __ DEVEM SER OVERWRITTADOS __ PELO 'non-existing node_modules folder'
+
+ DE NOSSO LOCAL HOST MACHINE FILE SYSTEM (que está bindado, com a bind mount)'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK, FAZ TOTAL SENTIDO, NA VERDADE...
+
+
+
+
+
+
+
+
+
+
+
+E PARA __ COLOCAR ESSA PASTA DE 'node_modules'
+
+
+EM 1 ANON VOLUME,
+
+O PROFESSOR ESCREVE ASSIM:
+
+
+
+
+-v /app/node_modules 
+
+
+(BASTA NÃO COLOCAR 1 NOME PARA O VOLUME, NO INÍCIO)..
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+docker run --name goals-backend --network goal-network -v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app -v goals-backend-logs:/app/logs -v /app/node_modules -p 80:80 node-goals
+
+
+
+
+
+
+
+
+ASSIM:
+
+
+
+
+docker run 
+--name goals-backend
+--network goal-network
+-v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app
+-v goals-backend-logs:/app/logs
+-v /app/node_modules
+-p 80:80 node-goals
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, O NODE DEVE SER INICIADO, COM ESSES VOLUMES ADICIONADOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ABRIMOS NOSSO REACT APP....
+ 
+
+ AINDA SOMOS CAPAZES 
+
+
+ DE 
+
+
+
+
+ ADICIONAR DATA E 
+
+
+ LER DATA DA DATABASE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> ISSO PROVA QUE, DE FATO, 
+
+ NOSSOS CONTAINERS ESTÃO RODANDO COM SUCESSO... --> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ OK... MAS AGORA O NODE CONTAINER TAMBÉM TEM 1 BIND MOUNT, O QUE É BOM....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -_> MAS AINDA NÃO ACABAMOS...
+
+
+
+
+
+
+
+
+
+
+ ISSO PQ, SIM, 
+ NÓS 
+ COLOCAMOS NOSSO 'LATEST SOURCE CODE'
+
+
+ NO 
+
+
+
+ NOSSO 
+
+
+
+ CONTAINER BACKEND,
+
+
+
+
+
+
+
+
+ MAS O PROBLEMA É QUE ELE NÃO ESTÁ COM 'HOT RELOAD',
+
+
+ JUSTAMENTE 
+
+ POR NÃO ESTARMOS 
+
+
+ USANDO NODEMON, E SIM 
+
+
+
+ O 'NODE'...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> É POR ISSO QUE INSTALEI O NODEMON...
+
+
+
+
+
+
+
+
+
+ --> 
+ 
+[nodemon] 2.0.22
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: js,mjs,json
+[nodemon] starting `node app.js`
+(node:37) [MONGOOSE] DeprecationWarning: Mongoose: the `strictQuery` option will be switched back to `false` by default in Mongoose 7. Use `mongoose.set('strictQuery', false);` if you 
+want to prepare for this change. Or use `mongoose.set('strictQuery', true);` to suppress this warning.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+STARTED APP
+CONNECTED TO MONGODB!!
+TRYING TO FETCH GOALS
+FETCHED GOALS
+TRYING TO FETCH GOALS
+FETCHED GOALS
+TRYING TO FETCH GOALS
+FETCHED GOALS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ok... mas cada vez que eu ESCREVO ALGUMA COISA E SALVO NO MEU ARQUIVO,
+
+
+O SERVER NÃO PARECE SER RESTARTADO... (o que é estranho...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> na verdade, isso realmente está acontecendo, pq 
+
+o server NÃO ESTÁ SENDO RESTARTADO CADA VEZ QUE 
+
+
+eu salvo algo...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+deixe-me ver mais uma vez...
+
+
+
+
+
+
+
+
+
+
+
+é, realmente, não está fazendo reload....
+
+
+
+
+
+
+
+
+
+
+
+
+
+NO STACKOVERFLOW, ENCONTREI ESTE COMENTÁRIO:
+
+
+https://stackoverflow.com/questions/57946095/nodemon-doesnt-reload-in-docker-container-when-files-change
+
+
+
+
+
+Via the CLI, use either --legacy-watch or -L for short. More informations here.
+
+
+
+(COLOCAR ISSO LÁ NO CÓDIGO DE 'npm start')...
+
+
+
+
+EX:
+
+
+
+
+
+
+
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -L app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "express": "^4.18.2",
+    "mongoose": "^6.9.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... FUNCIONOU....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS HÁ MAIS 2 COISAS QUE O PROFESSOR QUER TWEAKAR SOBRE NOSSO SETUP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> A PRIMEIRA COISA, NO NODE APP:
+
+
+
+
+
+
+
+
+
+
+1) A CONNECTION STRING DE '
+
+
+mongoose.connect(
+  // 'mongodb://localhost:27017/course-goals',
+  // 'mongodb://mongodb-pure:27017/course-goals',
+  // ? 'HOST.DOCKER.INTERNAL' é traduzido para nosso REAL LOCAL HOST MACHINE IP, pelo docker container... --> utilize se vc quer MISTURAR DOCKER CONTAINERS COM PROCESSOS DO SEU PRÓPRIO PC/MÁQUINA (localhost, etc) --> se vc quiser fazer isso, vc pode usar 'host.docker.internal' PARA CONSEGUIR CONECTAR SEU CONTAINER A PROCESSOS DO SEU PC
+   'mongodb://arthur:senha@mongodb-pure:27017/course-goals?authSource=admin', // ? funciona COM DOCKER NETWORKS
+
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB 2');
+      console.error(err);
+    } else {
+      console.log('STARTED APP');
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+);
+
+
+
+''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NÓS FIZEMOS HARDCODE 
+de 
+
+
+'arthur:senha'...
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS ISSO SIGNIFICA QUE 
+
+
+
+
+
+__ SEMPRE __ QUE NÓS ALTERARMOS 
+
+
+
+
+
+
+
+O RUN DO CONTAINER DO MONGODB, QUE É ESTE:
+
+
+
+
+docker run 
+--name mongodb-pure 
+-v mongo-volume:/data/db 
+--rm 
+-d 
+--network goal-network 
+-e MONGO_INITDB_ROOT_USERNAME=arthur 
+-e MONGO_INITDB_ROOT_PASSWORD=senha 
+mongo 
+
+
+
+
+
+
+
+
+
+
+
+
+, 
+
+
+SEMPRE QUE 
+
+
+ALTERARMOS AS VARIÁVEIS DE 
+
+
+
+''
+
+
+
+-e MONGO_INITDB_ROOT_USERNAME=arthur 
+-e MONGO_INITDB_ROOT_PASSWORD=senha 
+
+
+
+
+'',
+
+
+
+
+
+
+
+
+PRECISARÍAMOS ALTERAR ISSO 
+
+
+
+LÁ DENTRO DE 'app.js',
+
+
+
+NA CONNECTION STRING...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É CLARO QUE ISSO NÃO É HORRÍVEL,
+
+
+
+
+
+
+MAS SERIA BEM MELHOR USAR 'ENVIRONMENT VARIABLES'
+
+aqui,
+
+
+
+PARA INJETAR VALUES ALI DENTRO ---> FAZER COM QUE 
+
+
+
+
+ESSES VALUES PASSADOS AÍ,
+
+com 
+
+''
+
+-e MONGO_INITDB_ROOT_USERNAME=arthur 
+-e MONGO_INITDB_ROOT_PASSWORD=senha 
+
+
+
+'',
+
+
+
+
+
+SEJAM 
+
+
+
+AUTOMATICAMENTE 
+
+UTILIZADOS E REPASSADOS NA URL,
+
+
+
+
+
+QUANDO INICIARMOS ESSE CONTAINER NODE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------> OK.... É ISSO QUE VAMOS FAZER..
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR VAI ADICIONAR UMA ENVIRONMENT VARIABLE 
+
+
+
+LÁ NO 'dockerfile',
+
+
+
+EM QUE 
+
+
+VAI ESCREVER ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+ENV MONGODB_USERNAME root 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, ELE DEFINE ESSA VARIÁVEL COMO SENDO IGUAL A UM VALOR DEFAULT DE 'root'...
+
+
+
+
+
+
+
+DEPOIS, COLOCA OUTRA VARIABLE,
+
+
+
+
+ASSIM:
+
+
+
+
+
+
+ENV MONGODB_USERNAME root
+ENV MONGODB_PASSWORD password
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... AGORA ESSAS 2 ENVIRONMENT VARIABLES FICAM DISPONÍVEIS:
+
+
+
+
+1) NO ENVIRONMENT DO CONTAINER 
+
+
+
+
+
+
+
+2) TAMBÉM __ NO CÓDIGO, NO RUNTIME...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> E PODEMOS UTILIZAR ISSO LÁ EM 'app.js',
+
+IMEDIATAMENTE...
+
+
+
+
+
+
+
+
+
+
+--> COMO PODEMOS ESCREVER ESSA VARIABLE DENTRO DE 'app.js'?
+
+
+
+
+
+
+
+
+
+
+--> DEVEMOS COLOCAR 'process.env.MONGODB_USERNAME' 
+
+
+
+e 
+
+
+'process.env.MONGODB_PASSWORD'...
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80
+
+
+ENV MONGODB_USERNAME root
+ENV MONGODB_PASSWORD password
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+mongoose.connect(
+  `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb-pure:27017/course-goals?authSource=admin`,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB 2');
+      console.error(err);
+    } else {
+      console.log('STARTED APP');
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... ESSES VALUES AGORA SERÃO 
+
+
+DEFINIDOS DINAMICAMENTE,
+
+
+
+
+
+E PODEREMOS OS DEFINIR QUANDO NOSSO APP 
+
+COMEÇA...
+
+
+
+
+
+
+
+
+
+--> o professor rebuilda a image...
+
+
+
+
+
+
+
+--> ELE EXPLICA:
+
+
+
+
+
+OS VALUES DEFAULT DE 'root' e 'password'
+
+
+
+
+NÃO VÃO FUNCIONAR PARA MEU 
+
+
+
+
+APP MONGODB AGORA,
+
+PQ 
+
+
+
+
+NÓS ESCOLHEMOS AS VARIÁVEIS 'arthur' e 'senha' 
+
+
+
+COMO 
+
+
+
+
+VALORES DE 
+
+
+'-e MONGO_INITDB_ROOT_USERNAME' e '-e MONGO_INITDB_ROOT_PASSWORD'...
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O PROFESSOR VAI RODAR O CONTAINER 
+
+
+
+DO NODE APP COM O COMANDO CLÁSSICO,
+
+MAS AGORA 
+
+
+
+vai adicionar 
+
+
+
+
+
+
+A OPTION DE '-e',
+
+
+PARA DEFINIR 
+
+
+
+AQUELAS 'ENV' como 
+
+
+
+sendo 
+
+
+
+
+assim:
+
+
+
+
+
+
+
+
+docker run 
+--name goals-backend
+--network goal-network
+-e MONGODB_USERNAME="arthur"
+-e MONGODB_PASSWORD="senha"
+-v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app
+-v goals-backend-logs:/app/logs
+-v /app/node_modules
+-p 80:80 node-goals
+
+
+
+
+
+
+
+
+
+docker run --name goals-backend --network goal-network -e MONGODB_USERNAME="arthur" -e MONGODB_PASSWORD="senha" -v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app -v goals-backend-logs:/app/logs -v /app/node_modules -p 80:80 node-goals
+
+
+
+
+
+
+docker run --name goals-backend --network goal-network -e MONGODB_USERNAME="arthur" -v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\backend:/app -v goals-backend-logs:/app/logs -v /app/node_modules -p 80:80 goals-backend
+
+
+
+
+
+
+ok....
+
+
+
+deu certo..
+
+
+
+
+
+o container foi executado,
+
+
+
+
+
+
+e conseguiu se conectar ao mongodb container...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... POR FIM,
+
+
+SE NÃO PASSAMOS NENHUM VALUE PARA CADA ENV VARIABLE,
+
+
+OS VALUES DEFAULT 
+
+DEFINIDOS NA DOCKERFILE SÃO UTILIZADOS (
+
+
+    '''
+
+
+    # 'root' ficaria como value DEFAULT dessa variable, que SERÁ PASSADO SE NÃO COLOCARMOS NENHUM VALUE NO PARÂMETRO DE '-e MONGODB_USERNAME' quando rodamos o container do backend... (ver aula 'Volumes, Bind Mounts e o polimento do...')
+    # 'root' ficaria como value DEFAULT dessa variable, que SERÁ PASSADO SE NÃO COLOCARMOS NENHUM VALUE NO PARÂMETRO DE '-e MONGODB_USERNAME' quando rodamos o container do backend... (ver aula 'Volumes, Bind Mounts e o polimento do...')
+    ENV MONGODB_USERNAME=root
+    ENV MONGODB_PASSWORD=senha
+
+
+''
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA QUE ACABAMOS COM AS ENV VARIABLES,
+
+
+
+HÁ UMA ÚLTIMA COISA QUE O PROFESSOR QUER EXPLICAR:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NO MOMENTO, GRAÇAS AO DOCKERFILE,
+
+COPIAMOS TUDO DO FOLDER DE 'backend'
+
+
+PARA 
+
+
+
+__ DENTRO _ DO CONTAINER,
+
+DEPOIS 
+
+DAS dependencies 
+
+TEREM SIDO INSTALADAS,
+
+ 
+
+
+ POR CONTA DESTE CÓDIGO:
+
+
+
+
+
+ FROM node 
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80
+
+
+# 'root' ficaria como value DEFAULT dessa variable, que SERÁ PASSADO SE NÃO COLOCARMOS NENHUM VALUE NO PARÂMETRO DE '-e MONGODB_USERNAME' quando rodamos o container do backend... (ver aula 'Volumes, Bind Mounts e o polimento do...')
+# 'root' ficaria como value DEFAULT dessa variable, que SERÁ PASSADO SE NÃO COLOCARMOS NENHUM VALUE NO PARÂMETRO DE '-e MONGODB_USERNAME' quando rodamos o container do backend... (ver aula 'Volumes, Bind Mounts e o polimento do...')
+ENV MONGODB_USERNAME=root
+ENV MONGODB_PASSWORD=senha
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... 
+
+
+
+
+
+
+
+
+ISSO É OK, CLARO,
+
+
+
+MAS TALVEZ EXISTAM ALGUNS ARQUIVOS QUE NÃO QUEREMOS QUE 
+
+
+
+SEJAM 
+
+
+ADICIONADOS PARA DENTRO 
+
+
+DO 
+
+
+MEU CONTAINER DO BACKEND..
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, DEVEMOS ADICIONAR UM ARQUIVO '.dockerignore'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> DENTRO DESSE ARQUIVO,
+
+COLOCAREMOS:
+
+
+
+
+
+
+
+1) os node_modules em si 
+
+
+
+
+
+
+2) A DOCKERFILE...
+
+
+
+
+
+3) O FOLDER DE '.git', se ele existir...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+node_modules
+Dockerfile
+.git
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ESSES SÃO FOLDERS QUE SIMPLESMENTE NÃO COPIAREI PARA DENTRO DO CONTAINER...
+
+
+
+
+O MAIS IMPORTANTE É O 'NODE_MODULES'...
+
+
+
+
+
+
+
+
+
+ok... isso é tudo...
+
+
+
+
+
+
+
+
+
+
+AGORA TENHO NOSSO NODE APP,
+
+
+
+
+EM QUE 
+
+
+
+PODEMOS 
+
+
+REFLETIR CHANGES NO CÓDIGO IMEDIATAMENTE,
+
+E EM QUE 
+
+TAMBÉM FICAMOS COM 
+
+
+ENVIRONMENT VARIABLES...
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA DEVEMOS ACABAR O MÓDULO, COM O REACT APP...
