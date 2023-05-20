@@ -1,0 +1,414 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA QUE ACABAMOS COM O CONTAINER DO MONGODB E DO BACKEND,
+
+
+
+
+DEVEMOS UPGRADEAR NOSSO CONTAINER DO REACT..
+
+
+
+
+
+
+
+
+QUEREMOS QUE MUDANÇAS NO NOSSO SOURCE CODE SEJAM AUTOMATICAMENTE REFLETIDAS NO RUNNING CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+--> 
+
+
+
+
+
+
+
+A IDEIA AGORA É COMEÇAR ESSE CONTAINER FRONTEND DE MODO QUE 
+
+
+NOSSO SOURCE CODE SEJA PROVIDENCIADO DENTRO DELE,
+
+E QUE 
+
+SEJA 
+
+MUDADO 
+CADA VEZ QUE 
+
+REALIZARMOS ALGUMA MUDANÇA...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PRECISAMOS DE UMA BIND MOUNT...
+
+
+
+
+
+
+
+NÃO PRECISAMOS DE DATA PERSISTENCE (anon volume ou named volume),
+
+MAS PRECISAMOS DE UM BIND MOUNT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+PARA ISSO, VAMOS ESCREVER ASSIM:
+
+
+
+
+
+
+
+
+-v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\frontend:/app/src
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESCREVEMOS 
+
+
+':/app/src'
+
+
+
+
+
+JUSTAMENTE PQ _ NÃO VAMOS QUERER BINDAR O FOLDER INTEIRO,
+
+
+E 
+
+SIM APENAS 
+
+ O FOLDER DE 'src',
+
+ PQ 
+
+
+
+
+
+ É __ TIPICAMENTE 
+
+
+ APENAS NESSE FOLDER QUE 
+
+ TEMOS O CÓDIGO REACT COM QUE TRABALHAMOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> certo...
+
+
+
+
+
+
+
+
+
+
+ --> É POR ISSO QUE O COMANDO VAI FICAR TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+ docker run --name goals-frontend --rm -p 3000:3000 -v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\frontend/src:/app/src react 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ RESUMINDO:
+
+
+
+docker run 
+--name goals-frontend 
+--rm
+-p 3000:3000
+-v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\frontend/src:/app/src
+ react 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA DEVEMOS TESTAR, VER SE NOSSO APP AUTOMATICAMENTE REINICIA QUANDO SALVAMOS ALGUMA MUDANÇA NO SOURCE CODE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NÃO FUNCIONOU...
+
+
+
+
+
+
+
+
+
+PARECE QUE O PROBLEMA É ISTO:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+If you are on Windows and use react-scripts 5.x.x or above, CHOKIDAR_USEPOLLING is not working. Make changes your package.json instead in the following way:
+
+    "scripts": {
+    ...
+    "start": "WATCHPACK_POLLING=true react-scripts start",
+    ...
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  -> devemos adicionar esse parâmetro no package.json, para conseguirmos 
+
+
+
+  hot reload...
+
+
+
+
+
+
+
+
+
+
+
+
+  -> ok... agora funcionou...
+
+
+
+
+  esse comando é REALMENTE NECESSÁRIO...
+
+
+
+
+
+
+
+
+
+
+
+
+  ---------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  OK.... 
+
+
+
+
+
+
+
+
+
+
+  MAS AINDA FALTOU UMA COISA, PARA ESSE PROJETO REACT... --> É UM 
+
+  DOCKERFILE,
+
+  PARA 
+
+  IGNORARMOS 
+
+
+  A PASTA DE 'node_modules',
+
+
+  '.git'
+
+  e 
+
+  'Dockerfile'..
+
+
+
+
+
+
+
+
+  EX:
+
+
+
+
+
+
+  node_modules
+.git
+Dockerfile
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+É ASSIM QUE PODEMOS OPTIMIZAR ESSE DOCKER CONTAINER UM POUCo...

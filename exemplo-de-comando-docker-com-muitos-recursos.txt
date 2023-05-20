@@ -14,3 +14,181 @@ node-goals
 
 
 
+
+
+docker run 
+--name goals-frontend 
+--rm
+-p 3000:3000
+-v A:\projeto15-DOCKER\MODULO5-CONSTRUINDOMULTICONTAINERAPPSCOMODOCKER\projeto-docker-multi-containers\frontend/src:/app/src
+ react 
+
+
+
+
+
+
+docker run 
+--name mongodb-pure 
+-v mongo-volume:/data/db 
+--rm 
+-d 
+--network goal-network 
+-e MONGO_INITDB_ROOT_USERNAME=arthur 
+-e MONGO_INITDB_ROOT_PASSWORD=senha mongo 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NODE:
+
+
+
+
+
+
+
+
+
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -L app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "express": "^4.18.2",
+    "mongoose": "^6.9.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+REACT: 
+
+
+
+
+
+
+
+
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "WATCHPACK_POLLING=true react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.DOCKERIGNORE PARA TANTO O REACT COMO O NODE:
+
+
+
+
+
+node_modules
+.git
+Dockerfile
+
+
+
+
+
+
+
+
+
+

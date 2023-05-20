@@ -26,5 +26,4 @@ function CourseGoals(props) {
     </section>
   );
 }
-
 export default CourseGoals;
