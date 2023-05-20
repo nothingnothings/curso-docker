@@ -1,0 +1,1055 @@
+
+
+
+
+
+
+OK... DEVEMOS COMEÇAR PELO MONGODB CONTAINER..
+
+
+
+
+
+
+
+
+VAMOS:
+
+
+
+
+
+
+1) FAZER COM QUE A DATA PERSISTA,
+
+
+
+
+
+
+
+
+2) LIMITAR O ACESSO A ESSE MONGODB CONTAINER...
+
+
+
+
+
+
+
+
+
+
+---> OK... QUAL É O PROBLEMA, PARA INÍCIO DE CONVERSA?
+
+
+
+
+
+
+
+
+--> BEM, SE __ PARAMOS __ NOSSO CONTAINER MONGODB E __ O RESTARTAMOS LOGO DEPOIS,
+
+
+TODA NOSSA DATA TERÁ SIDO PERDIDA...
+
+
+
+
+
+
+
+
+MAS PQ ISSO ACONTECE?
+
+
+
+
+
+ACONTECE PQ __ QUANDO __ NÓS PARAMOS O MONGODB,
+
+O CONTAINER É REMOVIDO ( '--rm'),
+
+
+
+
+
+
+E _QUANDO ELE É REMOVIDO,
+
+TODA A DATA ARMAZENADA NA DATABASE DO MONGODB, ARMAZENADA NO CONTAINER,
+
+É 
+
+PERDIDA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PARA RESOLVER ESSE PROBLEMA, PRECISAMOS FAZER 'DETACH'
+
+DESSA DATA, 
+
+ARMAZENADA DENTRO DO CONTAINER,
+
+
+
+EM ALGUM 'NAMED VOLUME',
+
+
+
+
+
+
+
+QUE AÍ VAI PERSISTIR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS ADICIONAR 1 VOLUME AO NOSSO APP...
+
+
+
+
+
+
+--> PARA ISSO, VAMOS ESCREVER ASSIM:
+
+
+
+
+
+
+
+
+
+
+nosso comando ficará assim:
+
+
+
+
+
+
+
+
+
+docker run --name mongodb-pure -v volume-name:/app --rm -d --network goals-network mongo
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK...
+
+
+
+
+
+
+VAMOS ESCREVER 
+
+
+
+
+
+
+'-v volume-name:/path-inside-of-the-container'...
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS COMO ESSA NÃO É NOSSA IMAGE,
+
+
+
+
+NÃO SABEMOS 'EM QUE LUGAR A DATA DO MONGODB FICA ARMAZENADA, INTERNAMENTE',
+
+no container...
+
+
+
+
+
+
+
+
+
+ok...
+
+
+
+
+
+
+
+
+SE VISUALIZARMOS OS DOCS DA IMAGE DO MONGO,
+
+VEREMOS 
+
+ISTO:
+
+
+
+
+
+
+docker run --name mongodb-pure -v /my/own/datadir:/data/db -d mongo 
+
+
+
+
+
+
+
+
+
+
+
+
+-->  OK.... ISSO QUER DIZER QUE A DATA VAI FICAR DENTRO DESSA PASTA 
+
+
+'/data/db'...
+
+
+
+
+
+
+
+
+NO EXEMPLO DOS DOCS DO MONGO,
+O CARA USOU UM 'BIND MOUNT',
+
+
+O QUE É POSSÍVEL (poderia ser usado para VISUALIZAR A DATA DO MONGODB, NA NOSSA LOCAL MACHINE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS PARA APENAS PERSISTIRMOS A DATA,
+
+
+O QUE PRECISAMOS É DE UM 'NAMED VOLUME',
+
+
+ES
+
+
+
+É POR ISSO QUE VAMOS ESCREVER ASSIM:
+
+
+
+
+
+
+docker run --name mongodb-pure -v mongo-volume:/data/db --rm -d --network goals-network mongo
+
+
+
+
+
+
+
+
+
+
+ok...  AGORA O 
+DOCKER 
+
+VAI CRIAR ESSE VOLUME (se ele ainda não existe) 
+
+E AÍ 
+VAI 
+
+
+ARMAZENAR  A DATA ESCRITA DENTRO DAQUELE _ CONTAINER __ 
+
+
+
+
+LÁ NA NOSSA LOCAL HOST MACHINE (em algum lugar)...
+
+
+
+
+
+
+
+
+
+
+
+--> E, SE ESSE VOLUME JÁ EXISTE,
+
+
+ESSE COMANDO DE 
+
+''docker run --name mongodb-pure -v mongo-volume:/data/db --rm -d --network goal-network mongo''
+
+
+
+
+
+
+
+
+VAI GARANTIR QUE A DATA DESSE VOLUME SEJA 
+
+CARREGADA 
+
+
+
+NESSE CONTAINER QUE RECÉM RODAMOS,
+
+O QUE 
+GARANTE QUE NOSSA DATA NUNCA SERÁ PERDIDA...
+
+
+
+
+
+
+
+
+
+CERTO... AGORA VOU TESTAR ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... FUNCIONOU...
+
+
+
+
+
+
+
+
+agora nossa data realmente persiste...
+
+
+
+
+
+
+
+
+--> O OUTRO REQUIREMENT É 'SECURITY',
+
+E a 
+
+PREVENÇÃO DE ACESSO A NOSSA DATABASE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+
+O MONGODB __ NOS FORNECE 2 ENVIRONMENT VARIABLES,
+
+QUE SÃO 
+
+
+'MONGO_INITDB_ROOT_USERNAME'
+
+
+E 
+
+
+'MONGO_INITDB_ROOT_PASSWORD'...
+
+
+
+
+
+
+
+
+E QUANDO USAMOS ESSES ENV VARIABLES,
+
+
+
+
+AÍ A DATA 
+
+
+
+
+DENTRO DO MONGODB CONTAINER SERÁ CRIADA DE MODO QUE 
+
+ESSE USERANME E PASSWORD 
+
+SERÃO 
+
+NECESSÁRIOS PARA ACESSAR ESSA DATA...
+
+
+
+
+
+
+
+
+
+
+
+
+-> OS OUTROS CONTAINERS QUE TENTARÃO ACESSAR ESSA DATABASE, NO CONTAINER,
+
+
+PRECISARÃO ESPECIFICAR ESSE USERNAME E PASSWORD --> ISSO ADICIONA 
+
+
+
+MAIS 1 
+
+
+LAYER DE SECURITY...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA CONSEGUIR ADICIONAR ESSAS VARIABLES E SUA UTILIZAÇÃO,
+
+
+DEVEMOS ALTERAR 
+
+O COMANDO DOCKER RUN DESSE CONTAINER...
+
+
+
+
+
+
+
+--> VAMOS ADICIONAR ENVIRONMENT VARIABLES, com 
+
+
+a option de '-e'...
+
+
+
+
+
+
+
+--> VAMOS ESCREVER ASSIM:
+
+
+
+
+
+
+
+
+docker run --name mongodb -v data:/data/db --rm -d --network goal-network -e MONGO_INITDB_ROOT_USERNAME=arthur -e MONGO_INITDB_ROOT_PASSWORD=senha mongo 
+
+
+
+
+
+
+
+É CLARO QUE ESSE USER E PASSWORD 
+
+NÃO 
+
+
+SÃO MT BONS,
+
+MAS SERVEM PARA TESTAR ESSA FEATURE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AÍ RODAMOS ESSE CONTAINER MAIS UMA VEZ:
+
+
+
+
+
+A:\projeto15-DOCKER>docker run --name mongodb-pure -v data:/data/db --rm -d --network goal-network -e MONGO_INITDB_ROOT_USERNAME=arthur -e MONGO_INITDB_ROOT_PASSWORD=senha mongo 
+b190efefc8e8bfd96ebc7c00b3b22cce8bcd382ee408e4cd108de2adb56c529a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+AÍ NOSSO NODE APP NÃO VAI MAIS CONSEGUIR SE CONECTAR AO MONGODB DATABASE NO CONTAINER,
+
+PQ 
+
+NÃO ESTAMOS USANDO 
+
+
+ESSE USERNAME E PASSWORD...
+
+
+
+
+
+
+
+
+
+
+-> PRECISAMOS PASSAR ESSE USERNAME E PASSWORD COMO PARÂMETROS 
+
+
+
+AO 
+
+
+
+APP NODE, NO CONTAINER...
+
+
+
+
+
+
+
+
+
+-> PARA CONSEGUIR FAZER ISSO, PROVAVELMENTE USAREMOS A KEY DE 
+
+'ENV'
+
+
+LÁ 
+
+
+
+
+NA DOCKERFILE DO NODE APP,
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+FROM node 
+
+ENV MONGO_INITDB_ROOT_USERNAME="arthur"
+
+ENV MONGO_INITDB_ROOT_PASSWORD="senha"
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+EXPOSE 80 
+
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+docker run --name mongodb-pure -v data:/data/db --rm -d --network goal-network -e MONGO_INITDB_ROOT_USERNAME=arthur -e MONGO_INITDB_ROOT_PASSWORD=senha mongo 
+
+
+
+
+
+
+
+
+E NO CÓDIGO NODE:
+
+
+mongoose.connect(
+  // 'mongodb://localhost:27017/course-goals',
+  // 'mongodb://mongodb-pure:27017/course-goals',
+  // ? 'HOST.DOCKER.INTERNAL' é traduzido para nosso REAL LOCAL HOST MACHINE IP, pelo docker container... --> utilize se vc quer MISTURAR DOCKER CONTAINERS COM PROCESSOS DO SEU PRÓPRIO PC/MÁQUINA (localhost, etc) --> se vc quiser fazer isso, vc pode usar 'host.docker.internal' PARA CONSEGUIR CONECTAR SEU CONTAINER A PROCESSOS DO SEU PC
+  // 'mongodb://mongodb-pure:27017/course-goals', // ? funciona COM DOCKER NETWORKS
+
+  `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@mongodb-pure:27017/course-goals`, // ? funciona com DOCKER NETWORKS, E PASSAMOS TAMBÉM O USER E PASSWORD do mongodb container... (restrição de acesso definida por meio de ENVIRONMENT VARIABLES)...
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+
+
+
+
+
+
+------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... HORA DE TESTAR...
+
+
+
+
+
+
+
+
+
+O COMANDO DO MONGODB 
+
+
+USADO PARA DEFINIR AQUELE USERNAME E PASSWORD É ESTE:
+
+
+
+
+
+
+
+docker run --name mongodb-pure -v mongo-volume:/data/db --rm -d --network goal-network -e MONGO_INITDB_ROOT_USERNAME=arthur -e MONGO_INITDB_ROOT_PASSWORD=senha mongo 
+
+
+
+
+
+
+
+
+
+
+
+o comando para rodar o backend node no container é este:
+
+
+
+
+docker run --name node-multi --network goal-network -p 80:80 --rm node-goals
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... será que funcionou?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node 
+
+
+ARG MONGO_INITDB_ROOT_USERNAME
+
+ARG MONGO_INITDB_ROOT_PASSWORD
+
+
+ENV MONGO_INITDB_ROOT_USERNAME $MONGO_INITDB_ROOT_USERNAME
+
+ENV MONGO_INITDB_ROOT_PASSWORD $MONGO_INITDB_ROOT_PASSWORD
+
+
+
+WORKDIR /app 
+
+
+COPY package.json .
+
+
+RUN npm install 
+
+
+COPY . . 
+
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... SERÁ QUE FUNCIONARÁ?
+
+
+
+
+
+
+
+
+
+
+
+TENTEI RODAR 1 COMANDO ASSIM:
+
+
+
+
+
+
+
+
+
+não, não funcionou....
+
+
+
+
+
+
+
+
+
+
+-> É MELHOR SÓ FAZER HARDCODE MESMo...
+
+
+
+
+
+
+FICOU ASSIM:
+
+
+
+
+
+
+
+
+});
+
+mongoose.connect(
+  // 'mongodb://localhost:27017/course-goals',
+  // 'mongodb://mongodb-pure:27017/course-goals',
+  // ? 'HOST.DOCKER.INTERNAL' é traduzido para nosso REAL LOCAL HOST MACHINE IP, pelo docker container... --> utilize se vc quer MISTURAR DOCKER CONTAINERS COM PROCESSOS DO SEU PRÓPRIO PC/MÁQUINA (localhost, etc) --> se vc quiser fazer isso, vc pode usar 'host.docker.internal' PARA CONSEGUIR CONECTAR SEU CONTAINER A PROCESSOS DO SEU PC
+   'mongodb://arthur:senha@mongodb-pure:27017/course-goals', // ? funciona COM DOCKER NETWORKS
+
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB 2');
+      console.error(err);
+    } else {
+      console.log('STARTED APP');
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+ainda não funcionou....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... agora FINALMENTE funcionou...
+
+
+
+
+
+
+
+
+
+
+
+os comandos ficaram assim:
+
+
+
+
+
+
+
+docker run --name mongodb-pure -v mongo-volume:/data/db --rm -d --network goal-network -e MONGO_INITDB_ROOT_USERNAME=arthur -e MONGO_INITDB_ROOT_PASSWORD=senha mongo 
+
+docker run --name goals-backend --network goal-network -p 80:80 node-goals
+
+docker run --name goals-frontend -p 3000:3000 react 
+
+
+
+
+
+
+
+
+---------------------------
+
+
+
+
+
+
+
+
+
+
+ok....
+
+
+
+
+
+. Do note that none of the variables below will have any effect if you start the container with a data directory that already contains a database: any pre-existing database will always be left untouched on container startup.
+
+
+
+
+
+
+
+
+
+
+(não podemos colocar environment variables em data de uma database que já foi criada, como é o caso com volumes...)
+
+-> ok, precisamos APAGAR O VOLUME ANTIGO...
+
+
+
+
+
+
+
+
+
+
+ok, agora funcionou...
+
+
+
+

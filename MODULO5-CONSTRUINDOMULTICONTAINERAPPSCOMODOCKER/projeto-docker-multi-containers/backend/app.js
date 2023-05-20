@@ -98,7 +98,8 @@ mongoose.connect(
   // 'mongodb://localhost:27017/course-goals',
   // 'mongodb://mongodb-pure:27017/course-goals',
   // ? 'HOST.DOCKER.INTERNAL' é traduzido para nosso REAL LOCAL HOST MACHINE IP, pelo docker container... --> utilize se vc quer MISTURAR DOCKER CONTAINERS COM PROCESSOS DO SEU PRÓPRIO PC/MÁQUINA (localhost, etc) --> se vc quiser fazer isso, vc pode usar 'host.docker.internal' PARA CONSEGUIR CONECTAR SEU CONTAINER A PROCESSOS DO SEU PC
-  'mongodb://mongodb-pure:27017/course-goals', // ? funciona COM DOCKER NETWORKS ()
+   'mongodb://arthur:senha@mongodb-pure:27017/course-goals?authSource=admin', // ? funciona COM DOCKER NETWORKS
+
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
