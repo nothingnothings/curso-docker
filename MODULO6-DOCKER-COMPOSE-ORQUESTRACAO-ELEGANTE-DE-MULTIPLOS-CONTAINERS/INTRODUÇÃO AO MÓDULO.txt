@@ -1,0 +1,388 @@
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... NO ÚLTIMO MÓDULO, COMBINAMOS MÚLTIPLOS CONTAINERS 
+
+PARA CRIAR 
+
+1 
+
+APP ÚNICO,
+
+
+
+
+COMPOSTO POR:
+
+
+
+
+
+
+
+
+1) BACKEND (NODE EXPRESS API) 
+
+
+
+2) 1 FRONTEND (REACT SPA )
+
+
+
+
+
+3) MONGODB DATABASE...
+
+
+
+
+
+
+
+
+
+
+
+
+CONSTRUÍMOS ESSE APP POR MEIO DO LAUNCH DE 3 CONTAINERS,
+
+
+
+E 
+
+GARANTIMOS QUE ESSES CONTAINERS CONSEGUIAM COMUNICAR-SE ENTRE SI (estando ou não em 1 mesma network, etc etc)... 
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, POR FIM,
+
+TAMBÉM ADICIONAMOS FEATURES EXTRAS,
+
+COMO 
+
+'PERSISTENT DATA',
+
+'LIVE SOURCE UPDATES'
+
+
+
+E ASSIM POR DIANTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O PROBLEMA QUE O PROFESSOR TEM COM O SETUP QUE USAMOS NO ÚLTIMO MÓDULO É ISTO:
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR ANOTOU TODOS OS CORE DOCKER COMMANDS QUE PRECISAM 
+
+SER EXECUTADOS 
+
+PARA 
+
+
+
+
+
+TRAZER ESSE SETUP A VIDA...
+
+
+
+
+
+
+
+
+
+
+
+EM ORDEM:
+
+
+
+
+
+
+--------------------
+CREATE NETWORK 
+--------------------
+
+
+
+
+docker network create goals-net 
+
+
+
+
+
+
+
+
+
+
+-----------------------
+RUN MONGODB CONTAINER
+-------------------------
+
+
+
+
+docker run --name mongodb-pure -e MONGO_INITDB_ROOT_USERNAME=arthur -e MONGO_INITDB_ROOT_PASSWORD=password -v data:/data/db --rm -d --network goals-net mongo 
+
+
+
+
+
+
+
+
+
+
+------------------
+BUILD NODE API IMAGE 
+------------------
+
+
+
+docker build -t goals node . 
+
+
+
+
+
+
+
+
+
+-------------------
+RUN NODE API CONTAINER 
+-----------------------
+
+
+docker run --name goals-backend -e MONGODB_USERNAME=max -e MONGODB_PASSWORD=secret -v logs:/app/logs -v path/to/backend/:app -v /app/node_modules --rm -d --network goals-net -p 80:80 goals-node 
+
+
+
+
+
+------------------------
+BUILD REACT SPA IMAGE 
+------------------------
+
+
+docker build -t goals-react 
+
+
+
+
+
+
+-------------------------
+RUN REACT SPA CONTAINER 
+------------------------
+
+
+
+
+docker run --name goals-frontend -v path/to/frontend/src:/app/src --rm -d -p 3000:3000 goals-react
+
+
+
+
+
+
+
+
+
+
+-----------------------
+STOP ALL CONTAINERS 
+----------------------
+
+
+
+docker stop mongodb goals-backend goals-frontend 
+
+
+
+
+
+
+
+
+
+
+E É CLARO QUE, MESMO PARADOS OS CONTAINERS,
+
+TEMOS/TERÍAMOS DE REMOVER AS NETWORKS E NAMED VOLUMES LOGO DEPOIS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+RESUMINDO:
+
+
+
+
+
+
+
+HÁ MT TRABALHO A SER FEITO AQUI,
+
+E ESSE É APENAS UM APP BÁSICO,
+
+
+3 
+CONTAINERS QUE 
+
+TRABALHAM EM CONJUNTO...
+
+
+
+
+
+
+
+
+
+
+
+--> NÃO É SURREAL PENSAR EM 1 APP QUE TENHA MAIS DO QUE 3 
+
+CONTAINERS (como o fidelizou.me)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... E PODEMOS FAZER ISSO COM O DOCKER,
+
+
+COMO OBSERVAMOS,
+
+
+E NÃO É HORRÍVEL,
+
+MAS NÃO É CONVENIENTE --> É POR ISSO QUE O DOCKER VEM COM O 
+
+'DOCKER-COMPOSE',
+
+QUE 
+
+DEIXA 
+
+O 
+
+
+MANAGE DE SETUPS MULTI-CONTAINER 
+
+
+BEM MAIS SIMPLES... --> ELE TE DEIXA AUTOMATIZAR O SETUP PROCESS,
+
+
+
+E TE DEIXA 
+
+TRAZER ESSE SETUP COM TODOS OS CONTAINERS E SUAS CONFIGURAÇÕES DIFERENTES,
+
+
+TUDO COM 
+
+APENAS 1 COMANDO --> E VC PODE TAMBÉM 
+
+
+'TEAR EVERYTHING DOWN'
+
+
+COM 
+
+APENAS 1 COMANDO (tipo um 'stop' geral)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NESSE MÓDULO, APRENDEREMOS:
+
+
+
+
+
+1) O QUE É O DOCKER COMPOSE 
+
+
+
+2) COMO USAR O DOCKER COMPOSE PARA DEIXAR O TRABALHO COM 
+
+ESSE APP MULTI-CONTAINER MAIS SIMPLES E FÁCIL....
