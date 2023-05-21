@@ -101,7 +101,12 @@ mongoose.connect(
   // ? 'HOST.DOCKER.INTERNAL' é traduzido para nosso REAL LOCAL HOST MACHINE IP, pelo docker container... --> utilize se vc quer MISTURAR DOCKER CONTAINERS COM PROCESSOS DO SEU PRÓPRIO PC/MÁQUINA (localhost, etc) --> se vc quiser fazer isso, vc pode usar 'host.docker.internal' PARA CONSEGUIR CONECTAR SEU CONTAINER A PROCESSOS DO SEU PC
   //  'mongodb://arthur:senha@mongodb-pure:27017/course-goals?authSource=admin', // ? funciona COM DOCKER NETWORKS
 
-  `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb-pure:27017/course-goals?authSource=admin`,
+  // `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb-pure:27017/course-goals?authSource=admin`,
+
+
+
+    ///podemos usar 'mongodb' COMO _ VARIÁVEL DA NETWORK/coisa que vai ser resolvida como address do mongod __ JUSTAMENTE __ PQ _ FOI ESSE O NOME/KEY QUE DEMOS A ESSE CONTAINER MONGODB, lá no 'docker-compose.yaml' file... 
+  `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb:27017/course-goals?authSource=admin`,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -109,6 +114,7 @@ mongoose.connect(
 
   (err) => {
     if (err) {
+      console.log(process.env.MONGODB_USERNAME, process.env.MONGODB_PASSWORD)
       console.error('FAILED TO CONNECT TO MONGODB 2');
       console.error(err);
     } else {

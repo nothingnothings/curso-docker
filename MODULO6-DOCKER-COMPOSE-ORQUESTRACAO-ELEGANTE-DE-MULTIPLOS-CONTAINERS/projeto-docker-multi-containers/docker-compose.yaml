@@ -10,21 +10,45 @@
 version: "3.8" # É A VERSION DO ARQUIVO/DOCKER QUE QUEREMOS USAR (há diferenças entre versões, diferenças na sintaxe, etc)....
 #  --> COM ISSO, ESTAMOS ESPECIFICANDO QUE NOSSO APP VAI CONTER 3 CONTAINERS...
 services:
-  mongodb:
+  mongodb: ### usamos essa key também lá na connection string do mongodb, com  '''   `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb:27017/course-goals?authSource=admin`, ''
     image: 'mongo'
     volumes:
       - mongo-volume:/data/db
-    environment:
+      #! environment: # prefira 'env_file', com 1 arquivo '.env' com suas variáveis de ambiente...
       # - MONGO_INITDB_ROOT_USERNAME: arthur  # a sintaxe '- MONGO_INITDB_ROOT_USERNAME=arthur' TAMBÉM É CORRETA..
       # - MONGO_INITDB_ROOT_PASSWORD: password
+    env_file:
       - ./env/mongo.env # É ASSIM QUE PODEMOS IMPORTAR ARQUIVOS ENV, com as nossas ENVIRONMENT VARIABLES, E AÍ DEIXAR 'LEAN' O NOSSO DOCKER-COMPOSE FILE......
     # ? MTAS VEZES ESSE COMANDO NÃO É NECESSÁRIO, PQ O DOCKER-COMPOSE VAI DETECTAR AUTOMATICAMENTE CRIAR 1 NOVO ENVIRONMENT PARA TODOS OS SERVICES ESCRITOS NESSE ARQUIVO 'compose', E AÍ JÁ VAI ADICIONAR TODOS ESSES SERVICES NA 'NETWORK IMPLÍCITA', OUT OF THE BOX...
     # desnecessário, nesse nosso casos concreto... (esse container já vai ser adiciionado a 1 network implícita, criada pelo compose, que já abrangirá todos os outros containers especificados no docker-compose)...
     # networks:
     #   - goal-network
 
-    # backend:
+  backend:
+    # image:  PODERÍAMOS PROVIDENCIAR 1 COMANDO 'image', COM UMA IMAGE JÁ PRONTA, SIM (ou custom ou vanilla)... ENTRETANTO, TAMBÉM É POSSÍVEL PROVIDENCIAR COMANDOS DE BUILD DIRETOS, para que a etapa de build OCORRA POR CONTA DO DOCKER-COMPOSE EM SI (aí não precisaríamos rodar 'docker build -t nome-da-image . ' PARA BUILDARMOS NOSSa image... )
+    build: ./backend
+      # AQUI, SE OPTAMOS POR 'build', DEVEMOS ESPECIFICAR O 'path ao local em que temos a dockerfile da image que queremos construir/build')...
+      # --- EXEMPLO DE SINTAXE MAIS LONGA/DETALHADA DO COMANDO 'BUILD'...
+      # build:
+      #   context: ./backend 
+      #   dockerfile: dockerfile2
+      #   args:
+      #     some-arg: 1
+      #! environment: # prefira 'env_file', com 1 arquivo '.env'...
+    env_file: ./env/backend.env
+    ports:
+      # 'hostPort:containerInternalPort'
+      - '80:80'
+    volumes:
+      - goals-logs:/app/logs # É O NAMED VOLUME 
+      - /app/node_modules # É O ANON VOLUME
+      # É O BIND MOUNT -- EM VEZ DE USAR 1 ABSOLUTE PATH, USAMOS 1 RELATIVE PATH EM RELAÇÃO AO DOCKER FILE (bem mais curto do que 'A:\projeto15-DOCKER\MODULO6-DOCKER-COMPOSE-ORQUESTRACAO-ELEGANTE-DE-MULTIPLOS-CONTAINERS\projeto-docker-multi-containers\backend:/app')
+      - ./backend:/app
+      # frontend:
+      #### A OPTION/KEY DE 'depends_on' É SUPER IMPORTANTE, PQ DEFINE A 'ORDEM EM QUE DEVERÃO SER CRIADOS E RODADOS OS CONTAINERS' (comunicamos '''ah, o  CONTAINER BACKEND __ DEPENDE__ DO CONTAINER MONGODB, POR ISSO O CONTAINER MONGODB DEVE SER EXECUTADO ANTERIORMENTE A ELE')... 
+    depends_on:
+      - mongodb
 
-    # frontend:
 volumes:
   mongo-volume: #É ASSIM QUE ESPECIFICAMOS/DEFINIMOS 'named volumes' (precisamos DEFINIR AQUI E LÁ NO CONTAINER EM QUE É USADO/ACOPLADO)..
+  goals-logs:
