@@ -1,0 +1,778 @@
+
+
+
+
+
+
+
+
+
+VAMOS USAR O COMPOSE NO NOSSO PROJETO ANTERIOR...
+
+
+
+
+
+
+
+
+
+
+
+
+--> BASTA COPIAR TODOS OS ARQUIVOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> TEMOS OS ARQUIVOS E OS DOCKERFILES,
+
+E OS DOCKERIGNORE...
+
+
+
+
+
+
+
+
+
+
+
+
+-- >VAMOS PRECISAR DESSES ARQUIVOS, PQ O DOCKER COMPOSE NÃO OS SUBSTITUI...
+
+
+
+
+
+
+
+
+
+
+
+
+---> PARA CRIAR UM ARQUIVO DOCKER COMPOSE,
+
+
+CRIE 
+
+
+COM ESTE NOME:
+
+
+
+
+
+
+
+'docker-compose.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ARQUIVOS DOCKER-COMPOSE SÃO SEMPRE '.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- YAML --> É UM TIPO DE ARQUIVO ESPECÍFICO,
+
+
+ARQUIVO DE TEXTO,
+
+EM QUE VC USA INDENTATION PARA EXPRESSAR DEPENDENCIES ENTRE 
+
+
+CONFIGURATION OPTIONS...
+
+
+
+
+
+
+
+
+
+
+--> CERTO..
+
+
+
+
+
+
+
+DENTRO DESSE ARQUIVO,
+
+
+DESCREVEMOS O SETUP DE NOSSO PROJETO MULTI-CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> A PRIMEIRA COISA QUE VAMOS ESCREVER __ É __ A VERSÃO...
+
+
+
+
+
+
+escreva:
+
+
+
+
+
+
+
+
+
+
+
+'version:' ...
+
+
+
+
+
+
+
+
+
+
+
+
+POR VERSÃO,
+
+
+
+
+QUEREMOS DIZER A 'VERSÃO DA ___ DOCKER-COMPOSE ESPECIFICATION'
+
+
+
+que queremos usar...
+
+
+
+
+
+
+
+
+
+
+
+E A VERSÃO QUE ESCOLHEMOS, AQUI,
+
+TEM UM EFEITO 
+
+NAS FEATURES QUE PODEMOS USAR NA DOCKER FILE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO PQ __ A SINTAXE QUE TEMOS DE USAR NESSE ARQUIVO 'DOCKER-COMPOSE'
+
+
+
+
+é algo QUE ESTÁ EM DESENVOLVIMENTO ATIVO,
+
+
+
+E PODE MUDAR AO LONGO DO TEMPO... --> É POR ISSO QUE VC PODE 
+
+
+'LOCKAR'  
+
+
+
+
+1 CERTA VERSÃO NO INÍCIO DO ARQUIVO,
+
+TUDO PARA QUE O DOCKER 
+
+SAIBA QUAIS FEATURES 
+
+
+ESTARÃO OU NÃO DISPONÍVEIS,
+
+
+PARA QUE O DOCKER CONSIGA EXECUTAR 
+
+ESSE ARQUIVO 
+
+
+CORRETAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> TEMOS VÁRIAS VERSÕES DO COMPOSE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+1, 2, 3...
+
+
+
+
+
+
+
+
+
+3.8...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS UMA NOVA VERSÃO NÃO SIGNIFICA QUE 
+
+TUDO MUDOU,
+
+
+ÀS VEZES SÃO POUCAS COISINHAS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> É OUTRO DETALHE QUE O PROFESSOR
+
+
+NOS DÁ, SOBRE O SITE DOS DOCS DO DOCKER:
+
+
+
+
+
+
+O SITE TE DÁ UMA 
+
+LISTA LONGA __ _DAS CONFIG OPTIONS QUE VC PODE USAR 
+
+NO SEU ARQUIVO docker-compose.yaml..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS COMO O DOCKER QUER ABRANGER A GRANDE MAIORIA DE PROJECT SETUPS,
+
+TEMOS QUANTIDADES ABSURDAS DE OPTIONS AQUI... 
+
+
+
+
+
+
+
+
+
+
+PODEMOS USAR O DOCKER DOCS COMO REFERENCE,
+
+
+
+
+
+
+MAS O PROFESSOR SÓ QUER FALAR DA VERSION DO DOCKER-COMPOSE QUE VAMOS QUERER USAR..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+escrevemos:
+
+
+
+
+
+
+
+
+
+
+
+version: "3.8"
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, APONTAMOS A VERSION QUE VAMOS UTILIZAR..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... A PRÓXIMA COISA QUE TEMOS QUE ADICIONAR, AQUI,
+
+É A KEY DE 
+
+
+'services'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OBS:: CADA UMA DAS KEYS PRECISA SER ESCRITA CORRETAMENTE,
+
+PQ 
+O
+ 
+
+ DOCKER VAI PROCURAR POR ELAS... (não pode ser 'Version' ou 'V3rsion', tem que ser 'version')...
+
+
+
+
+
+
+
+ TIPO ASSIM:
+
+
+
+
+
+
+
+
+ version: "3.8" # É A VERSION DO ARQUIVO/DOCKER QUE QUEREMOS USAR (há diferenças entre versões, diferenças na sintaxe, etc)....
+
+
+services:
+
+
+
+
+
+
+
+
+-----------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... DEPOIS DISSO TEMOS A KEY DE 'services'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O 'services' NÃO VAI ACEITAR 1 VALUE ÚNICO, E SIM VAI ACEITAR 
+
+
+
+'NESTED VALUES'...
+
+
+
+
+
+
+
+
+
+-----> AGORA ENTRA O ASSUNTO DA INDENTATION --> VAMOS INDENTAR 2 BLANKS...
+
+
+
+
+
+
+
+--> ISSO É IMPORTANTE __ JUSTAMENTE __ PQ _ O 'YAML' USA __ INDENTATION PARA 
+
+EXPRESSAR DEPENDENCIES...
+
+
+
+
+
+
+
+E TUDO 
+
+
+QUE É 
+
+INDENTADO POR 2 BLANKS É UMA 'DIRECT CHILD'
+
+
+
+DO SERVICES...
+
+
+
+
+
+
+
+
+
+-> E O SERVICES VAI PRECISAR DE PELO MENOS 1 CHILD ELEMENT,
+
+
+MAS GERALMENTE SÃO MÚLTIPLAS CHILDREN...
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+version: "3.8"
+services:
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  --> OK... E COMO NOSSO APP TEM MÚLTIPLOS CONTAINERS,
+
+
+  TEREMOS 3 DIFERENTES CHILD ELEMENTS EMBAIXo de 'SERVICES'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  agora vc PODE ESCOLHER NOMES DE SUA ESCOLHA,
+
+  PARA CONFERIR NOMES AOS SEUS CONTAINERS...
+
+
+
+
+
+
+
+
+  TIPO ASSIM:
+
+
+
+
+
+
+
+  
+
+version: "3.8" # É A VERSION DO ARQUIVO/DOCKER QUE QUEREMOS USAR (há diferenças entre versões, diferenças na sintaxe, etc)....
+services:
+  mongodb:
+  backend:
+  frontend:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  OK... PODEMOS COLOCAR QUALQUER NOME QUE DESEJARMOS,
+
+
+
+
+  MAS DEVEMOS COLOCAR TODOS ELES NO MESMO NÍVEL,
+
+
+  COM OS 2 BLANKS,
+
+  PARA INDICAR QUE SÃO 
+  'EQUAL CHILDREN'
+
+  DO SERVICES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --> COM ISSO, ESTAMOS ESPECIFICANDO QUE NOSSO APP VAI CONTER 3 CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+  CERTO... MAS É CLARO QUE ESSE É SÓ O INÍCIO..
+
+
+
+
+
+
+  AGORA DEVEMOS DEFINIR A CONFIGURAÇÃO PARA CADA 1 DE NOSSOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+  --> PARA ISSO, DEVEMOS INDENTAR AS OPTIONS DE CADA 1 DE NOSSOS CONTAINERS
+
+
+
+
+
+
+
+
+  tipo assim:
+
+
+
+  version: "3.8" # É A VERSION DO ARQUIVO/DOCKER QUE QUEREMOS USAR (há diferenças entre versões, diferenças na sintaxe, etc)....
+#  --> COM ISSO, ESTAMOS ESPECIFICANDO QUE NOSSO APP VAI CONTER 3 CONTAINERS...
+services:
+  mongodb:
+
+  backend:
+
+  frontend:
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA PODEMOS ENTRAR NO ASSUNTO DA CONFIG PARA CADA 1 DOS CONTAINERS INDIVIDUAIS....

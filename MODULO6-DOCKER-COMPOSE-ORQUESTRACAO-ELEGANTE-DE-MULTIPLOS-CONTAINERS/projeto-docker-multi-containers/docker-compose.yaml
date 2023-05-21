@@ -1,0 +1,36 @@
+
+
+
+
+
+# version: 'version'
+# services:
+
+
+
+
+# -----> AGORA ENTRA O ASSUNTO DA INDENTATION --> VAMOS INDENTAR 2 BLANKS...
+
+
+
+
+
+
+
+# --> ISSO É IMPORTANTE __ JUSTAMENTE __ PQ _ O 'YAML' USA __ INDENTATION PARA 
+
+# EXPRESSAR DEPENDENCIES...
+
+
+
+
+
+version: "3.8" # É A VERSION DO ARQUIVO/DOCKER QUE QUEREMOS USAR (há diferenças entre versões, diferenças na sintaxe, etc)....
+#  --> COM ISSO, ESTAMOS ESPECIFICANDO QUE NOSSO APP VAI CONTER 3 CONTAINERS...
+services:
+  mongodb:
+
+  backend:
+
+  frontend:
+    
