@@ -18,15 +18,13 @@ services:
       # - MONGO_INITDB_ROOT_USERNAME: arthur  # a sintaxe '- MONGO_INITDB_ROOT_USERNAME=arthur' TAMBÉM É CORRETA..
       # - MONGO_INITDB_ROOT_PASSWORD: password
       - ./env/mongo.env # É ASSIM QUE PODEMOS IMPORTAR ARQUIVOS ENV, com as nossas ENVIRONMENT VARIABLES, E AÍ DEIXAR 'LEAN' O NOSSO DOCKER-COMPOSE FILE......
-    
-    
     # ? MTAS VEZES ESSE COMANDO NÃO É NECESSÁRIO, PQ O DOCKER-COMPOSE VAI DETECTAR AUTOMATICAMENTE CRIAR 1 NOVO ENVIRONMENT PARA TODOS OS SERVICES ESCRITOS NESSE ARQUIVO 'compose', E AÍ JÁ VAI ADICIONAR TODOS ESSES SERVICES NA 'NETWORK IMPLÍCITA', OUT OF THE BOX...
     # desnecessário, nesse nosso casos concreto... (esse container já vai ser adiciionado a 1 network implícita, criada pelo compose, que já abrangirá todos os outros containers especificados no docker-compose)...
     # networks:
     #   - goal-network
 
-  backend:
+    # backend:
 
-  frontend:
+    # frontend:
 volumes:
   mongo-volume: #É ASSIM QUE ESPECIFICAMOS/DEFINIMOS 'named volumes' (precisamos DEFINIR AQUI E LÁ NO CONTAINER EM QUE É USADO/ACOPLADO)..
