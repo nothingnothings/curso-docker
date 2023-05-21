@@ -1,0 +1,1073 @@
+
+
+
+
+
+
+
+
+
+
+OK.... USAR ESSES UTILITY CONTAINERS, COMO OS UTILIZAMOS AQUI,
+
+
+FUNCIONA,
+
+
+MAS É MEIO CUMBERSOME, ESPECIALMENTE COM 
+
+AS BIND MOUNTS...
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+docker run 
+-it 
+-v A:\projeto15-DOCKER\MODULO7-TRABALHANDO-COM-UTILITY-CONTAINERS-E-EXECUTANDO-COMANDOS-EM-CONTAINERS\projeto-utility-container-node:/app 
+node-utils
+install express --save nodemon --save-dev multer --save 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK....
+
+
+
+
+
+PODE SER BEM RUIM, MESMO...
+
+
+
+
+
+
+
+A BOA NOTÍCIA É QUE PODEMOS USAR DOCKER-COMPOSE COM 
+
+
+ISSO AÍ,
+
+
+MESMO POSSUINDO APENAS 
+
+1 ÚNICO CONTAINER...
+
+
+
+
+
+
+
+
+
+--> E TALVEZ VC TENHA PROJETOS COM 
+
+MAIS DE 1 TIPO DE CONTAINER,
+
+
+
+
+
+
+TANTO 'APP CONTAINERS'
+
+COMO 
+
+'UTILITY CONTAINERS'..
+
+
+
+
+
+
+
+
+
+
+
+
+--> VOCÊ PODE FAZER MIX AND MATCH DE CONTAINERS,
+
+
+E VEREMOS ISSO EM 1 PROJETO MAIOR...
+
+
+
+
+
+
+
+
+--> VEREMOS COMO PODEMOS APLICAR APP CONTAINERS E UTILITY 
+
+CONTAINERS 
+
+
+NO CONTEXTO DE 1 LARAVEL APP...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK, MAS ETAPA-POR-ETAPA...
+
+
+
+
+
+
+
+
+
+
+
+--> CRIAMOS UM ARQUIVO 'docker-compose.yaml'...
+
+
+
+
+
+
+
+
+--> DEVEMOS ESPECIFICAR A VERSION DO DOCKER/DOCKER-COMPOSE...
+
+---> colocamos:
+
+
+
+version: "3.8"
+
+
+
+
+
+--> DEVEMOS ESPECIFICAR NOSSOS SERVICES:
+
+
+
+
+
+
+
+
+
+
+version: '3.8'
+services: 
+  npm
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -> O CONTAINER SERÁ DE NOME 'npm'....
+
+
+
+
+E ELE VAI USAR NODE,
+
+E DEVERÁ ___ 
+
+TAMBÉM NOS DAR AQUELE 'ENTRYPOINT',
+
+como vimos antes...
+
+
+
+
+
+
+
+
+
+
+
+
+-> É POR ISSO QUE O PROFESSOR 
+
+VAI COLOCAR TIPO ASSIM:
+
+
+
+
+version: '3.8'
+services: 
+  npm
+    build: ./
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COLOCAMOS O path de './' 
+
+NO BUILD 
+
+
+__ JUSTAMENTE __ PQ JÁ ESTAMOS NO FOLDER EM QUE ESSE NOSSO DOCKERFILE (
+
+    de 
+    conteúdo 
+
+
+    ''''
+    FROM node:14-alpine
+    WORKDIR /app
+    ENTRYPOINT ["npm"] 
+
+'''
+)
+
+
+
+
+PODE SER ENCONTRADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... 
+
+
+
+
+
+
+
+
+ISSO JÁ DIZ AO 'COMPOSE'
+
+
+QUE 
+
+
+ESSA IMAGE DEVE SER USADA,
+SEMPRE QUE
+
+
+ESSE CONTAINER DE 'npm'
+
+FOR USADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... -> O PROFESSOR ENTÃO COLOCA 
+
+
+AS FLAGS de 
+
+
+'stdin_open: true' 
+'tty: true' 
+
+
+
+
+
+
+
+-> FAZEMOS ISSO PARA QUE, SE FOR NECESSÁRIO PROVIDENCIAR INPUT A ESSE CONTAINER,
+
+
+PÓSSAMOS FAZÊ-LO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... TAMBÉM JÁ VAMOS COLOCAR O BIND-MOUNT 
+
+DE 
+
+
+NOSSO 
+
+
+CONTAINER...
+
+
+
+
+
+
+
+
+
+-> VAMOS BINDAR ''''O CONTEÚDO ONDE O DOCKER-COMPOSE.YAML ESTÁ'''
+
+
+
+
+
+à 'PASTA APP, dentro do container'...
+
+
+
+É POR ISSO QUE O ´CODIGO FICA ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+version: '3.8'
+services: 
+  npm:
+    build: ./
+    stdin_open: true
+    tty: true 
+    volumes: 
+      - ./:/app
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+version: '3.8'
+services: 
+  npm:
+    build: ./
+    stdin_open: true
+    tty: true 
+    volumes: 
+    #bind mount da PASTA EM QUE O docker-compose.yaml ESTÁ, bindada à pasta 'app' DENTRO DO CONTAINER...
+      - ./:/app
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ESSE É ESSENCIALMENTE O COMANDO QUE EXECUTAMOS ANTERIORMENTE,
+
+
+aquele 
+
+
+
+docker run 
+-it 
+-v A:\projeto15-DOCKER\MODULO7-TRABALHANDO-COM-UTILITY-CONTAINERS-E-EXECUTANDO-COMANDOS-EM-CONTAINERS\projeto-utility-container-node:/app 
+node-utils
+init 
+
+
+
+
+
+
+
+
+,
+
+
+
+
+
+MAS 
+
+AGORA 
+
+
+MOVIDO PARA DENTRO DE 1 ARQUIVO 'docker-compose.yaml' --> DEIXA MAIS 
+
+FÁCIL DE FAZER 'MAINTAIN',
+
+E TAMBÉM NÃO PRECISAMOS REESCREVER 
+
+
+ESSE COMANDO O TEMPO INTEIRO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+E AGORA, EM VEZ DISSO,
+
+PODEMOS SIMPLESMENTE USAR ESSE ARUIQVO 'docker-compose',
+
+COM 
+
+
+
+
+'docker-compose up'...
+
+
+
+
+
+
+
+
+
+
+
+-> OK... MAS SE FIZERMOS ISSO,
+
+
+
+O DOCKER-COMPOSE VAI FAZER ALGO ESTRANHO:
+
+
+
+
+
+
+
+
+
+
+
+
+
+ELE VAI BUILDAR O NPM,
+
+
+E AÍ 
+
+
+VAI FAZER ALGO ESTRANHO...
+
+
+
+
+
+
+
+
+--> O PROBLEMA, AQUI,
+É QUE 
+
+O PROFESSOR EXECUTOU 
+
+'APENAS O NPM' -> PQ ESPECIFICAMOS 
+
+
+APENAS O 'NPM' 
+
+como entryPOINT,
+
+
+NA DOCKERFILE,
+
+
+
+E AÍ 
+
+
+NÃO ESPECIFICAMOS MAIS NENHUM COMANDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA RESOLVER ISSO, PARA QUE MAIS ALGUMA COISA SEJA EXECUTADA ALÉM DE 'npm',
+
+
+DEVEMOS ESPECIFICAR MAIS ALGUM COMANDO NO 
+
+
+'docker-compose up',
+
+
+
+
+TALVEZ 
+
+
+
+
+'docker-compose up init' ....
+
+
+
+
+
+
+
+
+
+E ISSO _ VAI FALHAR_... --> VAI FALHAR PQ _ O COMANDO 'docker-compose up'
+
+
+É USADO 
+
+
+DE FORMA 
+
+
+
+DIFERENTE 
+
+DAQUELA
+ 
+
+
+ DO 
+
+ 'docker run'...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> PQ O 'DOCKER-RUN'
+
+
+ DEVE 
+
+ SER USADO SOMENTE PARA 'BRING UP'
+
+
+
+
+ OS SERVICES DEFINIDOS NO ARQUIVO 
+
+ 'docker-compose.yaml'... ----> OU SEJA, BRING UP OS CONTAINERS,
+
+
+
+ APP CONTAINERS,
+
+
+
+
+
+ CONTAINERS QUE SÃO STARTADOS E QUE DEVEM CONTINUAR  RODANDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> ENTRETANTO,
+  PARA 
+
+
+
+  _UTILITY CONTAINERS, COMO ESSE ,
+
+
+  TAMBÉM TEMOS OUTRO COMANDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TEMOS 'docker-compose exec' --> ELE __ É USADO _ PARA _ RODAR 
+
+COMANDOS 
+
+EM 
+
+'ALREADY RUNNING CONTAINERS',
+
+
+
+CONTAINERS QUE FORAM CRIADOS COM  O DOCKER-COMPOSE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS TAMBÉM TEMOS 
+
+
+O COMANDO 
+
+'docker-compose run',
+
+
+que 
+será 
+
+
+
+O COMANDO ÚTIL, AGORA...
+
+
+
+
+
+
+
+
+
+-> DOCKER-COMPOSE run -----> NOS DEIXA 'RUN A SINGLE SERVICE' 
+
+
+
+DE 
+
+
+NOSSO ARQUIVO 'docker-compose.yaml',
+
+
+
+BASTA CHAMÁ-LO POR SEU NOME 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+como 
+
+
+'docker-compose run npm' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... E, DEPOIS DISSO,
+
+
+DEVEMOS ESCREVER QUALQUER COMANDO QUE 
+
+DEVE 
+SER 
+
+EXECUTADO APÓS 
+
+
+
+O ENTRYPOINT DE NOSSA ESCOLHA (que, no caso, é 'npm', nesse exemplo)..
+
+
+
+
+isso quer dizer que o comando vai ficar assim:
+
+
+
+
+
+
+
+
+
+
+
+
+''''''''''''''''''
+
+docker-compose run npm init 
+
+'''''''''''''''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. RODAMOS ISSO AÍ..
+
+
+
+
+
+--> VEREMOS QUE O ARQUIVO 'package.json'
+TERÁ 
+
+SIDO CRIADO NO ROOT DE NOSSO PROJECT FOLDER,
+
+
+NA LOCAL HOST MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... MAS VEREMOS QUE O PROFESSOR CRIOU 1 MONTE DE CONTAINERS,
+
+QUE PODEM SER VISTOS COM 'docker-compose run npm init'
+
+
+
+
+e 
+
+'docker-compose run npm install'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> DE FATO, UM MONTE DELES FICARAM CRIADOS, COMO SE FOSSEM 'SUJEIRA'..
+
+
+
+
+
+
+
+
+-> E ISSO É RUIM...
+
+
+
+
+
+
+ISSO ACONTECEU PQ ESQUECEMOS DE USAR A FLAG DE '--rm' NO RUN DOS CONTAINERS,
+
+
+COMO 
+
+
+docker-compose run --rm npm install
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... MAS HÁ TAMBÉM UM COMANDO ÚTIL PARA O 'docker-compose run',
+
+
+
+
+
+PARA _ _REMOVER __ OS CONTAINERS 
+
+
+AUTOMATICAMENTE 
+
+
+COM O STOP DE CONTAINERS...
+
+
+
+
+
+
+
+
+-> PQ O 'docker-compose up'
+
+
+REMOVE 
+
+OS CONTAINERS PARADOS AUTOMATICAMENTE,
+
+
+
+
+MAS 
+ISSO NÃO ACONTECE NO 
+
+
+
+docker-compose run...
+
+
+
+
+
+
+
+
+COM O DOCKER-COMPOSE RUN,
+
+
+PRECISAMOS ESPECIFICAR 
+
+
+
+
+'''docker-compose run --rm npm install'',
+
+
+
+
+COLOCAR ESSA FLAG DE 
+
+'--rm'
+
+PARA 
+
+
+REMOVER O CONTAINER AUTOMATICAMENTE 
+
+
+QUANDO ELE FOR PARADO/O COMANDO TIVER ACABADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE, POR ENQUANTO, PODEMOS LIMPAR TODOS OS CONTAINERS QUE TEMOS,
+
+COM 'docker container prune'...
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+MAS É BOM SABER ESSA FLAG DE '--rm' 
+
+no 'DOCKER-COMPOSE RUN',
+
+
+PQ 
+
+AÍ VC VAI EVITAR TER TODOS ESSES CONTAINERS DESNECESSÁRIOS, depois de terem sido rodados..
