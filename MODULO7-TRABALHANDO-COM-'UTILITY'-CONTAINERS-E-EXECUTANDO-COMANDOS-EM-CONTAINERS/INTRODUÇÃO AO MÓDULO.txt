@@ -1,0 +1,310 @@
+
+
+
+
+
+O PROFESSOR QUER QUE CONTINUEMOS PRATICANDO COM DOCKER 
+
+CONTAINERS E ETC...
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR QUER QUE TRABALHEMOS COM 'UTILITY CONTAINERS'...
+
+
+
+
+
+
+
+
+---> ESSA NÃO É UM TERMO OFICIAL,
+
+MAS É BOM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PQ DEVEMOS UTILIZAR ESSE TERMO, E APRENDER ESSE CONCEITO?
+
+
+
+
+
+
+
+
+
+
+BEM, ATÉ O PRESENTE MOMENTO,
+
+
+SEMPRE TRABALHAMOS COM APP CONTAINERS.. ..- -> FORAM DOCKER CONTAINERS QUE 
+
+
+CONTINHAM NOSSO APPLICATION CODE 
+
+
+E O ENVIRONMENT 
+NECESSÁRIO PARA RODAR ESSES APPS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... E ESSE É O PRIMARY SELLING POINT DO 
+
+DOCKER,
+UMA DAS 
+RAZÕES PRINCIPAIS PARA USAR O DOCKER...
+
+
+
+
+
+
+
+
+
+A IDEIA LÁ ERA SIMPLES,
+
+CRIAR NOSSAS PRÓPRIAS DOCKERFILE,
+
+
+E AÍ,
+
+
+
+POR _ MEIO __ 
+
+
+
+
+DE 'docker run' 
+
+
+OU 
+
+
+'docker compose up',
+
+
+
+
+
+E POR MEIO DOS COMANDOS 
+
+
+NO ARQUIVO/TERMINAL,
+
+
+
+
+
+
+
+
+RODAR NOSSOS CONTAINERS... -> FAZÍAMOS ISSO,
+
+
+E ESSA ERA A PARTE MAIS IMPORTANTE DO DOCKER, NA VERDADE...
+
+
+
+
+
+
+
+
+
+
+
+---> MAS É CLARO QUE ISSO NÃO QUER DIZER QUE 
+
+É 
+
+IMPOSSÍVEL USAR O DOCKER PARA OUTRAS COISAS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É NESSA HORA QUE OS 
+
+
+'UTILITY CONTAINERS'
+
+ENTRAM EM AÇÃO...
+
+
+
+
+
+
+POR 'UTILITY CONTAINERS',
+
+O PROFESSOR QUER DIZER 
+
+
+
+
+
+
+
+
+'''CONTAINERS QUE APENAS POSSUEM 1 ENVIRONMENT DENTRO DELES''...
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+'''UM NODEJS ENVIRONMENT'''..
+
+
+
+
+
+
+
+
+
+'''UM PHP ENVIRONMENT''...
+
+
+
+
+
+
+
+
+
+E A IDEIA, AQUI,
+
+É QUE 
+
+ELES NÃO VAO 
+
+INICIAR 1 APP QUANDO VC OS EXECUTAR,
+
+
+MAS 
+
+SIM QUE 
+
+
+
+SERÃO __ RODADOS_ _ EM CONJUNTO COM 
+
+ALGUM 
+
+
+
+
+__ COMANDO _ ESPECIFICADO _ POR VOCÊ,
+
+
+PARA AÍ 
+
+EXECUTAR UMA CERTA TASK...
+
+
+
+
+
+
+
+
+
+
+
+
+-> A SINTAXE É ASSIM:
+
+
+
+
+'docker run myapp init' 
+
+
+
+
+
+
+
+ou 
+
+
+'docker run mynpm init'..
+
+
+
+
+
+
+
+
+
+--> ok... ESSA É UMA SINTAXE QUE NUNCA VIMOS;
+
+
+NUNCA ADICIONAMOS 1 COMANDO EXTRA DEPOIS DO 'IMAGE NAME',
+
+
+
+
+depois de escrevermos o 'run/start' do container...
+
+
+
+
+
+
+
+
+
+MAS ISSO É ALGO QUE VEREMOS NESSE MÓDULO,
+
+PQ É OUTRA COISA QUE O DOCKER CONSEGUE FAZER...
