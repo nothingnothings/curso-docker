@@ -1,0 +1,825 @@
+ 
+
+
+
+
+
+
+
+
+ OK... PARA COMEÇARMOS O ESTUDO DE 'UTILITY CONTAINERS',
+
+
+ VAMOS COMEÇAR DE FORMA SIMPLES...
+
+
+
+
+
+
+
+
+
+
+ O PROFESSOR VAI RODAR A 
+
+ IMAGE DE 'NODE'...
+
+
+
+
+
+ a image default do dockerhub,
+ mesmo...
+
+
+
+
+
+
+
+
+ ex:
+
+
+
+
+
+
+
+
+ docker run -it node 
+
+
+
+
+
+
+
+
+
+
+
+
+ --> PRECISAMOS RODAR ESSE CONTAINER/IMAGE EM INTERACTIVE MODE,
+
+
+ JUSTAMENTE PQ ELE VAI 'EXPECT'
+
+ UM INPUT VINDO DE NÓS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> PODEMOS EXECUTAR ALGUNS COMANDOS NODE BÁSICOS...
+
+
+
+
+
+
+
+
+ --> CALCULAR COISAS, ETC..
+
+
+
+
+
+
+
+ --> JÁ FIZEMOS ISSO ANTERIORMENTE NO CURSO..
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DOCKER STOP 
+
+
+docker rm container-name..
+
+
+
+
+
+
+
+
+
+
+--> OK.. É ASSIM QUE PODEMOS 
+RODAR 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA O PROFESSOR VAI FAZER ALGO ESTRANHO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ELE VAI ESCREVER 
+
+'docker run -it node''...
+
+
+
+
+
+
+
+
+
+
+
+-> VAI RODAR DE FORMA 'INTERACTIVE',
+MAS 
+
+AÍ 
+
+VAI 
+
+
+COLOCAR TAMBÉM O '-d', DIZENDO 'DETACHED MODE'...
+
+
+
+
+
+
+
+
+
+-> COM ISSO, NÃO VAMOS MAIS PODER ESCREVER COMANDOS/INTERAGIR COM O CONTAINER 
+
+DIRETAMENTE,
+
+
+
+
+
+
+
+MAS ___ AINDA ASSIM,
+
+INTERNAMENTE,
+
+ESSE 
+
+
+CONTAINER 
+
+AINDA VAI FICAR 'WAITING FOR INPUT'...
+
+
+
+
+
+
+
+
+
+
+-> certo... É POR ISSO QUE 
+
+
+ENXERGAMOS 
+
+ESSE CONTAINER COM 'docker ps',
+
+
+PQ 
+ELE AINDA ESTARÁ RODANDO... (só está detached), AINDA ESTÁ RODANDO E AINDA ESTÁ 'WAITING FOR INPUT'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS AGORA VAMOS RODAR 1 COMANDO QUE AINDA NÃO EXECUTAMOS...
+
+
+
+
+
+--> É O COMANDO DE 'docker exec'...
+
+
+
+
+ESSE COMANDO TE DEIXA __ EXECUTAR__ CERTOS __ COMANDOS__ DENTRO DE 1 CONTAINER,
+
+
+
+COMANDOS ALÉM DOS COMANDOS DEFAULT QUE ESSE CONTAINER EXECUTA/EXECUTOU...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ISSO QUER DIZER QUE RODAMOS 
+
+
+
+MAIS DO QUE OS COMANDOS QUE JÁ FORAM ESPECIFICADOS NA DOCKERFILE (
+
+
+    ou seja,
+
+    comandos adicionais são rodados no container...
+)
+
+
+
+
+
+
+
+
+
+E ISSO PODE SER ÚTIL, MUITAS VEZES...
+
+
+
+
+
+
+
+
+
+
+
+-> para isso, precisamos escrever 
+
+
+'docker exec nome-do-container -it  COMANDO'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+dCOMO EXEMPLO DISSO, O PROFESSOR ESCREVE ASSIM:
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+docker exec vigorous_dewdney npm init 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS TENTAR EXECUTAR ISSO AÍ...
+
+
+
+
+
+
+NPM INIT CRIA UM NOVO PROJETO NODE NESSE RUNNING CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+VEREMOS QUE ELE VAI PERGUNTAR ALGUMAS COISAS,
+
+
+
+MAS VAI TERMINAR IMEDIATAMENTE -->  ISSO ACONTECE PQ TAMBÉM PRECISAMOS DE '-it'
+PARA 
+
+
+INTERAGIR COM ESSE _ PROCESSO QUE VC ESTÁ STARTANDO (e se vc quer providenciar input)...
+
+
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE ESCREVEMOS 
+
+
+docker exec -it vigorous_dewdney npm init 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+
+SE FAZEMOS ISSO, PODEMOS CONTINUAR COM 
+
+
+AS SETTINGS PARA A CRIAÇÃO DE 1 NOVO PROJETO NODE,
+ 
+
+ coisa normal...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> OK.... ISSO QUER DIZER QUE O COMANDO de 'docker exec'
+
+
+
+ É EXECUTADO _ DENTRO _ DO CONTAINER,
+
+
+
+
+
+
+ __ E AÍ NÃO PRECISAMOS TER O NODE E NPM INSTALADOS 
+
+ NO NOSSO SISTEMA,
+ PQ 
+
+ ISSO 
+
+
+ AÍ 
+
+ VAI 
+
+
+
+ SER EXECUTADO DENTRO DO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+ CERTO.... MAS AQUI ISSO NÃO VAI SER TÃO ÚTIL,
+
+
+ PQ '''SE O PROJECT ESTÁ NO CONTAINER, CRIAMOS ELE DENTRO DO CONTAINER,
+
+ E NÃO TEMOS NENHUM ACESSO A ELE'...
+
+
+
+
+
+
+
+
+
+
+ OK, MAS ESSE ERA SÓ UM PRIMEIRO EXEMPLO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ OK... AGORA VAMOS STOPPAR ESSE CONTAINER,
+
+
+
+ E AÍ VAMOS 
+
+EXECUTÁ-LO DE FORMA DIFERENTE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM DOCKER EXEC,
+PODEMOS RODAR 
+
+
+COMANDOS EM 1 RUNNING CONTAINER,
+
+
+
+
+MAS TAMBÉM PODEMOS 
+
+''OVERWRITE __ O DEFAULT COMMAND'', no entanto...
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+ISSO PQ QUANDO RODAMOS O NODE CONTAINER, O COMANDO DEFAULTE EXECUTADO 
+
+DENTRO DO CONTAINER É 
+
+O 
+
+'NODE EXECUTABLE' EM SI,
+
+
+
+QUE É BASICAMENTE O NEGÓCIO QUE ENTRA NO 'REPL',
+
+
+
+
+
+
+QUE É BASICAMENTE 1 INTERACTIVE MODE EM QUE PODEMOS RODAR COMANDOS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> e é por isso que quando rodamos 
+
+
+'docker run -it node' 
+
+
+PARA FICAR NESSE 'INTERACTIVE MODE '
+
+
+
+
+
+E INPUTTARMOS COMANDOS NO REPL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS PODEMOS __ OVERWRITTAR ESSE COMANDO,
+
+POR MEIO DA SINTAXE DE 'UTILITY CONTAINERS',
+
+QUE 
+
+É JUSTAMENTE 
+
+ESCREVER 
+
+
+
+
+
+
+'''
+docker run -it node + ALGUM OUTRO COMANDO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ESSA É OUTRA SINTAXE, QUE AINDA NÃO VIMOS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS COLOCAR 'npm init',
+
+que 
+
+
+VAI FAZER OVERWRITE 
+
+
+
+__ ESSE MODO 'REPL DO NODE',
+
+
+
+e vai substituir 
+
+
+POR ESSE CÓDIGO QUE  __ CRIA __ 1 PROJETO NODE..
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+docker run -it node npm init
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... SE TERMINAMOS DE DEFINIR NOSSO PROJETO,
+
+
+NOSSO CONTAINER DO DOCKER VAI __ PARAR (stop),
+
+
+
+
+justamente 
+
+PQ 
+
+
+SUBSTITUÍMOS O RUN DE 'node index.js'
+
+
+
+POR 
+'npm init',
+
+
+
+QUE VAI APENAS CRIAR 1 PROJECT E ENTÃO VAI 'STOPPAR'
+
+
+ASSIM QUE 
+
+ELE 
+
+TERMINAR ESSE PROCESSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ISSO NÃO É MT ÚTIL NO MOMENT,
+
+MAS MAIS TARDE 
+
+
+
+
+CONHECEREMOS COISAS ÚTEIS QUE PODEMOS FAZER COM O 'DOCKER EXEC'..
+
+
+
+
+
+
+
+
+--> O DOCKER EXEC PODE SER ÚTIL PARA 
+
+
+LER LOG FILES 
+CRIADAS DENTRO 
+
+DE 1 CONTAINER,  
+
+
+
+
+SEM __ INTERROMPER O MAIN PROCESS DO CONTAINER..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS AGORA QUE CONHECEMOS ESSE CONTAINER, 
+
+DEVEMOS BUILDAR 1 'UTILITY DOCKER IMAGE/CONTAINER',
+
+E AÍ 
+
+
+DEVEMOS VER __ COMO _ESSE CONTAINER PODERÁ NOS AJUDAR...
