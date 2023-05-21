@@ -1,3 +1,5 @@
 FROM node:14-alpine
 
 WORKDIR /app
+# COM ISSO, COM 'ENTRYPOINT', RESTRINGIMOS O NÚMERO/TIPO DE COMANDOS QUE PODERÃO SER EXECUTADOS COM NOSSO CONTAINER (nosso utility container).... ele é tipo o 'CMD[]', MAS QUE __ FORÇA O USUÁRIO DA IMAGE A RODAR APENAS OS COMANDOS ESPECIFICADOS (no caso, aqui apenas COMANDOS DO 'npm' podem ser executados)...
+ENTRYPOINT ["npm"] 

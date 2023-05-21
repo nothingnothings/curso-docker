@@ -1,0 +1,653 @@
+
+
+
+
+
+
+
+
+
+
+
+NO MOMENTO, ESSE BASIC UTILITY CONTAINER, 'node-utils',
+
+NOS DEIXA RODAR QUALQUER COMANDO...
+
+
+
+
+
+
+
+(
+
+    PQ A DOCKERFILE FICOU SÓ ASSIM:
+
+
+FROM node:14-alpine
+
+WORKDIR /app
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+ 
+
+
+ E ISSO É ÚTIL, SIM,
+
+
+ MAS O QUE QUEREMOS,
+
+ AQUI,
+
+
+ É  _fAZER __ ESSE 
+
+ NEGÓCIO 
+
+ 
+
+ APENAS 
+
+
+ RODAR COMANDOS RELATIVOS A 'npm' (
+
+
+
+
+
+
+    OU SEJA,
+
+    'NPM INIT',
+
+    'NPM INSTALL'
+
+
+    'NPM UNINSTALL',
+
+
+     ETC ETC...
+ )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> ISSO QUER DIZER QUE 
+
+
+
+
+
+
+ NÓS ATÉ MESMO PODEMOS RODAR, NO MOMENTO ISTO:
+
+
+
+
+
+
+docker run 
+-it 
+-v A:\projeto15-DOCKER\MODULO7-TRABALHANDO-COM-UTILITY-CONTAINERS-E-EXECUTANDO-COMANDOS-EM-CONTAINERS\projeto-utility-container-node:/app 
+node-utils
+npm install
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> 
+
+
+
+
+
+OK... MAS DIGAMOS QUE 
+
+
+O PROFESSOR QUER 
+
+QUE 
+ESCREVAMOS APENAS 'install', em vez de 'npm install' -----> ELE QUER QUE,
+
+UNDER THE HOOD,
+
+DENTRO DO CONTAINER,
+
+
+
+SEJA 
+
+
+
+
+PREPENDADO O TERMO 'npm',
+
+
+PARA QUE 
+FIQUE 'NPM INSTALL'...
+
+
+
+
+
+
+
+
+
+
+
+
+OU SEJA,
+
+O PROFESSOR QUER QUE CONSTRUAMOS UM UTILITY CONTAINER MAIS RESTRITO,
+
+
+JUSTAMENTE PARA QUE 'NÃO CONSIGAMOS RODAR QUALQUER COISA',
+
+
+
+
+ATÉ MESMO PARA 'NOS PROTEGER' (imagine que vc roda algum comando no container que 
+
+
+DELETA TUDO,
+
+E AÍ, 
+POR CONTA DISSO,
+
+
+POR CONTA DO BIND MOUNT,
+
+
+CONTEÚDO NA MINHA LOCAL HOST MACHINE 
+
+COMEÇA A SER DELETADO TAMBÉM...
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+--> é por isso que é bom/INTERESSANTE __ RESTRINGIR __ 
+
+O NÚMERO DE COMANDOS QUE 
+
+PODEMOS USAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE TEMOS 1 INSTRUCTION BEM ÚTIL
+NA DOCKERFILE,
+
+
+QUE É 
+
+
+
+A 
+
+
+'ENTRYPOINT []'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O 'ENTRYPOINT[]' 
+
+
+
+
+
+É BEM PARECIDO 
+
+
+
+
+
+COM 
+
+
+
+O 'CMD[]',
+
+
+
+MAS 
+
+
+
+
+ELE __ TEM 1 DIFERENÇA BEM IMPORTANTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE NÓS COLOCAMOS 1 COMANDO 
+
+
+
+LÁ 
+
+
+NA ESCRITA DE 
+
+
+''docker run 
+-it 
+-v A:\projeto15-DOCKER\MODULO7-TRABALHANDO-COM-UTILITY-CONTAINERS-E-EXECUTANDO-COMANDOS-EM-CONTAINERS\projeto-utility-container-node:/app 
+node-utils
+npm init
+
+'',
+
+
+
+
+
+como aquele 'npm init' ALI, AO FINAL,
+
+
+
+
+ESSE COMANDO VAI, NO FINAL DAS CONTAS,
+
+
+
+
+__ OVERWRITTAR O 'CMD[]' 
+
+
+ESCRITO EM UMA DOCKERFILE,
+
+
+
+
+SE ESSE CMD(comando) EXISTIR, NA DOCKERFILE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... MAS COM O ENTRYPOINT,
+
+
+AS COISAS NÃO ACONTECEM ASSIM --> COM O ENTRYPOINT,
+
+
+
+QUALQUER COISA QUE VC ESCREVE 
+
+
+
+
+ALI NO LOCAL DE 'npm init',
+
+
+
+
+DEPOIS DO 'IMAGE NAME',
+
+
+
+
+
+
+
+
+
+___ VAI __ SER 
+
+
+
+
+
+
+___APPENDED__ DEPOIS DO ENTRYPOINT (
+
+    ou seja,
+
+    podemos 
+
+    ESPECIFICAR 
+
+
+
+    'ENTRYPOINT["npm"]',
+
+
+    PARA FAZER COM QUE APENAS COMANDOS RELATIVOS AO NPM POSSAM SER EXECUTADOS...
+)
+
+
+
+
+
+
+
+
+FROM node:14-alpine
+
+WORKDIR /app
+# COM ISSO, COM 'ENTRYPOINT', RESTRINGIMOS O NÚMERO/TIPO DE COMANDOS QUE PODERÃO SER EXECUTADOS COM NOSSO CONTAINER (nosso utility container).... ele é tipo o 'CMD[]', MAS QUE __ FORÇA O USUÁRIO DA IMAGE A RODAR APENAS OS COMANDOS ESPECIFICADOS (no caso, aqui apenas COMANDOS DO 'npm' podem ser executados)...
+ENTRYPOINT ["npm"] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+COM ESSE ENTRYPOINT ADICIONADO,
+PODEMOS 
+
+
+
+
+
+RODAR ASSIM:
+
+
+
+
+
+docker run 
+-it 
+-v A:\projeto15-DOCKER\MODULO7-TRABALHANDO-COM-UTILITY-CONTAINERS-E-EXECUTANDO-COMANDOS-EM-CONTAINERS\projeto-utility-container-node:/app 
+node-utils
+init 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... O 'init'
+
+
+
+
+VAI FICAR COMO 'npm init',
+
+e aí 
+
+
+
+
+VAMOS 
+
+
+
+CONSEGUIR RODAR O 'npm init'
+
+
+COM ESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS FAZER A MESMA COISA COM 'npm install',
+
+TIPO ASSIM:
+
+
+
+
+
+
+docker run 
+-it 
+-v A:\projeto15-DOCKER\MODULO7-TRABALHANDO-COM-UTILITY-CONTAINERS-E-EXECUTANDO-COMANDOS-EM-CONTAINERS\projeto-utility-container-node:/app 
+node-utils
+install 
+
+
+
+
+
+-------------------------------
+
+
+
+
+
+
+
+
+
+
+
+OK... FAZ TOTAL SENTIDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS TENHA EM MENTE QUE 
+
+O CONTAINER SEMPRE VAI 
+
+
+'SHUT DOWN'
+
+
+DEPOIS que rodarmos o comando de 'npm install'...
+
+
+
+
+
+
+
+
+
+
+
+
+-->  PODERÍAMOS ADICIONAR DEPENDENCIES MANUALMENTE,
+OU ENTÃO 
+
+
+
+rodar 'install packages'..
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+docker run 
+-it 
+-v A:\projeto15-DOCKER\MODULO7-TRABALHANDO-COM-UTILITY-CONTAINERS-E-EXECUTANDO-COMANDOS-EM-CONTAINERS\projeto-utility-container-node:/app 
+node-utils
+install express --save nodemon --save-dev multer --save 
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+OK... E ESSE PATTERN É SUPER 
+
+
+
+ÚTIL,
+
+E É USADO 
+
+
+EM VÁRIOS DOCKER PROJECTS,
+
+E NO NOSSO CURSO,...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS NOSSO APPROACH TEM UMA DESVANTAGEM... -> TEMOS QUE RODAR ESSES COMANDOS RELATIVAMENTE 
+LONGOS 
+
+
+
+NO TERMINAL... -> E O __ DOCKER-COMPOSE __ PODE NOS AJUDAR COM ISSO, NOVAMENTE...
