@@ -1,0 +1,700 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK... PARA CONSTRUIR ESSE UTILITY CONTAINER,
+
+
+PRECISAMOS DE NOSSA PRÓPRIA IMAGE,
+
+
+POR ISSO O PROFESSOR 
+
+COMEÇA COM 1 DOCKERFILE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ELE COMEÇA PEGANDO 1 VERSÃO ESPECÍFICA DO NODE,
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+FROM node:14-alpine
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO,
+
+
+VAMOS PEGAR A VERSÃO 14 DO NODE,
+
+MAS AÍ VAI USAR UM OPERATING 
+
+SYSTEM 
+
+SUPER 'SLIM',
+
+
+UNDER THE HOOD...
+
+
+
+
+
+
+
+
+PODERÍAMOS USAR O NODE COMUM,
+
+MAS COMO O PROFESSOR QUER BUILDAR 1 UTILITY CONTAINER,
+
+ELE 
+
+VAI QUERER 
+1 VERSÃO 
+SUPER OPTIMIZADA DO NODE,
+
+1 BASE IMAGE SUPER OPTIMIZADA E SLIM...
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+
+
+
+-> ISSO FEITO,
+
+O PROFESSOR 
+
+VAI ADICIONAR 1 WORKDIRECTORY,
+
+
+E VAI Colocar 
+
+
+
+'/app' 
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE ESSE SERÁ O FOLDER UTILIZADO POR COMANDOS 
+
+EXECUTADOS NESSE CONTAINER/IMAGE...
+
+
+EX:
+
+
+
+
+FROM node:14-alpine
+
+WORKDIR /app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... 
+
+
+
+
+
+
+AGORA TUDO QUE ESCREVERMOS DEPOIS DE 'docker run'
+
+
+VAI __ RODAR_ _ CONTRA ESSE PATH AÍ...
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO..
+
+
+
+
+
+
+
+
+AÍ O PROFESSOR ESCREVERIA 
+
+
+
+
+'CMD ["npm", "init"]',
+
+
+
+
+
+
+
+
+
+MAS ELE APONTA QUE NÃO FARÁ ISSO.... --> NÃO FARÁ ISSO PQ 
+
+ELE 
+
+VAI QUERER 
+
+DAR 
+
+
+AO USUÁRIO 
+
+
+CONTROLE COMPLETO DESSA IMAGE,
+
+
+PERMITIR O USER RODAR QUALQUER COMANDO CONTRA ESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O 
+
+
+
+PROFESSOR ESCREVE SÓ AS DUAS PRIMEIRAS LINHAS, ASSIM:
+
+
+
+
+
+
+
+
+FROM node:14-alpine
+
+WORKDIR /app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... O DOCKER VAI BUILDAR NOSSA IMAGE,
+
+QUE SERÁ SUPER PEQUENA (14mb)...
+
+
+
+
+
+
+
+
+
+
+
+--> OK..
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+PODEMOS,
+
+
+
+RODAR O COMANDO 
+
+
+'docker exec -it npm init'...
+
+
+
+
+
+
+
+--> ISSO VAI __ CRIAR __ 1 PROJECT DENTRO DO NOSSO CONTAINER..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... MAS O PROFESSOR VAI QUERER FAZER MAIS DO QUE ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> POR DEFAULT, O 'npm init'
+
+RODARIA
+ 
+ DENTRO 
+
+ DO 
+
+ FOLDER DE '/app'
+
+ DENTRO DO CONTAINER ... -> MAS QUEREMOS 
+
+  FAZER 
+
+
+  'MIRROR' DO NOSSO LOCAL  FOLDER,
+
+
+  FAZER 
+
+  COM QUE 
+  TUDO 
+
+
+  QUE 
+
+  É CRIADO 
+
+  DENTRO DO CONTAINER __ FIQUE _ DISPONÍVEL NA NOSSA LOCAL MACHINE (
+
+
+
+
+
+    TUDO PARA QUE __ PÓSSAMOS CRIAR 
+
+    1 PROJECT NA NOSSA __ LOCAL HOST MACHINE __ COM A AJUDA 
+
+    DE 
+
+    1 CONTAINER...
+  )
+
+
+
+
+
+
+
+
+
+
+
+
+
+      TUDO PARA QUE __ PÓSSAMOS CRIAR 
+
+    1 PROJECT NA NOSSA __ LOCAL HOST MACHINE __ COM A AJUDA 
+
+    DE 
+
+    1 CONTAINER... ----------->  ESSA É JUSTAMENTE 
+
+    A IDEIA 
+
+    POR TRÁS DE 1 UTILITY CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+UTILITY CONTAINERS --> QUEREMOS __EXECUTAR__  DENTRO 
+
+DO CONTAINER,
+
+ALGO QUE 
+
+TENHA EFEITO SOBRE A LOCAL HOST MACHINE,
+
+TUDO 
+
+SEM __ TER DE INSTALAR COISA ALGUMA NA LOCAL HOST MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, PODEMOS USAR 1 FEATURE QUE JÁ USAMOS VÁRIAS VEZES ANTERIORMENTE,
+
+
+
+1 'BIND MOUNT'...
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+COM ISSO,
+
+BINDAREMOS 
+
+
+
+
+
+
+O FOLDER 
+
+
+DE NOSSA LOCALHOST MACHINE 
+
+AO WORKING DIRECTORY DO PROJETO, COM ESTA SINTAXE:
+
+
+
+
+
+
+
+
+
+docker run -it -v A:\projeto15-DOCKER\MODULO7-TRABALHANDO-COM-UTILITY-CONTAINERS-E-EXECUTANDO-COMANDOS-EM-CONTAINERS\projeto-utility-container-node:/app node-utils npm init
+
+
+
+
+
+
+
+
+
+
+FICOU ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+docker run 
+-it 
+-v A:\projeto15-DOCKER\MODULO7-TRABALHANDO-COM-UTILITY-CONTAINERS-E-EXECUTANDO-COMANDOS-EM-CONTAINERS\projeto-utility-container-node:/app 
+node-utils
+npm init
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA TESTAMOS ESSE COMANDO.... É CRIADO 1 CONTAINER,
+
+É EXECUTADO AQUELE COMANDO DE 'npm init',
+
+E AÍ 
+
+
+OS ARQUIVOS DO CONTAINER VÃO APARECER NA NOSSA LOCAL HOST MACHINE,
+
+AO MESMO TEMPO EM QUE APARECEM NO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo... isso REALMENTE FUNCIONOU...
+
+
+
+
+OS COMANDOS QUE EXECUTAMOS NO CONTAINER 
+
+
+
+TAMBÉM POSSUEM EFEITOS NO LOCAL HOST MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE, AGORA,
+
+EU PODERIA DESINSTALAR 
+
+
+O 'NODE' 
+
+
+NA MINHA LOCAL HOST MACHINE,
+
+E AINDA ASSIM CRIAR 
+
+PROJECTS COM 
+
+
+
+
+'npm init',
+
+USANDO 
+
+
+ESSE UTILITY CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO PODE PARECER UM CENÁRIO CONSTRUCTED/DUMB,
+
+
+MAS 
+
+PODE SER BEM ÚTIL NÃO TER DE INSTALAR TODAS ESSAS TOOLS EXTRAS 
+NO SEU PC...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... PQ __ PARA O NODE, É BEM SIMPLES,
+
+
+MAS PARA O LARAVEL E PHP,
+
+
+O 
+
+PROJETO SERÁ 
+
+BEM MAIS COMPLEXO,
+
+
+
+
+
+E O __ PROFESSOR _ VAI VOLTAR A ESSE EXEMPLO E MOSTRAR 
+
+1 EXEMPLO PHP LARAVEL 
+
+DEPOIS 
+
+DESSA SECTION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR QUER NOS MOSTRAR MAIS ALGUMAS FEATURES,
+
+QUE PODEM 
+
+DEIXAR O TRABALHO COM CONTAINERS 1 POUCO MAIS CONVENIENTE...
