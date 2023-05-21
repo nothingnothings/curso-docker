@@ -1,0 +1,531 @@
+
+
+
+
+
+
+
+OK... OBVIAMENTE, O DOCKER-COMPOSE É UMA TOOL SUPER ÚTIL..
+
+
+
+
+
+
+
+E O DOCKER-COMPOSE UP E DOCKER-COMPOSE DOWN 
+
+
+
+SÃO NOSSOS MELHORES AMIGOS..
+
+
+
+
+
+
+
+
+
+
+
+-> MAS HÁ 2 OUTROS COMANDOS/VARIATIONS DE COMMANDS QUE O PROFESSOR QUER NOS MOSTRAR,
+
+
+E TAMBÉM 
+
+
+ALGO SOBRE O NAMING 
+
+DESSES 
+
+CONTAINERS 
+
+
+
+E SERVICES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... O PROFESSOR COMEÇA COM OS COMANDOS...
+
+
+
+
+
+
+
+
+ESTUDAMOS 'DOCKER COMPOSE UP' 
+
+
+E 
+'DOCKER COMPOSE DOWN'....
+
+
+
+
+
+
+
+
+
+
+-> PARA VER AS OPTIONS DE 'docker-compose',
+
+
+
+
+
+
+ESCREVEMOS 
+
+'docker-compose --help'...
+
+
+
+
+
+
+
+
+--> UMA OPTION QUE PODE NOS INTERESSAR É A '--build'...
+
+
+
+
+
+
+
+
+
+COM ESSA OPTION ADICIONADA AO 
+
+COMANDO DE 'docker-compose up',
+
+
+
+
+
+
+
+
+VC __ FORÇA __ O 'REBUILD' DE SUAS IMAGES. .. -> CASO CONTRÁRIO,
+
+AS IMAGES 
+QUE 
+
+'NÃO FORAM ALTERADAS' 
+
+
+
+
+
+SERÃO BUILDADAS APENAS 1 ÚNICA VEZ,
+
+
+
+E O DOCKER VAI __ REUTILIZAR AS IMAGES JÁ EXISTENTES .. --> ISSO 
+
+TIPICAMENTE VAI SER O QUE 
+
+VC 
+QUER,
+
+
+
+
+
+E RARAMENTE SERÁ UM PROBLEMA... -> MAS SE VC QUISER _ FORÇAR _ SUA 
+
+IMAGE A SER REBUILDADA,
+VC PODE 
+FORÇAR 
+
+O DOCKER-COMPOSE,
+
+
+por meio de '--build'...
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+docker-compose up --build 
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+
+
+MAS SE VC QUER _ 
+
+BUILDAR APENAS AS IMAGES DEFINIDAS NO SEU DOCKER-COMPOSE FILE 
+
+(as IMAGES QUE CONSTRUÍMOS COM A KEY DE 'build:' DENTRO DO DOCKER-COMPOSE),
+
+
+se vc 
+
+QUER 
+
+
+
+
+BUILDAR _ APENAS __ AS IMAGES _ 
+
+
+DEFINIDAS DENTRO DE 
+
+
+1 ARQUIVO 'DOCKER-COMPOSE',
+
+
+VC 
+
+PODE 
+
+FAZER ISSO POR MEIO DO 
+
+
+
+COMANDO 
+
+
+
+'docker-compose build'...
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE 'docker-compose build' 
+
+
+É DIFERENTE DE 'docker-compose up',
+
+PQ 
+
+
+O 
+
+'docker-compose up' 
+
+VAI __ 'BUILDAR + RODAR' OS CONTAINERS...
+
+
+
+
+
+
+
+
+
+JÁ BUILD VAI ''APENAS BUILD AS IMAGES''',
+
+
+SEM RODAR __ _OS CONTAINERS 
+
+
+
+A PARTIR DESSAS IMAGES..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS GERALMENTE O COMPORTAMENTO NORMAL DO DOCKER-COMPOSE JÁ BASTA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR TAMBÉM TEM 1 DETALHE FINAL SOBRE O DOCKER-COMPOSE...
+
+
+
+
+
+
+
+
+
+
+
+
+--> É SOBRE OS NOMES DOS CONTAINERS QUE SÃO CREATED E STARTED...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> COM DOCKER-PS,
+
+PODEMOS VER QUE OS NOMES FICARAM ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+projeto-docker-multi-containers-mongodb-1 
+
+
+
+
+projeto-docker-multi-containers-backend-1 
+
+projeto-docker-multi-containers-react-1 
+
+
+
+
+
+
+
+
+
+
+OK.... MAS O ESTRANHO É QUE, LÁ NO DOCKER-COMPOSE,
+
+
+
+estavam escritas assim:
+
+
+
+
+'mongodb' 
+
+
+'backend' 
+
+
+
+'react'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... MAS O QUE INTERESSA, DIZ O PROFESSOR, É QUE 
+
+
+ESSES NOMES QUE VC ESPECIFICOU COMO KEYS 
+
+
+__ SÃO APENAS 
+
+OS 
+
+'SERVICE NAMES'...
+
+
+
+
+
+
+
+
+OS NOMES DOS SERVICES..
+
+
+
+
+
+
+
+
+JÁ O 'FULL NAME',
+
+DOS CONTAINERS,
+É 
+COMPOSTO POR:
+
+
+
+
+
+
+
+'YOUR PROJECT/DIRECTORY NAME  +  '_' + SEU SERVICE NAME + UM INCREMENTING NUMBER'...
+
+
+
+
+
+
+
+é por isso que fica ''projeto-docker-multi-containers-mongodb-1 ''
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+MAS SE VC NÃO QUER ALGO ASSIM,
+
+QUER 
+
+DEFINIR SEU PRÓPRIO 
+
+CONTAINER NAME,
+
+
+
+VC DEVE ESCREVER 
+
+A KEY DE 'container_name: mongodb',
+TIPO ASSIM:
+
+
+
+
+
+
+
+  react:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend/src:/app/src
+      # ESSAS 2 OPÇÕES SÃO EQUIVALENTES A '-it' no run do 'docker run'...
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+      # É ASSIM QUE DEFINIMOS CUSTOM NAMES PARA OS CONTAINERS (em vez de usar o default, que é  'YOUR PROJECT/DIRECTORY NAME  +  '_' + SEU SERVICE NAME + UM INCREMENTING NUMBER'...)
+    container_name: react
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS ESSE FOI O DOCKER-COMPOSE..
+
+
+
+
+
+
+
+É UMA TOOL MT ÚTIL,
+
+E NOS DEIXA RODAR MULTI-CONTAINER APPS NA NOSSA LOCAL MACHINE,
+
+TUDO COM 1 COMANDO,
+E COM 1 CONFIG FILE...

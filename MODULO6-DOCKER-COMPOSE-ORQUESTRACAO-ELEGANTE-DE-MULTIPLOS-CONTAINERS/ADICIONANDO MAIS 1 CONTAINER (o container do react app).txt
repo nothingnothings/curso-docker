@@ -1,0 +1,549 @@
+
+
+
+
+
+OK... FALTOU O CONTAINE DO REACT APP...
+
+
+
+
+
+
+
+
+
+
+
+
+--> NOSSO COMANDO REACT 
+
+
+
+
+
+
+ERA ALGO ASSIM:
+
+
+
+
+
+
+
+
+docker run --name goals-frontend 
+-v BIND-MOUNT 
+--rm 
+-d 
+-p 3000:3000
+-it 
+goals-react 
+
+
+
+
+
+
+
+
+
+
+
+-> A PARTE REALMENTE INTERESSANTE É AQUELE PARÂMETRO 
+
+
+de 'it',
+
+
+
+
+QUE DEIXARÁ O CONTAINER 'INTERACTIVE'...
+
+
+ISSO NÓS AINDA NÃO HAVÍAMOS FEITO,
+
+
+NO DOCKER-COMPOSE...
+
+
+
+
+
+
+
+
+
+-->  OK, VAMOS ESCREVER A KEY DE 'REACT'
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+react:
+  build: ./frontend
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -> COLOCAMOS ESSA KEY,
+   
+   E AÍ ESPECIFICAMOS QUE A PASTA DO BUILD SERÁ ESSA PASTA 'frontend',
+
+   em que 
+
+
+
+
+   TEMOS O DOCKERFILE DO FRONTEND..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+BTW... -> QUANDO VC RODA O 'DOCKER-compose up',
+
+
+
+
+NEM SEMPRE 
+
+
+
+VC VAI REBUILDAR AS IMAGES... --> ELE _ SÓ _ VAI _ REBUILDAR A IMAGE 
+
+
+
+SE 
+
+
+ALGO TIVER MUDADO SOBRE AQUELA IMAGE (por exemplo, vc alterou seu código,
+
+e aí 
+o 
+
+DOCKER-COMPOSE VAI SABER QUE O CÓDIGO PRECISARÁ SER REBUILDADO, A IMAGE PRECISARÁ SER REBUILDADA)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> COLOCAMOS O PORT, QUE SERÁ 3000,
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+react:
+  build: ./frontend
+  ports:
+    - '3000:3000'
+
+
+
+
+
+
+DEPOIS, COLOCAMOS 1 BIND MOUNT...
+
+
+
+
+
+
+
+
+
+
+--> PQ QUEREMOS QUE AS CHANGES SEJAM REFLETIDAS NO RUNNING CONTAINER...
+
+
+
+
+
+--> para isso, colocamos um RELATIVE PATH, EM VEZ DE 1 ABSOLUTE PATH...
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+react:
+  build: ./frontend
+  ports:
+    - '3000:3000'
+  volumes:
+    - ./frontend/src:/app/src 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS AGORA TEMOS UMA COISA DIFERENCIAL,
+QUE SERÁ 
+ESSE MODO DE '-it',
+
+
+
+QUE SERÁ BOM TER NO REACT..
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO PODEMOS ESPECIFICAR ISSO?
+
+
+
+
+
+
+
+
+
+
+
+--> BEM, HÁ 2 OPTIONS QUE PODEMOS ADICIONAR NA NOSSA CONFIGURATI0ON,
+
+PARA HABILITAR ISSO...
+
+
+
+
+
+
+
+
+
+
+
+--> UMA OPÇÃO SERIA ESCREVER A KEY DE 
+
+'stdin_open: true' --> 
+
+
+
+
+
+
+ISSO VAI __ DEIXAR_ _ O DOCKER SABER QUE ESSE SERVICE VAI PRECISAR DE 
+
+UMA 
+
+'OPEN INPUT CONNECTION'...
+
+
+
+
+
+
+
+
+
+
+
+TAMBÉM TEMOS A OPTION DE 'tty',
+
+que 
+
+TAMBÉM DEVE SER 
+
+DEIXADA COMO 'TRUE'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO PQ A FLAG DE '-it'
+
+
+É 
+
+SIMPLESMENTE A COMBINAÇÃO 
+
+ENTRE A FLAG DE 'stdin_open' 
+
+
+
+
+
+
+E 
+
+
+A FLAG DE 'tty' (que é para que o terminal seja disponibilizado, por assim dizer)..
+
+
+
+
+
+
+
+
+
+
+
+
+OK... COM ESSAS 2 OPTIONS ADICIONADAS,
+
+
+O DOCKER CONTAINER VAI SER EXECUTADO NESSE MODO INTERACTIVE,
+AINDA 
+QUE 
+
+VC 
+
+RODE 
+
+
+
+ELE NO DETACHED MODE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NÓS TAMBÉM PODEMOS COLOCAR O CÓDIGO DE 
+
+
+'depends_on',
+
+
+
+
+PARA QUE __ O FROTEND SÓ SEJA EXECUTADO SE _ O NODE __ APP 
+
+JÁ ESTIVER SETTADO..
+
+
+
+
+
+
+
+
+
+
+
+
+--> ALGUNS APPS FUNCIONAM SEM O BACKEND, ATÉ CERTO PONTO,
+
+
+MAS AQUI VAMOS COLOCAR ESSA OPTION,
+
+
+O QUE QUER DIZER QUE NOSSO CÓDIGO VAI FICAR ASSim:
+
+
+
+
+
+
+    react: 
+      build: ./frontend
+      ports:
+        - '3000:3000'
+      volumes:
+        - ./frontend/src:/app/src 
+        # ESSAS 2 OPÇÕES SÃO EQUIVALENTES A '-it' no run do 'docker run'...
+      stdin_open: true
+      tty: true
+      depends_on: 
+        - backend
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... RODAMOS 
+
+
+'docker-compose up -d' ...
+
+
+
+
+
+
+
+
+
+
+--> ISSO VAI BUILDAR TODAS AS IMAGES QUE PRECISAM SER BUILDADAS (o react app),
+
+E REBUILDAR TODOS OS OUTROS CONTAINERS....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> RODAMOS 'docker-compose down -v'
+
+PARA 
+
+
+
+DERRUBAR TAMBÉM NOSSOS VOLUMES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... ESSE É O DOCKER-COMPOSE...
+
+
+
+
+
+
+
+
+
+
+
+
+É BEM ÚTIL, E BEM MELHOR PARA PROJECTS MAIS COMPLEXOS...
+
+
+VC DEIXA DE TER DE RODAR TODOS ESSES COMANDOS GIGANTES NO TERMINAL..
+
+
+
+
+
+
+
+
+
+
+--> AÍ SÓ FICAMOS COM 2 COMANDOS,
+
+
+'DOCKER-COMPOSE UP'
+
+
+e 
+'DOCKER-COMPOSE DOWN'...
+
+
+
+
+(com as flags '-d' e '-v')...
+
+
+
+
+
+
+
+E ISSO É SUPER ÚTIL...

@@ -10,7 +10,8 @@
 version: "3.8" # É A VERSION DO ARQUIVO/DOCKER QUE QUEREMOS USAR (há diferenças entre versões, diferenças na sintaxe, etc)....
 #  --> COM ISSO, ESTAMOS ESPECIFICANDO QUE NOSSO APP VAI CONTER 3 CONTAINERS...
 services:
-  mongodb: ### usamos essa key também lá na connection string do mongodb, com  '''   `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb:27017/course-goals?authSource=admin`, ''
+  mongodb:
+    ### usamos essa key também lá na connection string do mongodb, com  '''   `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb:27017/course-goals?authSource=admin`, ''
     image: 'mongo'
     volumes:
       - mongo-volume:/data/db
@@ -23,7 +24,7 @@ services:
     # desnecessário, nesse nosso casos concreto... (esse container já vai ser adiciionado a 1 network implícita, criada pelo compose, que já abrangirá todos os outros containers especificados no docker-compose)...
     # networks:
     #   - goal-network
-
+    container_name: mongodb-pure # É ASSIM QUE DEFINIMOS CUSTOM NAMES PARA OS CONTAINERS (em vez de usar o default, que é  'YOUR PROJECT/DIRECTORY NAME  +  '_' + SEU SERVICE NAME + UM INCREMENTING NUMBER'...)
   backend:
     # image:  PODERÍAMOS PROVIDENCIAR 1 COMANDO 'image', COM UMA IMAGE JÁ PRONTA, SIM (ou custom ou vanilla)... ENTRETANTO, TAMBÉM É POSSÍVEL PROVIDENCIAR COMANDOS DE BUILD DIRETOS, para que a etapa de build OCORRA POR CONTA DO DOCKER-COMPOSE EM SI (aí não precisaríamos rodar 'docker build -t nome-da-image . ' PARA BUILDARMOS NOSSa image... )
     build: ./backend
@@ -44,10 +45,25 @@ services:
       - /app/node_modules # É O ANON VOLUME
       # É O BIND MOUNT -- EM VEZ DE USAR 1 ABSOLUTE PATH, USAMOS 1 RELATIVE PATH EM RELAÇÃO AO DOCKER FILE (bem mais curto do que 'A:\projeto15-DOCKER\MODULO6-DOCKER-COMPOSE-ORQUESTRACAO-ELEGANTE-DE-MULTIPLOS-CONTAINERS\projeto-docker-multi-containers\backend:/app')
       - ./backend:/app
-      # frontend:
       #### A OPTION/KEY DE 'depends_on' É SUPER IMPORTANTE, PQ DEFINE A 'ORDEM EM QUE DEVERÃO SER CRIADOS E RODADOS OS CONTAINERS' (comunicamos '''ah, o  CONTAINER BACKEND __ DEPENDE__ DO CONTAINER MONGODB, POR ISSO O CONTAINER MONGODB DEVE SER EXECUTADO ANTERIORMENTE A ELE')... 
     depends_on:
       - mongodb
+    # É ASSIM QUE DEFINIMOS CUSTOM NAMES PARA OS CONTAINERS (em vez de usar o default, que é  'YOUR PROJECT/DIRECTORY NAME  +  '_' + SEU SERVICE NAME + UM INCREMENTING NUMBER'...)
+    container_name: goals-backend
+
+  react:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend/src:/app/src
+      # ESSAS 2 OPÇÕES SÃO EQUIVALENTES A '-it' no run do 'docker run'...
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+      # É ASSIM QUE DEFINIMOS CUSTOM NAMES PARA OS CONTAINERS (em vez de usar o default, que é  'YOUR PROJECT/DIRECTORY NAME  +  '_' + SEU SERVICE NAME + UM INCREMENTING NUMBER'...)
+    container_name: react
 
 volumes:
   mongo-volume: #É ASSIM QUE ESPECIFICAMOS/DEFINIMOS 'named volumes' (precisamos DEFINIR AQUI E LÁ NO CONTAINER EM QUE É USADO/ACOPLADO)..
