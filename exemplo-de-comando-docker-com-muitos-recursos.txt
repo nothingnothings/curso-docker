@@ -192,3 +192,37 @@ Dockerfile
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker-compose up 
+
+
+
+docker-compose up -d 
+
+
+
+
+
+docker-compose down (para todos os containers e os remove, MAS NÃO REMOVE VOLUMES EM SI)...
+
+
+
+
+
+
+
+
+docker-compose down -v (vai remover também os named volumes assignados aos nossos containers)...

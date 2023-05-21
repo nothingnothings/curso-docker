@@ -1,0 +1,519 @@
+ 
+
+
+
+
+
+
+
+
+ OK... MAS AGORA A PERGUNTA É:
+
+
+
+ ''COMO STARTAMOS ___ SERVICEs__ _COM O DOCKER COMPOSE????'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> PARA STARTAR SERVICES COM O DOCKER-COMPOSE,
+
+
+
+ É CLARO QUE PRECISAMOS DO TERMINAL,
+
+
+
+
+ PRECISAMOS NAVEGAR ATÉ O FOLDER EM QUE O ARQUIVO 'docker-compose.yaml'
+
+
+ EXISTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> CERTO...
+
+
+
+
+
+
+ AGORA, PARA RODAR TODOS SEUS CONTAINERS/SERVICES ESPECIFICADOS DENTRO 
+
+
+
+ DO ARQUIVO 'docker-compose.yaml',
+
+
+
+
+
+
+
+
+BASTA __ RODAR__ 
+
+O COMANDO 
+
+
+
+
+'docker-compose up'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO VAI RODAR TODOS OS SERVICES 
+
+
+DEFINIDOS DENTRO DESSE ARQUIVO COMPOSE --> E VAI 
+
+FAZER MAIS DO QUE 
+
+
+
+STARTAR OS CONTAINERS... -> VAI TAMBÉM 'PULL' E 'BUILD'
+
+
+TODAS AS 
+
+
+
+
+IMAGES NECESSÁRIAS/REQUERIDAS PELOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+--> é por isso que o professor roda 'docker-compose up'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... E ISSO VAI RODAR TODO O SETUP NECESSÁRIO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> E, NO OUTPUT,
+
+
+ENXERGAMOS ISTO:
+
+
+
+
+ CREATING NETWORK 'projeto-docker-multi-containers_default' 
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO SIGNIFICA QUE ELE CRIOU 1 NETWORK COM O NOME DE NOSSA PASTA + '_default'...
+
+
+
+
+
+
+
+
+
+
+
+-> ELE TAMBÉM CRIOU 1 VOLUME DE NOME 
+
+
+'projeto-docker-multi-containers_mongo-volume'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> AO CONTAINER FOI ASSIGNADO UM NOME DE 
+
+
+'projeto-docker-multi-containers-mongodb-1'...
+
+
+
+
+
+
+
+ISSO TUDO É PREFIXADO PELO NOSSO FOLDER NAME...
+
+
+
+
+
+
+
+
+
+
+--> por default,
+
+
+
+O __ DOCKER-COMPOSE COMEÇA EM 'ATTACHED MODE'...
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO NOS PERMITE _ DERRUBAR TUDO COM 'CONTROL + C'...
+
+
+
+
+
+
+
+SE RODAMOS 'docker ps -a',
+
+VISUALIZAMOS QUE ESSE CONTAINER PAROU...
+
+
+
+(pq esse é o DEFAULT do docker-compose, RODAR EM 'attached' e 'REMOVE automatically', na execução do 'docker-compose up'...)...
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO....
+
+
+
+
+
+
+
+MAS SE QUEREMOS __ COMEÇAR NO MODO 'detached'
+
+
+OS NOSSOS SERVICES,
+
+DEVEMOS 
+RODAR 
+
+
+
+
+'docker-compose up -d' ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO VAI COMEÇAR NOSSOS PROCESSOS EM 'DETACHED MODE',
+
+e aí 
+
+
+
+
+
+
+
+
+não vai ficar no terminal..
+
+
+
+
+
+
+
+
+
+
+
+CERTO... AGORA ESTAMOS COM O CONTAINER RODANDO NO FUNDO, ESSENCIALMENTE..
+
+
+
+
+
+
+
+
+
+
+
+MAS DIGAMOS QUE QUEREMOS PARAR TODOS OS SERVICES,
+
+E AÍ REMOVER 
+TODOS OS CONTAINERS E ASSIM POR DIANTE... -> PARA ISSO,
+
+
+
+
+RODAMOS/RODARÍAMOS 'docker-compose down'...
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO6-DOCKER-COMPOSE-ORQUESTRACAO-ELEGANTE-DE-MULTIPLOS-CONTAINERS\projeto-docker-multi-containers> docker-compose up -d
+[+] Running 1/1
+ - Container projeto-docker-multi-containers-mongodb-1  Started                          1.8s 
+PS A:\projeto15-DOCKER\MODULO6-DOCKER-COMPOSE-ORQUESTRACAO-ELEGANTE-DE-MULTIPLOS-CONTAINERS\projeto-docker-multi-containers> docker-compose down
+[+] Running 2/2
+ - Container projeto-docker-multi-containers-mongodb-1  Removed                          0.4s 
+ - Network projeto-docker-multi-containers_default      Removed                          1.0s
+PS A:\projeto15-DOCKER\MODULO6-DOCKER-COMPOSE-ORQUESTRACAO-ELEGANTE-DE-MULTIPLOS-CONTAINERS\projeto-docker-multi-containers>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK....
+
+
+
+
+MAS ESSE COMANDO DE 'PARAR CONTAINERS E OS REMOVER'
+
+
+
+NÃO 
+
+
+VAI REMOVER OS VOLUMES,
+
+ELES AINDA FICAM COMO 'SUJEIRA'...
+
+
+
+
+
+
+
+
+
+
+
+SE _ VC __ QUER _REMOVER VOLUMES,
+
+
+
+
+VC PRECISA USAR A FLAG DE 'docker-compose down -v'..
+
+
+
+
+
+
+
+A FLAG DE '-v'
+
+
+VAI FORÇAR O REMOVE DOS VOLUMES, TAMBÉM...
+
+
+
+
+
+
+
+
+
+
+CERTO... ISSO VAI APAGAR 
+
+
+TAMBÉM NOSSO VOLUME DE 'mongo-volume'...
+
+
+
+
+
+
+
+
+
+
+ISSO FAZ MT SENTIDO,
+
+PQ TIPICAMENTE VC VAI QUERER PERSISTIR DATA 
+
+COM VOLUMES... 
+(
+
+    SE OS VOLUMES FOSSEM APAGADOS AUTOMATICAMENTE 
+
+    COM O STOP E REMOVE DE SEUS CONTAINERS,
+
+    ISSO SERIA RUIM...
+)
+
+
+
+
+
+
+
+
+
+
+
+DOCKER-COMPOSE UP --> É USADO PARA BUILD, PULL IMAGES E START CONTAINER...
+
+
+
+
+
+
+DOCKER-COMPOSE DOWN --> USADO PARA O STOP E REMOVE DE TODOS OS CONTAINERS E ASSIM POR DIANTE...
+
+
+
+
+
+
+
+
+
+É ASSIM QUE USAMOS O ARQUIVO 
+
+
+
+'docker-compose.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO ACABADO, DEVEMOS SEGUIR ATÉ O BACKEND,
+
+VER COMO PODEMOS USAR ISSO COM O DOCKER-COMPOSE...
