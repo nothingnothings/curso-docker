@@ -1,0 +1,1939 @@
+
+
+
+
+
+
+
+--> OK... ATÉ AGORA, TEMOS ESTE CÓDIGO:
+
+
+
+
+
+
+
+
+
+
+version: "3.8" 
+services:
+  mongodb:
+
+  backend:
+
+  frontend:
+    
+
+
+
+
+
+
+
+
+
+
+
+
+VAMOS COMEÇAR COM O CONTAINER DO MONGODB...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O COMANDO QUE USAMOS PARA RODAR O MONGODB CONTAINER FOI ESTE:
+
+
+
+
+
+
+
+-----------------------
+RUN MONGODB CONTAINER
+-------------------------
+
+
+
+
+docker run --name mongodb-pure -e MONGO_INITDB_ROOT_USERNAME=arthur -e MONGO_INITDB_ROOT_PASSWORD=password -v data:/data/db --rm -d --network goals-net mongo 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ou seja,
+
+ISTO:
+
+
+
+
+
+docker run 
+--name mongodb-pure 
+-e MONGO_INITDB_ROOT_USERNAME=arthur 
+-e MONGO_INITDB_ROOT_PASSWORD=password 
+-v mongo-volume:/data/db 
+--rm 
+-d 
+--network goals-net 
+
+mongo 
+
+
+
+
+
+
+
+
+
+
+ENTÃO PRECISAMOS:
+
+
+
+
+1) NÃO USAR UMA IMAGE CUSTOM, PQ USAMOS UMA 'PRE-BUILT, A DO MONGODB MESMO..
+
+
+
+
+
+
+2) PASSAMOS 2 ENVIRONMENT VARIABLES 
+
+
+
+3) COLOCAMOS 1 LABEL DE 'mongodb-pure'
+
+
+
+
+
+4) colocamos  1 named volume, de nome 'mongo-volume'....
+
+
+
+
+
+
+5) COLOCAMOS O PARÂMETRO DE '--rm',
+
+para 
+
+
+QUE O CONTAINER SEJA REMOVIDO QUANDO ELE FOR PARADO...
+
+
+
+
+
+6) COLOCAMOS '-d',
+
+PARA QUE O CONTAINER COMECE NO 'DETACHED MODE'...
+
+
+
+
+
+7) COLOCAMOS ESSE CONTAINER DENTRO DA NETWORK DE 'goals-net'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS COMO CONSEGUIMOS ESCREVER TUDO ISSO NO DOCKER COMPOSE?
+
+
+
+
+
+
+
+BEM, O PRIMEIRO PASSO É __ APONTAR__ PARA A IMAGE QUE QUEREMOS USAR...
+
+
+
+
+
+
+
+
+
+--> devemos COLOCAR A KEY de 'image' DEBAIXO DO 
+
+CONTAINER A QUE 
+
+ESSA IMAGE VAI PERTENCER,
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+version: "3.8" 
+services:
+  mongodb:
+    image: 
+
+  backend:
+
+  frontend:
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É CLARO QUE PRECISAMOS COLOCAR 2 BLANKS, INDENTAR ESSA KEY DA IMAGE...
+
+
+
+
+
+
+
+--> OK... COMO VALUE DESSA KEY, COLOCAREMOS A STRING DE 'mongo',
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+version: "3.8" # É A VERSION DO ARQUIVO/DOCKER QUE QUEREMOS USAR (há diferenças entre versões, diferenças na sintaxe, etc)....
+#  --> COM ISSO, ESTAMOS ESPECIFICANDO QUE NOSSO APP VAI CONTER 3 CONTAINERS...
+services:
+  mongodb:
+    image: 'mongo'
+
+  backend:
+
+  frontend:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... 
+
+
+USAREMOS O MESMO NOME DE IMAGE QUE USAMOS PARA O DOCKER RUN..
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO VAI COMUNICAR AO DOCKER QUE O 'MONGODB CONTAINER'
+
+DEVERÁ 
+
+SER BASEADO 
+
+NESSA IMAGE AÍ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS COLOCAR SIMPLESMENTE UMA 'image name' (O DOCKER VAI ENTÃO PROCURAR LOCALMENTE E LÁ NO DOCKER HUB)...
+
+
+
+
+
+
+--> VC TAMBÉM PODE USAR UMA URL COMPLETA A 1 REPOSITORY EM QUE 
+
+
+ESSA IMAGE PODE ESTAR 
+
+
+ARMAZENADA (como 'academind/hello-world' )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... TUDO ISSO É VÁLIDO... --> VC TAMBÉM PODE USAR, É CLARO,
+
+UMA CUSTOM IMAGE QUE VC USOU NO SEU SISTEMA,
+
+QUE 
+
+VC 
+
+PODE QUERER 
+
+REFERENCIAR,
+
+como 
+
+
+'goals-node'...(a image do backend node)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... VAMOS USAR O 'mongo', pq queremos o mongo vanilla...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO.... E QUE MAIS VAMOS QUERER EXECUTAR?
+
+
+
+
+
+
+
+
+
+
+
+
+-> BEM, VAMOS QUERER: 
+
+
+
+
+
+
+5) COLOCAMOS O PARÂMETRO DE '--rm',
+
+para 
+
+
+QUE O CONTAINER SEJA REMOVIDO QUANDO ELE FOR PARADO...
+
+
+
+
+
+6) COLOCAMOS '-d',
+
+PARA QUE O CONTAINER COMECE NO 'DETACHED MODE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> bem, aqui TEMOS UMA BOA NOTÍCIA -------> POR DEFAULT,
+
+QUANDO 
+
+VC 
+
+
+USA O DOCKER-COMPOSE,
+
+
+
+
+QUANDO VC DECIDE 'BRING THE SERVICES DOWN',
+
+ELES 
+
+SÃO AUTOMATICAMENTE REMOVIDOS...
+
+
+
+
+
+
+
+
+
+
+
+--> 
+E O 'detach', com '-d',
+
+É 
+
+
+
+
+ALGO QUE ___TAMBÉM PODEMOS __ ESPECIFICAR __ NO MOMENTO EM QUE 
+
+
+
+STARTAMOS TODOS OS SERVICES DE UMA SÓ VEZ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EM OUTRAS PALAVRAS,
+
+NÃO PRECISAMOS ADICIONAR AS FLAGS DE '--rm' e '-d' 
+
+
+
+
+__ À ESSA CONFIGURAÇÃO DO MONGODB....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO.... MAS UMA COISA __ QUE __ É _ NECESSÁRIO ADICIONAR, AQUI,
+
+É 
+
+O VOLUME 
+
+DESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR VAI ADICIONAR UM VOLUME,
+
+POR MEIO DA KEY DE 
+
+'volumes:'...
+
+
+
+
+
+
+
+
+
+
+----> ESSA OPTION VAI FICAR NO MESMO LEVEL DE 'image',
+
+TIPO ASSIM:
+
+
+
+
+
+version: "3.8" # É A VERSION DO ARQUIVO/DOCKER QUE QUEREMOS USAR (há diferenças entre versões, diferenças na sintaxe, etc)....
+#  --> COM ISSO, ESTAMOS ESPECIFICANDO QUE NOSSO APP VAI CONTER 3 CONTAINERS...
+services:
+  mongodb:
+    image: 'mongo'
+    volumes: 
+
+  backend:
+
+  frontend:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...E PODEMOS ADICIONAR MAIS DE 1 VOLUME, É CLARO,
+
+PQ ISSO É POSSÍVEL.... MAIS DE 1 VOLUME PARA 1 MESMO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... E A SINTAXE É BEM SIMPLES/FÁCIL... -------> 
+
+
+
+
+
+
+
+
+PARA CADA __ VOLUME,
+
+COLOCAMOS UM '-', como se fosse markdown...
+
+
+
+
+
+
+
+
+
+-> AÍ, DEPOIS DE CADA LINHA,
+
+VC 
+
+DEFINE O VOLUME EXATAMENTE COMO VC APRENDEU...
+
+
+
+
+
+
+
+
+
+
+OU SEJA,
+
+PARA 
+
+
+DEFINIR 1 VOLUME DE NOME 'mongo-volume',
+
+
+ESCREVEMOS ASSIM:
+
+
+
+
+
+
+
+
+- mongo-volume:/data/db 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CÓDIGO COMPLETO:
+
+
+
+
+
+version: "3.8" 
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - mongo-volume:/data/db
+
+  backend:
+
+  frontend:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO....
+
+
+
+
+
+
+
+
+
+OU SEJA, É EXATAMENTE A MESMA SINTAXE USADA COM O DOCKER COMUM, só tiramos aquele '-v'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+
+
+TAMBÉM PODEMOS ADICIONAR COISAS COMO ':ro', O READ-ONLY,
+
+NO VALUE DESSA KEY...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, FALTOU APENAS:
+
+
+
+
+
+
+1) A NETWORK DE 'net-goals' 
+
+
+
+
+
+e 
+
+
+
+2) AS ENVIRONMENT VARIABLES...
+
+
+
+
+
+
+
+
+
+
+A NETWORK É BEM FÁCIL, BASTA ESCREVER ASSIM:
+
+
+
+
+version: "3.8"
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - mongo-volume:/data/db
+    networks:
+      - goal-network
+
+  backend:
+
+  frontend:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS COMO COLOCAMOS AS ENVIRONMENT VARIABLES?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PRECISAMOS DE UMA OPTION DE 'environment',
+
+QUE FICARÁ NO MESMO LEVEL DE 'images' e 'volumes'...
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... E, DENTRO  DE 'environment:',
+
+
+TEMOS 
+
+
+2 
+SINTAXES POSSÍVEIS PARA ESPECIFICAR NOSSAS ENV VARIABLES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PODEMOS ESPECIFICAR 1 ENV VARIABLE,
+
+
+
+
+
+
+como 
+
+'MONGO_INITDB_ROOT_USERNAME' 
+
+
+
+
+
+
+
+
+
+
+
+e AÍ COLOCAR O VALUE, QUE SERÁ O VALUE PARA ESSA VARIABLE,
+
+TIPO ASSIM:
+
+
+
+
+version: "3.8"
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - mongo-volume:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=arthur
+    networks:
+      - goal-network
+
+  backend:
+
+  frontend:
+
+
+
+
+
+
+
+----------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. MAS QUAL É A SINTAXE ALTERNATIVA?
+
+
+
+
+
+
+
+
+
+
+é escrever assim: 
+
+
+
+
+' - MONGO_INITDB_ROOT_USERNAME: max' ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AMBAS OPÇÕES SÃO POSSÍVEIS...
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR PREFERE A SINTAXE DO ':',
+
+pq é mais bonita...
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+version: "3.8" # É A VERSION DO ARQUIVO/DOCKER QUE QUEREMOS USAR (há diferenças entre versões, diferenças na sintaxe, etc)....
+#  --> COM ISSO, ESTAMOS ESPECIFICANDO QUE NOSSO APP VAI CONTER 3 CONTAINERS...
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - mongo-volume:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME: arthur  # a sintaxe '- MONGO_INITDB_ROOT_USERNAME=arthur' TAMBÉM É CORRETA..
+    networks:
+      - goal-network
+
+  backend:
+
+  frontend:
+
+
+
+
+
+
+
+
+
+
+----------------------------
+
+
+
+
+
+
+
+
+
+
+COM ISSO, ESTAMOS ESPECIFICANDO AS ENV VARIABLES PARA ESSE MONGODB CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS VC __ TAMBÉM TEM OUTRA OPÇÃO DE DEFINIÇÃO,
+
+QUE 
+
+
+
+É 
+
+
+O USO DE UMA 'ENVIRONMENT VARIABLE FILE'... --> 
+
+
+
+
+
+
+
+
+
+PROVAVELMENTE É AQUILO DE 
+
+'.env'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR HAVIA NOS MOSTRADO ISSO MAIS CEDO NO CURSO,
+
+
+
+
+NO DOCKER NORMAL,
+
+COM A OPTION DE '--env-file NOME-DO-ARQUIVO-ENV'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS O EQUIVALENTE A ISSO,
+
+NO DOCKER COMPOSE,
+
+
+
+É ADICIONAR 1 SUB-FOLDER DE NOME 'env',
+
+
+
+E AÍ 
+
+
+ALI DENTRO 
+
+
+PODEMOS TER 1 ARQUIVO 'mongo.env',
+
+ou algo assim...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS A SINTAXE, NESSE ARQUIVO, DEVE FICAR OBRIGATORIAMENTE ASSIM:
+
+
+
+
+
+
+
+
+
+MONGO_INITDB_ROOT_USERNAME=arthur 
+MONGO_INITDB_ROOT_PASSWORD=password
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> CERTO...
+
+
+
+
+MAS SE QUISERMOS 
+
+
+
+IMPORTAR ESSE ARQUIVO CONFIG/ENV,
+
+
+
+
+DEVEMOS ESCREVER 
+
+
+
+
+
+A OPTION DE 'env_file:',
+
+
+E AÍ 
+
+
+
+ESPECIFICAR TODOS OS ENV FILES QUE 
+
+
+DEVEM SER APLICADOS/USADOS COM ESSE CONTAINER... --> PARA ISSO,
+
+
+
+
+
+
+
+
+vc deve 
+
+escrever 
+
+
+'- '
+
+
+
+E AÍ UM 
+
+
+RELATIVE PATH AO ARQUIVO ENV QUE VC QUER USAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE ESCREVEMOS ASSIM:
+
+
+
+
+
+version: "3.8" #
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - mongo-volume:/data/db
+    environment:
+      - ./env/mongo.env # É ASSIM QUE PODEMOS IMPORTAR ARQUIVOS ENV, com as nossas ENVIRONMENT VARIABLES, E AÍ DEIXAR 'LEAN' O NOSSO DOCKER-COMPOSE FILE......
+    networks:
+      - goal-network
+
+  backend:
+
+  frontend:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... COM ISSO, OS ENVIRONMENT VARIABLES ARMAZENADOS NESSE ARQUIVO '.env'
+
+
+
+SERÃO 
+
+
+LIDOS E CONSIDERADOS NAQUELE CONTAINER 'mongodb'...
+
+
+
+
+
+
+
+
+
+
+
+-----> OK, MAS PQ DIABOS 
+
+ESCREVEMOS, AGORA,
+ 
+
+
+
+
+ '- ./env/mongo.env' ,
+
+
+
+
+
+
+
+
+
+
+
+ E PQ __ ANTERIORMENTE,
+
+ COM NOSSAS ENVIRONMENT VARIABLES NA KEY DE 'environment:',
+
+
+
+ ESCREVEMOS 
+
+
+
+
+ '- ' ANTES do key name?
+
+
+
+
+
+
+
+
+
+
+
+ --> O PROFESSOR EXPLICA QUE 
+
+
+ VC DEVE __ USAR_ _ '- ' (dash )
+
+
+ SEMPRE QUE 
+
+ VC 
+
+
+ TIVER 1 __ LISTA_ DE SINGLE VALUES...
+
+
+
+
+
+
+
+
+
+
+
+ENTRETANTO,
+
+
+COMO EM __ 'environment'
+
+TÍNHAMOS UM _ MONTE _DE KEY-VALUE PAIRS,
+
+
+ISSO NÃO É TECNICAMENTE UMA LISTA,
+
+
+
+E SIM UM __ YAML OBJECT,
+
+
+
+
+_ E É JUSTAMENTE POR ISSO QUE NÃO PRECISAMOS 
+
+
+
+
+DE UM '- ' nesse 'environment'
+
+
+
+
+
+
+
+
+
+
+
+
+PARA SINGLE VALUES, EM QUE VC NÃO TEM 'key: value',
+
+
+
+
+
+
+VC PRECISA DO '-'.... caso contrário, essa notação não é necessária... (o '-' é desnecessário)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+COM ISSO,
+
+
+
+O PROFESSOR FALOU UM MONTE SOBRE ESSAS OPTIONS..
+
+
+
+
+
+
+
+
+
+
+MAS AGORA ACABAMOS COM O MONGODB,
+
+MAS FALTOU A NETWORK..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ADICIONAR UMA NETWORK,
+
+BASTA COLOCAR 
+
+'network:
+    - xxx' ,
+
+
+
+    E AÍ 
+
+    especificar 
+
+
+
+    AS NETWORKS A QUE ESSE CONTAINER PERTENCE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS EM MTOS CASOS ISSO NÃO SERÁ NECESSÁRIO --> ISSO PQ, QUANDO VC USA O DOCKER-COMPOSE,
+
+O DOCKER VAI AUTOMATICAMENTE CRIAR 
+
+
+
+
+
+
+1 NETWORK E __ ENTÃO _ VAI COLOCAR TODOS OS SERVICES ESPECIFICADOS NO DOCKER-COMPOSE FILE 
+
+__DENTRO_ _ 
+DELA....
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    environment:
+      # - MONGO_INITDB_ROOT_USERNAME: arthur  # a sintaxe '- MONGO_INITDB_ROOT_USERNAME=arthur' TAMBÉM É CORRETA..
+      # - MONGO_INITDB_ROOT_PASSWORD: password
+      - ./env/mongo.env # É ASSIM QUE PODEMOS IMPORTAR ARQUIVOS ENV, com as nossas ENVIRONMENT VARIABLES, E AÍ DEIXAR 'LEAN' O NOSSO DOCKER-COMPOSE FILE......
+    
+    
+    # ? MTAS VEZES ESSE COMANDO NÃO É NECESSÁRIO, PQ O DOCKER-COMPOSE VAI DETECTAR AUTOMATICAMENTE CRIAR 1 NOVO ENVIRONMENT PARA TODOS OS SERVICES ESCRITOS NESSE ARQUIVO 'compose', E AÍ JÁ VAI ADICIONAR TODOS ESSES SERVICES NA 'NETWORK IMPLÍCITA', OUT OF THE BOX...
+    networks:
+      - goal-network
+
+  backend:
+
+  frontend:
+
+
+
+
+
+
+
+----------------------------
+
+
+
+
+
+
+
+
+
+
+OK... ISSO SALVA BASTANTE TRABALHO... ELE JÁ VAI ADICIONAR 
+
+
+
+
+
+NOSSOS CONTAINERS DENTRO DE 1 MESMA NETWORK, OUT OF THE BOX...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS VC PODERIA ESPECIFICAR UMA _ NETWORK,
+EXPLICITAMENTE...
+
+
+
+
+
+
+
+
+
+-> VC PODE FAZER ISSO SE VC QUER 'USAR UMA NETWORK JÁ CRIADA POR VOCÊ'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ----> NO CASO ATUAL,
+
+
+
+O MONGODB SERVICE SERIA ADICIONADO TANTO AO 'DEFAULT NETWORK' CRIADO COM O DOCKER-COMPOSE
+
+
+COMO __ TAMBÉM 
+
+
+
+
+A NETWORK 
+
+QUE  VC HAVIA CRIADO ANTES (de 'goals-net')....
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+version: "3.8" # É A VERSION DO ARQUIVO/DOCKER QUE QUEREMOS USAR (há diferenças entre versões, diferenças na sintaxe, etc)....
+#  --> COM ISSO, ESTAMOS ESPECIFICANDO QUE NOSSO APP VAI CONTER 3 CONTAINERS...
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - mongo-volume:/data/db
+    environment:
+      # - MONGO_INITDB_ROOT_USERNAME: arthur  # a sintaxe '- MONGO_INITDB_ROOT_USERNAME=arthur' TAMBÉM É CORRETA..
+      # - MONGO_INITDB_ROOT_PASSWORD: password
+      - ./env/mongo.env # É ASSIM QUE PODEMOS IMPORTAR ARQUIVOS ENV, com as nossas ENVIRONMENT VARIABLES, E AÍ DEIXAR 'LEAN' O NOSSO DOCKER-COMPOSE FILE......
+    
+    
+    # ? MTAS VEZES ESSE COMANDO NÃO É NECESSÁRIO, PQ O DOCKER-COMPOSE VAI DETECTAR AUTOMATICAMENTE CRIAR 1 NOVO ENVIRONMENT PARA TODOS OS SERVICES ESCRITOS NESSE ARQUIVO 'compose', E AÍ JÁ VAI ADICIONAR TODOS ESSES SERVICES NA 'NETWORK IMPLÍCITA', OUT OF THE BOX...
+    # desnecessário, nesse nosso casos concreto... (esse container já vai ser adiciionado a 1 network implícita, criada pelo compose, que já abrangirá todos os outros containers especificados no docker-compose)...
+    # networks:
+    #   - goal-network
+
+  backend:
+
+  frontend:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... MAS, COM ISSO, ACABAMOS COM O MONGODB... -> TEMOS TODA A CONFIG PARA 
+
+CRIARMOS 
+O MONGODB SERVICE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS MAIS 1 DETALHE SOBRE VOLUMES:
+
+
+
+
+
+
+
+1) PARA _ VOLUMES,
+
+
+
+
+__PARA __ 'NAMED VOLUMES',
+
+
+VC 
+TAMBÉM 
+
+
+DEVE ADICIONAR 1 KEY _ NO _ MESMO __ NÍVEL de 'services' (top-level, em outras palavras),
+
+
+
+
+
+
+
+
+
+
+
+E AÍ __ VC DEVE __ aDICIONAR QUAISQUER 'NAMED VOLUMES' USADOS 
+
+
+NOS SEUS SERVICES (no nosso caso, será 'mongo-volume')...
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+volumes:
+    mongo-volume: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    --> E VC __ TAMBÉM NÃO DEVERÁ COLOCAR VALOR ALGUM DEPOIS DA KEY ( ou seja, fica 'mongo-volume' mesmo...)
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+version: "3.8" 
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - mongo-volume:/data/db
+    environment:
+
+      - ./env/mongo.env # É ASSIM QUE PODEMOS IMPORTAR ARQUIVOS ENV, com as nossas ENVIRONMENT VARIABLES, E AÍ DEIXAR 'LEAN' O NOSSO DOCKER-COMPOSE FILE......
+
+  backend:
+
+  frontend:
+volumes:
+  mongo-volume: #É ASSIM QUE ESPECIFICAMOS/DEFINIMOS 'named volumes' (precisamos DEFINIR AQUI E LÁ NO CONTAINER EM QUE É USADO/ACOPLADO)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  OK... ISSO PODE PARECER ESTRANHO, MAS ESSA É A SINTAXE QUE O DOCKER QUER PARA FICAR 'AWARE' 
+
+  DE NAMED 
+
+  VOLUMES QUE ELE DEVE CRIAR PARA SEUS SERVICES....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --> POR FIM, OUTRO DETALHE:
+
+
+
+
+  '''SE VC USAR O MESMO NOME DE VOLUME EM DIFERENTES SERVICES,
+
+  O VOLUME SERÁ ___ SHARED''' --> isso quer DIZER QUE 
+
+
+  DIFERENTES CONTAINERS PODEM USAR O MESMO VOLUME,
+
+  O MESMO VOLUME NA SUA LOCAL HOST MACHINE...
+
+
+
+
+
+
+  (
+
+    ISSO É ALGO QUE É POSSÍVEL...
+  )
+
+
+
+
+
+
+
+
+  --> É JUSTAMENTE POR ISSO QUE 
+
+
+  ___ DEVEMOS ESPECIFICAR  'named volumes' 
+
+  NAQUELA KEY de 'volumes' NO MESMO NÍVEL DE 'services'...
+
+
+
+
+
+
+
+
+
+
+  JÁ __ ANON VOLUMES E BIND MOUTNS _ NÃO PRECISAM SER ESPECIFICADOS 
+
+
+
+  ali na key de 'volumes:
+                    nome-do-volume:...' 

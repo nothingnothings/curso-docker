@@ -1,36 +1,32 @@
-
-
-
-
-
 # version: 'version'
 # services:
 
-
-
-
 # -----> AGORA ENTRA O ASSUNTO DA INDENTATION --> VAMOS INDENTAR 2 BLANKS...
-
-
-
-
-
-
 
 # --> ISSO É IMPORTANTE __ JUSTAMENTE __ PQ _ O 'YAML' USA __ INDENTATION PARA 
 
 # EXPRESSAR DEPENDENCIES...
 
-
-
-
-
 version: "3.8" # É A VERSION DO ARQUIVO/DOCKER QUE QUEREMOS USAR (há diferenças entre versões, diferenças na sintaxe, etc)....
 #  --> COM ISSO, ESTAMOS ESPECIFICANDO QUE NOSSO APP VAI CONTER 3 CONTAINERS...
 services:
   mongodb:
+    image: 'mongo'
+    volumes:
+      - mongo-volume:/data/db
+    environment:
+      # - MONGO_INITDB_ROOT_USERNAME: arthur  # a sintaxe '- MONGO_INITDB_ROOT_USERNAME=arthur' TAMBÉM É CORRETA..
+      # - MONGO_INITDB_ROOT_PASSWORD: password
+      - ./env/mongo.env # É ASSIM QUE PODEMOS IMPORTAR ARQUIVOS ENV, com as nossas ENVIRONMENT VARIABLES, E AÍ DEIXAR 'LEAN' O NOSSO DOCKER-COMPOSE FILE......
+    
+    
+    # ? MTAS VEZES ESSE COMANDO NÃO É NECESSÁRIO, PQ O DOCKER-COMPOSE VAI DETECTAR AUTOMATICAMENTE CRIAR 1 NOVO ENVIRONMENT PARA TODOS OS SERVICES ESCRITOS NESSE ARQUIVO 'compose', E AÍ JÁ VAI ADICIONAR TODOS ESSES SERVICES NA 'NETWORK IMPLÍCITA', OUT OF THE BOX...
+    # desnecessário, nesse nosso casos concreto... (esse container já vai ser adiciionado a 1 network implícita, criada pelo compose, que já abrangirá todos os outros containers especificados no docker-compose)...
+    # networks:
+    #   - goal-network
 
   backend:
 
   frontend:
-    
+volumes:
+  mongo-volume: #É ASSIM QUE ESPECIFICAMOS/DEFINIMOS 'named volumes' (precisamos DEFINIR AQUI E LÁ NO CONTAINER EM QUE É USADO/ACOPLADO)..
