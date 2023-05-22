@@ -14,33 +14,33 @@ services:
 
     #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
     # VAMOS USAR 1 IMAGE CUSTOM, criada por nós...
-    php:
+  php:
       # sintaxe mais complexa de build...
-      build:
-        context: '/dockerfiles'
-        dockerfile: 'php.dockerfile'
+    build:
+      context: '/dockerfiles'
+      dockerfile: 'php.dockerfile'
         # 'DELEGATED' vai MELHORAR 1 POUCO A PERFORMANCE, PQ ESSE CONTAINER DE 'php' NÃO DEVERÁ WRITE BACK A ESSE FOLDER __ COM TANTA FREQUÊNCIA ASSIM, E AS COISAS QUE ELE FAZ WRITE NÃO PRECISAM SER REFLETIDAS NA HOST MACHINE INSTANTANEAMNETE.. (pq ELE NÃO VAI WRITE _ ALGUMA _ COISA QUE PRECISAMOS __ ACESSAR INSTANTANEAMENTE NA HOST MACHINE) 
-      volumes:
+    volumes:
         - './src:/var/www/html:delegated'
-      ports:
+    ports:
         - '3000:9000'
 
     #MYSQL --> é a database MYSQL
-    mysql:
+  mysql:
       #? DEPOIS DISSO, OS 'UTILITY CONTAINERS' (que SÃO RODADOS, OCASIONALMENTE, DURANTE O RUNTIME, POR NÓS MESMOS, COM 'docker-compose run xxx xxx')..
       image: mysql:5.7
       env_file:
         - ./env/mysql.env
     #'COMPOSER' é TIPO O 'npm do PHP', é usado para CRIAR PROJETOS E INSTALAR DEPENDENCIES PHP (é usado para CRIAR O APP LARAVEL, POR EXEMPLO)...
-    composer:
+  composer:
       # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
       build:
         context: './dockerfiles'
         dockerfile: composer.dockerfile
       volumes:
         - ./src:/var/www/html
-    artisan: # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
+  # artisan: # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
 
-    npm:
+  # npm:
 
 

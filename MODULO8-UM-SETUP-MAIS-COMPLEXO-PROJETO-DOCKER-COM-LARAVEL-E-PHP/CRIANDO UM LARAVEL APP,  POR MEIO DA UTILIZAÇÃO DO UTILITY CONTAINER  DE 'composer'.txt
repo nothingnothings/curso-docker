@@ -1,0 +1,505 @@
+
+
+
+PARA CRIAR UM LARAVEL APP,
+
+
+
+
+
+
+
+PODEMOS DAR 1 OLHADA NOS DOCS OFICIAIS 
+
+
+DO 
+
+
+LARAVEL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TEMOS OS REQUISITOS,
+
+MAS MAIS PARA BAIXO 
+
+TEMOS 
+
+O COMANDO 
+
+
+
+de 
+
+'composer global require laravel/installer'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE COMANDO INSTALA O LARAVEL,
+
+
+MAS TEMOS TAMBÉM ESTE COMANDO:
+
+
+
+
+
+
+
+
+
+
+
+composer create-project --prefer-dist laravel/laravel blog
+
+
+
+
+
+
+
+
+
+
+
+-> ok... 
+
+
+
+
+
+
+USAREMOS ESSE ÚLTIMO COMANDO,
+
+PQ 
+ELE 
+
+USA 
+
+
+SOMENTE O COMPOSER,
+
+PARA 
+
+GERAR 
+
+1 APP LARAVEL...
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. COPIAMOS ESSE COMANDO DE 
+
+
+'composer create-project --prefer-dist laravel/laravel blog',
+
+
+
+
+E AÍ 
+
+
+
+
+
+
+
+
+
+
+VOLTAMOS AO TERMINAL...
+
+
+
+
+
+
+
+
+
+
+
+---> NO TERMINAL, VAMOS ESCREVER 
+
+
+
+
+
+
+
+1 CÓDIGO 
+
+QUE RODE _ APENAS __ O CONTAINER DE 'composer'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO É ALGO QUE VIMOS NA SECTION ANTERIOR,
+
+
+
+
+O RUN DE CONTAINERS INDIVIDUAIS DE SEU ARQUIVO 'docker-compose',
+TUDO 
+
+POR MEIO DO 
+
+
+
+COMANDO 
+
+
+
+
+docker-compose run ____NOME DO CONTAINER____ (key) 
+
+
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+docker-compose run composer create-project --prefer-dist laravel/laravel blog
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS COLOCAR ESSE COMANDO ADICIONAL DE 'create-project --prefer-dist laravel/laravel blog'...
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS O PROFESSOR TAMBÉM COLOCA A FLAG DE '--rm'
+
+NESSE RUN 
+
+
+
+DO CONTAINER DE 'composer',
+
+TUDO PARA QUE 
+
+
+
+__ ESSE CONTAINER UTILITY _ SEJA _ REMOVIDO__ DEPOIS 
+
+
+
+DE ELE TER SIDO EXECUTADO (queremos que ele execute e pare, uma única vez)...
+
+
+
+
+
+
+
+
+--> ISSO EVITA FICARMOS COM UM MONTE DE 'DEAD CONTAINERs'
+
+depois 
+
+de 
+
+
+executarmos utility containers...
+
+
+ex:
+
+
+
+
+
+
+
+
+
+
+docker-compose run --rm composer create-project --prefer-dist laravel/laravel blog
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... DEPOIS DE TUDO ISSO,
+
+DEVEMOS 
+
+ESPECIFICAR __ O __ FOLDER __ EM QUE 
+
+NOSSO PROJETO DEVERÁ SER CRIADO (no default, está como 'blog', mas podemos colocar '.')...
+
+
+
+
+
+
+
+
+-- >VAMOS COLOCAR '.'
+
+PQ QUEREMOS QUE NOSSO APP LARAVEL SEJA CRIADO 
+
+NO ROOT DO FOLDER 'php-laravel-docker-setup'..
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+docker-compose run --rm composer create-project --prefer-dist laravel/laravel .
+
+
+
+
+
+
+
+
+
+
+
+---> OK... MAS GANHEI 1 ERROR...
+
+''services.server Additional property composer is not allowed''
+
+
+
+
+
+
+OK... ERA PQ AS COISAS NÃO ESTAVAM INDENTADAS CORRETAMENTE... CORRIGI ESSE ERRO....]
+
+
+
+
+
+
+
+
+
+OK... RODEI O COMANDO...
+
+
+
+
+O OUTPUT FICOU ASSIM:
+
+
+
+
+
+Creating a "laravel/laravel" project at "./"
+Info from https://repo.packagist.org: #StandWithUkraine
+Installing laravel/laravel (v10.2.1)
+  - Downloading laravel/laravel (v10.2.1)
+  - Installing laravel/laravel (v10.2.1): Extracting archive
+Created project in /var/www/html/.
+> @php -r "file_exists('.env') || copy('.env.example', '.env');"
+Loading composer repositories with package information
+Updating dependencies
+
+
+
+
+
+
+-------------------------------------------
+
+
+
+
+UM MONTE DE COISAS FORAM INSTALADAS...
+
+
+
+
+
+
+
+
+
+--> E TUDO ISSO FICOU REFLETIDO NO FOLDER DE 'src',
+
+
+
+DENTRO DO FOLDER DE 'php-laravel-docker-setup'...
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+COM ESSE PROCESSO TERMINADO,
+
+
+
+TEREMOS 
+
+
+o folder de 'src'
+
+cheio de arquivos...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ISSO TUDO PARECE LEGAL...E SE 
+
+
+
+
+EXAMINARMOS O SOURCE FOLDER,
+
+
+
+
+
+VEREMOS NOSSO LARAVEL APP...
+
+
+
+
+
+
+
+
+
+
+
+--> SE VC CONHECE LARAVEL,
+
+VC PODE 
+
+COMEÇAR A ESCREVER CÓDIGO LARAVEL...
+
+
+
+
+
+
+
+
+---> O PROFESSOR SÓ QUERIA MOSTRAR COMO PODEMOS RODAR O APP LARAVEL... (esse não é um curso laravel)...
+
+
+
+
+
+
+
+BASTANTE COISA, NESSE PROJETO LARAVEL...
