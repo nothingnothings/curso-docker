@@ -1,0 +1,1169 @@
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... 
+
+AGORA DEVEMOS COMEÇAR COM O WRITE DE 1 POUCO DE CÓDIGO, 
+
+NO CASO 
+
+
+VAMOS 
+
+ESCREVER 
+
+NOSSO 'NGINX WEB SERVER'..
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR ENFATIZA QUE NÓS (tanto nós como ele) NÃO 
+
+
+TEMOS 
+
+O 
+
+'COMPOSER' DO PHP INSTALADO...
+
+
+
+
+
+
+
+
+--> O PROFESSOR APONTA QUE, 
+
+
+
+COM O DOCKER,
+
+
+
+TEREMOS TODAS AS FERRAMENTAS PARA CONSTRUIR UM LARAVEL APP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR COMEÇA PELO ADD DE 1 FILE 'docker-compose.yaml',
+
+
+PQ 
+
+
+VAMOS 
+
+
+
+USAR VÁRIOS CONTAINERS NO NOSSO APP,
+
+
+
+E ESSES CONTAINERS DEVERÃO SER CAPAZES DE INTERAGIR ENTRE SI...
+
+
+
+
+
+
+
+
+
+
+-> OK...
+
+
+
+
+
+
+
+--> o PROFESSOR SEMPRE PREFERE TER 1 'DOCKER-COMPOSE',
+
+mesmo em apps com 1 único container...
+
+
+
+
+
+
+
+
+
+
+COMEÇAMOS ASSIM:
+
+
+
+
+
+version: '3.8'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE DOCKER-COMPOSE VAI SEGURAR O PROJETO INTEIRO,
+
+
+VAI 
+
+SEGURAR 
+
+TANTO 
+
+
+
+OS APP CONTAINERS, COMO TAMBÉM 
+
+OS 
+
+
+UTILITY CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR TAMBÉM VAI NOS MOSTRAR COMO PODEMOS 
+
+'RUN ALL' 
+
+
+
+OU 
+
+'APENAS RODAR ALGUNS DOS CONTAINERS'
+
+
+AO LONGO DESSE MÓDULO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+DEPOIS DISSO,
+
+O PROFESSOR COLOCA 
+
+A KEY de 'services'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E TEREMOS 6 SERVICES (containers) diferentes,
+
+
+
+
+
+
+pq nosso app é realmente 
+
+1 pouco maior...
+
+
+
+
+
+
+
+--> É POR ISSO QUE ESCREVEMOS ASSIM:
+
+
+
+
+
+
+
+
+version: '3.8'
+services:
+  #SERVER --> SERÁ RESPONSÁVEL PELO RECEBIMENTO DOS INCOMING REQUESTS E SUA DATA, QUE SERÁ REPASSADA AO 'PHP INTERPRETER' ( container 'PHP')...
+  server:
+  #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
+  php: 
+  #MYSQL --> é a database MYSQL
+  mysql:
+
+
+
+
+
+--------------------------------
+
+
+
+
+
+
+
+
+
+
+OK... AGORA ADICIONAMOS OS UTLITY CONtainers...
+
+
+
+tipo assim:
+
+
+
+
+
+
+
+
+version: '3.8'
+services:
+  #? PRIMEIRAMENTE, OS 'APP CONTAINERS' (que sempre ficarão rodando, no fundo... pq precisams handlar os requests, por ser um server)..
+  #SERVER --> SERÁ RESPONSÁVEL PELO RECEBIMENTO DOS INCOMING REQUESTS E SUA DATA, QUE SERÁ REPASSADA AO 'PHP INTERPRETER' ( container 'PHP')...
+  server:
+  #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
+  php: 
+  #MYSQL --> é a database MYSQL
+  mysql:
+  #? DEPOIS DISSO, OS 'UTILITY CONTAINERS' (que SÃO RODADOS, OCASIONALMENTE, DURANTE O RUNTIME, POR NÓS MESMOS, COM 'docker-compose run xxx xxx')..
+  
+  #'COMPOSER' é TIPO O 'npm do PHP', é usado para CRIAR PROJETOS E INSTALAR DEPENDENCIES PHP (é usado para CRIAR O APP LARAVEL, POR EXEMPLO)...
+  composer:
+  # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
+  artisan:
+  # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
+  npm:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... TEMOS OS 6 CONTAINERS AQUI....
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR QUER COMEÇAR COM O SERVER...
+
+
+
+
+
+
+
+
+
+
+-> O SERVER VAI USAR 
+
+
+
+'NGINX'..
+
+
+
+
+
+
+
+
+
+
+NGINX --> É 1 WEB SERVER POPULAR E SUPER EFICIENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker nginx -> ENCONTRAMOS A IMAGE OFICIAL DOCKER... E SEUS DOCS...
+
+
+
+
+
+
+
+
+
+
+-> OK...
+
+
+
+PODEMOS USAR ESSA IMAGE PARA SETTAR 1 
+
+
+
+
+
+NGINX SERVER..
+
+
+
+
+
+
+
+-> OK...
+
+
+
+
+
+
+
+
+
+é por isso que escrevemos, na key de 'server',
+
+assim:
+
+
+
+
+
+
+
+
+
+
+server:
+  image: nginx:stable-alpine 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -> O PROFESSOR VAI USAR ESSA VERSÃO 'stable-alpine',
+  UQE É BASEADA 
+
+  NO LINUX,
+
+  E QUE É BEM 
+
+
+  LEVE..
+
+
+
+
+
+  EX:
+
+
+
+
+
+  version: '3.8'
+services:
+  #? PRIMEIRAMENTE, OS 'APP CONTAINERS' (que sempre ficarão rodando, no fundo... pq precisams handlar os requests, por ser um server)..
+  #SERVER --> SERÁ RESPONSÁVEL PELO RECEBIMENTO DOS INCOMING REQUESTS E SUA DATA, QUE SERÁ REPASSADA AO 'PHP INTERPRETER' ( container 'PHP')...
+  server:
+    image: 'nginx:stable-alpine'
+  #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
+  php: 
+  #MYSQL --> é a database MYSQL
+  mysql:
+  #? DEPOIS DISSO, OS 'UTILITY CONTAINERS' (que SÃO RODADOS, OCASIONALMENTE, DURANTE O RUNTIME, POR NÓS MESMOS, COM 'docker-compose run xxx xxx')..
+  
+  #'COMPOSER' é TIPO O 'npm do PHP', é usado para CRIAR PROJETOS E INSTALAR DEPENDENCIES PHP (é usado para CRIAR O APP LARAVEL, POR EXEMPLO)...
+  composer:
+  # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
+  artisan:
+  # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
+  npm:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+services:
+  server:
+    image: 'nginx:stable-alpine' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK... E ESSE WEBSERVER TAMBÉM VAI EXPOR UMA PORT..
+
+
+
+
+
+
+
+
+
+
+
+
+A PORT SERÁ '80',
+
+
+
+
+
+
+QUE 
+
+SERÁ EXPOSTA INTERNAMENTE POR ESSA 
+
+IMAGE..
+
+
+
+
+
+
+
+-. É POR ISSO QUE O PROFESSOR ESCREVE ASSIM:
+
+
+
+
+
+
+
+'ports:
+  - '8000:80' 
+
+
+
+
+
+
+
+
+
+
+
+  --> OU SEJA,
+
+  BINDAMOS A PORT '8000'
+
+
+  DE NOSSA LOCAL HOST MACHINE A ESSA 
+
+  PORT 80 
+
+
+
+
+  DO CONTAINER COM O WEB SERVER...
+
+
+
+
+
+  EX:
+
+
+
+
+
+
+
+
+
+  
+services:
+  server:
+    image: 'nginx:stable-alpine' 
+    ports:
+      - '8000:80'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. COM ISSO, 
+CRIAMOS ESSE WEB SERVER DEFAULT....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ENTRETANTO, 'OUT OF THE BOX',
+
+
+ESSE SERVER NÃO VAI SER MT ÚTIL... --> NÃO VAI SER MT ÚTIL PQ 
+
+
+ELE __ NÃO VAI SABER 'WHAT IT SHOULD DO'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O QUE ELE PRECISA FAZER?  ELE PRECISA RECEBER INCOMING HTTP REQUESTS
+
+
+E FAZER 'FUNNEL' DESSES REQUESTS 
+
+
+
+LÁ 
+
+PARA O CONTAINER DE 'PHP' (o interpreter PHP),
+
+
+
+PARA QUE 
+
+ESSE CONTAINER CONSIGA 
+
+
+RODAR 
+
+
+
+O NOSSO CÓDIGO PHP...
+
+
+
+
+
+
+
+
+
+
+---> OK... PARA_ _ PROVIDENCIARMOS NOSSA PRÓPRIA CONFIGURAÇÃO 
+
+
+AO 
+
+
+SERVIDOR (Container 'server'),
+
+
+
+O PROFESSOR DIZ QUE DEVEMOS 
+
+
+ASSIGNAR 1 BIND MOUNT 
+
+
+A ESSE 
+CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR BINDA 1 LOCAL FOLDER,
+
+
+O FOLDER DE `nginx` (QUE AINDA NÃO CRIAMOS, MAS QUE VAI EXISTIR DENTRO DO FOLDER 'php-laravel-docker-setup')...
+
+
+
+
+
+
+
+
+
+
+--> CERTO... AÍ O PROFESSOR VAI TARGETTAR APENAS A FILE DE 'nginx.conf' ( pq 
+
+PODEMOS BINDAR APENAS 1 FILE ÚNICA,
+
+EM VEZ DE 1 FOLDER INTEIRO, COM 1 BIND MOUNT)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FICA TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+version: '3.8'
+services:
+  #? PRIMEIRAMENTE, OS 'APP CONTAINERS' (que sempre ficarão rodando, no fundo... pq precisams handlar os requests, por ser um server)..
+  #SERVER --> SERÁ RESPONSÁVEL PELO RECEBIMENTO DOS INCOMING REQUESTS E SUA DATA, QUE SERÁ REPASSADA AO 'PHP INTERPRETER' ( container 'PHP')...
+  server:
+    image: 'nginx:stable-alpine'
+    ports:
+      - '8000:80'
+    #SIM, É POSSÍVEL BINDAR APENAS 1 ÚNICO ARQUIVO EM 1 FOLDER, EM VEZ DE 1 FOLDER INTEIRO...
+    volumes:
+      - './nginx/nginx.conf'
+  #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
+  php: 
+  #MYSQL --> é a database MYSQL
+  mysql:
+  #? DEPOIS DISSO, OS 'UTILITY CONTAINERS' (que SÃO RODADOS, OCASIONALMENTE, DURANTE O RUNTIME, POR NÓS MESMOS, COM 'docker-compose run xxx xxx')..
+  
+  #'COMPOSER' é TIPO O 'npm do PHP', é usado para CRIAR PROJETOS E INSTALAR DEPENDENCIES PHP (é usado para CRIAR O APP LARAVEL, POR EXEMPLO)...
+  composer:
+  # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
+  artisan:
+  # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
+  npm:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTo...
+
+
+
+
+
+
+
+
+E, NESSE CONTAINER,
+
+DEVEMOS 
+
+
+
+
+
+
+BINDAR à PASTA DE 
+
+
+'/etc/nginx/nginx.conf'...
+
+
+
+
+
+
+
+
+OK... MAS PQ O PROFESSOR ESPECIFICOU ESSE CAMINHO AÍ?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É _ PQ _ OS OFFICIAL DOCS DA IMAGE 
+PEDIRAM 
+
+QUE ELE FIZESSE ISSO --> É ASSIM QUE TRABALHAMOS COM ESSAS 
+
+
+
+OFFICIAL IMAGES,
+
+
+
+VC NÃO VAI 'JUST KNOW'
+
+
+QUAIS PORTS SÃO EXPOSTAS,
+OU 
+
+QUAIS FOLDERS FAZEM ALGO 
+
+ESPECIAL NA IMAGE... --> VC __ dEVE __ LER _ OS DOCS..
+
+
+
+
+
+
+
+
+
+E, AQUI,
+
+
+NÓS APRENDEMOS QUE PODEMOS PASSAR NOSSA PRÓPRIA CONFIGURATION,
+
+TUDO POR MEIO DO BIND 
+
+
+
+
+
+
+
+A ESSE 'CONTAINER INTERNAL PATH.'...
+
+
+
+
+
+
+
+
+
+
+--> fica tipo assim:
+
+
+
+
+
+
+
+
+
+
+  server:
+    image: 'nginx:stable-alpine'
+    ports:
+      - '8000:80'
+    #SIM, É POSSÍVEL BINDAR APENAS 1 ÚNICO ARQUIVO EM 1 FOLDER, EM VEZ DE 1 FOLDER INTEIRO...
+    volumes:
+    # DEVEMOS BINDAR ESSA PASTA LOCAL, COM 1 BIND MOUNT, A ESSE PATH INTERNO DO CONTAINER, QUE É '/etc/nginx/nginx.conf' (pq, sim, é apenas esse arquivo que interessa, dentro daqeula pasta)..
+      - './nginx/nginx.conf:/etc/nginx/nginx.conf:ro'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ISSO, NO CASO,
+
+VAI NOS DEIXAR PASSAR NOSSA PRÓPRIA CONFIGURATION FILE PARA 
+
+
+ESSE WEBSERVER,
+
+
+
+PARA DENTRO DESSE WEBSERVER CONTAINER...
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS AINDA PRECISAMOS CRIAR 
+
+
+
+ESSA CONFIG FILE 
+
+NA NOSSA LOCAL HOST MACHINE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ficamos com 1 ARQUIVO JÁ COMPLETO,
+
+QUE TEM ESTE CONTEÚDo:
+
+
+
+
+
+
+
+
+
+
+
+
+server {
+    listen 80;
+    index index.php index.html;
+    server_name localhost;
+    root /var/www/html/public;
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass php:3000;
+        fastcgi_index index.php;
+        include_fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_scripts;
+        fastcgi_param PATH_INFO $fastcgi_path_info; 
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ESSE ARQUIVO nginx.conf'
+
+
+
+
+
+BASICAMENTE TEM 1 POUCO DE CONFIG...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O RESUMO É ESTE:
+
+
+
+
+
+
+
+
+
+
+
+server {
+    listen 80; # faz listen NA PORT 80...
+    index index.php index.html; # HANDLA REQUESTS A 'INDEX FILES'...
+    server_name localhost; 
+    root /var/www/html/public; #TAMBÉM ASSEGURA QUE PROCURAMOS NESSE DIRECTORY PARA FILES QUE USAREMOS PARA 'RESPOND' AOS REQUESTS... (ainda não temos esses arquivos)..
+    location / { #SÃO REDIRECTION RULES... -> BASICAMENTE ASSEGURAM QUE INCOMING REQUESTS SÃO REDIRECIONADOS A PHP FILES....
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    location ~ \.php$ { # OS REQUESTS QUE JÁ TARGETTAM PHP FILES SÃO ENTÃO REDIRECIONADOS AO NOSSO 'PHP INTERPRETER'... é isso que fazemos, aqui...
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass php:3000;
+        fastcgi_index index.php;
+        include_fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_scripts;
+        fastcgi_param PATH_INFO $fastcgi_path_info; 
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... MAS AGORA VOLTAMOS AO ARQUIVO 'docker-compose.yaml'..
+
+
+
+
+
+
+
+
+
+
+
+
+-> PQ AGORA JÁ GARANTIMOS QUE NOSSA CONFIG É 
+ADICIONADA AO NOSSO CONTAINER..
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR 
+
+
+
+
+
+
+SABE QUE 
+ISSO É NOVO PARA NÓS... VEREMOS MTOS EXEMPLOS,
+
+E ENTENDEREMOS PQ 
+CONSTRUÍMOS NOSSO CONTAINER ASSIM...
+
+
+
+
+
+
+
+
+AGORA PODEMOS VER O CONTAINER DE PHP (php interpreter)...

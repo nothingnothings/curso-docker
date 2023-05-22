@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  #? PRIMEIRAMENTE, OS 'APP CONTAINERS' (que sempre ficarão rodando, no fundo... pq precisams handlar os requests, por ser um server)..
+  #SERVER --> SERÁ RESPONSÁVEL PELO RECEBIMENTO DOS INCOMING REQUESTS E SUA DATA, QUE SERÁ REPASSADA AO 'PHP INTERPRETER' ( container 'PHP')...
+  server:
+    image: 'nginx:stable-alpine'
+    ports:
+      - '8000:80'
+    #SIM, É POSSÍVEL BINDAR APENAS 1 ÚNICO ARQUIVO EM 1 FOLDER, EM VEZ DE 1 FOLDER INTEIRO...
+    volumes:
+      # DEVEMOS BINDAR ESSA PASTA LOCAL, COM 1 BIND MOUNT, A ESSE PATH INTERNO DO CONTAINER, QUE É '/etc/nginx/nginx.conf' (pq, sim, é apenas esse arquivo que interessa, dentro daqeula pasta)..
+      # ESSA CONFIG FILE É NECESSÁRIA PARA FAZER O WEBSERVER NGINX FUNCIONAR...
+      - './nginx/nginx.conf:/etc/nginx/nginx.conf:ro'
+  #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
+  php: #MYSQL --> é a database MYSQL
+
+  mysql: #? DEPOIS DISSO, OS 'UTILITY CONTAINERS' (que SÃO RODADOS, OCASIONALMENTE, DURANTE O RUNTIME, POR NÓS MESMOS, COM 'docker-compose run xxx xxx')..
+
+  #'COMPOSER' é TIPO O 'npm do PHP', é usado para CRIAR PROJETOS E INSTALAR DEPENDENCIES PHP (é usado para CRIAR O APP LARAVEL, POR EXEMPLO)...
+  composer: # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
+
+  artisan: # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
+
+  npm:
+
+
