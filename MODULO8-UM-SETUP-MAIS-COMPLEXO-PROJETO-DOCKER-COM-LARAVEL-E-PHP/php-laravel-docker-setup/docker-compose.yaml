@@ -11,16 +11,28 @@ services:
       # DEVEMOS BINDAR ESSA PASTA LOCAL, COM 1 BIND MOUNT, A ESSE PATH INTERNO DO CONTAINER, QUE É '/etc/nginx/nginx.conf' (pq, sim, é apenas esse arquivo que interessa, dentro daqeula pasta)..
       # ESSA CONFIG FILE É NECESSÁRIA PARA FAZER O WEBSERVER NGINX FUNCIONAR...
       - './nginx/nginx.conf:/etc/nginx/nginx.conf:ro'
-  #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
-  php: #MYSQL --> é a database MYSQL
+    
+    #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
+    # VAMOS USAR 1 IMAGE CUSTOM, criada por nós...
+    php: 
+    # sintaxe mais complexa de build...
+      build:
+        context: '/dockerfiles'
+        dockerfile: 'php'
+        # 'DELEGATED' vai MELHORAR 1 POUCO A PERFORMANCE, PQ ESSE CONTAINER DE 'php' NÃO DEVERÁ WRITE BACK A ESSE FOLDER __ COM TANTA FREQUÊNCIA ASSIM, E AS COISAS QUE ELE FAZ WRITE NÃO PRECISAM SER REFLETIDAS NA HOST MACHINE INSTANTANEAMNETE.. (pq ELE NÃO VAI WRITE _ ALGUMA _ COISA QUE PRECISAMOS __ ACESSAR INSTANTANEAMENTE NA HOST MACHINE) 
+      volumes:
+        - './src:/var/www/html:delegated'
+      ports:
+        - '3000:9000'
 
-  mysql: #? DEPOIS DISSO, OS 'UTILITY CONTAINERS' (que SÃO RODADOS, OCASIONALMENTE, DURANTE O RUNTIME, POR NÓS MESMOS, COM 'docker-compose run xxx xxx')..
+    #MYSQL --> é a database MYSQL
+    mysql: #? DEPOIS DISSO, OS 'UTILITY CONTAINERS' (que SÃO RODADOS, OCASIONALMENTE, DURANTE O RUNTIME, POR NÓS MESMOS, COM 'docker-compose run xxx xxx')..
 
-  #'COMPOSER' é TIPO O 'npm do PHP', é usado para CRIAR PROJETOS E INSTALAR DEPENDENCIES PHP (é usado para CRIAR O APP LARAVEL, POR EXEMPLO)...
-  composer: # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
+    #'COMPOSER' é TIPO O 'npm do PHP', é usado para CRIAR PROJETOS E INSTALAR DEPENDENCIES PHP (é usado para CRIAR O APP LARAVEL, POR EXEMPLO)...
+    composer: # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
 
-  artisan: # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
+    artisan: # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
 
-  npm:
+    npm:
 
 

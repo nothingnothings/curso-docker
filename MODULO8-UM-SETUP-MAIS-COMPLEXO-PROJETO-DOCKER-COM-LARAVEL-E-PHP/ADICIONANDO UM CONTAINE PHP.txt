@@ -1,0 +1,2198 @@
+
+
+
+
+
+
+
+
+OK... AGORA QUE TERMINAMOS O CONTAINER DE `WEBSERVER`,
+
+aquele container de nginx,
+
+
+
+
+DEVEMOS ADICIONAR O CONTAINER 
+
+
+DE 
+
+PHP..
+
+
+
+
+
+
+
+
+
+
+
+ESSE CONTAINER SERÁ RELATIVAMENTE SIMPLES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_> MAS O PROFESSOR, NESSE CASO,
+
+VAI QUERER USAR 1 
+
+DOCKERFILE,
+
+JUSTAMENTE PQ 
+
+A 
+
+IMAGE DEFAULT DO DOCKER 
+
+
+NÃO É SUFICIENTE PARA O QUE 
+
+
+VAMOS FAZER...
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS USAR A IMAGE BASE DO PHP,
+
+MAS VAMOS BUILDAR UMA CUSTOM IMAGE, A PARTIR DESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+--> PQ VAMOS QUERER O 'PHP + ALGUMAS EXTENSIONS NECESSÁRIAS AO LARAVEL'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> É POR ISSO QUE O PROFESSOR 
+
+CRIA 
+
+1 OUTRO FOLDER NO NOSSO PROJETO,
+
+
+
+DE NOME 'dockerfiles',
+
+E AÍ 
+
+
+
+COLOCA 'php.dockerfile'
+
+ALI DENTRO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+
+
+
+php.dockerfile...
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR EXPLICA QUE 'PODEMOS ESCOLHER O NOME QUE QUISERMOS',
+ 
+MAS QUE 
+
+
+
+
+O 
+
+
+
+naming style de `php.dockerfile'
+
+
+
+É RECONHECIDO 
+
+PELO 
+
+
+
+VISUAL STUDIO CODE,
+
+
+QUE VAI NOS AJUDAR COM O AUTOCOMPLETION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESCREVEMOS 
+
+
+'FROM php:',
+
+
+
+
+
+
+
+E AÍ 
+
+
+VAMOS USAR 
+
+ALGUMA DAS VERSÕES DO 
+
+
+
+PHP...
+
+
+
+
+
+
+
+
+
+--> PEGAMOS A VERSÃO 
+
+
+
+'7.4-fpm-alpine'
+
+
+
+
+
+
+
+
+-> ESSA IMAGE É BEM SLIM, E BEM BOA...
+
+
+
+
+
+
+
+
+
+--> VC _ TAMBÉM __ PRECISA _ DESSA IMAGE PARA _ USAR __ A 
+
+
+
+'NGINX CONFIG'
+
+
+
+QUE ESTAMOS UTILIZANDO... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+FROM php:7.4-fpm-alpine 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO, O PROFESSOR VAI __ RODAR __ 1 COMANDO....
+
+
+
+
+
+
+
+
+
+
+ELE VAI RODAR 1 COMANDO PARA INSTALAR EXTRA DEPENDENCIES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> CONVENIENTEMENTE,
+
+
+
+NESSA BASE IMAGE,
+
+HÁ UMA TOOL QUE PODEMOS USAR 
+
+
+
+PARA INSTALAR ESSAS EXTRA DEPENDENCIES... --> 
+
+
+É A TOOL 
+
+DE 
+
+
+'docker-php-ext install'...
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+FROM php:7.4-fpm-alpine
+
+# 'docker-php-ext-install' é uma TOOL que vai existir/existe DENTRO DAQEULA IMAGE DE 'php:7.4-fpm-alpine'....  
+RUN docker-php-ext-install pdo pdo_mysql
+
+
+
+
+
+
+
+
+COM ISSO,
+
+VAMOS INSTALAR 
+
+
+AS EXTENSIONS 
+
+
+
+DE 
+
+'pdo'
+
+
+
+e 
+
+'pdo_mysql'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> E ESSAS SÃO PHP EXTENSIONS NECESSÁRIAS A NÓS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK, MAS O QUE É O 'PDO'?
+
+
+
+
+
+
+
+
+
+
+
+O que é o PDO no PHP?
+PDO(PHP Data Objects) é um
+ módulo de PHP montado sob o paradigma Orientado
+  a Objetos, cujo objetivo é prover uma padronização
+   da forma com que PHP se comunica com um banco de dados relacional.
+    Este módulo surgiu a partir da versão 5 de PHP.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... MAS PRECISAMOS ASSEGURAR A EXECUÇÃO DESSE COMANDO 
+
+
+NO FOLDER CORRETO,
+
+POR ISSO 
+
+
+
+O PROFESSOR 
+
+
+
+COLOCA 
+
+
+QUE NOSSO 
+
+
+WORKDIR 
+
+
+
+DEVERÁ 
+
+SER 
+
+
+
+'/var/www/html'...
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE FOLDER PODE PARECER ESTRANHO,
+
+MAS 
+
+É UM FOLDER BEM COMUM,
+
+
+
+EM WEBSERVERS,
+
+
+PARA __ 'SERVE YOUR WEBSITE FROM'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> FROM php:7.4-fpm-alpine
+
+# É UM FOLDER BEM COMUM EM WEB DEVELOPMENT/WEB SERVERS (vc tipicamente 'SERVE YOUR WEBSITE FROM THIS FOLDER')
+# TOD0S OS CONTAINERS QUE USAMOS NESSE MODULE USARÃO ESSE FOLDER COMO __ O FOLDER __ QUE VAI SEGURAR NOSSA 'FINAL APPLICATION'...
+WORKDIR /var/www/html
+
+# 'docker-php-ext-install' é uma TOOL que vai existir/existe DENTRO DAQEULA IMAGE DE 'php:7.4-fpm-alpine'....  
+RUN docker-php-ext-install pdo pdo_mysql
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ TOD0S OS CONTAINERS QUE USAMOS NESSE MODULE USARÃO ESSE FOLDER COMO __ O FOLDER __ QUE VAI SEGURAR NOSSA 'FINAL APPLICATION'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> NÓS JÁ VIMOS UMA REFERÊNCIA A ESSE FOLDER ANTERIORMENTE,
+
+ LÁ NO ARQUIVO 'nginx.conf'...
+
+
+
+
+
+
+
+
+ server {
+    listen 80; # faz listen NA PORT 80...
+    index index.php index.html; # HANDLA REQUESTS A 'INDEX FILES'...
+    server_name localhost; 
+   --->  root /var/www/html/public; #TAMBÉM ASSEGURA QUE PROCURAMOS NESSE DIRECTORY PARA FILES QUE USAREMOS PARA 'RESPOND' AOS REQUESTS... (ainda não temos esses arquivos)..
+    location / { #SÃO REDIRECTION RULES... -> BASICAMENTE ASSEGURAM QUE INCOMING REQUESTS SÃO REDIRECIONADOS A PHP FILES....
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    location ~ \.php$ { # OS REQUESTS QUE JÁ TARGETTAM PHP FILES SÃO ENTÃO REDIRECIONADOS AO NOSSO 'PHP INTERPRETER'... é isso que fazemos, aqui...
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass php:3000;
+        fastcgi_index index.php;
+        include_fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_scripts;
+        fastcgi_param PATH_INFO $fastcgi_path_info; 
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO ASSUME QUE 
+
+
+O WEBCONFIG VAI ENCONTRAR AS 'WEB APPLICATION FILES'
+
+DENTRO DE UM SUBFOLDER DESSE FOLDER,
+
+
+
+E 
+
+
+VAMOS 
+CONTINUAR 
+
+
+COM ESSE 
+
+FOLDER
+
+
+
+AO LONGO DE NOSSO MÓDULO,
+
+
+
+
+
+
+
+
+
+
+PQ, NO FINAL DAS CONTAS,
+
+
+
+SERÁ 
+
+
+
+
+O FOLDER QUE, DENTRO DOS CONTAINERS,
+
+VAI 
+
+
+SEGURAR 
+
+NOSSO LARAVEL PHP APP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> É POR ISSO QUE DEFINIMOS ESSE FOLDER COMO WORKING DIRECTORY,
+
+E É POR ISSO QUE 
+
+
+
+INSTALAMOS TODAS AS DEPENDENCIES DENTRO 
+
+DELE, com 'docker-php-ext-install pdo pdo_mysql'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS AQUI DEVEMOS RESSALTAR ALGO ESTRANHO:
+
+
+
+
+
+
+
+
+AQUI NÃO UTILIZAMOS NENHUM COMANDO 'npm start'
+
+
+
+ou algo do gênero... --> TAMBÉM NÃO TEMOS NENHUM 
+
+'ENTRYPOINT []'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PQ, ATÉ AGORA,
+
+NAS DOCKERFILES,
+
+
+SEMPRE TIVEMOS ALGUM 
+
+COMANDO 
+
+
+
+AO Final,
+
+
+
+como 
+
+
+'CMD[]' ou 'ENTRYPOINT[]'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ENTRETANTO,
+
+AQUI,
+
+NÃO TEMOS ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE VC __ NÃO TEM 1 COMANDO OU ENTRYPOINT AO FINAL DE SUA DOCKERFILE,
+
+ 
+
+ __ O __ CMD OU ENTRYPOINT _ DA __ BASE __ IMAGE __ SERÁ USADO (se ela tiver algum desses comandos)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ NO CASO DA IMAGE DO PHP, IMAGE BASE DE 'php:7.4-fpm-alpine',
+
+
+
+
+
+
+
+
+__ ELA TEM 1 COMANDO DEFAULT PHP,
+
+QUE 
+
+
+É UM COMANDO QUE VAI INVOCAR 
+
+
+
+
+
+__ O PHP _ INTERPRETER... -------> ISSO QUER DIZER QUE 
+
+
+ESSA IMAGE 
+
+QUE 
+
+TEMOS AQUI, ESSA DOCKERFILE,
+
+
+
+VAI AUTOMATICAMENTE RODAR 
+
+
+ESSE 'BASE COMMAND' DA BASE IMAGE,
+
+
+
+
+
+
+O QUE VAI FAZER COM QUE 
+
+
+
+
+
+ELA FIQUE CAPAZ DE 'DEAL WITH' 
+
+INCOMING 
+PHP 
+
+FILES QUE 
+
+DEVEM 
+
+SER INTERPRETADAS,
+
+
+
+TUDO PQ 
+
+
+
+
+__ NOSSA BASE IMAGE JÁ ESTÁ 
+
+
+
+
+'INVOKING' ESSE INTERPRETER... --------> E ISSO ERA ALGO QUE O PROFESSOR 
+
+
+
+QUERIA ESCLARECER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... PARA USARMOS ESSA DOCKERFILE,
+
+BASTA 
+
+A ESPECIFICARMOS LÁ NA KEY DE 'build',
+
+
+
+NA KEY DE 'build',
+
+NO DOCKER-COMPOSE...
+
+
+
+
+ex:
+
+
+
+
+
+    php: 
+      build:
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        OK.... MAS AQUI NÃO BASTARÁ ESCREVER './dockerfiles/php.dockerfile'...
+
+
+
+
+
+
+
+
+
+    EM VEZ DISSO, PRECISAREMOS DA SINTAXE DE BUILD MAIS COMPLEXA,
+
+    que é 
+
+
+
+
+
+    
+    php: 
+      build:
+        context: './dockerfiles'
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+    php: 
+      build:
+        context: '/dockerfiles'
+        dockerfile: 'php.dockerfile'
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... COM ISSO,
+
+O COMPOSE VAI SABER O __ NOME __ DO ARQUIVO DOCKERFILE QUE DEVE SER USADO...
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+    #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
+    # VAMOS USAR 1 IMAGE CUSTOM, criada por nós...
+    php: 
+    # sintaxe mais complexa de build...
+      build:
+        context: '/dockerfiles'
+        dockerfile: 'php'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. COM ISSO, O DOCKER-COMPOSE VAI CONSEGUIR ENCONTRAR ESSA DOCKERFILE,
+
+E VAI CONSEGUIR 
+
+BUILDAR E RODAR ESSA RESPECTIVE IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... TEMOS A IMAGE SETTADA PARA ESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+AGORA HÁ MAIS 2 COISAS  QUE QUEREMOS FAZER, AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> A PRIMEIRA COISA IMPORTANTE É 
+
+
+
+ASSEGURAR __ QUE __ 
+
+
+
+ESSE 'PHP INTERPRETER'
+
+CONSIGA 
+
+ALCANÇAR
+ 
+
+ NOSSO 'SOURCE CODE' -> PARA ISSO,
+
+
+
+ PROVAVELMENTE __ VAMOS 
+
+ PRECISAR __ DE 1
+  BIND MOUNT...
+
+
+
+
+
+
+
+
+
+
+
+--> AINDA NÃO TEMOS SOURCE CODE,
+
+MAS TEREMOS NO FUTURO...
+
+
+
+
+
+
+
+
+
+
+
+
+-----> ESSE SOURCE CODE,
+
+NO FINAL DAS CONTAS,
+
+
+PRECISARÁ __ FICAR DISPONÍVEL 
+
+NAQUELE FOLDER DE 
+
+
+'/var/www/html',
+
+
+
+DENTRO 
+
+
+
+
+DO CONTAINER DE 'php'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU SEJA,
+ PRECISAREMOS 
+
+ DE 
+
+
+ 1 BIND MOUNT,
+
+ PQ 
+
+
+ VAMOS QUERER 
+
+
+ TRABALHAR NESSE SOURCE CODE 
+
+
+
+ LÁ NO NOSSO LOCAL HOST FILE SYSTEM...
+
+
+
+
+
+
+
+
+ É POR ISSO QUE O CÓDIGO FICARÁ TIPO ASSIM (ainda não sei qual será o path na local machine, mas vou chutar alguma coisa)...
+
+
+
+
+
+
+     php: 
+    # sintaxe mais complexa de build...
+      build:
+        context: '/dockerfiles'
+        dockerfile: 'php'
+      volumes:
+        - './src:/var/www/html'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESCREVI 
+
+'./src:/var/www/html'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> ESSE FOLDER VAI SER MONTADO AO PATH DE '/var/www/html'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA AUMENTAR 1 POUCO A PERFORMANCE DE NOSSA BIND MOUNT,
+
+
+PODEMOS COLOCAR A VARIANTE ':delegated'
+
+
+(QUE AINDA NÃO HAVÍAMOS UTILIZADO)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+o que faz 'delegated'? --> ELA FAZ COM QUE 
+
+
+
+''SHOULD A CONTAINER WRITE SOME DATA 
+IN THAT FOLDER,
+
+THAT 
+
+WONT BE REFLECTED INSTANTLY 
+
+ON THE 
+
+HOST MACHINE'' --> É UMA OPTIMIZATION 
+
+
+
+
+QUE FAZ COM QUE AS CHANGES SEJAM 
+
+APLICADAS EM 'BATCHES' NA HOST MACHINE --> É UMA OPTIMIZATION,
+
+
+
+
+A PERFORMANCE FICA 1 POUCO MELHOR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> JÁ 'read-only'
+
+
+NÃO PODE SER USADO, AQUI,
+
+PQ 
+
+
+
+O __ PHP __ VAI_ _ ESCREVER ALGUMAS COISAS _ NA 
+
+NOSSA LOCAL HOST MACHINE,
+
+E O 
+
+
+LARAVEL TAMBÉM VAI 'GENERATE SOME FILES'
+
+
+quando 
+
+ele for rodado,
+
+
+como por exemplo as VIEWS 
+
+
+
+QUE 
+SÃO ENVIADOS DE VOLTA,
+
+COMO PARTE DAS RESPONSES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok....
+
+
+
+
+
+
+
+
+
+O ADD DESSE VOLUME ERA 1 DAS COISAS IMPORTANTES,
+
+
+
+
+
+PQ _ PRECISAMOS DE 1 FOLDER PARA NOSSO SOURCE CODE,
+
+
+E 
+
+
+PRECISÁVAMOS  
+
+
+
+
+
+SER CAPAZES DE TRABALHAR NESSE SOURCE CODE E O DEIXAR EXPOSTO 
+
+
+AO PHP INTERPRETER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... A OUTRA COISA QUE SERÁ IMPORTANTE SERÁ 
+O 
+
+
+
+'PORT' A QUE ESSE PHP INTERPRETER VAI 'LISTEN TO'...
+
+
+
+
+
+
+
+
+
+'LISTEN FOR WORK'... -> E ESSA PORT, NA VERDADE,
+
+
+
+
+
+
+
+FOI DEFINIDA LÁ 
+
+
+
+NO ARQUIVO 
+
+DE 
+
+'nginx.conf'...
+
+
+
+
+
+
+
+
+
+
+
+LÁ NAQUELE ARQUIVO,
+
+
+
+ESTAMOS ENVIANDO REQUESTS/PHP REQUESTS 
+
+
+__ AO __ PORT 3000... --> 
+
+
+
+
+
+
+
+
+PODEMOS OBSERVAR ISSO NESSA LINHA:
+
+
+
+
+
+
+        fastcgi_pass php:3000;
+
+
+
+
+
+
+
+
+
+
+----> ANTES DE MAIS NADA,
+
+
+
+ANTES DO ':3000',
+
+
+TEMOS 
+
+1 
+
+
+__ADDRESS__.... --> o address de 'php'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ESSE ADDRESS PODERIA SER 1 IP ADDRESS, COMO 
+
+
+
+'127.0.0.1'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... MAS O PROFESSOR ESTÁ SE APROVEITANDO 
+
+DO FATO 
+
+DE QUE 
+
+
+
+
+
+'''TODOS OS CONTAINERS CRIADOS EM 1 MESMO DOCKER-COMPOSE FILE 
+
+FAZEM PARTE DA MESMA NETWORK,
+
+
+E JUSTAMENTE POR ISSO ___ PODEM 'DISCOVER EACH OTHER' POR MEIO 
+
+DOS NOMES/KEYS DOS SERVICES (php, server, mysql, composer, artisan)...
+
+
+DESDE QUE O _ CÓDIGO SEJA EXECUTADO DENTRO DO CONTAINER (que é o que temos, aqui)'''''...
+
+
+
+
+
+
+
+
+
+
+-> É POR ISSO QUE 
+
+ 
+ O 'php'
+
+
+ PODE SER COLOCADO  em 'php:3000'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ex:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ server {
+    listen 80; # faz listen NA PORT 80...
+    index index.php index.html; # HANDLA REQUESTS A 'INDEX FILES'...
+    server_name localhost; 
+    root /var/www/html/public; #TAMBÉM ASSEGURA QUE PROCURAMOS NESSE DIRECTORY PARA FILES QUE USAREMOS PARA 'RESPOND' AOS REQUESTS... (ainda não temos esses arquivos)..
+    location / { #SÃO REDIRECTION RULES... -> BASICAMENTE ASSEGURAM QUE INCOMING REQUESTS SÃO REDIRECIONADOS A PHP FILES....
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    location ~ \.php$ { # OS REQUESTS QUE JÁ TARGETTAM PHP FILES SÃO ENTÃO REDIRECIONADOS AO NOSSO 'PHP INTERPRETER'... é isso que fazemos, aqui...
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        # 'php' em 'php:3000' poderia ser um IP ADDRESS, como '127.0.0.1'...
+        # aqui, 'php', nesse local, se refere ao 'PHP CONTAINER', justamente por 'server' e 'php' (nossos containers) ESTAREM EM 1 MESMA NETWORK, POR CONTA DO DOCKER-COMPOSE (comportamento default do compose, que coloca todos os containers/services em 1 mesma network)...
+        fastcgi_pass php:3000;
+        fastcgi_index index.php;
+        include_fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_scripts;
+        fastcgi_param PATH_INFO $fastcgi_path_info; 
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... COM ISSO,
+
+
+BASICAMENTE 
+
+ 
+
+ VAMOS QUERER __ ENVIAR ___ NOSSO REQUEST PARA _ HANDLAR __ 1 ARQUIVO PHP
+
+
+
+
+
+LÁ PARA A PORT DE '3000'...
+
+
+
+
+
+
+
+
+
+
+-> É JUSTAMENTE POR ISSO QUE, NO DOCKER-COMPOSE,
+
+VAMOS QUERER 
+
+EXPOR 
+
+
+ALGUMA PORT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS SE CHECARMOS 
+
+
+
+
+O DOCKERFILE 
+
+
+DA IMAGE OFICIAL 'PHP',
+
+
+
+
+PERCEBEREMOS QUE 
+
+
+A PORT 
+
+
+
+EXPOSTA 
+
+
+
+POR ESSA IMAGE OFICIAL 
+
+
+__ É, ACTUALLY,
+
+
+A 
+PORT '9000'..
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE VAMOS QUERER EXPOR A PORT DE '9000'
+
+
+
+para esse container de 
+
+
+'php'...
+
+
+
+
+
+
+
+
+
+--> é por isso que o map da port,
+
+lá 
+
+NO CONTAINER do 'php',
+
+VAI FICAR COMO 
+
+
+
+
+'ports:
+  - '3000:9000'
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  ISSO PQ O FLUXO SERÁ:
+
+
+
+
+
+
+    server:
+    image: 'nginx:stable-alpine'
+    ports:
+      - '8000:80'
+
+
+
+
+
+
+
+
+
+
+      (
+
+
+        O PRIMEIRO REQUEST, DO USER, É ENVIADO 
+
+
+        A ESSA PORT DE '8000', que ENTÃO ALCANÇA ESSE WEBSERVER,
+
+        INTERNAMENTE NO CONTAINER, NA PORT DE '80'...
+      )
+
+
+
+
+
+
+      ISSO FEITO,
+
+
+
+      OCORRE ALGO NO WEBSERVER:
+
+
+      ELE VAI ENVIAR 1 ARQUIVO PHP/REQUEST PHP 
+
+
+      PARA O _ PHP INTERPRETER.... ESSE ARQUIVO 
+
+      SERÁ 
+
+      ENVIADO 
+
+
+      À PORT '3000' no INTERPRETER,
+
+
+      justamente por conta desta linha, lá no 'nginx.conf':
+
+
+
+           fastcgi_pass php:3000; 
+
+
+
+
+
+
+
+
+
+--> POR FIM, COMO ESSE REQUEST É ENVIADO À PORT '3000',
+
+
+
+
+
+
+
+A PORT 3000 é ocupada PELO CONTAINER DE 'php',
+
+que foi PUBLICADO NELA:
+
+
+
+
+
+
+
+
+    php: 
+      build:
+        context: '/dockerfiles'
+        dockerfile: 'php'
+      volumes:
+        - './src:/var/www/html:delegated'
+      ports:
+        - '3000:90'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+POR FIM, O CONTEÚDO DO REQUEST PHP 
+
+
+
+
+QUE ENTRA NA PORT 3000 
+
+
+É, DENTRO DO CONTAINER,
+
+AFUNILADO
+ 
+ NA PORT 
+
+ 9000... 
+
+
+
+
+
+
+
+
+--> '3000' --> é a local host machine..
+
+
+
+
+--> '9000' --> É O CONTAINER-INTERNAL PORT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS AGORA ESSA É A TRICKY PART... --> 'REALMENTE PRECISAMOS DISSO TUDO?'
+
+
+
+
+
+
+
+PRECISAMOS DESSE MAPPING DE '3000:9000' ?
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+--> O PROBLEMA É QUE 
+
+
+o nginx,
+ao 
+
+
+
+ser rodada aquela linha de '''' fastcgi_pass php:3000; ''',
+
+
+
+
+
+
+o REQUEST 
+
+SERÁ ENVIADO DIRETAMENTE AO CONTAINER, SEM PASSAR POR NOSSA 'LOCAL HOST MACHINE' (
+
+    isso quer dizer que 
+
+
+    SERÁ TARGETTADA A PORT ___ 3000 DO PRÓPRIO CONTAINER 'php' docker, E NÃO 
+
+    DA NOSSA LOCAL HOST MACHINE... 
+)
+
+
+
+
+
+
+
+
+-> ISSO QUER DIZER QUE 
+
+
+
+
+
+
+O MAPPING DE '3000:9000', no container php,
+
+
+SERÁ USADO _ _APENAS_ SE QUISERMOS 
+
+__ TARGETTAR __ ESSE CONTAINER, RODAR COISAS CONTRA ELE,
+
+
+
+__ DO LADO DE FORA,
+ 
+DO LADO DE NOSSA LOCAL HOST MACHINE... (interagir vindo de nossa local host machine)..
+
+
+
+
+
+
+
+
+
+
+-> SE QUISERMOS INTERAGIR 
+
+COM O CONTAINER DE PHP APENAS POR MEIO DO 'WEB SERVER',
+
+
+
+COMUNICAÇÃO EXCLUSIVA 
+
+'webserver -> php',
+
+
+
+
+
+
+DEVEMOS SIMPLESMENTE TROCAR 
+
+'php:3000'
+
+
+por 
+
+
+
+'php:9000'
+
+
+LÁ 
+
+
+no 'nginx.conf',
+
+
+
+
+PQ ISSO JÁ VAI ESTABELECER ESSA CONEXÃO ENTRE OS DOIS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE O CÓDIGO FICA ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+server {
+    listen 80; # faz listen NA PORT 80...
+    index index.php index.html; # HANDLA REQUESTS A 'INDEX FILES'...
+    server_name localhost; 
+    root /var/www/html/public; #TAMBÉM ASSEGURA QUE PROCURAMOS NESSE DIRECTORY PARA FILES QUE USAREMOS PARA 'RESPOND' AOS REQUESTS... (ainda não temos esses arquivos)..
+    location / { #SÃO REDIRECTION RULES... -> BASICAMENTE ASSEGURAM QUE INCOMING REQUESTS SÃO REDIRECIONADOS A PHP FILES....
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    location ~ \.php$ { # OS REQUESTS QUE JÁ TARGETTAM PHP FILES SÃO ENTÃO REDIRECIONADOS AO NOSSO 'PHP INTERPRETER'... é isso que fazemos, aqui...
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        # 'php' em 'php:9000' poderia ser um IP ADDRESS, como '127.0.0.1'...
+        # aqui, 'php', nesse local, se refere ao 'PHP CONTAINER', justamente por 'server' e 'php' (nossos containers) ESTAREM EM 1 MESMA NETWORK, POR CONTA DO DOCKER-COMPOSE (comportamento default do compose, que coloca todos os containers/services em 1 mesma network)...
+        # targettamos a port de '9000' no container 'php', pq essa é a port que A IMAGE BASE DO PHP nos deixa exposta...
+        fastcgi_pass php:9000;
+        fastcgi_index index.php;
+        include_fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_scripts;
+        fastcgi_param PATH_INFO $fastcgi_path_info; 
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+A PORT FICA '9000',
+
+
+
+PQ AÍ FICAMOS COM DIRECT 'CONTAINER-TO-CONTAINER COMMUNICATION',
+
+
+sem passar por nosso localhost...
+
+
+
+
+
+
+
+
+
+--> ok... ISSO QUER DIZER QUE 
+
+
+
+
+ACABAMOS, E ACABAMOS COM ESSE PHP CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+--> aGORA DEVEMOS VER O CONTAINER DE MYSQL...
