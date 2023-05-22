@@ -18,7 +18,7 @@ services:
       # sintaxe mais complexa de build...
       build:
         context: '/dockerfiles'
-        dockerfile: 'php'
+        dockerfile: 'php.dockerfile'
         # 'DELEGATED' vai MELHORAR 1 POUCO A PERFORMANCE, PQ ESSE CONTAINER DE 'php' NÃO DEVERÁ WRITE BACK A ESSE FOLDER __ COM TANTA FREQUÊNCIA ASSIM, E AS COISAS QUE ELE FAZ WRITE NÃO PRECISAM SER REFLETIDAS NA HOST MACHINE INSTANTANEAMNETE.. (pq ELE NÃO VAI WRITE _ ALGUMA _ COISA QUE PRECISAMOS __ ACESSAR INSTANTANEAMENTE NA HOST MACHINE) 
       volumes:
         - './src:/var/www/html:delegated'
@@ -32,8 +32,13 @@ services:
       env_file:
         - ./env/mysql.env
     #'COMPOSER' é TIPO O 'npm do PHP', é usado para CRIAR PROJETOS E INSTALAR DEPENDENCIES PHP (é usado para CRIAR O APP LARAVEL, POR EXEMPLO)...
-    composer: # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
-
+    composer:
+      # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
+      build:
+        context: './dockerfiles'
+        dockerfile: composer.dockerfile
+      volumes:
+        - ./src:/var/www/html
     artisan: # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
 
     npm:

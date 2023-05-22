@@ -549,7 +549,7 @@ A KEY
 
 DE 
 
-'env_file'
+'env_file' (poderíamos ter adicionado 'environment' em vez de 'env_file', se quiséssemos adicionar as variáveis diretamente na dockerfile....)
 
 LÁ 
 
@@ -671,3 +671,235 @@ PRECISAMOS DE UM LARAVEL APP....
 
 
 DA TOOL/CONTAINER DE 'compose'...
+
+
+
+
+
+
+
+
+
+
+
+-> OU SEJA,
+
+VAMOS PRECISAR DE 1 BIND MOUNT...
+
+
+
+
+
+
+
+
+
+
+
+
+--> fazemos isso com esta escrita:
+
+
+
+volumes:
+  - ./src:/var/www/html
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+    composer:
+      # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
+      build:
+        context: './dockerfiles'
+        dockerfile: composer.dockerfile
+      volumes:
+        - ./src:/var/www/html
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... 
+
+
+
+
+
+AGORA, SE USARMOS O COMPOSER PARA, POR EXEMPLO,
+
+CRIAR 
+
+1 'LARAVEL APP'
+
+
+
+DENTRO 
+
+DO FOLDER 'html',
+
+
+DENTRO 
+
+
+
+DE 1 CONTAINER,
+
+
+
+ESSE LARAVEL APP SERÁ 'MIRRORED BACK'
+
+
+AO NOSSO FOLDER DE 'src',
+
+LÁ 
+
+NA NOSSA LOCAL HOST MACHINE (
+
+    vimos isso no último módulo,
+    com 'npm' e 'node'...
+     
+)
+
+
+
+
+
+
+
+
+
+COM ISSO ACABADO,
+
+
+NÓS PODEMOS PAUSAR UM POUCO...
+
+
+
+
+
+
+
+
+AGORA TEMOS NOSSOS 3 CONTAINER APPS,
+
+
+
+QUE SERÃO NECESSÁRIOS PARA RODAR O LARAVEL APP...
+
+
+
+
+
+
+
+
+
+TAMBÉM TEMOS ESSE UTILTIY CONTAINER DE 'composer',
+
+QUE É NECESSÁRIO PARA CRIAR ESSE APP LARAVEL...
+
+
+
+
+
+
+CRIAR (1 utility container, 'composer') ---> RODAR... (3 app containers)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... OS OUTROS 2 UTILITY CONTAINERS,
+
+
+'artisan' e 'npm',
+
+serão usados PARA ALGUMAS FEATURES,
+
+
+MAS VAMOS OS IGNORAR, POR ENQUANTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> VAMOS COMEÇAR  COM O CREATE DO APP,
+
+
+COM O UTILITY CONTAINER DE 
+
+'composer'...
+
+
+  
+
+  ISSO FEITO,
+
+  VEREMOS SE SERÁ POSSÍVEL 
+
+  STARTAR ESSE APP,
+
+
+  COM NOSSOS 3 OUTROS CONTAINERS...
+
+
+
+
+
+
+
+
+
+  OK, MAS COMO FAZEMOS ISSO?
+
+
+
+
+
+  

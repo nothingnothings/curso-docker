@@ -1,0 +1,460 @@
+ 
+
+
+
+
+
+
+
+ COMENTAMOS PARA DENTRO O SERVICE DE 'composer',
+
+
+
+
+ E AÍ 
+
+
+
+
+
+
+
+ COMEÇAMOS A SETTAR ESSE CONTAINER,
+
+ QUE SERÁ 1 UTILITY CONTAINER,
+
+
+
+
+
+
+
+
+
+
+ QUE VAI SER USADO TANTO PELO LARAVEL (INTERNAMENTE) COMO __ POR NÓS,
+
+
+
+
+
+
+PARA __ SETTAR 1 APP LARAVEL EM PRIMEIRO LUGAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+
+O PROFESSOR VAI CRIAR 1 CUSTOM DOCKERFILE,
+
+PQ 
+
+VAMOS 
+
+PRECISAR DE 1 BASE IMAGE,
+
+COM ALGUM FINE-TUNING...
+
+
+
+
+
+
+
+
+
+
+
+
+----> CRIAMOS UMA DOCKERFILE de nome 
+'composer.dockerfile'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... VAMOS  COMEÇAR COM A IMAGE DE 
+
+
+
+'composer'....
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+FROM composer 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSA É UMA BASE IMAGE QUE TEM ESSA COMPOSER TOOL JÁ 
+
+
+
+INSTALADA... O QUE É SUPER LEGAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> colocamos 'composer:latest',
+
+PARA USARMOS A VERSÃO MAIS RECENTE DO COMPOSER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK.... E A RAZÃO PARA USARMOS UMA 'CUSTOM DOCKERFILE'
+
+
+É 
+
+
+
+__ QUE _ QUEREMOS COLOCAR 'ENTRYPOINTS'
+
+CUSTOMIZADOS... -> QUEREMOS RESTRINGIR 
+
+
+O NÚMERO DE COMANDOS QUE O USER PODERÁ RODAR..
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR APONTA QUE EXISTE UMA MANEIRA DE 
+
+
+DEFINIR O 'composer'
+
+
+LÁ NO DOCKER-COMPOSE EM SI (talvez esses entrypoints),
+
+
+MAS QUE 
+ELE 
+
+
+VAI VOLTAR A ESSE TÓPICO MAIS TARDE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR PREFERE ESSE APPROACH PQ AÍ FICAMOS COM 
+
+
+
+1 DOCKERFILE __ BEM SIMPLES E FÁCIL DE COMPREENDER...
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... O ENTRYPOINT 
+
+será 
+
+
+
+
+o 
+
+
+
+executável de 'composer',
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+FROM composer:latest
+
+
+ENTRYPOINT ["composer"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR TAMBÉM COLOCA 
+1 FLAG, QUE 
+DEVE 
+SER EXECUTADA 
+
+A QUALQUER COMANDO EXECUTADO POR ELE..
+
+
+
+
+
+
+
+
+
+--> A FLAG É '--ignore-platform-reqs'...
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+FROM composer:latest
+
+# É O COMANDO QUE SEMPRE SERÁ EXECUTADO QUANDO RODAMOS 'docker-compose run composer'...
+ENTRYPOINT ["composer", "--ignore-platform-reqs"]
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+MAS ISSO É IMPORTANTE:
+
+
+
+
+
+
+
+DEVEMOS 
+
+SETTAR O WORKING DIRECTORY CORRETO,
+
+QUE NO CASO 
+É 
+
+
+'/var/www/html',
+
+
+PQ ESSE É O DIRECTORY EM QUE NOSSO CÓDIGO VAI FICAR, NO FUTURO...
+
+
+
+
+
+
+
+
+
+
+VAI FICANDO TIPO ASSIM:
+
+
+
+
+
+
+
+
+FROM composer:latest
+
+WORKDIR /var/www/html
+
+# É O COMANDO QUE SEMPRE SERÁ EXECUTADO QUANDO RODAMOS 'docker-compose run composer'...
+ENTRYPOINT ["composer", "--ignore-platform-reqs"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> CERTO... COLOCAMOS O CONTEXT DO NEGÓCIO COMO SENDO './dockerfiles',
+
+
+e aí colocamos 
+
+'dockerfile: composer.dockerfile',
+
+
+
+
+PQ ESSE É O DOCKERFILE QUE QUEREMOS USAR, PARA BUILDAR ESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+POR FIM,
+
+
+
+
+
+
+
+PRECISAMOS ASSEGURAR QUE NOSSO SOURCE CODE DIRECTORY SEJA EXPOSTO A ESSA IMAGE 
+
+do 
+
+'composer'... -->  ISSO PARA QUE ESSA IMAGE CONSIGA TRABALHAR NO NOSSO 'SOURCE CODE'
+
+DIRETAMENTE --> TUDO PARA QUE 
+
+
+QUANDO USARMOS ESSA IMAGE PARA 
+
+INSTALAR O LARAVEL E SETTAR 1 LARAVEL PROJECT,
+ELE FAÇA ISSO NO NOSSO SOURCE FOLDER... --> 
