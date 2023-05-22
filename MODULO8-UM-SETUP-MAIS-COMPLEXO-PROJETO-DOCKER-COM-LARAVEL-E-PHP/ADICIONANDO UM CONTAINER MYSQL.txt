@@ -1,0 +1,673 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AGORA DEVEMOS COLOCAR ESSE CONTAINER MYSQL...
+
+
+
+
+
+
+
+
+
+
+
+--> TAMBÉM VAMOS USAR UMA IMAGE OFICIAL MYSQL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS USAR ISSO PARA LANÇAR 
+
+
+1
+ 
+
+CONTAINER QUE TEM UMA IMAGE DO MYSQL NELE...
+
+
+
+
+
+
+
+
+
+
+
+-> É 1 IMAGE BEM PARECIDA 
+
+COM 
+
+
+A IMAGE DO MONGODB,
+
+QUE USAMOS ANTERIORMENTE...
+
+
+
+
+
+
+
+
+
+
+
+--> vamos escrever assim:
+
+
+
+
+
+
+
+mysql:
+  image: mysql:5.7
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -> OK... VAMOS QUERER USAR ESSA VERSÃO DESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --> DENTRO DESSA IMAGE,
+
+  QUANDO ELA FOR STARTADA COMO CONTAINER,
+
+
+
+
+  __ UMA DATABASE__ MYSQL SERÁ STARTADA...
+
+
+
+
+
+
+
+
+
+
+--> ESSA DATABASE MYSQL VAI, MAIS TARDE,
+
+SER ACESSADA POR NOSSO CÓDIGO 
+
+PHP,
+
+
+
+
+O CÓDIGO PHP QUE VAI SER HANDLADO PELO CONTAINER PHP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, COMO TODOS ESSES CONTAINERS VÃO EXISTIR NA MESMA NETWORK,
+
+VAMOS 
+PODER 
+
+
+
+CONVERSAR COM ESSE DATABASE SEM NENHUM PROBLEMA,
+
+TUDO 
+POR MEIO 
+
+DO 
+
+CONTAINER-NAME de 
+
+
+'mysql'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... ISSO QUER DIZER QUE NÃO PRECISAMOS CONFIGURAR COISA ALGUMA 
+
+A RESPEITO DAS NETWORKS...
+
+
+
+
+
+
+
+
+
+MAS HÁ UMA OUTRA COISA QUE PRECISAMOS CONFIGURAR, AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO É O 'ENVIRONMENT'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PRECISAREMOS PROVIDENCIAR ALGUMAS ENVIRONMENT VARIABLES,
+
+QUE SERÃO 
+
+
+USADAS 
+
+POR ESSA IMAGE.. --> PARA QUE 
+
+
+
+POSSAMOS 
+
+
+
+SETTAR COISAS COMO:
+
+
+
+
+
+
+
+1) 1 DATABASE 
+
+
+
+2) 1 USER 
+
+
+
+
+3) 1 PASSWORD
+
+
+
+
+
+
+E ASSIM POR DIANTE...
+
+
+
+
+
+
+
+
+
+
+
+--> ok... 
+
+
+
+
+
+PODEMOS ENCONTRAR 
+
+
+
+A DESCRIÇÃO DETALHADA NOS 
+
+
+DOCS DESSA IMAGE 
+
+
+
+DO MYSQL...
+
+
+
+
+
+
+
+
+
+
+
+
+-> TEMOS ALGUMAS VARIABLES QUE DEVERÃO SER SETTADAS...
+
+
+
+
+
+MAS VAMOS SETTAR ESSAS VARIABLES 
+
+EM 
+
+
+
+1
+ FOLDER DE 'env',
+
+
+ EM 
+
+ ARQUIVOS'.env',
+
+
+
+
+
+
+ tipo 
+
+ 'mysql.env'...
+
+
+
+
+
+
+ --> 
+
+
+
+
+
+
+
+
+ CERTO... --> para isso, o professor CRIA ESSE FOLDEr...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> O PROFESSOR ENTÃO 
+
+ escreve 
+
+
+
+
+
+
+
+
+
+ MYSQL_DATABASE=
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> ESSE SERÁ O NOME DA DATABASE QUE SERÁ CRIADA,
+
+ QUANDO FOR STARTADO O CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+ --> o professor coloca 1 value de 'homestead'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ MYSQL_DATABASE=homestead
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+DEPOIS COLOCA 
+
+
+
+
+
+MYSQL_USER=homestead 
+
+
+
+
+
+
+
+
+
+
+
+
+-> NOSSO USER TAMBÉM SERÁ 'homestead'..
+
+
+
+
+
+
+
+
+
+
+--> O PASSWORD DO NEGÓCIO 
+
+SERÁ 
+
+'password',
+
+
+e o 
+
+ROOT_PASSWORD 
+
+também será 'password'..
+
+
+TIPO ASSIM:
+
+
+
+
+
+MYSQL_DATABASE=homestead
+MYSQL_USER=homestead
+MYSQL_PASSWORD=password
+MYSQL_ROOT_PASSWORD=password
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+FICOU ASSIM...
+
+
+
+
+
+
+AGORA PODEMOS VOLTAR AO __ DOCKER-COMPOSE E ADICIONAR 
+A KEY 
+
+DE 
+
+'env_file'
+
+LÁ 
+
+
+NO 
+MYSQL,
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #MYSQL --> é a database MYSQL
+    mysql:
+      #? DEPOIS DISSO, OS 'UTILITY CONTAINERS' (que SÃO RODADOS, OCASIONALMENTE, DURANTE O RUNTIME, POR NÓS MESMOS, COM 'docker-compose run xxx xxx')..
+      image: mysql:5.7
+      env_file:
+        - ./env/mysql.env
+
+
+
+
+
+
+
+
+
+OK... 
+
+
+
+
+
+
+
+
+COM ISSO, ACABAMOS COM ESSES 3 APP CONTAINERS,
+
+
+
+
+
+
+
+O 
+
+
+
+
+
+'CONTAINER WEBSERVER (nginx)',
+
+
+O 
+
+
+
+'CONTAINER PHP INTERPRETER'
+
+
+
+e o 
+
+
+CONTAINER MYSQL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS PARA CONSEGUIRMOS TESTAR 
+
+
+SE TUDO FUNCIONOU, OU SE COMETEMOS 
+
+
+
+
+
+ALGUM ERRO,
+
+
+PRECISAMOS DE UM LARAVEL APP....
+
+
+
+
+
+
+
+
+
+
+
+--> E O LARAVEL APP VAI __ ACTUALLY__ SER CONSTRUÍDO ATRAVÉS 
+
+
+DA TOOL/CONTAINER DE 'compose'...
