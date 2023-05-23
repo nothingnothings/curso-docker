@@ -1,0 +1,803 @@
+
+
+OK.... COM TUDO ISSO, 
+
+
+AGORA TEMOS 1 WORKING SETUP,
+
+
+
+E __ ESTAMOS USANDO TODAS AS FERRAMENTAS QUE USAMOS AO LONGO DESTE CURSO...
+
+
+
+
+
+
+
+
+
+
+
+
+AINDA ASSIM, HÁ UM PUNHADO DE CONCEITOS,
+
+INTRODUZIDOS NESSE MODULE,
+
+QUE O PROFESSOR QUER REVISAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> A PRIMEIRA COISA É 
+
+
+
+'''ADDING DOCKERFILE INSTRUCTIONS _ DENTRO DE 1 ARQUIVO docker-compose''' (
+
+
+    COMO 'WORKING_DIR' 
+
+    e 
+
+    'ENTRYPOINT'
+)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR  RESSALTA/RELEMBRA:
+
+
+
+
+
+
+
+ISSO É ALGO QUE VOCÊ __PODE__ FAZER,
+
+MAS NÃO 
+
+
+É ALGO QUE VC __ TEM QUE _ FAZER... -------> CRIAR 1 DOCKERFILE, EM VEZ DISSO,
+
+E
+ APONTAR 
+
+
+
+ A ESSE ARQUIVO,
+
+
+
+ LÁ EM 
+
+
+
+
+
+
+KEYS COMO 
+
+
+
+
+''''
+
+artisan:
+  build:
+    context: ./dockerfiles
+    dockerfile: php.dockerfile
+
+
+
+
+''''
+
+
+
+
+
+, 
+
+É ALGO QUE VC PODE FAZER, SIM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->  E SEMPRE É POSSÍVEL FAZER COISAS COMO ISTO:
+
+
+
+
+
+npm:
+  image: node:14
+  working_dir: /var/www/html
+  entrypoint: ["npm"]
+  volumes:
+    - ./src:/var/www/html 
+
+
+
+
+
+
+
+
+COM ISSO, EVITAMOS A NECESSIDADE DE CRIAR 1 DOCKERFILE EXTRA (E apontar a esse dockerfile),
+
+MAS É CLARO QUE 
+
+
+TUDO DEPENDE 
+
+
+
+
+DO APPROACH QUE VC PREFERE... -> O PROFESSOR PREFERE TER 
+
+
+DOCKERFILES EXTRAS,
+
+PQ ISSO DEIXA BEM CLARA A NOSSA INTENÇÃO,
+
+ALÉM 
+DE 
+
+DEIXAR 
+
+
+
+NOSSO ARQUIVO 'docker-compose'
+
+
+BEM MAIS LEAN ----------> MAS A DESVANTAGEM É QUE PRECISAMOS 
+
+ENTRAR 
+
+NESSES ARQUIVOS DOCKERFILE INDIVIDUAIS,
+
+
+PARA ENTENDER O QUE ESTÁ ACONTECENDO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... SIGNIFICA QUE PODEMOS IR PARA QUALQUER 1 DOS LADOS...
+
+
+
+
+
+
+
+E, PARA INSTRUCTIONS MAIS COMPLEXAS,
+
+COMO 
+
+
+
+CASOS EM QUE VC '''QUER RODAR 1 CERTO COMANDO EM 1 IMAGE''',
+
+
+
+OU 
+
+ENTÃO 
+VC QUER 
+
+
+
+''COPIAR ALGO PARA DENTRO DO CONTAINER''',
+
+
+
+VC 
+
+
+
+VAI PRECISAR  DE 1 DOCKERFILE DE QUALQUER JEITO,
+
+PQ 
+
+VC 
+
+NÃO VAI TER 
+
+'COPY'
+ 
+
+
+
+ou 
+
+'RUN'
+
+
+
+DISPONÍVEIS DENTRO 
+
+
+
+DE 
+
+
+
+
+
+1 ARQUIVO 'docker-compose'... --> isso quer dizer que SOMENTE SÃO PERMITIDAS, NO DOCKER COMPOSE,
+
+
+
+CONFIGS BÁSICAS DO DOCKERFILE,
+
+
+
+COMO 
+
+
+
+'entrypoint' e 'working_dir'...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+  npm:
+    image: node:14
+    # working_dir é a 'WORKDIR' instruction das dockerfiles... e pode ser escrita aqui....
+    working_dir: /var/www/html
+    # stdin_open e tty também são instructions das dockerfile, e também podem ser escritas aqui, no arquivo docker-compose.yaml...
+    stdin_open: true
+    tty: true
+    # entrypoint TAMBÉM É UMA INSTRUCTION DAS DOCKERFILE, e pode ser escrita aqui...
+    entrypoint: [ "npm" ]
+    # run --> É UMA INSTRUCTION DAS DOCKERFILE... MAS NÃO PODE SER ESCRITA NOS ARQUIVOS 'docker-compose'...
+    # copy --> É UMA INSTRUCTION DAS DOCKERFILE... MAS NÃO PODE SER ESCRITA NOS ARQUIVOS 'docker-compose'...
+    volumes:
+      - ./src:/var/www/html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+ALGO + OU - 
+
+
+RELACIONADO 
+A ISSO É UM DETALHE SOBRE OS BIND MOUNTS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR CITA O EXEMPLO DE 
+
+
+
+'server', o nosso container/service do NGINX..
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... nesse service,
+
+ESTAMOS BINDANDO 2 VOLUMES/FOLDERS  DE NOSSA LOCAL HOST MACHINE 
+
+A  FOLDERS 
+__ DENTRO DO CONTAINER 
+
+
+
+DE 
+
+'server'...
+
+
+
+
+
+
+
+
+
+o primeiro folder, de nossa local host machine,
+
+que está exposto é 
+
+
+
+
+
+
+o FOLDER DE 'src',
+
+
+como visto em './src:/var/www/html'...
+
+
+
+
+
+
+
+
+
+
+
+o
+
+OUTRO FOLDER É o DA CONFIGURATION DE 
+
+
+'./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro'
+
+
+
+
+
+
+
+
+
+
+
+
+
+NA VERDADE,
+
+EM GERAL,
+
+ESTAMOS TRABALHANDO COM 1 MONTE DE BIND MOUNTS , AQUI...
+
+
+
+
+
+
+
+
+
+-> CÓDIGO COMPLETO:
+
+
+
+
+
+
+
+ version: '3.8'
+services:
+  #? PRIMEIRAMENTE, OS 'APP CONTAINERS' (que sempre ficarão rodando, no fundo... pq precisams handlar os requests, por ser um server)..
+  #SERVER --> SERÁ RESPONSÁVEL PELO RECEBIMENTO DOS INCOMING REQUESTS E SUA DATA, QUE SERÁ REPASSADA AO 'PHP INTERPRETER' ( container 'PHP')...
+  server:
+    image: 'nginx:latest'
+    ports:
+      - '8000:80'
+    #SIM, É POSSÍVEL BINDAR APENAS 1 ÚNICO ARQUIVO EM 1 FOLDER, EM VEZ DE 1 FOLDER INTEIRO...
+    volumes:
+      # DEVEMOS BINDAR ESSA PASTA LOCAL, COM 1 BIND MOUNT, A ESSE PATH INTERNO DO CONTAINER, QUE É '/etc/nginx/nginx.conf' (pq, sim, é apenas esse arquivo que interessa, dentro daqeula pasta)..
+      # ESSA CONFIG FILE É NECESSÁRIA PARA FAZER O WEBSERVER NGINX FUNCIONAR...
+      - './nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro'
+      - './src:/var/www/html'
+    depends_on:
+      - php
+      - mysql
+    #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
+    # VAMOS USAR 1 IMAGE CUSTOM, criada por nós...
+  php:
+    # sintaxe mais complexa de build...
+    build:
+      context: './dockerfiles'
+      dockerfile: 'php.dockerfile' # 'DELEGATED' vai MELHORAR 1 POUCO A PERFORMANCE, PQ ESSE CONTAINER DE 'php' NÃO DEVERÁ WRITE BACK A ESSE FOLDER __ COM TANTA FREQUÊNCIA ASSIM, E AS COISAS QUE ELE FAZ WRITE NÃO PRECISAM SER REFLETIDAS NA HOST MACHINE INSTANTANEAMNETE.. (pq ELE NÃO VAI WRITE _ ALGUMA _ COISA QUE PRECISAMOS __ ACESSAR INSTANTANEAMENTE NA HOST MACHINE) 
+    volumes:
+      - './src:/var/www/html:delegated'
+    ports:
+      - '3000:9000'
+    #MYSQL --> é a database MYSQL
+  mysql:
+    #? DEPOIS DISSO, OS 'UTILITY CONTAINERS' (que SÃO RODADOS, OCASIONALMENTE, DURANTE O RUNTIME, POR NÓS MESMOS, COM 'docker-compose run xxx xxx')..
+    image: mysql:5.7
+    env_file:
+      - ./env/mysql.env
+  #'COMPOSER' é TIPO O 'npm do PHP', é usado para CRIAR PROJETOS E INSTALAR DEPENDENCIES PHP (é usado para CRIAR O APP LARAVEL, POR EXEMPLO)...
+  composer:
+    # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
+    build:
+      context: './dockerfiles'
+      dockerfile: composer.dockerfile
+    volumes:
+      - ./src:/var/www/html
+  artisan:
+    # é usado para fazer coisas como 'POPULATE THE DATABASE' com migrations, seeds, etc.. é o LARAVEL ARTISAN...
+    # USAREMOS A MESMA IMAGE DO PHP, BÁSICA...
+    # comando que usaremos, no terminal: 'docker-compose run --rm artisan migrate'
+    build:
+      context: './dockerfiles'
+      dockerfile: 'php.dockerfile'
+    volumes:
+      - ./src:/var/www/html
+    # ESSA OPTION/KEY NOS DEIXA __ ADD OU OVERWRITE 1 COMANDO DE 'entrypoint' na DOCKERFILE que é usada em build/image, se __ ESSE 'CMD []' ou 'entrypoint []' EXISTIR DENTRO DAQUELA DOCKERFILE, É CLARO...
+    # com esse 'UTILITY CONTAINER', vamos querer EXECUTAR ESSE ARQUIVO 'artisan'...
+    entrypoint: [ "php", "/var/www/html/artisan" ]
+    # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
+  npm:
+    image: node:14
+    # working_dir é a 'WORKDIR' instruction das dockerfiles... e pode ser escrita aqui....
+    working_dir: /var/www/html
+    # stdin_open e tty também são instructions das dockerfile, e também podem ser escritas aqui, no arquivo docker-compose.yaml...
+    stdin_open: true
+    tty: true
+    # entrypoint TAMBÉM É UMA INSTRUCTION DAS DOCKERFILE, e pode ser escrita aqui...
+    entrypoint: [ "npm" ]
+    # run --> É UMA INSTRUCTION DAS DOCKERFILE... MAS NÃO PODE SER ESCRITA NOS ARQUIVOS 'docker-compose'...
+    # copy --> É UMA INSTRUCTION DAS DOCKERFILE... MAS NÃO PODE SER ESCRITA NOS ARQUIVOS 'docker-compose'...
+    volumes:
+      - ./src:/var/www/html
+
+
+
+
+
+
+
+
+
+
+--------------
+
+
+
+
+
+
+
+
+
+
+ESTAMOS USANDO BIND MOUNTS COM:
+
+
+1) server 
+
+
+
+2) php 
+
+
+
+3) npm 
+
+
+
+4) artisan 
+
+
+5) composer ..
+
+
+
+
+
+
+
+
+
+
+
+
+MAS A COISA QUE DEVEMOS TER EM MENTE SOBRE OS BIND MOUNTS,
+
+
+QUE O PROFESSOR MENCIONOU MAIS CEDO NO CURSO,
+
+É 
+QUE 
+
+
+
+__ ELES SÃO 'GREAT FOR DEVELOPMENT',
+
+
+
+MAS 
+SÃO 
+
+PÉSSIMOS 
+
+PARA 
+
+
+
+
+
+
+PRODUCTION...
+
+
+
+
+
+
+
+
+
+
+
+
+SÃO ÓTIMOS PARA DEVELOPMENT,
+PQ FAZEM MIRROR DE FOLDERS DE NOSSO LOCAL HOST MACHINE,
+
+QUE FICAM MIRRORED NOS NOSSOS CONTAINERS...
+
+
+
+
+
+
+
+OS BIND MOUNTS NÃO SÃO UMA OPTION SE VC PLANEJA DEPLOYAR SEU CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+O DEPLOY DE  1 CONTAINER 
+
+
+
+
+SERÁ VISTO NA SECTION DE DEPLOY,
+
+LOGO DEPOIS DESTE MÓDULO...
+
+
+
+
+
+
+
+
+
+
+
+-_> ISSO PQ SUAS BIND MOUNTS,
+
+
+SEUS LOCAL FOLDERS 
+
+NA SUA LOCAL HOST MACHINE 
+
+
+
+
+SÃO _ ARQUIVOS E FOLDERS QUE ESTÃO DISPONÍVEIS APENAS _ NA SUA LOCAL HOST MACHINE --> 
+
+
+ISSO QUER DIZER QUE, 
+SE VC 
+
+
+
+PEGAR SEU DOCKER-COMPOSE.YAML E TRANSFERIR PARA OUTRO PC/AMIGO,
+
+
+O CONTEÚDO DO DOCKER-COMPOSE E OS DOCKERFILE SERÁ TRANSFERIDO,
+
+
+
+SIM,
+
+
+
+
+
+
+MAS __o  CONTEÚDO DE SUA LOCAL HOST MACHINE, 
+
+
+O 'SURROUNDING FOLDER SYSTEM',
+
+
+
+NÃO VAI SER TRANSFERIDO 
+
+
+
+
+JUNTO DESSES ARQUIVOS 'dockerfile' e 'docker-compose.yaml'...
+
+
+
+
+
+E A IDEIA POR TRÁS DE CONTAINERS É JUSTAMENTE 
+
+
+
+
+
+
+'''TER TUDO QUE O CONTAINER PRECISA __ DENTRO __ DO PRÓPRIO CONTAINER''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROPÓSITO DOS BIND MOUNTS É JUSTAMENTE TER 1 EASIER DEVELOPMENT TIME,
+
+PQ 
+
+
+NOSSO SOURCE CODE E 
+
+A LATEST NGINX CONFIGURATION 
+
+
+
+ESTARÁ 
+
+
+DIRECTLY EXPOSED A 1 CONTAINER... ------> A IMPLICAÇÃO PARA ISSO,
+
+NO CASO,
+
+É QUE 
+
+
+
+
+TALVEZ QUEIRAMOS 
+
+
+
+
+CONSIDERAR CRIAR 1 DOCKERFILE 
+
+PARA ESSE 'server'
+
+AÍ,
+
+
+
+
+
+
+E AÍ 
+
+COPIAR __ PARA __ DENTRO O SOURCE CODE (pasta de './src', na nossa local host machine)
+
+
+E A NGINX CONFIGURATION FILE,
+
+
+
+
+TUDO PARA QUE, ALÉM DAQUELE BIND MOUNT (que funciona durante o development),
+
+NÓS TAMBÉM 
+
+
+TENHAMOS UMA 'SNAPSHOT'
+
+DO SOURCE CODE 
+
+
+E 
+
+
+DA NOSSA CONFIGURATION DENTRO DA IMAGE,
+
+QUANDO ELA FOR BUILT .... -> TUDO PARA QUE, MAIS TARDE, QUANDO 
+
+DEPLOYARMOS ESSA IMAGE,
+
+ELA JÁ CONTENHA TODO O SOURCE CODE E A CONFIGURATION NECESSÁRIAS A ELA...
