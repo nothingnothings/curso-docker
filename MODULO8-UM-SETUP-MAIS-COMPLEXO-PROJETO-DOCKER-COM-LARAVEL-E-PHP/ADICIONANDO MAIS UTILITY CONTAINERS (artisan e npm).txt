@@ -1,0 +1,1173 @@
+
+
+
+
+
+NO ARQUIVO DOCKER-COMPOSE,
+
+AINDA TEMOS 
+
+
+2 
+
+CONTAINERS INUSADOS...
+
+
+
+
+
+
+
+SÃO 'artisan' 
+
+e 'npm'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ESSE CONTAINER SERÁ USADO PARA RODAR CERTOS 
+
+
+COMANDOS 
+
+
+LARAVEL,
+
+COMO POR EXEMPLO 
+
+
+'POPULATE THE MYSQL DATABASE 
+
+WITH SOME INITIAL DATA'...
+
+
+
+(MIGRATIONS)...
+
+
+
+
+
+
+
+--> OK... MAS O COMANDO DE ARTISAN PRECISA DE 1 CUSTOM DOCKERFILE...
+
+
+
+
+
+
+
+
+
+
+
+
+-> ENTRETANTO,
+
+O PROFESSOR VAI SIMPLESMENTE 
+USAR O 
+
+DOCKERFILE 'php.dockerfile',
+
+
+
+pq ESSA CONFIGURAÇÃO DO PHP, BÁSICA,
+
+SERVE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> é por isso que o professor escreve assim:
+
+
+
+
+  artisan:
+    # é usado para fazer coisas como 'POPULATE THE DATABASE' com migrations, seeds, etc.. é o LARAVEL ARTISAN...
+    # USAREMOS A MESMA IMAGE DO PHP, BÁSICA...
+    build:
+      context: './dockerfiles'
+      dockerfile: 'php.dockerfile'
+
+
+
+
+
+
+------------------------
+
+
+
+
+
+usaremos essa image JUSTAMENTE PQ 
+
+O ARTISAN 
+
+
+PRECISA DO PHP PARA 
+
+RODAR CÓDIGO PHP...
+
+
+
+
+
+O ARTISAN É 
+
+
+
+UM COMANDO LARAVEL,
+CONSTRUÍDO COM CÓDIGO PHP...
+
+
+
+
+
+
+
+
+
+
+-> CERTO...
+
+
+
+
+
+
+
+
+-> O ARTISAN TAMBÉM PRECISA DE VOLUMES.... MAIS ESPECIFICAMENTE,
+
+ELE 
+
+PRECISA 
+
+DO NOSSO SOURCE CODE,
+
+
+
+
+PQ ELE VAI FAZER 
+
+
+COISAS COM NOSSO SOURCE CODE,
+
+ATRAVÉS DE SEU COMANDO..
+
+
+
+
+
+
+
+
+
+
+
+
+-> CERTO, É POR ISSO QUE FAREMOS UMA BIND MOUNT,
+TIPO ASSIM:
+
+
+
+
+
+  artisan:
+    # é usado para fazer coisas como 'POPULATE THE DATABASE' com migrations, seeds, etc.. é o LARAVEL ARTISAN...
+    # USAREMOS A MESMA IMAGE DO PHP, BÁSICA...
+    build:
+      context: './dockerfiles'
+      dockerfile: 'php.dockerfile'
+
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+  artisan:
+    # é usado para fazer coisas como 'POPULATE THE DATABASE' com migrations, seeds, etc.. é o LARAVEL ARTISAN...
+    # USAREMOS A MESMA IMAGE DO PHP, BÁSICA...
+    build:
+      context: './dockerfiles'
+      dockerfile: 'php.dockerfile'
+    volumes:
+      - ./src:/var/www/html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      OK... MAS AGORA O PROFESSOR VAI NOS MOSTRAR ALGO INTERESSANTE, QUE AINDA NÃO VIMOS...
+
+
+
+
+
+----> MAS O QUE É ISSO?
+
+
+
+BEM, PODEMOS 
+SETTAR CERTAS SETTINGS, 
+
+
+
+
+SETTINGS QUE GERALMENTE SÃO SETTADAS LÁ NO DOCKERFILE,
+
+
+
+
+_ DENTRO __ DO DOCKER-COMPOSE ... --> O BENEFÍCIO DISSO É QUE 
+
+AS SETTINGS 
+
+DO 
+
+'docker-compose'
+
+
+VÃO 
+
+OVERWRITTAR AS SETTINGS DA DOCKERFILE...
+
+
+
+
+
+
+
+
+
+
+--> AQUI, NO CASO,
+
+O PROFESSOR 
+
+
+
+ESTÁ SE APROVEITANDO DA DOCKERFILE DE 'php.dockerfile',
+
+
+QUE 
+
+TEM ESTE CONTEÚDO:
+
+
+
+FROM php:8-fpm-alpine
+
+# É UM FOLDER BEM COMUM EM WEB DEVELOPMENT/WEB SERVERS (vc tipicamente 'SERVE YOUR WEBSITE FROM THIS FOLDER')
+# TOD0S OS CONTAINERS QUE USAMOS NESSE MODULE USARÃO ESSE FOLDER COMO __ O FOLDER __ QUE VAI SEGURAR NOSSA 'FINAL APPLICATION'...
+WORKDIR /var/www/html
+
+# 'docker-php-ext-install' é uma TOOL que vai existir/existe DENTRO DAQEULA IMAGE DE 'php:7.4-fpm-alpine'....  
+RUN docker-php-ext-install pdo pdo_mysql
+
+
+
+
+
+----------------------------------------
+
+
+
+
+
+
+
+
+
+
+CERTO... ESSA É A IMAGE BASE, no dockerfile...
+
+
+
+
+
+ESSA IMAGE USA O PHP,
+
+SIM,
+
+E TAMBÉM ESTAMOS FELIZES COM O WORKDIR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ENTRETANTO, AQUI EU TAMBÉM QUERO ADICIONAR 1 __ ENTRYPOINT...
+
+
+
+
+
+
+
+
+--> NÓS NÃO TEMOS 1 ENTRYPOINT 
+
+LÁ 
+
+NO 'php.dockerfile'
+
+SIMPLESMENTE 
+
+
+PQ 
+
+ESSE CONTAINER É USADO PELO NGINX 
+
+
+APENAS PARA 
+
+'FUNNEL INDIVIDUAL FILES  THROUGH IT' -----> ISSO QUER DIZER, EM OUTRAS PALAVRAS,
+
+
+QUE 
+
+ELE 
+
+É QUASE 
+
+1 
+'UTILITY CONTAINER PARA O NGINX',
+
+esse container de 'php'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO TUDO É LEGAL, SIM,
+
+
+MAS O PROFESSOR QUER ESPECIFICAR SEU PRÓPRIO COMANDO 
+
+
+
+A SER RODADO COM ESSE CONTAINER DE 'php',
+
+
+
+E __ ELE __ QUER __ ESPECIFICAR ESSE COMANDO COMO 1 __ ENTRYPOINT..
+
+
+
+
+
+
+
+
+--> PODERÍAMOS ESPECIFICAR UMA OUTRA DOCKERFILE,
+
+SIM,
+
+
+
+MAS __ UMA ALTERNATIVA BEM MAIS SIMPLES E RÁPIDA 
+
+É SIMPLESMENTE
+
+
+
+
+
+__ESPECIFICAR O 'entrypoint'
+
+
+NO PRÓPRIO 'docker-compose.yaml'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+  artisan:
+    # é usado para fazer coisas como 'POPULATE THE DATABASE' com migrations, seeds, etc.. é o LARAVEL ARTISAN...
+    # USAREMOS A MESMA IMAGE DO PHP, BÁSICA...
+    build:
+      context: './dockerfiles'
+      dockerfile: 'php.dockerfile'
+    volumes:
+      - ./src:/var/www/html
+    # ESSA OPTION/KEY NOS DEIXA __ ADD OU OVERWRITE 1 COMANDO DE 'entrypoint' na DOCKERFILE que é usada em build/image, se __ ESSE 'CMD []' ou 'entrypoint []' EXISTIR DENTRO DAQUELA DOCKERFILE, É CLARO...
+    entrypoint: entrypoint
+    
+
+---------------------------------
+
+
+
+
+
+
+
+
+
+ISSO NOS DEIXA ADD OU OVERWRITE 1 COMMAND/ENTRYPOINT JÁ EXISTENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> dentro de 'entrypoint',
+
+
+o professor VAI QUERER EXECUTAR 
+'php',
+
+
+(o executável),
+
+
+
+
+
+
+QUE VAI ESTAR DISPONÍVEL POR CONTA DA IMAGE DE 'php'...
+
+
+
+
+
+
+
+
+--> E A FILE QUE O PROFESSOR VAI QUERER EXECUTAR 
+
+EXISTIRÁ 
+
+
+
+NO PATH DE 
+
+
+'/var/www/html/artisan'...
+
+
+
+
+
+
+
+
+
+
+---> É ESSE ARQUIVO 'artisan'...
+
+
+
+ex:
+
+
+
+
+  artisan:
+    # é usado para fazer coisas como 'POPULATE THE DATABASE' com migrations, seeds, etc.. é o LARAVEL ARTISAN...
+    # USAREMOS A MESMA IMAGE DO PHP, BÁSICA...
+    build:
+      context: './dockerfiles'
+      dockerfile: 'php.dockerfile'
+    volumes:
+      - ./src:/var/www/html
+    # ESSA OPTION/KEY NOS DEIXA __ ADD OU OVERWRITE 1 COMANDO DE 'entrypoint' na DOCKERFILE que é usada em build/image, se __ ESSE 'CMD []' ou 'entrypoint []' EXISTIR DENTRO DAQUELA DOCKERFILE, É CLARO...
+    # com esse 'UTILITY CONTAINER', vamos querer EXECUTAR ESSE ARQUIVO 'artisan'...
+    entrypoint: ["php", "/var/www/html/artisan"]
+
+
+
+
+
+
+
+
+
+
+
+    ARTISAN É UM PHP FILE,
+
+    SIM,
+
+
+
+    MAS QUE QUANDO É EXECUTADO,
+
+
+     
+     'BRINGS UP' 
+
+
+
+
+     1 UTILITY PROGRAM,
+
+     QUE 
+
+     FAZ 1 MONTE DE COISAS... -> E O ARTISAN FAZ PARTE DO LARAVEL FRAMEWORK...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ESTAMOS EXECUTANDO ESSA FILE DENTRO DO CONTAINER,
+
+
+
+COM A AJUDA DO PHP E ESSA PHP IMAGE... --> E ESTAMOS ADICIONANDO ESSE ENTRYPOINT 
+
+NESSA IMAGE,
+
+
+PQ 
+ELA NÃO EXISTE, A PRIORI,
+ 
+ NA NOSSA DOCKERFILE....
+
+
+
+
+
+
+
+
+
+
+
+ --> OUTRA VANTAGEM DE ESPECIFICAR O 'entrypoint'
+
+
+
+ NESSE CONTAINER DE 'artisan'
+
+ É 
+ QUE 
+
+
+ __ NÃO VAMOS 
+ DEIXAR
+
+ A OPÇÃO DE RODAR ESSE COMANDO DISPONÍVEL NO EXECUTE DO CONTAINER 'php',
+
+
+
+
+
+
+
+
+
+ PQ __ AQUELE DOCKERFILE DO 'php'
+
+ TAMBÉM É USADO COM O CONTAINER DE 'php',
+
+
+ E O ENTRYPOINT REALMENTE NÃO É NECESSÁRIO, NESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> OK... COM ISSO,
+
+
+ ACABAMOS COM ESSE CONTAINER...
+
+
+
+
+
+ AGORA DEVEMOS FINALIZAR O CONTAINER DE 'npm'
+
+ TAMBÉM...
+
+
+
+
+
+
+ -> COM O NPM, USAREMOS A IMAGE DE 'node:14'..
+
+
+
+
+
+
+ EX:
+
+
+
+
+
+
+   npm:
+    image: node:14
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+PODEMOS COLOCAR 1 OUTRO 'entrypoint',
+
+aqui,
+
+PARA 
+DEIXAR 
+
+
+ESSE 
+
+CONTAINER COMO OUTRO UTILITY CONTAINER...
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+  npm:
+    image: node:14
+    stdin_open: true
+    tty: true
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+    -> TAMBÉM PODEMOS COLOCAR o 'working_dir'
+    nessa option aí..
+
+
+
+
+
+
+
+
+
+    -> EX:
+
+
+
+
+  npm:
+    image: node:14
+    working_dir: /var/www/html
+    stdin_open: true
+    tty: true
+
+
+
+
+
+
+
+
+
+E, POR FIM, O ENTRYPOINT:
+
+
+
+
+
+
+
+
+  npm:
+    image: node:14
+    working_dir: /var/www/html
+    stdin_open: true
+    tty: true
+    entrypoint: ["npm"]
+
+
+
+
+
+
+
+
+
+
+    
+    COM ISSO, FICAMOS CAPAZES DE RODAR COMANDOS NPM NO NOSSO PROJETO,
+
+
+    POR MEIO 
+
+    DESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+    -> UMA COISA QUE FALTOU FOI O BIND 
+
+
+    DO VOLUME DE 
+
+    './src:/var/www/html'...
+
+
+    
+
+    BINDO-O ASSIM:
+
+
+
+
+  npm:
+    image: node:14
+    working_dir: /var/www/html
+    stdin_open: true
+    tty: true
+    entrypoint: [ "npm" ]
+    volumes:
+      - ./src:/var/www/html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COLOCAMOS ISSO JUSTAMENTE PQ 
+
+QUEREMOS FAZER ISSO COM NOSSO FOLDER, DENTRO DO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM TUDO ISSO FEITO,
+
+ESTAMOS 
+PRONTOS...
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO,
+
+DEVEMOS COMEÇAR COM O COMANDO DE 'artisan'...
+
+
+
+
+
+
+
+
+
+
+
+--> PARA RODAR O UTILITY CONTAINER DO ARTISAN,
+
+devemos escrever assim:
+
+
+
+
+
+
+
+
+
+'docker-compose run --rm artisan'
+
+
+
+
+
+
+
+
+
+
+
+-> INTERNAMENTE,
+
+
+
+O COMANDO DE 
+
+'docker-compose run artisan'
+
+
+VAI __ RODAR 
+
+
+
+ISTO AQUI:
+
+
+
+
+    entrypoint: [ "php", "/var/www/html/artisan" ]
+
+
+
+
+
+
+
+
+
+
+
+
+-> CERTO... MAS TAMBÉM ESCREVEMOS '--rm',
+
+PARA QUE 
+
+ESSE UTILITY CONTAINER SEJA REMOVIDO QUANDO ELE ACABAR...
+
+
+
+
+
+
+
+
+
+
+AO FINAL DO COMANDO DE 
+
+
+'' 'docker-compose run artisan' ''',
+
+
+
+
+
+
+COLOCAMOS 
+
+O COMANDO DE 'migrate',
+
+
+
+
+QUE É _ UM DOS COMANDOS ARTISAN SUPORTADOS PELO LARAVEL...
+
+
+
+
+
+
+
+ex:
+
+'docker-compose run --rm artisan migrate'
+
+
+
+
+
+
+OK... RODAMOS ISSO AÍ,
+
+
+E ELE VAI RODAR AS MIGRATIONS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--VAI RODAR AS MIGRATIONS DE 
+
+'CREATE USERS TABLE'
+
+
+
+'CREATE PASSWORD RESET TOKENS TABLE'
+
+
+
+
+'CREATE FAILED JOBS TABLE'
+
+
+
+
+'CREATE PERSONAL ACCESS TOKENS TABLE'...
+
+
+
+
+
+
+
+
+
+
+
+-> OK... ESSAS MIGRATIONS DERAM CERTO...
+
+
+
+
+
+
+
+
+
+
+
+O PROFESOR EXPLICA QUE ESSE COMANDO NÃO FUNCIONARIA SE_ NÃO TIVÉSSEMOS UMA 
+
+DATABASE CONNECTION...
+
+(
+  por isso precisamos rodar os 'app containers', com 
+
+
+
+
+  'docker-compose up -d --build server'...
+)
+
+
+
+
+
+
+
+CERTO.... COM ISSO, FICAMOS COM 1 BOM SETUP PARA 1 LARAVEL PHP APP...
+
+
+
+
+
+
+
+
+
+
+SIM, ESSE É UM SETUP MAIS COMPLEXO,
+
+MAS 
+
+ESSA É A IDEIA POR TRÁS DE UM CURSO: 
+
+APRENDER OS BASICS,
+E AÍ 
+
+
+VER ALGO MAIS COMPLEXO...
+
+
+
+
+
+
+
+
+
+OK... EVENTUALMENTE,
+ 
+
+ VC 
+
+ VAI CHEGAR NO PONTO 
+
+
+ EM QUE VC VAI CONSEGUIR CONSTRUIR PROJETOS 
+
+
+ COMO ESSE COMPLETAMENTE POR CONTA PRÓPRIA...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OBVIAMENTE,
+
+SE VC SOUBER LARAVEL E PHP,
+
+
+VC VAI SABER OS BUILDING BLOCKS QUE VC VAI PRECISAR...
+
+
+
+
+
+
+
+
