@@ -3,7 +3,13 @@ services:
   #? PRIMEIRAMENTE, OS 'APP CONTAINERS' (que sempre ficarão rodando, no fundo... pq precisams handlar os requests, por ser um server)..
   #SERVER --> SERÁ RESPONSÁVEL PELO RECEBIMENTO DOS INCOMING REQUESTS E SUA DATA, QUE SERÁ REPASSADA AO 'PHP INTERPRETER' ( container 'PHP')...
   server:
-    image: 'nginx:latest'
+    # outsourceado para nossa DOCKERFILE de 'nginx.dockerfile'..
+    # image: 'nginx:latest'
+    build: 
+      #context --> '''SETs THE FOLDER IN WHICH THE DOCKERFILE WILL BE BUILT (and found)''...
+      # com '.', ampliamos o alcance do catch de changes de nosso container, pq com '.' ele será o ROOT PROJECT FOLDER (o folder de 'php-laravel-docker-setup', em que o arquivo docker-compose se encontra)
+      context: .
+      dockerfile: 'dockerfiles/nginx.dockerfile'
     ports:
       - '8000:80'
     #SIM, É POSSÍVEL BINDAR APENAS 1 ÚNICO ARQUIVO EM 1 FOLDER, EM VEZ DE 1 FOLDER INTEIRO...
@@ -20,8 +26,10 @@ services:
   php:
     # sintaxe mais complexa de build...
     build:
-      context: './dockerfiles'
-      dockerfile: 'php.dockerfile' # 'DELEGATED' vai MELHORAR 1 POUCO A PERFORMANCE, PQ ESSE CONTAINER DE 'php' NÃO DEVERÁ WRITE BACK A ESSE FOLDER __ COM TANTA FREQUÊNCIA ASSIM, E AS COISAS QUE ELE FAZ WRITE NÃO PRECISAM SER REFLETIDAS NA HOST MACHINE INSTANTANEAMNETE.. (pq ELE NÃO VAI WRITE _ ALGUMA _ COISA QUE PRECISAMOS __ ACESSAR INSTANTANEAMENTE NA HOST MACHINE) 
+      # context: './dockerfiles'
+      # dockerfile: 'php.dockerfile' # 'DELEGATED' vai MELHORAR 1 POUCO A PERFORMANCE, PQ ESSE CONTAINER DE 'php' NÃO DEVERÁ WRITE BACK A ESSE FOLDER __ COM TANTA FREQUÊNCIA ASSIM, E AS COISAS QUE ELE FAZ WRITE NÃO PRECISAM SER REFLETIDAS NA HOST MACHINE INSTANTANEAMNETE.. (pq ELE NÃO VAI WRITE _ ALGUMA _ COISA QUE PRECISAMOS __ ACESSAR INSTANTANEAMENTE NA HOST MACHINE) 
+      context: .
+      dockerfile: 'dockerfiles/php.dockerfile'
     volumes:
       - './src:/var/www/html:delegated'
     ports:
@@ -45,8 +53,8 @@ services:
     # USAREMOS A MESMA IMAGE DO PHP, BÁSICA...
     # comando que usaremos, no terminal: 'docker-compose run --rm artisan migrate'
     build:
-      context: './dockerfiles'
-      dockerfile: 'php.dockerfile'
+      context: '.'
+      dockerfile: 'dockerfiles/php.dockerfile'
     volumes:
       - ./src:/var/www/html
     # ESSA OPTION/KEY NOS DEIXA __ ADD OU OVERWRITE 1 COMANDO DE 'entrypoint' na DOCKERFILE que é usada em build/image, se __ ESSE 'CMD []' ou 'entrypoint []' EXISTIR DENTRO DAQUELA DOCKERFILE, É CLARO...

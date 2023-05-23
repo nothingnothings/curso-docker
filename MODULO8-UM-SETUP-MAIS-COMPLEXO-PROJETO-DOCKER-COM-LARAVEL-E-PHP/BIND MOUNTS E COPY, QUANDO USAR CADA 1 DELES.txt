@@ -1,0 +1,2922 @@
+
+
+
+
+
+PARA COPIARMOS O NOSSO SOURCE CODE DO 'server nginx'
+
+PARA 
+
+DENTRO 
+
+
+
+DO CONTAINER/service de 'nginx',
+
+
+
+O PROFESSOR EXPLICA QUE 
+
+
+PODEMOS CRIAR 1 ARQUIVO 
+
+'nginx.dockerfile',
+
+DENTRO 
+
+
+DO FOLDER DE 'dockerfiles'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+PODEMOS DEFINIR A BASE IMAGE (FROM) 
+
+COMO
+
+SENDO 
+
+
+
+
+'nginx:stable-alpine'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TAMBÉM PODEMOS COLOCAR O WORKDIR 
+
+DESSE NOSSO CONTAINER COMO SENDO 
+
+'/etc/nginx/conf.d'
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+FROM nginx:stable-alpine
+
+WORKDIR /etc/nginx/conf.d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+DEPOIS DISSO, VAMOS QUERER COPIAR A NOSSA 'LOCAL CONFIGURATION FILE'
+
+
+PARA DENTRO 
+
+DESSE FOLDER ( do workdir),
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+FROM nginx:stable-alpine
+
+WORKDIR /etc/nginx/conf.d
+
+COPY nginx/nginx.conf .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DEPOIS DISSO,
+
+VAMOS QUERER RODAR 1 COMANDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+QUAL COMANDO?
+
+
+
+
+
+
+
+
+
+
+BEM,
+
+
+
+
+
+SE VC LER OS DOCS DO 'nginx',
+
+DA IMAGE DO NGINX,
+
+
+VERÁ QUE O ARQUIVO CONF DEVERÁ TER UM NOME DE 'default.conf'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA FAZER COM QUE O ARUQIVO de 'nginx.conf' FUNCIONE,
+PODERÍAMOS 
+
+
+
+RENOMEÁ-LO PARA 'default.conf' AGORA,
+
+
+
+OU ENTÃO PODEMOS RODAR 1 COMANDO LÁ EM 
+
+
+'nginx.dockerfile' 
+
+
+PARA 
+
+
+RENOMEÁ-LO DURANTE O RUNTIME...
+
+
+
+
+
+
+
+
+
+
+---> PODEMOS FAZER ISSO COM O COMANDO LINUX 'mv',
+
+MOVE,
+
+
+
+
+E ESPECIFICAR ASSIM:
+
+
+
+
+
+mv nginx.conf default.conf
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+mv nginx.conf default.conf
+
+
+
+
+
+
+--------------------------
+
+
+
+
+EX:
+
+
+
+FROM nginx:stable-alpine
+
+WORKDIR /etc/nginx/conf.d
+
+COPY nginx/nginx.conf .
+
+# ISSO VAI RENOMEAR 'nginx.conf' PARA 'default.conf'...
+RUN mv nginx.conf default.conf 
+
+
+
+
+
+
+
+
+
+
+
+-------------------------
+
+
+
+
+
+DEPOIS DISSO,
+
+
+O PROFESSOR VAI QUERER TROCAR O WORKDIR PARA 
+
+
+'/var/www/html',
+
+
+PARA ENTÃO COPIARMOS NOSSO SOURCE CODE PARA DENTRO DELE,
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+# ISSO VAI TROCAR O WORKDIR, que antes era '/etc/nginx/conf.d' (esse folder aí) PARA O FOLDER DE '/var/www/html', que é onde NOSSO SOURCE CODE RESIDIRÁ....
+WORKDIR /var/www/html
+
+#copia todo o conteúdo de 'src' (folder de 'src', na nossa local host machine) PARA DENTRO De '/VAR/WWW/HTMl'..
+COPY src .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... TUDO DO FOLDER de 'src'
+
+É COPIADO PARA DENTRO 
+
+DO WORKING DIRECTORY...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... POR MEIO DISSO, POR MEIO DO ADD DESSA DOCKERFILE,
+
+
+
+NÓS GARANTIMOS QUE 
+
+ 
+
+ É 'SEMPRE COPIADA 1 __ SNAPSHOT DE NOSSA CONFIGURATION E NOSSO SOURCE CODE PARA DENTRO 
+
+ DA IMAGE de server',
+
+
+
+
+
+
+O QUE QUER DIZER QUE 
+DEIXAMOS DE CONFIAR UNICAMENTE NA BIND MOUNT DE 
+
+
+
+''
+
+
+      - './nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro'
+      - './src:/var/www/html'
+    
+''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... ISSO QUER DIZER QUE 
+
+A BIND MOUNT VAI CONTINUAR NOS AJUDANDO DURANTE O DEVELOPMENT,
+
+MAIS TARDE,
+
+
+DE MODO QUE APENAS O 'LATEST CODE' 
+
+E 
+
+A 
+
+'LATEST CONFIG'
+
+SEJAM 'BOUND' AO INTERIOR DESSE CONTAINER... -----> MAS AO MESMO TEMPO QUE 
+
+
+
+NOS APROVEITAMOS DESSE BIND MOUNT,
+
+
+NÓS APROVEITAMOS 
+
+
+
+A PARTE DE DEPLOY,
+
+
+
+
+PQ __ SE NÓS FIZERMOS DEPLOY,
+
+
+NÓS NÃO TEREMOS ESSES BIND MOUNTS,
+
+E AÍ 
+A 
+
+SNAPSHOT COPIADA PARA DENTRO 
+
+DO CONTAINER 'server',
+
+POR MEIO DESSE DOCKERFILE,
+
+ 
+
+
+
+
+
+ SERÃO IMPORTANTES/SERÃO CONSIDERADAS... ->  E ESSE É UM PEQUENO TWEAK 
+
+ QUE 
+ 
+
+
+ FIZEMOS AQUI, DIZ O PROFESSOR...
+
+
+
+
+
+
+
+
+
+ MAS O PROFESSOR APONTA QUE 
+
+ NÃO PRECISAMOS 
+
+ ESPECIFICAR NENHUMA 'CMD []' 
+
+
+ OU 
+
+ 'ENTRYPOINT []' 
+
+
+
+
+
+
+
+
+ NESSA DOCKERFILE DO 'server',
+
+
+
+ pq 
+
+
+
+
+
+
+ A IMAGE DE 'nginx'
+
+ JÁ TEM 1 DEFAULT COMMAND....  E, SE NÓS NÃO ESPECIFICARMOS NENHUM COMMAND CUSTOM, ESCRITO POR NÓS,
+
+ ESSE DEFAULT COMMAND JÁ SERÁ UTILIZADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> OK.... E O 'DEFAULT COMMAND' 
+
+
+ DA BASE IMAGE DE 'nginx'
+
+ É O COMMAND QUE STARTA ESSE WEBSERVER,
+
+
+QUE É EXATAMENTE AQUILO QUE DESEJO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA BASTA IR ATÉ O 'docker-compose.yaml'
+
+
+
+
+
+E TROCAR UM POUCO NOSSA CONFIGURAÇÃO..
+
+
+
+
+
+
+
+
+
+
+VAMOS TIRAR AQUELA OPTION DE 'image'
+LÁ 
+
+NA KEY DE 'server',
+
+
+
+
+
+
+
+
+
+PQ AGORA NÃO VAMOS MAIS USAR APENAS A BASE IMAGE AQUi...
+
+
+
+
+
+
+
+-> VAMOS  COLOCAR 'build:',
+
+
+E AÍ 
+
+VAMOS ESPECIFICAR 
+A NOSSA DOCKERFILE DE 'nginx.dockerfile',
+
+especificamente.,..
+
+
+
+
+
+
+
+
+tipo assim:
+
+
+
+
+
+  server:
+    build: 
+      context: ./dockerfiles
+      dockerfile: 'nginx.dockerfile'
+    ports:
+      - '8000:80'
+
+
+
+
+
+
+
+
+
+
+EU ACHAVA QUE SERIA ASSIM,
+
+MAS O PROFESSOR APONTA QUE 
+
+
+
+AGORA 
+
+
+USAREMOS UMA CONFIGURATION NUNCA UTILIZADA ANTERIORMENTE...
+
+
+
+
+
+
+
+
+
+--> ANTERIORMENTE,
+NOSSO 'context'
+ 
+ value 
+
+ era sempre O FOLDER DE DOCKERFILES,
+
+ PQ 
+ ERA ALI QUE TÍNHAMOS NOSSAS DOCKERFILES...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> DEPOIS DISSO, COLOCÁVAMOS O NAME DA DOCKERFILE, NA KEY DE 'dockerfile'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... MAS ISSO NÃO FUNCIONARÁ, 
+AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+--> NÃO FUNCIONARÁ JUSTAMENTE 
+
+PQ 
+
+A 
+
+KEY DE 'context'
+
+
+FAZ MAIS DO QUE APENAS 
+
+
+'''SET THE FOLDER IN WHICH THIS DOCKERFILE CAN BE FOUND''''..
+
+
+
+
+
+
+
+
+ISSO PQ 
+
+O 
+
+'context'
+
+TAMBÉM 
+
+
+
+SETTA 
+
+
+
+'''THE FOLDER IN WHICH THE DOCKERFILE WILL BE BUILT (and found)''...
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  --> ok... 
+
+
+
+
+
+
+
+
+  QUAL É A EXPLICAÇÃO?
+
+
+
+
+
+
+
+
+
+
+  BEM... 
+
+
+
+
+  LÁ NA DOCKERFILE DE 'nginx.dockerfile',
+
+
+  ESTAMOS NOS REFERINDO 
+
+
+
+
+
+  AO FOLDER  DE 'nginx',
+
+  E AO FOLDER 
+
+  DE 
+
+
+'src',
+
+AMBOS 
+
+NA MINHA LOCAL HOST MACHINE project folder...
+
+
+
+
+
+
+
+
+
+
+
+--> E AMBOS OS FOLDERS,
+
+
+'nginx'
+
+e 
+
+'src',
+
+ESTÃO __ DO LADO __ DE FORA_  
+
+
+
+DA PASTA EM QUE 
+
+SE ENCONTRA 
+
+NOSSA DOCKERFILE DE 'nginx.dockerfile'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. MAS QUAL É O PROBLEMA DISSO?
+
+
+
+
+
+
+
+
+
+
+
+
+
+BEM, SE NÓS BUILDARMOS NOSSA IMAGE DE 'server'
+
+
+NESSE FOLDER DE 'dockerfiles',
+
+
+
+
+
+
+ESSES CAMINHOS DE 'src'
+
+e 
+
+
+'nginx'
+
+
+SERÃO 'UNREACHABLE'...
+
+
+
+
+
+
+
+
+
+
+--> para consertar isso, O PROFESSOR APONTA QUE 
+
+DEVEMOS DEFINIR 
+
+A 
+
+
+OPTION DE 'context'
+
+COMO SENDO '.' (ou seja,
+
+O PRÓPRIO ROOT DO PROJETO EM QUE 'docker-compose.yaml' SE ENCONTRA),
+
+
+
+
+
+
+
+e a option de 'dockerfile'
+
+COMO SENDO 
+
+
+__ o PATH _ ATÉ NOSSA DOCKERFILE,
+ TIPO ASSIM:
+
+
+
+
+
+
+
+
+services:
+  #? PRIMEIRAMENTE, OS 'APP CONTAINERS' (que sempre ficarão rodando, no fundo... pq precisams handlar os requests, por ser um server)..
+  #SERVER --> SERÁ RESPONSÁVEL PELO RECEBIMENTO DOS INCOMING REQUESTS E SUA DATA, QUE SERÁ REPASSADA AO 'PHP INTERPRETER' ( container 'PHP')...
+  server:
+    # outsourceado para nossa DOCKERFILE de 'nginx.dockerfile'..
+    # image: 'nginx:latest'
+    build: 
+      #context --> '''SETs THE FOLDER IN WHICH THE DOCKERFILE WILL BE BUILT (and found)''...
+      context: .
+      dockerfile: 'dockerfiles/nginx.dockerfile'
+    ports:
+      - '8000:80'
+
+
+
+
+
+
+
+
+
+
+
+      POR MEIO DISSO,
+
+
+
+
+
+      GARANTIMOS QUE
+
+
+
+      'MORE CONTEXT, MORE FOLDERS, ARE AVAILABLE',
+
+
+
+
+
+
+      pq A DOCKERFILE SERÁ CONSTRUÍDA LÁ NO 'MAIN PROJECT FOLDER',
+
+      E NÃO 
+
+      DENTRO 
+
+
+
+      __ DO FOLDER _ DE 'dockerfiles'...
+
+
+
+
+
+
+
+
+
+
+
+-> PARA OUTRAS IMAGES,
+
+COMO A IMAGE DE 'php',
+
+
+
+
+ISSO NÃO IMPORTAVA,
+
+
+PQ 
+
+NA IMAGE DE 'php'
+
+NÃO ESTAMOS COPIANDO NADA DE NOSSA LOCAL HOST MACHINE 
+PARA 
+
+O 
+CONTAINER DO PHP....
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O USO DO context como sendo 
+
+'context: ./dockerfiles'
+ 
+
+ FUNCIONAVA JUST FINE,
+
+ LÁ NO CASO DE 'php' container...
+
+
+
+
+
+
+
+
+
+
+
+ ENTRETANTO, CONFORME VISTO AGORA,
+
+ SE VC PRECISA DE ALGO MAIS DE SEU PROJECT FOLDER,
+
+
+ SETTAR O CONTEXT COMO SENDO 1 CHILD _ FOLDER_ _É ALGO QUE NÃO VAI FUNCIONAR...
+
+
+
+
+
+ 
+
+
+ --> NESSES CASOS,
+
+
+ DEVEMOS FAZER COMO FIZEMOS AGORA,
+
+
+
+
+ SETTAR 1 CONTEXT FOLDER MAIS ACIMA DO NOSSO, PARA QUE MAIS CHANGES SEJAM DETECTADAS, o escopo
+
+ seja aumentado...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ OK... PODERÍAMOS TESTAR OS CONTAINERS AGORA,
+ MAS ANTES DISSO,
+
+ O PROFESSOR QUER FAZER OUTRA COISA:
+
+
+
+
+O PROFESSOR QUER COMENTAR NOSSOS VOLUMES PARA FORA,
+
+
+
+
+PARA QUE POSSAMOS 
+
+TESTAR 
+
+
+
+O SERVICE/CONTAINER DE 
+
+
+'server'
+
+
+SEM OS NOSSOS BIND MOUNTS (
+
+COM ISSO,
+
+CODE CHANGES DEIXARAM DE SEREM REFLETIDAS NO NOSSO SERVER,
+
+mas ainda 
+
+SEREMOS CAPAZES 
+
+DE STARTAR 
+
+NOSSO APP E O UTILIZAR,
+
+PQ A 'STARTING PAGE' 
+DE NOSSO APP AINDA DEVE FUNCIONAR...
+
+)
+
+
+
+
+
+FICA TIPO ASSIM:
+
+
+
+
+
+
+version: '3.8'
+services:
+  #? PRIMEIRAMENTE, OS 'APP CONTAINERS' (que sempre ficarão rodando, no fundo... pq precisams handlar os requests, por ser um server)..
+  #SERVER --> SERÁ RESPONSÁVEL PELO RECEBIMENTO DOS INCOMING REQUESTS E SUA DATA, QUE SERÁ REPASSADA AO 'PHP INTERPRETER' ( container 'PHP')...
+  server:
+    # outsourceado para nossa DOCKERFILE de 'nginx.dockerfile'..
+    # image: 'nginx:latest'
+    build: 
+      #context --> '''SETs THE FOLDER IN WHICH THE DOCKERFILE WILL BE BUILT (and found)''...
+      context: .
+      dockerfile: 'dockerfiles/nginx.dockerfile'
+    ports:
+      - '8000:80'
+    #SIM, É POSSÍVEL BINDAR APENAS 1 ÚNICO ARQUIVO EM 1 FOLDER, EM VEZ DE 1 FOLDER INTEIRO...
+    # volumes:
+      # DEVEMOS BINDAR ESSA PASTA LOCAL, COM 1 BIND MOUNT, A ESSE PATH INTERNO DO CONTAINER, QUE É '/etc/nginx/nginx.conf' (pq, sim, é apenas esse arquivo que interessa, dentro daqeula pasta)..
+      # ESSA CONFIG FILE É NECESSÁRIA PARA FAZER O WEBSERVER NGINX FUNCIONAR...
+      # - './nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro'
+      # - './src:/var/www/html'
+    depends_on:
+      - php
+      - mysql
+
+
+
+
+
+
+
+  -----------------------------
+
+
+
+
+
+
+
+
+
+
+
+  O SERVER VAI FUNCIONAR PQ  A 'SNAPSHOT DE NOSSO SERVER'
+
+  AINDA VAI FICAR DENTRO DE NOSSO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  CERTO... MAS ALÉM DISSO, O PROFESSOR TAMBÉM QUER TWEAKAR 
+
+  AQUELA 
+
+  DOCKERFILE DE 'php.dockerfile'...
+
+
+
+
+
+
+
+
+
+
+
+  -> O CONTEÚDO DO CONTAINER PHP, NA DOCKERFILE, É ESTE:
+
+
+
+  FROM php:8-fpm-alpine
+
+# É UM FOLDER BEM COMUM EM WEB DEVELOPMENT/WEB SERVERS (vc tipicamente 'SERVE YOUR WEBSITE FROM THIS FOLDER')
+# TOD0S OS CONTAINERS QUE USAMOS NESSE MODULE USARÃO ESSE FOLDER COMO __ O FOLDER __ QUE VAI SEGURAR NOSSA 'FINAL APPLICATION'...
+WORKDIR /var/www/html
+
+# 'docker-php-ext-install' é uma TOOL que vai existir/existe DENTRO DAQEULA IMAGE DE 'php:7.4-fpm-alpine'....  
+RUN docker-php-ext-install pdo pdo_mysql
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, NO DOCKER-COMPOSE, É ESTE:
+
+
+
+
+
+  php:
+    # sintaxe mais complexa de build...
+    build:
+      context: './dockerfiles'
+      dockerfile: 'php.dockerfile' # 'DELEGATED' vai MELHORAR 1 POUCO A PERFORMANCE, PQ ESSE CONTAINER DE 'php' NÃO DEVERÁ WRITE BACK A ESSE FOLDER __ COM TANTA FREQUÊNCIA ASSIM, E AS COISAS QUE ELE FAZ WRITE NÃO PRECISAM SER REFLETIDAS NA HOST MACHINE INSTANTANEAMNETE.. (pq ELE NÃO VAI WRITE _ ALGUMA _ COISA QUE PRECISAMOS __ ACESSAR INSTANTANEAMENTE NA HOST MACHINE) 
+    volumes:
+      - './src:/var/www/html:delegated'
+    ports:
+      - '3000:9000'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -----> OK... A DOCKERFILE DE PHP é mt parecida com a de 'server'...
+
+
+
+
+
+
+  O PROBLEMA TAMBÉM É O BIND MOUNT,
+
+
+
+
+
+
+PQ __ '''SE FIZERMOS DEPLOY DE NOSSO APP,
+
+
+
+O BIND MOUNT NÃO VAI NOS AJUDAR NEM UM POUCO,
+
+
+
+PQ _ AÍ __ O DOCKERFILE DE PHP
+NÃO 
+
+VAI 
+
+TER CÓDIGO/CONTEÚDO ALGUM DENTRO DELE'''.... --> e isso, é claro,
+
+
+SIGNIFICA 
+
+
+
+QUE 
+
+
+
+NENHUM CÓDIGO SERIA PARTE DO DEPLOYED PHP CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+--> É JUSTAMENTE POR ISSO QUE O PROFESSOR 
+
+
+VAI 
+
+
+rodar 
+
+'COPY src .' ,
+
+
+LÁ 
+
+
+NO CONTAINER DE 'php',
+
+PARA 
+
+
+TER TODO O CÓDIGO DE NOSSA PASTA 'src'
+
+DENTRO 
+
+
+
+
+DA PASTA DE '/var/www/html'...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+FROM php:8-fpm-alpine
+
+# É UM FOLDER BEM COMUM EM WEB DEVELOPMENT/WEB SERVERS (vc tipicamente 'SERVE YOUR WEBSITE FROM THIS FOLDER')
+# TOD0S OS CONTAINERS QUE USAMOS NESSE MODULE USARÃO ESSE FOLDER COMO __ O FOLDER __ QUE VAI SEGURAR NOSSA 'FINAL APPLICATION'...
+WORKDIR /var/www/html
+
+COPY src .
+
+# 'docker-php-ext-install' é uma TOOL que vai existir/existe DENTRO DAQEULA IMAGE DE 'php:7.4-fpm-alpine'....  
+RUN docker-php-ext-install pdo pdo_mysql
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO FARÁ COM QUE 1 SNAPSHOT DE NOSSO CÓDIGO TAMBÉM FIQUE DISPONÍVEL DENTRO 
+
+
+DO NOSSO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+
+E ISSO SIGNIFICA, NO CASO,
+
+QUE 
+
+TAMBÉM 
+
+DEVEMOS SER CAPAZES DE RODAR AQUELE PHP CONTAINER SEM TER 1 BIND MOUNT (
+
+  deixamos o live reload para trás, precisamos  rebuildar a image 
+  toda santa vez que 
+
+  quisermos aplicar as mudanças,
+
+  MAS É CLARO QUE ISSO É SÓ UM DEMO... -> VAMOS 'COMMENT IN' 
+
+
+
+  ESSE 
+
+  BIND MOUNT MAIS TARDE... o professor só está nos mostrando COMO 
+
+DEIXARÍAMOS NOSSO PROJETO 'DEPLOY-READY'...
+
+)
+
+
+
+
+
+
+
+
+
+
+FICA TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+  php:
+    # sintaxe mais complexa de build...
+    build:
+      context: './dockerfiles'
+      dockerfile: 'php.dockerfile' # 'DELEGATED' vai MELHORAR 1 POUCO A PERFORMANCE, PQ ESSE CONTAINER DE 'php' NÃO DEVERÁ WRITE BACK A ESSE FOLDER __ COM TANTA FREQUÊNCIA ASSIM, E AS COISAS QUE ELE FAZ WRITE NÃO PRECISAM SER REFLETIDAS NA HOST MACHINE INSTANTANEAMNETE.. (pq ELE NÃO VAI WRITE _ ALGUMA _ COISA QUE PRECISAMOS __ ACESSAR INSTANTANEAMENTE NA HOST MACHINE) 
+    # volumes:
+    #   - './src:/var/www/html:delegated'
+    ports:
+      - '3000:9000'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ok... 
+  MAS COMO 
+
+  A DOCKERFILE DE 'php'
+
+  AGORA 
+
+  SE REFERE 
+
+  A 1 FOLDER EXISTENTE 
+
+
+
+NO ROOT DE NOSSO PROJETO (pasta 'src'),
+
+
+
+
+
+
+
+DEVEMOS MUDAR O CONTEXT TAMBÉM, DEIXAR COMO 
+
+
+
+'''build:
+     context: './dockerfiles'
+     dockerfile: dockerfile/php.dockerfile 
+
+
+
+
+     '''
+
+
+
+
+
+
+
+
+
+
+COM ISSO, O 'BUILD CONTEXT'
+
+SERÁ MAIS DO QUE APENAS O CHILD 
+
+FOLDER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+MAS NÃO PRECISAMOS MUDAR MAIS NADA 
+
+
+ACERCA 
+
+DOS 
+
+
+OUTROS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PQ 'NPM'', 'ARTISAN' E 'COMPOSER'
+
+
+
+
+SÃO BASICAMENTE 
+
+
+'MEANT TO BE EXECUTED LOCALLY',
+
+
+
+
+
+
+
+
+O QUE QUER DIZER QUE NÃO PRECISAMOS MUDAR NADA DELES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> JÁ O CONTAINER DE 'mysql'
+
+NÃO POSSUI NENHUM BOUND VOLUME...
+
+
+
+
+
+(NO BIND VOLUME).... --> isso quer dizer que esse container 'works just fine as it is'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> o professor roda  
+
+
+docker-compose up -d --build server,
+
+
+
+
+
+
+PARA REBUILDARMOS TODAS NOSSAS IMAGES DOS APP CONTAINERS,
+
+e re-rodarmos seus containers...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO VAI BUILDAR A IMAGE PHP MAIS UMA VEZ....
+
+
+
+
+
+
+
+
+
+ESPERAMOS TUDO TERMINAR....
+
+
+
+
+
+
+
+
+aí testamos nosso app .... --> MAS RECEBO 1 ERROR,
+
+'PERMISSION DENIED'...
+
+
+
+
+
+
+
+
+--> É O MESMO ERRO DO CHMOD,
+
+
+DE ANTES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR EXPLICA QUE ESSE ERRO TEM RELAÇAÕ COM O CONTAINER DE 'php'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM  A IMAGE DE PHP QUE ESTAMOS USANDO NA DOCKERFILE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O CÓDIGO DO CONTAINER DE PHP É ESTE:
+
+
+
+
+
+
+FROM php:8-fpm-alpine
+
+WORKDIR /var/www/html
+
+COPY src .
+
+RUN docker-php-ext-install pdo pdo_mysql
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ESSA DOCKERFILE,
+
+ESTAMOS TAMBÉM COPIANDO 
+
+
+O CÓDIGO DA PASTA 'src'
+
+PARA DENTRO 
+
+DO WORKING DIRECTORY DO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... E O PROBLEMA É QUE 
+
+
+
+''APESAR DO CONTAINER SER GERALMENTE LIVRE 
+
+AO 
+
+READ E WRITE,
+
+ESSA IMAGE __ DO PHP _ ACTUALLY _ RESTRINGE __ 
+O ACESSO
+ 
+ READ E WRITE DO CONTAINER'''....  ------> E ISSO 
+
+
+ NÃO ERA 1 PROBLEMA COM 
+
+ A BIND MOUNT,
+
+ QUE 
+ USAMOS 
+
+ ANTERIORMENTE,
+
+
+
+
+
+
+ MAS __ ISSO __ SERÁ 1 PROBLEMA 
+
+
+
+
+ SE TRABALHARMOS 'APENAS DENTRO DO CONTAINER',
+
+
+ COMO ESTAMOS FAZENDO AGORA,
+
+
+
+ Com 'COPY src .'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> A SOLUÇÃO, NO CASO,
+
+
+ É DAR AO NOSSO CONTAINER 
+
+ 'WRITE ACCESS' 
+
+ A CERTOS FOLDERS...
+
+
+
+
+
+
+
+ --> NO CASO,
+
+
+ GARANTIREMOS 'WRITE ACCESS'
+
+
+ AO 
+ FOLDER 
+
+
+ DE 
+
+ '/var/www/html'...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> PARA ISSO,
+
+
+ DEVEMOS FAZER O RUN DE OUTRO COMANDO,
+
+ NA IMAGE,
+
+
+
+ QUANDO ELA FOR CRIADA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> não vamos usar chmod,
+
+
+ pq o professor decidiu optar por 
+
+ 'chown'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ex:
+
+
+
+
+
+
+
+
+ RUN chown 
+
+
+
+
+
+
+
+
+
+
+
+
+ -> ESSE COMANDO É USADO, NO LINUX,
+
+ PARA MUDAR O DONO 
+
+
+ DE 1 FOLDER/FILE...
+
+
+
+
+
+
+
+
+
+
+
+ -> E VAMOS COLOCAR '-R' 
+
+
+ para 
+
+ TROCAR 
+
+
+
+
+ O OWNER DE TODOS OS FOLDERS E FILES DENTRO 
+
+
+ DE NOSSO WORKDIR...
+
+
+
+
+
+
+
+
+ --> OK, MAS QUAL USER COLOCAREMOS, AQUI?
+
+
+
+
+
+
+
+
+ --> COLOCAREMOS O USER DE 'www-data',
+
+
+ QUE É O DEFAULT USER CRIADO POR ESSA IMAGE DE 
+
+
+
+ '7.4-fpm-alpine'...
+
+
+
+
+
+
+
+
+
+
+ -> colocamos 
+
+ 'www-data:www-data',
+
+
+
+
+
+
+
+ PARA QUE ESSA FILE Dê ACESSO DE READ E WRITE TANTO AO USER COMO AO GROUP 'www-data'...
+
+
+
+
+
+
+
+
+
+
+
+
+ -------> ok.. MAS FALTOU ESPECIFICAR O FOLDER NAME...
+
+
+
+
+
+
+ no caso, o folder será 
+
+ '/var/www/html'
+
+
+
+
+
+
+
+
+
+
+
+
+
+ EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM php:8-fpm-alpine
+
+# É UM FOLDER BEM COMUM EM WEB DEVELOPMENT/WEB SERVERS (vc tipicamente 'SERVE YOUR WEBSITE FROM THIS FOLDER')
+# TOD0S OS CONTAINERS QUE USAMOS NESSE MODULE USARÃO ESSE FOLDER COMO __ O FOLDER __ QUE VAI SEGURAR NOSSA 'FINAL APPLICATION'...
+WORKDIR /var/www/html
+
+## com isso, ficamos com 1 SNAPSHOT DE NOSSO CÓDIGO SRC, DENTRO DO CONTAINER (o que será usado na hora de DEPLOY nosso CONTAINER)....
+COPY src .
+
+# 'docker-php-ext-install' é uma TOOL que vai existir/existe DENTRO DAQEULA IMAGE DE 'php:7.4-fpm-alpine'....  
+RUN docker-php-ext-install pdo pdo_mysql
+
+
+# 'www-data' É O DEFAULT USER DESSA IMAGE DE '8-fpm-alpine', E USAMOS O 'chown' PARA DEFINIR NOSSAS PASTAS DO WORKDIR COMO PERTENCENTES A ELE (para que então SEJA POSSÍVEL TER READ E WRITE ACCESS AOS CONTEÚDOS que SÃO copiadOS para DENTRO DE NOSSO CONTAINER, no workdir de '/var/www/html')...
+RUN chown -R www-data:www-data /var/www/html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok...
+
+
+
+
+
+
+
+
+
+
+RUN chown -R www-data:www-data /var/www/html
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO GARANTE QUE ESSE DEFAULT USER,
+SETTADO POR ESSA 
+
+
+
+IMAGE DE PHP:8,
+
+
+
+
+
+TEM WRITE ACCESS A ESSE FOLDER QUE 
+
+
+
+SEGURA NOSSO SOURCE CODE...
+
+
+
+
+
+
+
+
+
+
+
+
+E COMO O LARAVEL 
+
+PRECISA __ GERAR __ ARQUIVOS _ NESSE FOLDER 
+
+
+de /var/www/html ,
+
+
+
+
+DURANTE O SEU PHP CODE EXECUTION (log files ou CACHED VIEWS),
+
+
+
+É __ NECESSÁRIO GARANTIR ESSE WRITE ACCESS, AQUi..
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ESSA CHANGE FEITA,
+
+
+
+
+podemos rodar 'docker-compose down -v'
+
+PARA REMOVER TODOS OS SERVICES...
+
+
+
+
+
+
+
+
+
+
+DEPOIS docker-compose up --build server ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO VAI REBUILDAR NOSSA IMAGE,
+
+
+E AÍ TUDO VAI FICAR CERTO... SEREMOS CAPAZES DE 
+
+
+
+VISITAR ESSA RUNNING LARAVEL APPLICATION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É CLARO QUE 
+
+''RUN chown -R www-data:www-data /var/www/html ''
+
+
+
+
+É UM EXEMPLO BEM ESPECÍFICO,
+
+
+
+
+EXEMPLO AVANÇADO,
+
+
+
+E ESPECÍFICO 
+
+AO LARAVEL,
+
+QUE PRECISA DE READ/WRITE ACCESS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... AGORA CONSEGUIREMOS ACESSAR NOSSO SITE, COMO ANTES,
+
+
+
+MAS AGORA 
+
+
+NOSSO CONTAINER ESTARÁ FAZENDO SEU TRABALHO POR MEIO 
+
+
+
+
+DA 
+
+'SNAPSHOT DO CÓDIGO,
+
+QUE 
+
+COPIAMOS PARA DENTRO DE NOSSAS IMAGES' (com 'COPY src . ')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E, NOVAMENTE,
+
+NÃO PRECISAMOS 
+
+
+DESSA COPY,
+
+
+DESSA SNAPSHOT,
+
+DURANTE O DEVELOPMENT... -------> MAS SE VC 
+
+
+QUISER 1 ENVIRONMENT QUE 
+
+
+
+
+TEM __ PELO MENOS _ ALGUMAS__ 
+
+
+
+DAS REQUIRED PREPARATIONS PARA O DEPLOYMENT,
+
+
+ESSAS SÃO ALGUMAS DAS CHANGES QUE VC VAI QUERER FAZER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+O PROFESSOR 
+
+COPIA AS BIND MOUNTS DE VOLTA NO NOSSO CÓDIGO,
+
+
+
+DE VOLTA NO DOCKER-COMPOSE,
+
+ISSO 
+
+
+PARA QUE 
+
+
+
+RECUPEREMOS A FEATURE DE 'LIVE SOURCE CODE UPDATE'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+version: '3.8'
+services:
+  #? PRIMEIRAMENTE, OS 'APP CONTAINERS' (que sempre ficarão rodando, no fundo... pq precisams handlar os requests, por ser um server)..
+  #SERVER --> SERÁ RESPONSÁVEL PELO RECEBIMENTO DOS INCOMING REQUESTS E SUA DATA, QUE SERÁ REPASSADA AO 'PHP INTERPRETER' ( container 'PHP')...
+  server:
+    # outsourceado para nossa DOCKERFILE de 'nginx.dockerfile'..
+    # image: 'nginx:latest'
+    build: 
+      #context --> '''SETs THE FOLDER IN WHICH THE DOCKERFILE WILL BE BUILT (and found)''...
+      # com '.', ampliamos o alcance do catch de changes de nosso container, pq com '.' ele será o ROOT PROJECT FOLDER (o folder de 'php-laravel-docker-setup', em que o arquivo docker-compose se encontra)
+      context: .
+      dockerfile: 'dockerfiles/nginx.dockerfile'
+    ports:
+      - '8000:80'
+    #SIM, É POSSÍVEL BINDAR APENAS 1 ÚNICO ARQUIVO EM 1 FOLDER, EM VEZ DE 1 FOLDER INTEIRO...
+    # volumes:
+      # DEVEMOS BINDAR ESSA PASTA LOCAL, COM 1 BIND MOUNT, A ESSE PATH INTERNO DO CONTAINER, QUE É '/etc/nginx/nginx.conf' (pq, sim, é apenas esse arquivo que interessa, dentro daqeula pasta)..
+      # ESSA CONFIG FILE É NECESSÁRIA PARA FAZER O WEBSERVER NGINX FUNCIONAR...
+      - './nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro'
+      - './src:/var/www/html'
+    depends_on:
+      - php
+      - mysql
+    #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
+    # VAMOS USAR 1 IMAGE CUSTOM, criada por nós...
+  php:
+    # sintaxe mais complexa de build...
+    build:
+      # context: './dockerfiles'
+      # dockerfile: 'php.dockerfile' # 'DELEGATED' vai MELHORAR 1 POUCO A PERFORMANCE, PQ ESSE CONTAINER DE 'php' NÃO DEVERÁ WRITE BACK A ESSE FOLDER __ COM TANTA FREQUÊNCIA ASSIM, E AS COISAS QUE ELE FAZ WRITE NÃO PRECISAM SER REFLETIDAS NA HOST MACHINE INSTANTANEAMNETE.. (pq ELE NÃO VAI WRITE _ ALGUMA _ COISA QUE PRECISAMOS __ ACESSAR INSTANTANEAMENTE NA HOST MACHINE) 
+      context: .
+      dockerfile: 'dockerfiles/php.dockerfile'
+    volumes:
+      - './src:/var/www/html:delegated'
+    ports:
+      - '3000:9000'
+    #MYSQL --> é a database MYSQL
+  mysql:
+    #? DEPOIS DISSO, OS 'UTILITY CONTAINERS' (que SÃO RODADOS, OCASIONALMENTE, DURANTE O RUNTIME, POR NÓS MESMOS, COM 'docker-compose run xxx xxx')..
+    image: mysql:5.7
+    env_file:
+      - ./env/mysql.env
+  #'COMPOSER' é TIPO O 'npm do PHP', é usado para CRIAR PROJETOS E INSTALAR DEPENDENCIES PHP (é usado para CRIAR O APP LARAVEL, POR EXEMPLO)...
+  composer:
+    # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
+    build:
+      context: './dockerfiles'
+      dockerfile: composer.dockerfile
+    volumes:
+      - ./src:/var/www/html
+  artisan:
+    # é usado para fazer coisas como 'POPULATE THE DATABASE' com migrations, seeds, etc.. é o LARAVEL ARTISAN...
+    # USAREMOS A MESMA IMAGE DO PHP, BÁSICA...
+    # comando que usaremos, no terminal: 'docker-compose run --rm artisan migrate'
+    build:
+      context: './dockerfiles'
+      dockerfile: 'php.dockerfile'
+    volumes:
+      - ./src:/var/www/html
+    # ESSA OPTION/KEY NOS DEIXA __ ADD OU OVERWRITE 1 COMANDO DE 'entrypoint' na DOCKERFILE que é usada em build/image, se __ ESSE 'CMD []' ou 'entrypoint []' EXISTIR DENTRO DAQUELA DOCKERFILE, É CLARO...
+    # com esse 'UTILITY CONTAINER', vamos querer EXECUTAR ESSE ARQUIVO 'artisan'...
+    entrypoint: [ "php", "/var/www/html/artisan" ]
+    # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
+  npm:
+    image: node:14
+    # working_dir é a 'WORKDIR' instruction das dockerfiles... e pode ser escrita aqui....
+    working_dir: /var/www/html
+    # stdin_open e tty também são instructions das dockerfile, e também podem ser escritas aqui, no arquivo docker-compose.yaml...
+    stdin_open: true
+    tty: true
+    # entrypoint TAMBÉM É UMA INSTRUCTION DAS DOCKERFILE, e pode ser escrita aqui...
+    entrypoint: [ "npm" ]
+    # run --> É UMA INSTRUCTION DAS DOCKERFILE... MAS NÃO PODE SER ESCRITA NOS ARQUIVOS 'docker-compose'...
+    # copy --> É UMA INSTRUCTION DAS DOCKERFILE... MAS NÃO PODE SER ESCRITA NOS ARQUIVOS 'docker-compose'...
+    volumes:
+      - ./src:/var/www/html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... mas esse processo todo foi ideal,
+
+
+
+
+
+
+
+PQ _ AGORA TEMOS 1 APP QUE ESTÁ PREPARADO PARA AMBOS:
+
+
+
+
+1) SNAPSHOTS SENDO COPIADAS PARA DENTRO DAS IMAGES,
+
+QUANDO AS IMAGES SÃO BUILT 
+
+
+
+
+
+
+
+
+2) BIND MOUNTS, PARA SEMPRE 
+
+TERMOS ACESSO AO CÓDIGO MAIS RECENTE,
+
+DO LADO DE DENTRO 
+DOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... POR FIM, UMA ÚLTIMA MUDANÇA...
+
+
+
+
+
+
+
+
+LÁ NO CONTAINER DE ARTISAN,
+
+
+
+
+
+no arquivo docker-compose,
+
+
+
+
+
+
+TEMOS ESTE CÓDIGO:
+
+
+
+
+
+
+
+
+
+
+
+
+  artisan:
+    # é usado para fazer coisas como 'POPULATE THE DATABASE' com migrations, seeds, etc.. é o LARAVEL ARTISAN...
+    # USAREMOS A MESMA IMAGE DO PHP, BÁSICA...
+    # comando que usaremos, no terminal: 'docker-compose run --rm artisan migrate'
+    build:
+      context: './dockerfiles'
+      dockerfile: 'php.dockerfile'
+    volumes:
+      - ./src:/var/www/html
+    # ESSA OPTION/KEY NOS DEIXA __ ADD OU OVERWRITE 1 COMANDO DE 'entrypoint' na DOCKERFILE que é usada em build/image, se __ ESSE 'CMD []' ou 'entrypoint []' EXISTIR DENTRO DAQUELA DOCKERFILE, É CLARO...
+    # com esse 'UTILITY CONTAINER', vamos querer EXECUTAR ESSE ARQUIVO 'artisan'...
+    entrypoint: [ "php", "/var/www/html/artisan" ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR APONTA QUE 
+
+
+AS MUDANÇAS, ADIÇÕES QUE 
+
+
+COLOCAMOS NA DOCKERFILE DE 'php'
+
+
+
+não trazem nenhum problema para 
+
+
+
+o container do artisan (que usa a image do php custom, nossa),
+
+
+
+
+
+
+
+MAS _ O PROFESSOR AFIRMA A NÓS 
+
+
+
+
+
+
+QUE É NECESSÁRIO TROCAR 
+
+
+
+A ESCRITA DO 'build:',
+
+
+
+TROCAR O CONTEXT E A DOCKERFILE,
+
+ASSIM COMO FIZEMOS COM o 'php'
+
+e o 
+
+
+
+'nginx'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+  artisan:
+    # é usado para fazer coisas como 'POPULATE THE DATABASE' com migrations, seeds, etc.. é o LARAVEL ARTISAN...
+    # USAREMOS A MESMA IMAGE DO PHP, BÁSICA...
+    # comando que usaremos, no terminal: 'docker-compose run --rm artisan migrate'
+    # build:
+    #   context: './dockerfiles'
+    #   dockerfile: 'php.dockerfile'
+    build:
+      context: .
+      dockerfile: dockerfiles/php.dockerfile
+    volumes:
+      - ./src:/var/www/html
+    # ESSA OPTION/KEY NOS DEIXA __ ADD OU OVERWRITE 1 COMANDO DE 'entrypoint' na DOCKERFILE que é usada em build/image, se __ ESSE 'CMD []' ou 'entrypoint []' EXISTIR DENTRO DAQUELA DOCKERFILE, É CLARO...
+    # com esse 'UTILITY CONTAINER', vamos querer EXECUTAR ESSE ARQUIVO 'artisan'...
+    entrypoint: [ "php", "/var/www/html/artisan" ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CASO CONTRÁRIO, O RUN DO COMANDO DE 'artisan'
+
+
+FALHARIA...
+
+
+(
+
+  o run do comando de 'docker-compose run --rm artisan migrate'...
+)
+
+
+
+
+
+
+
+
+mas ainda não acabamos... outro error:
+
+
+
+1 error(s) decoding:
+
+* error decoding 'Ports': Invalid ip address: ./nginx/nginx.conf
+
+
+
+
+
+
+
+aprendemos um pouco sobre docker-compose e etc...
+
+
+
+
+
+
+
+
+
+
+
+
+NO PRÓXIMO MÓDULO, VEREMOS O DEPLOY DE CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+O CÓDIGO FICOU ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+version: '3.8'
+services:
+  #? PRIMEIRAMENTE, OS 'APP CONTAINERS' (que sempre ficarão rodando, no fundo... pq precisams handlar os requests, por ser um server)..
+  #SERVER --> SERÁ RESPONSÁVEL PELO RECEBIMENTO DOS INCOMING REQUESTS E SUA DATA, QUE SERÁ REPASSADA AO 'PHP INTERPRETER' ( container 'PHP')...
+  server:
+    # outsourceado para nossa DOCKERFILE de 'nginx.dockerfile'..
+    # image: 'nginx:latest'
+    build: 
+      #context --> '''SETs THE FOLDER IN WHICH THE DOCKERFILE WILL BE BUILT (and found)''...
+      # com '.', ampliamos o alcance do catch de changes de nosso container, pq com '.' ele será o ROOT PROJECT FOLDER (o folder de 'php-laravel-docker-setup', em que o arquivo docker-compose se encontra)
+      context: .
+      dockerfile: 'dockerfiles/nginx.dockerfile'
+    ports:
+      - '8000:80'
+    #SIM, É POSSÍVEL BINDAR APENAS 1 ÚNICO ARQUIVO EM 1 FOLDER, EM VEZ DE 1 FOLDER INTEIRO...
+    volumes:
+      # DEVEMOS BINDAR ESSA PASTA LOCAL, COM 1 BIND MOUNT, A ESSE PATH INTERNO DO CONTAINER, QUE É '/etc/nginx/nginx.conf' (pq, sim, é apenas esse arquivo que interessa, dentro daqeula pasta)..
+      # ESSA CONFIG FILE É NECESSÁRIA PARA FAZER O WEBSERVER NGINX FUNCIONAR...
+      - './nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro'
+      - './src:/var/www/html'
+    depends_on:
+      - php
+      - mysql
+    #PHP --> RESPONSÁVEL PELO RUN E EXECUTE DE NOSSO CÓDIGO PHP (também o código laravel, pq o laravel é um framework php).
+    # VAMOS USAR 1 IMAGE CUSTOM, criada por nós...
+  php:
+    # sintaxe mais complexa de build...
+    build:
+      # context: './dockerfiles'
+      # dockerfile: 'php.dockerfile' # 'DELEGATED' vai MELHORAR 1 POUCO A PERFORMANCE, PQ ESSE CONTAINER DE 'php' NÃO DEVERÁ WRITE BACK A ESSE FOLDER __ COM TANTA FREQUÊNCIA ASSIM, E AS COISAS QUE ELE FAZ WRITE NÃO PRECISAM SER REFLETIDAS NA HOST MACHINE INSTANTANEAMNETE.. (pq ELE NÃO VAI WRITE _ ALGUMA _ COISA QUE PRECISAMOS __ ACESSAR INSTANTANEAMENTE NA HOST MACHINE) 
+      context: .
+      dockerfile: 'dockerfiles/php.dockerfile'
+    volumes:
+      - './src:/var/www/html:delegated'
+    ports:
+      - '3000:9000'
+    #MYSQL --> é a database MYSQL
+  mysql:
+    #? DEPOIS DISSO, OS 'UTILITY CONTAINERS' (que SÃO RODADOS, OCASIONALMENTE, DURANTE O RUNTIME, POR NÓS MESMOS, COM 'docker-compose run xxx xxx')..
+    image: mysql:5.7
+    env_file:
+      - ./env/mysql.env
+  #'COMPOSER' é TIPO O 'npm do PHP', é usado para CRIAR PROJETOS E INSTALAR DEPENDENCIES PHP (é usado para CRIAR O APP LARAVEL, POR EXEMPLO)...
+  composer:
+    # 'ARTISAN' É UMA FERRAMENTA DO 'laravel', é o LARAVEL ARTISAN, que é usado para fazer coisas como 'RODAR MIGRATIONS CONTRA NOSSA DATABASE', dentre outras...
+    build:
+      context: './dockerfiles'
+      dockerfile: composer.dockerfile
+    volumes:
+      - ./src:/var/www/html
+  artisan:
+    # é usado para fazer coisas como 'POPULATE THE DATABASE' com migrations, seeds, etc.. é o LARAVEL ARTISAN...
+    # USAREMOS A MESMA IMAGE DO PHP, BÁSICA...
+    # comando que usaremos, no terminal: 'docker-compose run --rm artisan migrate'
+    build:
+      context: '.'
+      dockerfile: 'dockerfiles/php.dockerfile'
+    volumes:
+      - ./src:/var/www/html
+    # ESSA OPTION/KEY NOS DEIXA __ ADD OU OVERWRITE 1 COMANDO DE 'entrypoint' na DOCKERFILE que é usada em build/image, se __ ESSE 'CMD []' ou 'entrypoint []' EXISTIR DENTRO DAQUELA DOCKERFILE, É CLARO...
+    # com esse 'UTILITY CONTAINER', vamos querer EXECUTAR ESSE ARQUIVO 'artisan'...
+    entrypoint: [ "php", "/var/www/html/artisan" ]
+    # colocamos o 'npm' PQ VAMOS RODAR COMANDOS COMo 'npm install', 'npm  init', etc etc...
+  npm:
+    image: node:14
+    # working_dir é a 'WORKDIR' instruction das dockerfiles... e pode ser escrita aqui....
+    working_dir: /var/www/html
+    # stdin_open e tty também são instructions das dockerfile, e também podem ser escritas aqui, no arquivo docker-compose.yaml...
+    stdin_open: true
+    tty: true
+    # entrypoint TAMBÉM É UMA INSTRUCTION DAS DOCKERFILE, e pode ser escrita aqui...
+    entrypoint: [ "npm" ]
+    # run --> É UMA INSTRUCTION DAS DOCKERFILE... MAS NÃO PODE SER ESCRITA NOS ARQUIVOS 'docker-compose'...
+    # copy --> É UMA INSTRUCTION DAS DOCKERFILE... MAS NÃO PODE SER ESCRITA NOS ARQUIVOS 'docker-compose'...
+    volumes:
+      - ./src:/var/www/html
+
+
+
+
+
+
+
+
+
+
+
+
