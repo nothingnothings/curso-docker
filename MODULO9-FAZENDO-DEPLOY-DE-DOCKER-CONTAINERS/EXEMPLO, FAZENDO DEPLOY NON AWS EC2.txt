@@ -1,0 +1,647 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+--. OK..
+
+
+
+
+ESSE É O PRIMEIRO EXEMPLO, FAZER DEPLOY DE UMA BASIC APPLICATION 
+
+
+AO 
+
+AWS 
+
+EC2,
+
+
+SEM DATABASE NEM NADA DO GÊNERO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EC2 --> É UM SERVICE PROVIDENCIADO PELO __ AWS___,
+
+
+
+
+
+
+QUE TE DEIXA __ 'SPIN UP' 
+
+SUA PRÓPRIA REMOTE HOSTING MACHINE,
+
+SUAS PRÓPRIAS MÁQUINAS NA CLOUD...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VC PODERÁ SE CONECTAR A ESSES COMPUTADORES PARA INSTALAR QUALQUER SOFTWARE NELES...
+
+
+
+
+
+
+
+
+
+
+
+NO NOSSO CASO,
+
+
+
+INSTALAREMOS O DOCKER NESSES COMPUTADORES, 
+
+
+
+
+
+
+PARA O UTILIZAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E NÓS VAMOS POR 3 'MAIN STEPS'
+
+PARA 
+
+
+TRAZER 
+
+NOSSO DOCKERIZED 
+
+APP À VIDA,
+
+
+EM 1 EC2 INSTANCE...
+
+
+
+
+
+
+
+
+
+
+
+
+A PRIMEIRA ETAPA SERÁ 
+
+
+
+
+
+
+
+
+1) ___ CREATE__ AND LAUNCH THIS EC2 INSTANCE (esse computador remoto)...
+
+
+
+--> COM ISSO, PRECISAREMOS CRIAR UM 'VPC',
+
+UMA 'VIRTUAL PRIVATE CLOUD'... 
+
+
+
+--> TAMBÉM PRECISAREMOS CRIAR UM 'SECURITY GROUP',
+
+
+ALGO QUE O PROFESSOR DEMONSTRARÁ COMO FAZER (acho que já vi isso)...
+
+
+
+
+
+
+
+
+
+
+
+
+2) depois disso,
+
+
+TEREMOS DE CONFIGURAR ESSE SECURITY GROUP,
+
+PARA AÍ CONSEGUIRMOS 'EXPOSE ALL REQUIRED PORTS TO THE WEB',
+
+
+
+
+
+PARA QUE __ CONSIGAMOS TER 'INCOMING TRAFFIC' A ESSA INSTANCE EC2...
+
+
+
+
+
+
+
+
+
+
+
+3) DEPOIS DISSO,
+
+TEREMOS DE NOS CONECTAR A ESSA INSTANCE,
+
+POR MEIO DE 
+
+
+'SSH' (que significa 'secure shell') --> É UM PROCESS/APPROACH 
+
+
+USADO 
+
+PARA NOS CONECTARMOS A ESSA REMOTE MACHINE (é um terminal, basicamente)...
+
+
+
+
+
+
+
+
+
+
+--> ESSE APPROACH VAI NOS DEIXAR RODAR COMANDOS NESSE REMOTE COMPUTER.. -> VAMOS 
+
+
+
+USAR 1 COMANDO PARA 
+
+INSTALAR O DOCKER,
+
+
+E AÍ 
+
+OUTRO COMANDO 
+
+
+PARA 
+
+'PULL  E RUN' 
+
+O NOSSO CONTAINER..
+
+
+
+
+
+
+
+
+
+
+É ISSO QUE FAREMOS COM A AWS/COM A AJUDA DO AWS,
+
+PARA 
+
+TRAZERMOS 
+
+NOSSA DOCKERIZED APPLICATION À VIDA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ANTES DE MAIS NADA,
+
+PRECISAREMOS DE 1 DOCKERIZED APP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->sERÁ 1 NODE APP QUE VAI SERVIR 
+1 ÚNICO ARQUIVO HTML PARA INCOMING REQUESTS,
+
+
+
+
+
+E QUE VAI 'LISTEN TO'
+
+NA PORT 80...
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+
+
+const path = require('path');
+
+const express = require('express');
+
+const app = express();
+
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+  const filePath = path.join(__dirname, 'views', 'welcome.html');
+  res.sendFile(filePath);
+});
+
+app.listen(80);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... E A DOCKERFILE DESSE PROJETO, NO CASO,
+É ESTA:
+
+
+
+
+
+
+
+
+FROM node:14-alpine
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install 
+
+COPY . .
+
+EXPOSE 80 
+
+CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+-------------------------
+
+
+
+
+
+
+
+
+o professor escreveu uma dockerfile normal...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA PODEMOS CONSTRUIR UMA IMAGE COM BASE NESSA IMAGE,
+
+
+E AÍ 
+
+RODAR 1 CONTAINER COM BASE NESSA IMAGE...
+
+
+
+
+
+escrevo assim:
+
+
+
+'docker build -t node-app-aws . '
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO VAI BUILDAR 1 CONTAINER DE NOME 'node-app-aws'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... COM ISSO, PODEMOS 
+
+FAZER __ PUSH __ DESSA IMAGE PARA NOSSO REPOSITORY DO DOCKERHUB,
+
+
+
+
+com comandos adicionais..
+
+
+
+
+
+
+
+
+
+que comando posso utilizar?
+
+
+
+
+You can push a new image to this repository using the CLI
+
+docker tag local-image:tagname new-repo:tagname
+docker push new-repo:tagname
+
+
+
+
+ok... tenho que rebuildar minha image, com esse comando/comandos...
+
+
+
+
+
+
+
+
+
+
+
+OS COMANDOS FORAM ESTES:
+
+
+
+
+
+ docker login
+
+
+
+docker build -t nothingnothings/node-app-aws:default .
+
+
+
+
+docker push nothingnothings/node-app-aws:default
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA TENHO ESSA IMAGE LÁ NO DOCKERHUB...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR FAZ A MESMA COISA.... ELE EXECUTA ASSIM:
+
+
+
+
+
+
+
+
+
+docker build -t node-dep-example . 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO VAI BUILDAR A IMAGE...
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO, O PROFESSOR VAI QUERER RODAR 1 CONTAINER COM BASE NESSA IMAGE..
+
+
+
+
+
+
+
+
+
+docker run -d --rm --name node-dep -p 80:80 node-dep-example
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR FAZ ISSO SÓ PARA CHECAR SE O CONTAINER FUNCIONA....
+
+
+
+
+
+
+
+
+
+É UM DEMO APP, REALMENTE...
