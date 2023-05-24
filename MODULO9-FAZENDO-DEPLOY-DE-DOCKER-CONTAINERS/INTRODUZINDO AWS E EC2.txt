@@ -1,0 +1,166 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... O PROFESSOR NOS MOSTRA O DEMO APP...
+
+
+
+
+
+
+
+
+
+ATÉ AGORA,
+
+É O QUE FIZEMOS MÚLTIPLAS VEZES AO LONGO DO CURSO..
+
+
+
+
+
+
+
+
+
+
+
+AGORA QUEREMOS PEGAR ESSE APP E ESSA IMAGE E DEPLOYAR EM 1 WEB SERVER,
+
+
+PARA QUE 
+
+QUALQUER USUÁRIO POSSA VISITAR ESSE SITE...
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+BUILDAR 1 IMAGE É UM IMPORTANTE PRIMEIRO PASSO.... --> NÓS SEMPRE 
+
+
+
+
+
+TEMOS DE REBUILDAR A IMAGE SEMPRE QUE 
+
+
+
+FAZEMOS ALGUMA MUDANÇA 
+
+
+NO NOSSO CÓDIGO...
+
+
+
+
+
+
+
+
+
+
+
+
+-_> OK, MAS QUANDO TIVERMOS ESSA IMAGE PRONTA,
+
+QUEREMOS 
+
+RODAR 
+eSSA IMAGE 
+
+
+NÃO NA NOSSA LOCAL MACHINE,
+
+
+E SIM EM UMA MÁQUINA REMOTA...
+
+
+
+
+
+
+
+
+VAMOS USAR O AWS PARA 
+
+
+
+
+CRIAR _ 1 EC2 INSTANCE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> ASSIM QUE VC ESTIVER 'LOGGED IN',
+
+DENTRO DA SUA CONTA AWS,
+
+
+
+
+VÁ ATÉ O 'AWS MANAGEMENT CONSOLE'...
+
+
+
+
+--> VEREMOS 
+
+
+
+
+
+
+
+
+A TELA DE INSTANCES DO EC2...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> O OBJETIVO SERÁ INICIAR UMA NOVA INSTANCE...
+
+
+
+
+
+
+
+--> vamos lançar uma nova instance...
