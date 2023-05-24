@@ -1,0 +1,320 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR QUER NOS MOSTRAR COMO 
+
+INSTALAR O DOCKER NA INSTANCE AWS..
+
+
+
+
+
+
+
+
+
+
+
+ESTAMOS NO TERMINAL DA INSTANCE DA AWS (no nosso próprio terminal, e não no browser)...
+
+
+
+
+
+
+OK.... 
+
+
+
+
+
+
+
+O PROFESSOR RODA 
+
+
+'sudo yum update -y' -------> ISSO VAI GARANTIR QUE TODAS AS PACKAGES ESSENCIAIS, NAQUELA REMOTE
+MACHINE, ESTARÃO UPDATADAS A SUAS VERSÕES MAIS LATEST...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEPOIS DISSO, RODAMOS 
+
+
+'sudo amazon-linux-extras install docker' ...
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE PRECISAMOS DESSA IMAGE 'AMAZON' QUANDO CRIAMOS 
+
+ESSA EC2 INSTANCE... --> PQ NESSAS 'AMAZON-BASED VIRTUAL INSTANCES',
+
+
+TEMOS 
+
+ESSE COMMAND 
+
+
+DE 
+
+'amazon-linux-extras' INSTALADO... E ESSE COMANDO 
+
+DEIXA O INSTALL DE SOFTWARE EXTRA, 
+
+
+NESSAS MÁQUINAS,
+
+SUPER FÁCIL...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO VAI INSTALAR O DOCKER 
+
+NA REMOTE MACHINE...
+
+
+
+
+
+
+
+
+
+
+--> COISAS DISPONÍVEIS:
+
+
+
+
+
+
+
+
+
+
+
+
+
+0  ansible2                 available    [ =2.4.2  =2.4.6 ]
+2  httpd_modules            available    [ =1.0 ]
+3  memcached1.5             available    [ =1.5.1 ]
+4  nginx1.12                available    [ =1.12.2 ]
+5  postgresql9.6            available    [ =9.6.6  =9.6.8 ]
+6  postgresql10             available    [ =10 ]
+8  redis4.0                 available    [ =4.0.5  =4.0.10 ]
+9  R3.4                     available    [ =3.4.3 ]
+10  rust1                   available    [ =1.22.1  =1.26.0  =1.26.1  =1.27.2  =1.31.0 ]
+11  vim                     available    [ =8.0 ]
+13  ruby2.4                 available    [ =2.4.2  =2.4.4 ]
+15  php7.2                  available    [ =7.2.0  =7.2.4  =7.2.5  =7.2.8  =7.2.11  =7.2.13  =7.2.14 =7.2.16 ]
+16  php7.1                  available    [ =7.1.22  =7.1.25  =7.1.27 ]
+17  lamp-mariadb10.2-php7.2 available    [ =10.2.10_7.2.0 =10.2.10_7.2.4 =10.2.10_7.2.5 =10.2.10_7.2.8 =10.2.10_7.2.11 =10.2.10_7.2.13 =10.2.10_7.2.14 =10.2.10_7.2.16 ]
+18  libreoffice             available    [ =5.0.6.2_15  =5.3.6.1 ]
+19  gimp                    available    [ =2.8.22 ]
+20  docker=latest           available    [ =17.12.1  =18.03.1  =18.06.1 ]
+21  mate-desktop1.x         available    [ =1.19.0  =1.20.0 ]
+22  GraphicsMagick1.3       available    [ =1.3.29 ]
+23  tomcat8.5               available    [ =8.5.31  =8.5.32  =8.5.38 ]
+24  epel                    available    [ =7.11 ]
+25  testing                 available    [ =1.0 ]
+26  ecs                     available    [ =stable ]
+27  corretto8               available    [ =1.8.0_192  =1.8.0_202 ]
+28  firecracker             available    [ =0.11 ]
+29  golang1.11              available    [ =1.11.3 ]
+30  squid4                  available    [ =4 ]
+31  php7.3                  available    [ =7.3.2  =7.3.3 ]
+32  lustre2.10              available    [ =2.10.5 ]
+33  java-openjdk11          available    [ =11 ]
+34  lynis                   available    [ =stable ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE COMANDO VAI INSTALAR O DOCKER NA nossa máquina remota...
+
+
+
+
+
+
+
+
+
+
+
+
+--> vai instalar o docker e todas as tools necessárias 
+
+
+para o rodar na nuvem....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> COM ISSO TERMINADO,
+
+PODEMOS RODAR 
+
+'sudo service docker start'
+
+
+PARA __ INICIAR O DOCKER LÁ NA INSTANCE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO FEITO,
+
+PODEMOS 
+
+
+RODAR __ DOCKER __ COMMANDS,
+
+COMO 
+
+'docker run'...
+
+
+
+
+
+
+
+
+
+
+-> BEM LEGAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA O DOCKER ESTÁ INSTALADO NA NOSSA REMOTE MACHINE, NA INSTANCE DO EC2....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMANDOS:
+
+
+
+
+ssh -i "example-1.pem" ec2-user@ec2-18-118-1-211.us-east-2.compute.amazonaws.com
+
+
+sudo yum update -y
+
+
+sudo amazon-linux-extras install docker
+
+
+sudo service docker start
