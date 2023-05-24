@@ -1,0 +1,791 @@
+
+
+
+
+
+
+
+
+
+AGORA QUE O DOCKER ESTÁ INSTALADO E UP AND RUNNING 
+
+
+
+
+
+NA REMOTE MACHINE,
+
+
+
+
+PRECISAMOS 
+
+
+
+
+TRAZER 
+
+
+NOSSA 
+
+
+
+'LOCAL IMAGE'
+
+
+
+àQUELA 
+
+
+
+REMOTE MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARA ISSO,
+
+
+TEMOS 2 MAIN APPROACHES:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1) PRIMEIRO APPROACH --> FAZEMOS DEPLOY DE NOSSO 'SOURCE CODE' -> OU SEJA,
+
+
+
+
+ENCONTRAMOS UMA MANEIRA 
+
+DE COPIAR 
+
+
+
+TODO O NOSSO SOURCE-CODE PARA DENTRO DA REMOTE MACHINE (
+
+    todos os arquivos, inclusive a dockerfile...
+),
+
+
+
+E ENTÃO BUILDARÍAMOS A IMAGE dentro da remote machine...
+
+
+
+
+
+
+
+
+
+
+
+2) A SEGUNDA ALTERNATIVA,
+NO CASO,
+
+
+SERIA 
+
+
+NÓS 
+
+
+'BUILD THE IMAGE AHEAD OF TIME',
+
+
+
+
+
+
+
+COMO POR EXEMPLO __ NA NOSSA LOCAL MACHINE,
+
+
+
+E AÍ __ FARÍAMOS APENAS O DEPLOY DESSA BUILT IMAGE 
+
+
+
+
+LÁ 
+
+
+NA REMOTE MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... ENTÃO É SOBRE 
+
+
+
+
+
+
+
+
+
+
+
+
+'''CONSTRUIR A IMAGE NA REMOTE MACHINE EM SI,
+
+POR MEIO DO PUSH DO SOURCE CODE DA LOCAL MACHINE À REMOTE 
+MACHINE E ENTÃO POR MEIO DO RUN DE 'docker build' 
+e 'docker run' LÁ NA REMOTE MACHINE'''''...
+
+
+
+
+
+VS 
+
+
+
+
+
+
+
+''CONSTRUIR A IMAGE LOCALMENTE, ANTES DO DEPLOYMENT (e.g on local machine),
+
+
+
+E AÍ SÓ EXECUTAR 'docker run' NA REMOTE MACHINE, ASSIM QUE TIVERMOS A IMAGE 
+
+LÁ EM CIMA''''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR EXPLICA QUE O PRIMEIRO APPROACH TEM UM MONTE DE COMPLEXIDADE
+
+
+DESNECESSÁRIA... --> NÓS __ PRECISAMOS _ FAZER 1 MONTE DE TRABALHO DESNECESSÁRIO
+NA REMOTE MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+--> PQ DIABOS BUILDARÍAMOS A IMAGE LÁ NA REMOTE MACHINE EM SI?
+
+
+
+
+
+--> QUAL VANTAGEM ISSO NOS TRARIA? NÃO NOS TRAZ NENHUMA VANTAGEM...
+
+
+
+
+
+
+
+--> O PROFESSOR PREFERE __ PREPARAR TUDO LOCALMENTE,
+
+E TER A IMAGE 
+
+ACABADA LOCALMENTE,
+
+
+E AÍ 
+
+
+PEGAR 
+
+ESSA IMAGE __ ACABADA __ E ENVIÁ-LA 
+
+
+
+
+
+
+AO 'REMOTE HOST',
+
+
+
+PARA ENTÃO 
+
+A
+ RODAR,
+ COMO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+--> E PODEMOS _ USAR__ O DOCKERHUB PARA ISSO.... --> 
+
+
+
+
+
+
+
+PODEMOS __ CONSTRUIR __ NOSSA IMAGE LOCALMENTE,
+
+AÍ 
+
+FAZER 
+PUSH DESSA IMAGE AO DOCKERHUB,
+
+E AÍ 
+
+
+
+__PULLAR__ ESSA IMAGE,
+
+LÁ DO REMOTE SERVER,
+
+PARA 
+
+
+RODAR 
+
+ESSA IMAGE 
+
+
+
+
+NO REMOTE SERVER....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E É EXATAMENTE ISSO QUE FAREMOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> FAZEMOS LOGIN NO DOCKERHUB, AGORA...
+
+
+
+
+
+
+
+
+
+
+--> LÁ DENTRO,
+
+COLOCAMOS EM 'CREATE REPOSITORY',
+
+
+
+E CRIAMOS 
+
+1 NOVO REPOSITORY...
+
+
+
+
+
+
+
+
+
+-> eu criei 'node-app-aws',
+ ou algo assim...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> CERTO... O PROFESSOR SETTA 
+
+
+ esse repository COMO PUBLIC,
+
+ PQ 
+
+
+
+ __tEMOS _ 1 NÚMERO LIMITADO DE PRIVATE REPOSITORIES, SE NÃO ESTAMOS PAGANDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ISSO FEITO,
+
+ PODEMOS FAZER 'PUSH' 
+
+ A ESSE REPOSITORY,
+
+
+
+ POR MEIO DO CREATE DE 1 IMAGE,
+
+ LOCALMENTE,
+
+
+ QUE TENHA O REPOSITORY NAME COMO NOME...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> é por isso que o professor vai criar, localmente, uma image,
+
+
+
+ com este nome:
+
+
+
+
+
+
+ docker build -t  .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ O PROFESSOR TAMBÉM EDITA O 'DOCKERIGNORE',
+
+
+
+
+
+ ELE COLOCA 
+
+
+
+
+ OS ARQUIVOS DE 
+
+
+
+ 'node_modules',
+
+
+
+ 'Dockerfile' 
+
+
+ e 
+
+ '*.pem'...
+
+
+
+
+
+
+
+
+
+ EX:
+
+
+
+
+
+
+
+ *.pem
+Dockerfile
+node_modules
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR COLOCA 1 TAG DE 'node-dep-example'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> TEREMOS ESSA IMAGE LOCALMENTE...
+
+
+
+
+
+
+
+
+
+
+
+-> AGORA PODEMOS FAZER __ PUSH __ dESSA IMAGE AO DOCKERHUB,
+
+
+
+
+
+
+POR MEIO DE 'docker push'...
+
+
+
+
+
+
+
+
+
+
+
+PARA CONSEGUIRMOS FAZER PUSH,
+
+PRECISAMOS 
+
+RENOMEAR ESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> FAZEMOS ISSO COM O COMANDO 'docker tag'...
+
+
+
+
+
+
+
+
+DAREMOS 1 NOVA TAG à IMAGE DE 'node-dep-example-1'..
+
+
+
+
+
+
+
+
+
+-> VAMOS RENOMEAR PARA 'academind/node-example-1'...
+
+
+
+
+
+(e a tag é opcional, no caso)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo....
+
+
+
+
+
+
+AÍ PODEMOS LISTAR TODAS NOSSAS IMAGES,  PARA ENCONTRAR 
+
+
+
+
+A IMAGE DO REPOSITORY, TIPO ASSIM:
+
+
+
+REPOSITORY                         TAG            IMAGE ID       CREATED        SIZE
+node-app-aws                       node-app-aws   5bd5435216d6   22 hours ago   124MB    
+nothingnothings/node-app-aws       default        5bd5435216d6   22 hours ago   124MB    
+php-laravel-docker-setup-php       latest         191fc80050bd   25 hours ago   178MB    
+php-laravel-docker-setup-server    latest         d02bac05971b   26 hours ago   91MB     
+php-laravel-docker-setup-artisan   latest         bb26690a0e25   42 hours ago   77.8MB   
+nginx                              latest         448a08f1d2f9   2 weeks ago    142MB    
+mysql                              5.7            dd6675b5cfea   5 weeks ago    569MB
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+nothingnothings/node-app-aws       default        5bd5435216d6   22 hours ago   124MB    
+
+
+
+
+
+
+
+
+
+ESSA É A IMAGE QUE INTERESSA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS FAZER PUSH DESSA IMAGE,
+
+
+
+
+POR MEIO DO COMANDO 
+
+
+'docker push nothingnothings/node-app-aws'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS ESSE COMANDO VAI FALHAR SE VC NÃO ESTIVER 'LOGGED IN',
+
+com 
+
+'docker login'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO, NOSSA IMAGE, CRIADA LOCALMENTE,
+
+ESTARÁ 
+
+
+
+UPADA NO DOCKERHUB...
+
+
+
+
+
+
+
+
+
+
+-----> AGORA SÓ PRECISAMOS 
+
+PEGAR ESSA IMAGE, DO DOCKERHUB,
+
+E RODAR __ NA NOSSA _ EC2 INSTANCE, NA NOSSA REMOTE MACHINE...
