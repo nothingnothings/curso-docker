@@ -1,0 +1,581 @@
+
+
+
+
+
+
+
+
+
+
+OK... 
+
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE ESSE É APENAS 1 PRIMEIRO EXEMPLO (exemplo node)...
+
+
+
+
+
+
+
+É CLARO QUE 
+
+
+
+VC FARIA UM FINE-TUNING BEM MAIOR SE FOSSE USAR ISSO PARA PRODUCTIOn (como settar 1 'custom domain')..
+
+
+
+
+
+
+
+
+
+MAS VC PODE FAZER ISSO, VER COMO USAR 1 CUSTOM DOMAIN,
+
+
+
+SE VC LER OS 
+
+AWS DOCS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO PQ __ O QUE ESTAMOS FAZENDO AGORA NÃO É A MANEIRA ULTIMATE DE DEPLOYAR 1 APP..
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO PQ VOCÊ PODE TER DIFERENTES  TIPOS DE APPS,
+
+
+
+E TAMBÉM DIFERENTES NECESSIDADES PARA SEU DEPLOYMENT PROCESS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS O QUE INTERESSA É QUE SEU APP ESTÁ 'UP AND RUNNING',
+
+
+E QUE JÁ PODEMOS VER COMO O DOCKER PODE NOS AJUDAR TANTO COM O DEVELOPMENT COMO COM O DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... MAS PARA ACABAR COM ESTE EXEMPLO, O PROFESSOR QUER MOSTRAR COMO PODEMOS 
+
+'PUSH UPDATES' 
+
+AO NOSSO CÓDIGO,
+
+àQUELE REMOTE SERVER... 
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR TAMBÉM QUER MOSTRAR COMO PODEMOS 'STOP AND SHUT EVERYTHING DOWN',
+
+
+se vc quiser fazer isso..
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR COMEÇA COM OS UPDATES NO CÓDIGO...
+
+
+
+
+
+
+
+
+
+--> ELE DUPLICA A SECTION DE 'THIS WORKS'...
+
+
+
+
+
+
+->>>>> MAS MUDAMOS ISSO APENAS LOCALMENTE... 
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROCESSO PARA TRAZER ESSES UPDATES AO REMOTE SERVER É SIMPLES:
+
+
+
+
+
+
+
+1) DEVEMOS REBUILDAR A IMAGE 
+
+
+
+2) DEVEMOS PUSHAR A IMAGE 
+
+NO DOCKERHUB MAIS UMA VEZ...
+
+
+
+
+
+
+
+3) 
+DEVEMOS __ PARAR__ O CONTAINER COM A IMAGE ANTERIOR, COM 
+
+'docker stop nothingnothings/node-app-aws:default'
+,
+
+
+
+4) POR FIM, DEVEMOS FAZER 'PULL' DA IMAGE UPDATADA LÁ NO AWS EC2
+
+
+
+E ENTÃO DEVEMOS 
+
+
+
+
+RE-RODAR A IMAGE EM 1 CONTAINER, COM 
+
+'docker run --rm -d nothingnothings/node-app-aws:default'
+
+
+
+
+
+
+
+ 
+
+
+ certo... farei isso...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ JÁ SALVEI A IMAGE NOVA,
+
+
+ AGORA DEVO REBUILDAR, COM 
+
+
+
+ 'docker build -t nothingnothings/node-app-aws:default .'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ CERTO... FIZ ISSO...
+
+
+
+
+
+
+
+ AGORA FIZ PUSH, COM 
+
+
+
+ 'docker push nothingnothings/node-app-aws:default'
+
+
+
+
+
+
+
+
+
+
+
+ --> AGORA BASTA IR NO AWS,
+
+
+ E AÍ RODAR O COMANDO DE STOP, DEPOIS O COMANDO DE 'PULL',
+
+ DEPOIS O COMANDO DE RUN..
+
+
+
+
+ TIPO ASSIM:
+
+
+
+
+
+
+ [ec2-user@ip-172-31-2-109 ~]$ sudo docker stop hardcore_rhodes
+hardcore_rhodes
+
+
+[ec2-user@ip-172-31-2-109 ~]$ sudo docker pull nothingnothings/node-app-aws:default
+default: Pulling from nothingnothings/node-app-aws
+f56be85fc22e: Already exists
+8f665685b215: Already exists
+e5fca6c395a6: Already exists
+561cb69653d5: Already exists
+23fcd351d455: Already exists
+977453385ddc: Already exists
+7a8c5e92b06e: Already exists
+9cde4e2c7345: Pull complete
+Digest: sha256:dce7ab229e65607a1cb18eb9636f6797cbeffc8bf2c0c8336bf2d75f317f8ab5
+Status: Downloaded newer image for nothingnothings/node-app-aws:default
+docker.io/nothingnothings/node-app-aws:default
+
+
+[ec2-user@ip-172-31-2-109 ~]$ sudo docker run -d --rm -p 80:80 nothingnothings/node-app-aws:default
+f7b2897e0ba6bfc877cc2e714715a414be0081b459c74cfb2092227193445fed
+
+
+[ec2-user@ip-172-31-2-109 ~]$ sudo docker ps
+CONTAINER ID   IMAGE                                  COMMAND                  CREATED         STATUS       
+  PORTS                               NAMES
+f7b2897e0ba6   nothingnothings/node-app-aws:default   "docker-entrypoint.s…"   3 seconds ago   Up 2 seconds 
+  0.0.0.0:80->80/tcp, :::80->80/tcp   flamboyant_mclean
+
+
+
+[ec2-user@ip-172-31-2-109 ~]$ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... FUNCIONOU...
+
+
+
+
+
+
+SEMPRE QUE VC FAZ 'DOCKER RUN' 
+
+DE 1 IMAGE,
+O DOCKER 
+
+
+VAI SIMPLESMENTE CHECAR SE 
+
+VC JÁ TEM 1 CÓPIA 'LOCAL' DESSA IMAGE ---> ELE NÃO VAI CHECAR AUTOMATICAMENTE 
+
+SE 
+
+EXISTE 
+
+
+1 VERSÃO 
+
+MAIS 'LATEST' DESSA IMAGE... --> PARA FAZER ISSO, PRECISAMOS DO COMANDO 'DOCKER PULL',
+
+QUE 
+FAZ JUSTAMENTE ISSO...
+
+
+
+
+
+
+
+
+
+
+É  ASSIM QUE PODEMOS 'UPDATE OUR DEPLOYED CODE'...
+
+
+
+
+
+
+--> FAZEMOS ISSO POR MEIO DE:
+
+
+1) REBUILDING THE IMAGE 
+
+
+
+2) PUSH DA IMAGE + 1 UMA VEZ, NO DOCKER HUB 
+
+
+
+3) STOP DA IMAGE/CONTAINER, LÁ NO EC2 AWS 
+
+
+
+
+
+4) PULL DA IMAGE/CONTAINER, LÁ NO EC2 AWS... 
+
+
+
+
+
+
+
+
+
+
+5) RE-RUN DO CONTAINER COM ESSA IMAGE, LÁ 
+
+NO EC2 AWS....
+
+
+
+
+
+
+
+
+
+
+
+
+
+SE VC QUISER TEMPORARIAMENTE PAUSAR ESSA INSTANCE/CONTAINER,
+
+
+VC PODE USAR 'docker stop' 
+
+PARA PARAR SEU CONTAINER...
+
+
+
+
+
+
+
+
+
+-> ISSO VAI PARAR SEU CONTAINER...
+
+
+
+
+
+
+
+
+
+
+--> UMA VEZ QUE ISSO ESTIVER PARADO,
+
+
+
+
+O RELOAD DE NOSSO WEB PAGE 
+
+
+
+
+__ VAI FALHAR,
+
+JUSTAMENTE PQ 
+
+
+
+'''' NÃO EXISTIRÁ MAIS WEBSERVER RODANDO NESSA EC2 INSTANCE''' (pq recém paramos esse container)...
+
+
+
+
+
+
+
+
+
+--> VOCÊ TAMBÉM PODE REINICIAR SEU SERVIDOR,
+
+
+
+
+COM 'sudo docker start'... (se seus containers não foram removidos)...
+
+
+
+
+
+
+
+
+
+
+
+--> se seus containers foram removidos ('--rm'),
+precisa rodá-los novamente,
+
+com 
+
+'docker run'...
+
+
+
+
+
+
+
+
+
+
+SE VC QUISER FECHAR SUAS EC2 INSTANCES PARA SEMPRE,
+
+BASTA IR ATÉ O DASHBOARD DE INSTANCES E SELECIONAR 
+
+
+
+SUA INSTANCE E COLOCAR 'INSTANCE STATE -> TERMINATE' --> ISSO VAI DELETAR A INSTANCE 
+
+
+INTEIRA,
+
+E O APP 
+
+RODANDO 
+NESSA INSTANCE...
+
+
+
+
+
+
+
+
+
+
+
+VAMOS FAZER ISSO, AQUI,
+
+
+PQ ESSE FOI 1 PRIMEIRO EXEMPLO,
+E 1 POSSÍVEL 
+
+
+MANEIRA DE DEPLOYAR 1 APP COM O DOCKER,
+
+MAS NÃO 
+
+SERÁ O APPROACH ULTIMATE,
+
+
+PQ 
+
+
+ESSE 
+
+APPROACH QUE O PROFESSOR NOS MOSTROU TEM ALGUNS 
+
+DEFEITOS E DESVANTAGENS..
