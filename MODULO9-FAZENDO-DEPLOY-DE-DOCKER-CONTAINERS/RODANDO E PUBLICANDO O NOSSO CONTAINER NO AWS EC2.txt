@@ -1,0 +1,1114 @@
+
+
+
+
+
+
+
+
+E RODAR E PUBLICAR O NOSSO CONTAINER NA INSTANCE EC2 
+
+É SUPER SIMPLES...
+
+
+
+
+
+
+DEVEMOS VOLTAR AO NOSSO TERMINAL,
+
+
+
+
+O TERMINAL EM QUE TEMOS A CONEXÃO SSH COM A AWS...
+
+
+
+
+
+
+
+
+
+--> AÍ DEVEMOS RODAR 'docker run nothingnothings/node-aws-app'
+
+(BASTA COLOCAR O NOME DO NOSSO REPOSITORY)
+
+
+
+
+
+
+
+
+-> COMO NOSSO REPOSITORY É PUBLIC, NAÕ PRECISAMOS FAZER LOGIN NO DOCKER,
+
+NESSA INSTANCE EC2...
+
+
+
+
+
+
+
+
+
+
+
+-> DEVEMOS RODAR ''docker run -d --rm academind/node-example-1'..
+
+
+
+
+
+
+
+
+
+
+VAMOS RODAR COM '-d' e '--rm' 
+
+PARA QUE ESSE CONTAINER SEJA REMOVIDO 
+
+QUANDO 
+
+ELE 
+
+
+FOR PARADO...
+
+
+
+
+
+
+
+
+
+
+-> TAMBÉM PRECISAMOS DEIXAR EXPOSTA A PORT 80,
+
+
+
+PQ A NOSSA DOCKERFILE DEPENDIA DISSO..
+
+
+
+É POR ISSO QUE O CÓDIGO VAI FICAR 
+
+
+
+
+
+''''
+
+docker run -d --rm -p 80:80 nothingnothings/node-app-aws
+
+
+'''
+
+
+
+
+
+
+
+
+
+
+---> GANHEI 1 ERROR DE PERMISSION:
+
+
+
+
+
+
+--> docker: Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post "http://%2Fvar%2Frun%2Fdocker.sock/v1.24/containers/create": dial unix /var/run/docker.sock: connect: permission denied.
+
+
+
+
+
+
+
+
+
+
+
+PARA CONSERTAR, PRECISO ADICIONAR 'sudo' ANTES DO DOCKER:
+
+
+
+
+sudo docker run -d --rm -p 80:80 nothingnothings/node-app-aws:default
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> o professor explica que colocar 'sudo' na frente do docker não 
+
+é o melhor approach,
+
+
+PQ HÁ JEITOS MELHORES DE FAZER ISSO...
+
+
+
+
+
+
+
+
+
+
+
+MAS SE USARMOS O EC2 PARA 1 PROJETO DE VERDADE,
+
+
+
+É MELHOR DAR UMA OLHADA NOS SEUS DOCS,
+
+
+ 
+
+ E APRENDER MAIS SOBRE O LINUX E COMO RODAR COMANDOS NELE,
+
+
+
+
+ PQ TEREMOS FULL RESPONSIBILITY POR O QUE RODAMOS NA NOSSA INSTANCE EC2 E SUA SEGURANÇA...
+
+
+
+
+
+
+
+
+
+
+
+CERTO... MINHA DOCKER IMAGE FOI RODADA, EM 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+COM 'sudo docker ps',
+
+PODEMOS 
+
+
+VISUALIZAR QUE NOSSO CONTAINER ESTÁ 'UP AND RUNNING'...
+
+
+
+
+
+
+
+--> CERTO... MAS PELO VISTO, HOUVE ALGUM PROBLEMA COM MEU CONTAINER, pq 
+
+ele PAROU...
+
+
+
+
+foi um erro de 'missing script: start'...
+
+
+
+
+
+
+
+
+
+
+
+PARA CONSERTAR ISSO, PRECISO:
+
+
+
+
+
+
+
+1) REBUILDAR ESSA IMAGE LOCALMENTE
+
+
+
+
+2) REFAZER PUSH NO DOCKERHUB,
+COM A IMAGE CORRETA 
+
+
+
+
+
+3) FAZER PULL DESSA IMAGE, LÁ NO DOCKER DA AWS..
+
+
+
+
+
+
+
+
+
+
+
+OK... CORRIGI,
+
+
+AGORA ESTÁ FUNCIONANDO...
+
+
+
+
+
+
+
+
+----------------------
+
+
+
+
+
+
+
+
+
+
+
+AGORA STARTAMOS ESSE APP,
+
+
+COM A AJUDA DE 1 CONTAINER,
+
+
+EM 1 REMOTE MACHINE...
+
+
+
+
+
+
+
+
+A ÚNICA PERGUNTA QUE NOS RESTA, AGORA, 
+
+É 
+
+
+'COMO TESTAR NOSSA RUNNING APPPLICATION'?
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEVEMOS IR ATÉ NOSSAS INSTANCES,
+
+E AÍ 
+
+DEVEMOS PROCURAR A COLUNA DE 'IPv4 PUBLIC IP'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE É O PUBLIC IP ADDRESS DE SUA MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+--> VOCÊ PODERIA 
+
+CONECTAR 1 'CUSTOM DOMAIN' ao seu app,
+
+
+se vc quiser usar...
+
+
+
+
+
+
+
+
+
+--> vc usaria 1 'custom domain' 
+
+SE QUISESSE 
+
+USAR
+ 
+
+
+ ESSA MÁQUINA COM SEU APP DE VERDADE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ MAS SE COLOCAMOS ESSE IP NO BROWSER,
+
+ VEREMOS QUE 
+
+
+
+ NADA ACONTECERÁ... --> NÃO VAMOS CONSEGUIR 
+ 
+ ACESSAR NOSSO SITE... -> E ISSO NÃO É UM BUG,
+
+
+
+
+
+
+
+
+
+ __ É UMA SECURITY FEATURE... --> POR DEFAULT,
+
+ SUA 
+ EC2 
+ INSTANCE 
+
+
+
+
+ É 
+
+ BASICAMENTE 
+
+ 'DESCONECTADA DE TUDO DA WEB' --> ISSO É FEITO PARA _ QUE _ 
+
+
+
+
+,
+
+INICIALMENTE,
+
+APENAS 
+
+VOCê CONSIGA SE CONECTAR,
+
+POR MEIO 
+
+
+
+DO SSH.... ---> E TUDO ISSO É CONTROLADO 
+
+
+
+
+POR AQUILO QUE CHAMAMOS DE 'SECURITY GROUP'... --> DEVEMOS 
+
+
+
+MEXER NA COLUNA DA ESQUERDA,
+E AÍ 
+
+
+CLICAR NO 'SECURITY GROUP'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------> SELECIONE O SECURITY GROUP QUE RECÉM FOI CRIADO...
+
+
+
+
+
+
+
+
+
+
+é o de nome 'launch-wizard-1'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ESSE GROUP VAI CONTROLAR 'QUAL TRÁFEGO É PERMITIDO,
+
+NA NOSSA EC2 INSTANCE'...
+
+
+
+
+
+
+
+
+
+
+
+--> LÁ EMBAIXO,
+
+TEREMOS 
+
+'INBOUND'
+
+
+E 
+
+'OUTBOUND'
+
+rules...
+
+
+
+
+
+
+
+
+--> OUTBOUND RULES CONTROLAM 'QUAL TRÁFEGO __ É _ PERMITIDO ''''DA INSTANCE PARA OUTRO LUGAR'''' ''
+
+
+
+
+
+
+--> É EXATAMENTE POR ISSO, POR CAUSA DA PERMISSÃO 'ALL IS ALLOWED' PARA O OUTBOUND,
+
+QUE 
+
+O COMANDO DE 'DOCKER RUN' FUNCIONOU... ------> TENHA EM MENTE QUE 
+
+
+
+
+''RODAMOS 1 IMAGE QUE HAVIA SIDO ARMAZENADA NO DOCKERHUB''... --> ISSO QUER DIZER QUE,
+
+INICIALMENTE,
+
+O DOCKER DE NOSSA REMOTE MACHINE TEVE __ DE BAIXAR_ ESSA IMAGE LÁ DO DOCKERHUB.... --> ISSO 
+
+ACONTECEU/FOI PERMITIDO 
+
+
+JUSTAMENTE 
+
+
+PQ 
+
+
+A EC2 INSTANCE POSSUI ''PERMISSÃO PARA __ CONTATAR/SE COMUNICAR COM O DOCKERHUB''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS COM INBOUND RULES, ISSO É DIFERENTE...
+
+
+
+
+
+
+
+
+
+COM 'INBOUND RULES',
+
+
+
+
+
+
+
+
+
+É UMA QUESTÃO DE 'TODO O TRÁFEGO QUE É PERMITIIDO, DE ALGUM LUGAR DO MUNDO,
+
+PARA ESSA INSTANCE'...
+
+
+
+
+
+
+
+
+
+
+
+--> POR DEFAULT,
+APENAS 
+
+1 ÚNICA PORTA ESTARÁ ABERTA,
+
+QUE É 
+
+
+A '22'... (a port 22)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+e o source está como '0.0.0.0/0 '--> SIGNIFICA QUE QUALQUER LUGAR 
+
+
+DO MUNDO É CAPAZ 
+
+DE SE CONECTAR A ESSA INSTANCE,
+
+
+POR MEIO DO 'SSH' ------> E É JUSTAMENTE POR ISSO QUE 
+
+
+
+
+
+O ARQUIVO '.pem' 
+
+
+É 
+
+
+___ TÃO __ ESSENCIAL,
+
+
+
+
+
+PQ __ APENAS _ ELE _ TE DEIXA __ SE CONECTAR A SUA INSTANCE 
+
+
+EC2  COM SUCESSO..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALTERNATIVAMENTE,
+
+VC PODERIA 
+
+
+'NARROW DOWN'
+
+SEU SOURCE 
+PARA 
+QUE 
+
+FIQUE COMO 
+
+APENAS SUA 'LOCAL MACHINE IP ADDRESS'... (
+
+é mais seguro, de fato..
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... MAS A QUESTÃO AQUI NÃO É A PORT 22...
+
+
+
+
+
+
+
+
+
+
+
+
+--> A QUESTÃO É QUE _ PRECISAMOS QUE TRÁFEGO CONSIGA ALCANÇAR OUTRAS PORTS... -> 
+
+
+
+
+NOSSO APP ESTÁ FAZENDO 'LISTEN TO' NA PORT 80.... ---------> O CONTAINER 
+
+
+
+E O APP ESTÃO 'PUBLISHING' ESSA PORT,
+ 
+
+ E ESTÃO FAZENDO LISTEN TO NESSA PORT... ENTRETANTO, 
+
+
+ O SERVER, A 'REMOTE HOST MACHINE',
+
+
+
+
+
+ AINDA ESTÁ _ BLOQUEANDO TODO O TRÁFEGO A ESSA PORT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> É EXATAMENTE POR ISSO QUE PRECISAMOS ADICIONAR UMA NOVA REGRA 
+
+
+
+ NAS REGRAS DOS SECURITY GROUP...
+
+
+
+
+
+
+
+
+
+ --> VAMOS COLOCAR A REGRA DE 'HTTP',
+
+
+
+ E AÍ 
+
+ VAMOS COLOCAR A PORT DE 80... --> AÍ COLOCAMOS '0.0.0/0' (ou anywhere in the world),
+
+
+ PQ QUEREMOS QUE QUALQUER 1 CONSIGA ACESSAR ESSE SITE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ OK... ISSO VAI UPDATAR O SECURITY GROUP..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ISSO ERA A SEGUNDA ETAPA,
+
+
+
+ DE 'CONFIGURE SECURITY GROUP TO EXPOSE ALL REQUIRED PORTS TO WWW'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> CERTO... COM ISSO FEITO,
+
+ PODEMOS 
+
+ TENTAR ENTRAR NAQUELE IP MAIS UMA VEZ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ COLOCAMOS ISSO NO BROWSER, APERTAMOS ENTER:
+
+
+ 18.118.1.211
+
+
+
+
+
+
+
+
+
+
+ --> CONSEGUIMOS ENTRAR NESSE SITE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -_> E ISSO É HUGE,
+
+ PQ 
+
+
+
+ SIGNIFICA QUE 
+
+
+ NOSSA LOCAL APPLICATION FOI 
+
+
+ RODADA, COM SUCESSO,
+
+ EM 1 REMOTE SERVER...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> E NEM MESMO TIVEMOS DE INSTALAR O NODEJS NESSE REMOTE SERVER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> APENAS INSTALAMOS O DOCKER NAQUELA REMOTE EC2 INSTANCE... 
+
+
+
+
+ ISSO FEITO,
+
+
+
+USAMOS NOSSA FINISHED IMAGE,
+QUE CONTINHA NODE E O NODE CODE,
+
+PARA AÍ RODAR NOSSA WEB APPLICATION LÁ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ESSE É O GRANDE SELLING POINT DE CONTAINERS:
+
+NÃO TIVEMOS DE INSTALAR E CONFIGURAR 1 NODEJS ENVIRONMENT 
+
+
+NAQUELA REMOTE INSTANCE... -> APENAS TIVEMOS DE INSTALAR O DOCKER... --> E A DOCKER 
+
+IMAGE E O CONTAINER JÁ TINHAM TODAS AS COISAS NECESSÁRIAS PARA RODAR ESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+-> É CLARO QUE ISSO TUDO TEM 1 IMPORTANTE IMPLICATION --> ISSO SIGNIFICA QUE 
+
+
+
+
+PODEMOS RODAR __ QUALQUER DOCKER COMMAND NESSE REMOTE HOST... ISSO INCLUI 'DOCKER-COMPOSE'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO QUER DIZER QUE SE TIVÉSSEMOS 1 MULTI-CONTAINER APPLICATION QUE 
+
+
+
+QUISÉSSEMOS 
+
+
+DEPLOYAR NESSA MÁQUINA REMOTA,
+
+PODERÍAMOS 
+
+PEGAR NOSSO ARQUIVO 'docker-compose'
+
+
+
+E TAMBÉM RODAR ISSO, LÁ NO REMOTE HOST...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS É CLARO QUE TALVEZ SEJA NECESSÁRIO TWEAKAR AQUELE ARQUIVO 'docker-compose',
+
+
+para que 
+
+
+
+
+ELE __ APENAS FUNCIONE COM IMAGES QUE SÃO PUSHADAS PARA O 'DOCKERHUB',
+
+e para 
+
+
+
+
+QUE 'NÃO BUILDE IMAGES ON THE FLY' (como estamos fazendo 
+
+no nosso local development environment, PQ 
+
+
+EM PRODUCTION NÃO QUEREMOS BUILDAR IMAGES, E SIM QUEREMOS APENAS USAR FINISHED IMAGES )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS Voltaremos ao tópico de 'multi-container apps' 
+
+
+
+MAIS TARDE.... --> E, DE FATO,
+
+
+NÃO RODAREMOS 
+
+o 'docker-compose' 
+
+na nossa CUSTOM-CONTROLLED INSTANCE... ->  O PROFESSOR EXPLICARÁ 
+A RAZÃO 
+
+DE NÃO RODARMOS ISSO MAIS TARDE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+POR ENQUANTO, É IMPORTANTE ENTENDER QUE VC TEM CONTROLE COMPLETO SOBRE ESSA INSTANCE,
+
+SOBRE ESSA REMOTE MACHINE --> E VC PODE RODAR TODOS OS COMANDOS QUE VC TEM LOCALMENTE,
+
+NA SUA MÁQUINA, NESSA INSTÂNCIA REMOTA...
