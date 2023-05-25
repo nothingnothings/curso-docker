@@ -1,0 +1,610 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... TEMOS AQUELE 'UNEQUAL SETUP',
+
+
+
+
+
+
+
+PARCIALMENTE UNEQUAL,
+
+
+
+
+PQ O CÓDIGO QUE ESCREVEMOS 
+
+SERÁ 
+
+O MESMO,
+
+
+MAS 
+
+
+
+A MANEIRA PELA QUAL O RODAMOS SERÁ DIFERENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+A RESPEITO DO REACT APP,
+
+
+
+TEMOS A DIFERENÇA ENTRE 
+
+
+
+
+
+
+
+'''A VERSÃO QUE RODAMOS EM DEVELOPMENT MODE,
+
+
+COM O DEVELOPMENT SERVER, COM LIVE-RELOAD,
+
+ETC, FEATURES NÃO OPTIMIZADS''' 
+
+
+
+
+
+
+
+
+
+E 
+
+
+
+
+
+
+'''A VERSÃO DE PRODUCTION, SEM ATTACHED SERVER,
+
+OPTIMIZADA,
+
+TOTALMENTE COMPATÍVEL NO BROWSER, MAS SEM 
+
+NENHUM SERVER'''' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ESSA SEGUNDA VERSÃO É GERADA POR MEIO DO COMANDO 
+
+'npm run build',
+
+
+
+
+
+
+
+
+
+QUE STARTA O SCRIPT DE 'REACT-SCRIPTS BUILD'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... O PROJETO, COMO ESTÁ AGORA, NÃO PODE SER DEPLOYED...
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE AGORA DEVEMOS INVESTIGAR COMO PODEMOS 
+USAR 
+
+FEATURES DO DOCKER 
+
+
+PARA _ QUE _ CONSIGAMOS TER 1 CONTAINER QUE FUNCIONE TANTO 
+
+
+
+EM DEVELOPMENT (que nos deixa TESTAR NOSSO APP) COMO EM PRODUCTION (NOS DEIXARÁ __ RODAR NOSSA APPLICATION)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO SIGNIFICA QUE 
+
+NOSSO REACT APP 
+BASICAMENTE 
+
+PRECISARÁ 
+
+SER EXECUTADO DE FORMA DISTINTA 
+
+EM 
+
+DEVELOPMENT E PRODUCTION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TEREMOS DE SETTAR 2 ENVIRONMENTS COMPLETAMENTE DIFERENTES,
+
+PQ 
+
+O REACT APP NOS FORÇA A TAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TAMBÉM VALE A PENA RESSALTAR QUE 
+
+'''PRECISAMOS DO NODE _APENAS _ NO DEV MODE''',
+
+
+
+
+
+
+
+PQ NOSSO SERVER, QUE É STARTADO COM 
+
+'npm start',
+
+
+É ACTUALLY _ 
+
+1 NODE SERVER, UNDER THE HOOD..
+
+
+
+
+
+
+
+
+
+
+
+MAS __ EM PRODUCTION,
+
+
+COMO NÃO VAMOS PRECISAR DO NODE ( 
+
+A NÃO SER QUE BUILDEMOS NOSSO PRÓPRIO NODE SERVER,
+
+QUE FAÇA SERVE DOS FINISHED JAVASCRIPT FILES E FRONTEND APP
+
+),
+
+
+
+
+
+
+
+NÃO VAMOS PRECISAR DO NODE PQ _ O JAVASCRIPT CODE EM SI 
+
+
+__ NÃO __ É dependente __ _DO NODEJS,
+
+
+
+NÃO É EXECUTADO COM NODEJS (
+
+
+    E, SIM, É EXECUTADO PELO BROWSER,
+
+DEPENDE DO BROWSER EM QUE ELE ESTARÁ RODANDO....
+)
+
+
+
+
+
+
+
+
+
+
+--> É EXATAMENTE POR ISSO QUE O PROFESSOR VAI ADICIONAR UMA SEGUNDA FILE NO ROOT DE NOSSO PROJETO,
+
+DE NOME 
+'Dockerfile.prod'...
+
+
+
+
+
+
+
+
+
+
+
+-> SERÁ NOSSA DOCKERFILE DE PRODUCTION, E ELA SERÁ DIFERENTE DA NOSSA DOCKERFILE DE DEVELOPMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... ESSE ARQUIVO 
+
+
+VAI __ TER __ TODAS AS INSTRUCTIONS DE QUE PRECISAMOS __ PARA __ CRIAR 1 WEB SERVER 
+
+
+QUE 
+
+
+FAÇA SERVE 
+
+
+
+__ DESSES BUILT E OPTIMIZED JAVASCRIPT FILES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK... MAS O PROBLEMA AQUI, PORTANTO,  SERÁ 
+
+QUE 
+
+TEREMOS DE RODAR MAIS 
+
+
+
+DO QUE APENAS O 'npm run build',
+
+
+
+que vai gerar os arquivos de build,
+
+
+
+mas também 
+
+
+
+PRECISAREMOS 'BRING OUR OWN SERVER',
+
+QUE 
+FAÇA 
+
+O SERVE DESSES ARQUIVOS...
+
+
+
+
+
+
+
+
+O NPM START --> ELE BRINGS UM DEV SERVER,
+
+
+MAS ELE É UNOPTIMIZED,
+
+E FOCADO PARA DEVELOPMENT..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS AINDA ASSIM,
+
+O PROFESSOR QUER RODAR 
+
+
+ESSA DOCKERFILE PARA CONSTRUÍRMOS 
+
+
+
+OS ARQUIVOS DE BUILD..
+
+
+
+
+
+
+
+
+
+
+VAI FICANDO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node:14-alpine 
+
+
+WORKDIR /app 
+
+
+
+COPY package.json . 
+
+
+RUN npm install 
+
+COPY . . 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... ENTRETANTO,
+
+NA ÚLTIMA PARTE DO CÓDIGOO,
+
+
+
+VAMOS RODAR 'CMD["npm", "run", "build"]',
+
+
+
+
+
+
+
+PARA __ JUSTAMENTE CONSTRUIR NOSSOS ARQUIVOS DE BUILD...
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node:14-alpine 
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+CMD ["npm", "run", "build"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É ASSIM QUE VAMOS RODAR ESSE COMANDO,
+
+
+
+
+PARA _ CRIAR NOSSOS ARQUIVOS DE BUILD...
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+QUANDO ESSA IMAGE FOR INSTANCIADA COMO CONTAINER,
+
+
+ESSE COMANDO DE 'npm run build'
+SERÁ RODADO...
+
+
+
+
+
+
+
+
+
+
+
+--> MAS ISSO NÃO É TUDO.. --> NÃO É TUDO PQ ISSO AÍ NOS DÁ 
+
+AS FINISHED FILES,
+
+SIM,
+
+
+
+
+
+MAS _ NÃO VAI NOS DAR O SERVER NECESSÁRIO 
+
+
+PARA RODAR ESSAS FILES....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É JUSTAMENTE NESSE MOMENTO QUE O PROFESSOR NOS INTRODUZ A 
+
+
+'MULTI-STAGE BUILDS'...
