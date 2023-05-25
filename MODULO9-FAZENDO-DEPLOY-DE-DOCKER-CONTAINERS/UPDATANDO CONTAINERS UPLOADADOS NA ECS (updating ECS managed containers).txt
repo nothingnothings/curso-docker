@@ -1,0 +1,530 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... DIGAMOS QUE 
+
+
+
+
+
+TEMOS 1 TASK RODANDO NO NOSSO CLUSTER,
+
+
+
+E QUE 
+
+
+
+ESSA TASK ESTÁ COM 1 DE NOSSOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+COMO PODEMOS UPDATAR 
+
+
+1 DE NOSSOS CONTAINERS,
+
+RODADO 
+
+
+
+NA ECS?
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> bem... DIGAMOS QUE, NO NOSSO SOURCE CODE,
+
+
+
+
+O PROFESSOR REMOVEU UMA PARTE DO ARQUIVO HTML...
+
+
+
+
+
+
+
+
+
+
+--> NÓS RODAMOS 'docker build' 
+
+PARA REBUILDAR 
+
+NOSSA IMAGE,
+
+COM 
+O COMANDO 
+
+
+
+
+docker build -t nothingnothings/node-app-aws 
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO FEITO,
+
+FAZEMOS PUSH DESSA UPDATED IMAGE AO DOCKERHUB,
+
+ASSIM:
+
+
+
+
+docker build -t nothingnothings/node-app-aws:default 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA A PERGUNTA É:
+
+
+
+'COMO FAZEMOS O AWS ECS 
+
+FICAR _ AWARE DO UPDATE DESSA IMAGE'?
+
+
+
+
+
+
+
+
+
+
+A BOA NOTÍCIA É 
+
+
+
+'''' ELE NÃO VAI USAR ESSA IMAGE UPDATADA AUTOMATICAMENTE'''... --> PQ ISSO SERIA BEM BAD...
+
+
+
+
+
+
+
+
+
+
+--> PARA ATUALIZAR A IMAGE QUE ESTÁ RODANDO 
+
+
+
+NA SUA TASK, 
+
+
+NO CONTAINER DENTRO DELA,
+
+
+VC DEVE IR ATÉ 
+
+
+
+
+'CLUSTERS' --> DEPOIS,
+
+
+'TASKS' -->  DENTRO DE TASKS,
+
+
+CLIQUE 
+
+NA 'TASK DEFINITION'
+
+
+
+
+DA TASK QUE ESTÁ RODANDO NO MOMENTO... --> ISSO FEITO,
+
+
+CLIQUE 
+
+
+EM 
+
+
+'CREATE NEW REVISIOn'... ---> ISSO VAI TE PERMITIR 'CRIAR UMA NOVA TASK.'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO VAI TE DEIXAR CRIAR UMA NOVA TASK,
+
+SIM,
+
+
+
+MAS VC 
+
+DEVERÁ 
+DEIXAR 
+
+TODAS AS 
+
+SETTINGS QUE VC JÁ TINHA,
+
+DENTRO 
+
+DESSA OPÇÃO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... VAMOS CRIAR __ A MESMA __ TASK  DE NOVO,
+
+
+PQ ___ AÍ __ O AWS ECS 
+VAI AUTOMATICAMENTE 
+PULL A UPDATED IMAGE DE SUA IMAGE... -------> QUANDO VC CRIA 
+
+UMA 
+
+'''NOVA TASK''''
+
+
+E 
+
+VC 
+
+FAZ LAUNCH DE 1 NOVO SERVICE NESSA TASK,
+
+
+O 
+
+AWS VAI AUTOMATICAMENTE FAZER 'PULL'
+
+DA SUA 
+
+
+UPDATED IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... ISSO É BEM CONVENIENTE..
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEVEMOS CRIAR 1 NOVA TASK REVISION,
+
+
+
+COM BASE NAS MESMAS SETTINGS DE ANTES,
+
+
+
+
+
+E 
+
+AÍ,
+
+DEPOIS QUE ESSA TASK FOR UPDATED 
+
+
+E ESTIVERMOS NA PAGE DE CONFIRMATION,
+
+
+DEVEMOS CLICAR EM 'ACTIONS V' 
+
+
+
+
+
+-> DEPOIS 
+
+
+EM 'UPDATE SERVICE' --> DEIXE TODAS AS SETTINGS 
+
+IGUAIS,
+
+
+DEPOIS CLIQUE  
+
+
+
+
+EM 'SKIP TO REVIEW',
+
+E DEPOIS CLIQUE EM 'UPDATE SERVICE'... --> ISSO VAI REALMENTE 
+
+
+PULLAR SUA LATEST IMAGE,
+
+E AÍ 
+
+VAI 
+
+
+RESTARTAR ESSE SERVICE, NESSA TASK....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... SE 
+
+AGORA 
+
+
+
+
+VISUALIZARMOS ESSE SERVICE,
+
+
+EM 'TASKS',
+
+
+
+
+VEREMOS TODAS AS TASKS,
+
+
+E AI 
+
+VEREMOS 
+
+
+ESSA NOVA TASK DE 'REVISION',
+
+
+
+QUE AINDA VAI ESTAR 'PROVISIONING' (isso significa que ainda está baixando 
+
+a image e assim por diante)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> QUANDO ESTIVER 'RUNNING',
+
+
+
+VC JÁ PODE ABRIR O PUBLIC IP DESSE CONTAINER... -----> VC 
+
+
+
+VAI CONSEGUIR ACESSAR O SITE,
+
+
+
+MAS TENHA 
+
+EM MENTE 
+QUE 
+
+O 
+IP 
+
+SERÁ 
+
+DIFERENTE 
+
+DO IP 
+
+ANTERIOR --> ISSO ACONTECE PQ O AWS __ 
+
+
+
+VAI CREATE E ASSIGN 1 NOVO 
+
+IP 
+
+ADDRESS PARA CADA 
+
+
+TASK QUE VC FAZ LAUNCH,
+
+CADA 
+TASK 
+
+REVIEW QUE VC FAZ LAUNCH .... -------> OK.... MAS AINDA HÁ 
+
+
+MANEIRAS
+ 
+
+
+ DE ACTUALLY CONECTAR 
+
+
+
+ 1 DOMAIN A ESSA 'RUNNING ECS TASK EM GERAL',
+
+
+
+
+ DE FORMA INDEPENDENTE 
+
+
+
+ DO SPECIFIC IP 
+
+ QUE O 
+
+
+ 
+
+ AWS ASSIGNOU... (
+
+    MAIS SOBRE ESSE ASSUNTO 
+
+
+    PODE SER LIDO 
+
+    NO MATERIAL ANEXADO A ESSA LIÇÃO...
+ )
+
+
+
+
+
+
+
+
+*** PARA CONSEGUIR 'FIXED DOMAIN NAMES'
+
+COM O ECS,
+
+PRECISAMOS 
+
+
+
+
+''''ADD A LOAD BALANCER TO A FARGATE TASK FOR __ FIXED_ DOMAIN _ NAMES''....
+
+
+
+Your Amazon ECS service can optionally be
+ configured to use Elastic Load Balancing to distribute
+  traffic evenly across the tasks in your service.
+
+
+
+
+
+
+Application Load Balancers offer several features that make them attractive for use with Amazon ECS services:
+
+Each service can serve traffic from multiple load balancers and expose multiple load balanced ports by specifying multiple target groups.
+
+They are supported by tasks hosted on both Fargate and EC2 instances.
+
+Application Load Balancers allow containers to use dynamic host port mapping (so that multiple tasks from the same service are allowed per container instance).
+
+Application Load Balancers support path-based routing and priority rules (so that multiple services can use the same listener port on a single Application Load Balancer).
+
+
+
+
+
+ --> OK... É ASSIM QUE PODEMOS USAR ESSE MANAGED ENVIRONMENT,
+
+ PARA RODAR NOSSO CONTAINER NA NUVEM...
