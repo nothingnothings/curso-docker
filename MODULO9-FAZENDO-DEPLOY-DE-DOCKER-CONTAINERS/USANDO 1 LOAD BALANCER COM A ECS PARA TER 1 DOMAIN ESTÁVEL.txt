@@ -1,0 +1,610 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... AGORA DEVEMOS FALAR SOBRE 1 PROBLEMA QUE TALVEZ ENFRENTAREMOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PUBLIC IP DE NOSSO APP SEMPRE VAI MUDAR QUANDO 
+
+FIZERMOS DEPLOY DE 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> E ISSO É LONGE DE IDEAL... --> É POR ISSO QUE O PROFESSOR HAVIA CRIADO AQUELE LOAD 
+
+BALANCER..
+
+
+
+
+
+
+
+
+
+--> SE VC PROCURAR POR 'APPLICATION LOAD BALANCERS' 
+
+
+
+NO SEARCH DO AWS,
+
+
+
+
+
+
+VC VAI ENCONTRAR O EC2... ----> ISSO PQ 
+
+
+__ É NO EC2 
+
+QUE 
+
+
+
+LOAD BALANCERS SÃO MANAGED...
+
+
+
+
+
+
+
+
+
+
+
+
+--> NÓS NÃO ESTAMOS USANDO EC2 INSTANCES,
+
+
+MAS A FEATURE DO LOAD BALANCER PERTENCE A ELAS,
+
+
+E __ O FARGATE TAMBÉM UTILIZA LOAD BALANCERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. EM LOAD BALANCERS,
+
+VEREMOS O LOAD BALANCER QUE CRIAMOS...
+
+
+
+
+
+
+
+
+
+
+--> E, ALI,
+
+ENCONTRAMOS 
+
+1 DNS NODE 
+QUE 
+
+SE PARECE MT COM 1 DOMAIN... ------> TIPO 'ecs-lb-612341223112.us-ease-2.elb.amazonaws.com 
+
+
+
+SE COLOCAMOS 
+
+
+ISSO 
+
+NO BROWSER,
+
+
+
+
+
+
+
+
+E TENTAMOS ENVIAR 1 REQUEST A '/goals',
+
+
+VEREMOS QUE ISSO NÃO FUNCIONARÁ...
+
+
+
+
+
+
+
+NÃO FUNCIONARÁ POR 1 PUNHADO DE RAZÕES....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> PRIMEIRA RAZÃO:
+
+
+
+
+
+1) O PROFESSOR ERROU, FEZ 1 PEQUENO ERRO 
+
+LÁ 
+
+NA PARTE DE LOAD BALANCERS...
+
+
+
+
+
+--> O PROFESSOR NOS MOSTRA QUE NOSSOS SERVICES ESTÃO 'STOPPED' E 'START' 
+
+O TEMPO INTEIRO --> ESSE STOP E START O TEMPO TODO 
+
+
+___É CAUSADO __ PELO NOSSO LOAD BALANCER... --> PQ O LOAD BALANCER 
+
+
+ESTÁ _ CHECANDO 
+
+
+
+
+A SAÚDE DOS SERVICES A QUE ELE ESTÁ 'REDIRECTING REQUESTS',
+
+
+
+
+E ELE 
+
+
+
+__ FAZ SHUT DOWN DE 1 SERVICE E O RESTARTA 
+
+SE ELE 
+
+
+DETECTA QUE AQUELE SERVICE ESTÁ UNHEALTHY --> ISSO GERALMENTE É UM BOM BEHAVIOR... --> 
+
+
+
+
+PQ ISSO EVITA O CRASH REPENTINO DE NOSSO APP... SE NOSSO APP FOSSE CRASHAR, POR QUALQUER 
+
+RAZÃO,
+
+ELE É RESTARTADO...
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK, MAS O PROFESSOR FEZ 1 PEQUENO ERRO,
+
+QUANDO ESTAVA SETTANDO O LOAD BALANCER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NA PARTE  DE 'TARGET GROUPS'
+
+
+
+
+DA PARTE DO 'EC2',
+
+
+
+
+
+SERÁ POSSÍVEL 
+
+ENCONTRAR O TARGET GROUP QUE 
+
+CRIAMOS ANTES ('tg')  --------> ALI DENTRO,
+
+
+
+
+
+EM 'HEALTH CHECK SETTINGS',
+
+DEVEMOS CLICAR EM 'EDIT'... ------> EDITAMOS O 'HEALTH CHECK SETTINGS'.. --> O PROBLEMA É QUE 
+AQUI,
+
+POR DEFAULT,
+
+O LOAD BALANCER 
+ESTÁ 
+
+ENVIANDO 
+
+
+1 REQUEST 
+
+
+AO 
+
+NOSSO 'DOMAIN SLASH NOTHING' ('/')...
+
+
+
+
+
+
+
+E É EXATAMENTE POR ISSO QUE ESTAMOS COM PROBLEMAS --> QUEREMOS 
+
+
+
+
+
+
+QUE ESSE HEALTH CHECK SEJA RODADO EM '/goals'..
+
+
+
+
+
+
+
+
+
+--> PQ O '/' NÃO ESTÁ SENDO USADO, NO NOSSO APP,
+
+NO NOSSO CÓDIGO NODE...
+
+
+
+
+
+
+
+
+
+-> O '/' ESTÁ RETORNANDO COM STATUS CODE 404, ESSENCIALMENTE....
+
+
+
+
+
+
+
+
+
+
+-> É POR ISSO QUE O PROFESSOR COLOCA A ROUTE DE '/goals' 
+
+
+
+COMO TARGET DO LOAD BALANCER HEALTH CHECKER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... OUTRA COISA QUE O PROFESSOR ERROU,
+
+
+
+
+LÁ 
+
+
+NO LOAD BALANCER EM SI,
+
+
+
+
+
+
+NA PARTE DE 'LOAD BALANCERS',
+
+ELE 
+
+
+
+
+ADICIONOU 1 SECURITY GROUP 
+
+
+
+
+DE 'DEFAULT' ------> E DEVEMOS ADICIONAR 
+
+
+
+
+O SECURITY GROUP DEFAULT __ E  ___ TAMBÉM _ O SECURITY GROUP QUE 
+
+
+ESTAMOS 
+USANDO 
+
+PARA NOSOS ECS SERVICES (
+    no caso,
+     
+     'goals-856'...
+
+)
+
+
+
+
+
+
+
+
+
+
+OK.. AÍ CLICAMOS 'SAVE'...
+
+
+
+
+
+
+ESSAS CHANGES VÃO DEMORAR 1 POUCO PARA TEREM EFEITO...
+
+
+
+
+
+
+
+MAS, COM ISSO,
+
+NOSSAS TASKS NÃO VÃÕ MAIS SER 'STOPPED' E 'STARTED' O TEMPO INTEIRO... ---> 
+
+
+
+
+
+
+
+
+E, COM ISSO,
+
+PODEMOS USAR 
+
+AQUELA 
+
+
+
+
+URL 
+
+DE 
+
+
+'ecs-lb-122134124124.us-east-2.elb.amazonaws.com'...
+
+
+
+
+
+
+
+
+
+
+
+PODEMOS USAR ESSA URL 
+PÚBLICA AÍ 
+
+
+PARA ENVIAR 1 REQUEST 
+
+AOS NOSSOS DEPLOYED SERVICES,
+
+E A NOSSAS TASKS.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> ISSO SIGNIFICA QUE PODEMOS 
+
+
+
+ENVIAR 1 REQUEST A 1 MESMO DOMAIN,
+
+SEM SE PREOCUPAR COM 
+
+
+O 
+
+'CHANGE DE IP ADDRESSES' AUTOMÁTICO.. -------> É CLARO QUE 
+
+
+TAMBÉM 
+
+
+PODEMOS MAPPEAR  NOSSO PRÓPRIO 
+'CUSTOM DOMAIN' 
+
+
+
+
+A ESSE 'DNS NAME',
+
+
+
+
+
+
+SE VC QUISER (
+
+    e os aws docs são o lugar em que há detalhes sobre isso...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+ESPERAMOS PELO RESTART DO SERVICE...
+
+
+
+
+
+
+AGORA SEREMOS CAPAZES DE ENVIAR REQUESTS A 
+
+
+'this-domain.com/goals'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--_> ok... agora todas as routes estão funcionando, com essa url..
+
+
+
+
+
+
+
+
+
+
+
+É ASSIM QUE PODEMOS DEPLOYAR MÚLTIPLOS CONTAINERS COM AWS ECS,
+
+
+E COMO 
+
+PODEMOS TAMBÉM USAR 1 LOAD BALANCER DESSES,
+
+PARA QUE 
+TENHAMOS 
+1
+ UNCHANGED DOMAIN,
+
+
+
+ 1 DOMAIN QUE APONTE A ESSES DEPLOYED CONTAINERS...
