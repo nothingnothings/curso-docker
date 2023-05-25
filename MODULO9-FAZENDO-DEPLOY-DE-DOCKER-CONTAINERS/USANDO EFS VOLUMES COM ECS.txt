@@ -1,0 +1,2306 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA DEPLOYAMOS UM PUNHADO DE CONTAINERS..
+
+
+
+
+
+
+
+
+
+
+
+ENTRETANTO, HÁ ALGUMAS ÁREAS EM QUE PODERÍAMOS/PODEMOS MELHORAR NOSSO SETUP...
+
+
+
+
+
+
+
+
+-> O PROFESSOR QUER COMEÇAR PELO ADD DE 1 NOVO GOAL, DE NOVO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ele adiciona um goal com 1 request de tipo 'post'
+
+
+
+
+à route de 'my-domain.com/goal'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VEREMOS 1 PRIMEIRA ISSUE NO NOSSO CÓDIGO:
+
+
+
+
+
+
+
+
+
+
+
+DIGAMOS QUE MUDAMOS ALGO NO NOSSO SOURCE CODE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COLOCAMOS 1 LINHA DE  SOURCE CODE EXTRA (no app.js)...
+
+
+
+
+
+
+
+
+
+
+--> ISSO FEITO,
+
+O PROFESSOR USA O COMANDO 'tag'
+
+PARA 
+
+
+
+DEIXAR 
+
+
+ESSAS LATEST CHANGES NA NOSSA REPOSITORY COMMAND, COM 'docker push'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> FAZEMOS PUSH DE NOSSA UPDATED IMAGE AO DOCKERHUB...
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO É ALGO QUE PROVAVELMENTE FAREMOS 
+
+DURANTE O TRABALHO EM 1 PROJETO --> VAMOS MUDAR ALGO NO CÓDIGO,
+
+E AÍ 
+
+VAMOS QUERER 
+
+
+
+
+'DEPLOY THESE LATEST CHANGES'...
+
+
+
+
+
+
+
+
+
+
+
+-> E O PROFESSOR JÁ NOS MOSTROU COMO PODEMOS 
+
+'PICK UP'
+
+
+ESSAS LATEST CHANGES...
+
+
+
+
+
+
+
+
+
+
+
+-> CLICAMOS NO NOSSO SERVICE,
+
+
+
+
+
+
+
+E AÍ COLOCAMOS 'UPDATE SERVICE'.. -> CLICAMOS EM 'FORCE NEW DEPLOYMENT' --> SKIP TO REVIEW --> 
+
+
+
+
+
+
+
+
+
+AÍ CLIQUE EM 'UPDATE SERVICE'..
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO VAI UPDATAR E RESTARTAR SEU SERVICE... -> E VAI RESTARTAR 
+
+
+SUAS TASKS,
+
+
+
+COM BASE NAS SUAS 'UPDATED CONTAINER IMAGES'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE NOS NOSSOS CLUSTERS VAMOS VER, NAS TASKS,
+
+
+O STATUS DE 'PROVISIONING'... (antes de ficar 'running')..
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... ESSA NOVA TASK SERÁ O NOVO SERVICE,
+
+
+COM BASE NOS UPDATED CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... O PROFESSOR ESPERA O START DO NOVO SERVICE,
+
+
+COM BASE NAS NOVAS TASKS,
+
+COM BASE NOS UPDATED CONTAINERS...
+
+
+
+
+
+
+
+
+
+--> ASSIM QUE ESTIVER 'UP AND RUNNING',
+
+
+
+ESPERAMOS 
+
+PELO SHUT DOWN 
+
+
+DA TASK/SERVICE ANTIGA....
+
+
+
+
+
+
+
+
+
+ISSO PODE DEMORAR 1 POUCO....
+
+
+
+
+
+
+
+
+
+
+
+ANTERIORMENTE, TÍNHAMOS 1 ÚNICO GOAL NA DATABASE.... ENTRETANTO,
+
+AGORA,
+
+
+QUANDO RESTARTEI A TASK, RESTARTEI OS CONTAINERS,
+
+
+A 
+
+
+
+DATA 
+
+QUE 
+
+EU 
+
+
+TINHA 
+
+
+NO CONTAINER DE 'MONGO'
+
+
+FOI __ PERDIDA COMPLETAMENTE... ------> 
+
+
+
+
+
+
+
+
+
+
+
+ISSO ACONTECEU PQ:
+
+
+
+
+
+
+
+1)  QUANDO 1 TASK ESTÁ 'UP AND RUNNING',
+
+DESDE QUE ELA ESTEJA RODANDO,
+
+
+A __ DATA SERÁ 'PERSISTED'...
+
+
+
+
+
+
+
+
+
+2) MAS ASSIM QUE VC PARAR E RESTARTAR 1 TASK (que é o que vc faz quando vc UPDATA 1 SERVICE... 
+como nos casos em que vc quer updatar 1 container image),
+
+
+SUA __ DATA_ _ SERÁ PERDIDA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+e isso, é claro, é algo que já vimos localmente... --> se vc PARA 1 CONTAINER 
+
+
+E 
+
+
+
+ENTÃO O REMOVE COM '--rm' ou com 'docker stop container-name + docker rm container-name'...',
+
+
+
+
+
+
+VC TAMBÉM PERDE SUA DATA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+BEM, MAS LOCALMENTE,
+
+A SOLUTION ERA USAR  1 'VOLUME' (1 named volume, para sermos mais exatos)...
+
+
+
+
+
+
+
+
+
+
+
+E, COM O ECS,
+A SOLUÇÃO É PRATICAMENTE A MESMA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PARA ISSO, DEVEMOS IR ATÉ 'TASK DEFINITIONS'
+
+
+
+E ESCOLHER A __ LATEST TASK DEFINITION QUE TEMOS ALI...
+
+
+
+
+
+
+
+
+
+
+
+
+-> CLICAMOS NA TASK DEFINITION E ENTÃO EM 'CREATE NEW REVISION'....
+
+
+
+
+
+
+
+
+
+
+
+CREATE NEW REVISION --> COM ISSO,
+
+VAMOS CRIAR 1 NOVA  CONFIGURATION,
+
+COM BASE 
+
+NA CONFIGURATION ANTERIOR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> vAMOS DEIXAR TODAS AS SETTINGS QUE TÍNHAMOS ANTERIORMENTE,
+
+
+MAS VAMOS TROCAR 
+
+O QUE HAVÍAMOS COLOCADO EM 'VOLUMES'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-_> EM 'VOLUMES',
+
+VAMOS QUERER __ ADICIONAR 1 VOLUME..
+
+
+
+
+
+
+
+
+
+--> VOCÊ PODE COLOCAR QUALQUER NOME 
+
+NO SEU VOLUME,
+
+E O PROFESSOR VAI COLOCAR 'data'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E PODEMOS ESCOLHER O TIPO DE VOLUME....
+
+
+
+
+
+(TEMOS 'BIND MOUNT' E 'EFS')..
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR ESCOLHE 
+
+'EFS' --> EFS É 
+
+
+
+__ OUTRO __ SERVICE __ 
+
+
+
+OFERECIDO 
+
+PELO AWS,
+
+
+
+
+É O 'ELASTIC FILE SYSTEM',
+
+
+
+
+
+
+
+
+QUE É UM SERVICE QUE TE DEIXA ATTACH 1 FILE SYSTEM AOS SEUS 
+'SERVERLESS EXECUTED CONTAINERS'...
+
+
+
+
+
+
+
+
+
+
+
+
+E, COMO ESTAMOS USANDO FARGATE,
+
+
+
+NOSSOS CONTAINERS REALMENTE ESTÃO SENDO EXECUTADOS 
+
+__ COM SERVERS QUE NÃO SÃO MANAGEADOS POR NÓS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> 'EFS' --> EFS, PORTANTO,
+
+NOS 
+
+DEIXA
+
+ATTACHEAR HARD DRIVES A ESSES CONTAINERS,
+
+
+
+
+HARD DRIVES QUE VÃO SOBREVIVER _ MESMO _ SE 
+
+SEUS 
+
+
+CONTAINERS FOREM REDEPLOYED...
+
+
+
+
+
+
+
+
+
+
+
+
+--. PARA USARMOS 1 FILE SYSTEM,
+
+DEVEMOS PRIMEIRAMENTE CRIAR UM...
+
+
+
+
+
+
+
+
+
+
+
+
+-> VAMOS ATÉ O 'AMAZON ELASTIC FILE SYSTEM',
+
+
+
+E AÍ VAMOS CRIAR 1 NOVO FILE SYSTEM...
+
+
+
+
+
+
+
+
+
+
+COLOCAMOS QUALQUER NOME NESSA FILE SYSTEM...
+
+
+
+
+
+
+
+
+O PROFESSOR COLOCA 'db-storage'...
+
+
+
+
+
+
+
+
+
+--> ISSO FEITO,
+
+VC PRECISA  
+
+ESCOLHER 
+
+
+UMA 
+
+'VIRTUAL PRIVATE CLOUD'...
+
+
+
+
+
+
+
+
+
+-> VC DEVE USAR O MESMO VPC QUE VC USOU PARA O ECS ANTERIORMENTE..
+
+
+
+
+
+
+
+
+
+
+
+--> MAS NÃO CLIQUE EM 'CREATE AINDA'... -> E SIM CLIQUE EM 'CUSTOMIZE'
+
+
+
+
+
+
+
+
+
+
+
+
+
+-_> EM 'CUSTOMIZE',
+
+PODEMOS DEIXAR TUDO COMO DEFAULT,
+
+MENOS 
+
+1 SETTING ESPECÍFICA...
+
+
+
+
+
+
+
+
+
+
+
+-> NA TELA DE 'NETWORK ACCESS',
+
+PRECISAMOS ALTERAR 1 COISA...
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEVEMOS DEIXAR 2 SUBNETS, SIM...
+
+
+
+
+
+
+
+
+
+
+MAS ALI, EM 'SECURITY GROUPS',
+
+
+TEMOS QUE MUDAR UMA COISA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARA ISSO,
+
+VAMOS 
+
+ATÉ A ABA DE 'EC2'...
+
+
+
+
+
+
+
+
+
+
+
+--> lá em 'ec2',
+
+
+DEVEMOS IR ATÉ 'SECURITY GROUPS'
+
+
+E CRIAR 1 NOVO SECURITY GROUP..
+
+
+
+
+
+
+
+--> SERÁ 1 SECURITY GROUP __ APENAS__ PARA O EFS..
+
+
+
+
+
+
+
+-> COLOCAMOS UM NOME DE 'efs-security-group'...
+
+
+
+
+
+--> VAMOS ADICIONAR ESSE SECURITY GROUP 
+
+AO 
+
+
+__VPC _ QUE _ VC ESTÁ USANDO COM 
+
+O 
+
+
+ECS 
+
+
+
+E COM 
+
+
+
+O EFS...
+
+
+
+
+
+
+
+
+
+-> DEPOIS, ADICIONE 1 'INBOUND RULE'... --> DENTRO DISSO,
+
+
+
+COLOQUE QUE A INBOUND RULE DEVERÁ SER 
+
+
+'NFS' ------> E __ ALI, NO SOURCE,
+
+
+
+
+
+ESCOLHA O SECURITY GROUP DE 'goals',
+
+
+
+
+
+
+QUE __ VC __ ESTÁ USANDO PARA MANAGEAR SEUS CONTAINERS... ------> ESSE SETUP 
+
+
+
+
+
+VAI 
+
+ALLOW 
+
+
+
+OS CONTAINERS, QUE ESTÃO RODANDO NESSE SECURITY GROUP,
+
+A 
+
+
+
+'CONVERSAR'
+
+
+
+
+__ COM __ QUALQUER COISA QUE 
+
+ESTEJA RODANDO 
+
+NESSE SECURITY GROUP (no caso, o EFS, elastic file system, que vamos incluir nesse security group de 'efs-security-group'),
+
+
+
+
+PARA ENTÃO CONVERSAR COM QUALQUER COISA ASSIGNADA NESSE SECURITY GROUP,
+
+
+NA 
+
+
+PORT '2049'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PORT 2049 ------> ESSA É UMA PORT USADA PELO __ ELASTIC FILE SYSTEM... --> E É EXATAMENTE 
+
+POR ISSO QUE 
+
+
+ESTAMOS CRIANDO 
+
+
+ESSE NOVO SECURITY GROUP.... ESTAMOS CRIANDO ESSE SECURITY GROUP 
+
+
+
+PARA __ ESSE SERVICE DE 'ELASTIC FILE SYSTEM',
+
+
+
+E PARA O FILE SYSTEM QUE ESTAMOS 
+
+
+GERANDO COM ELE/NELE
+
+
+
+
+
+
+
+*** SEM ESSE SECURITY GROUP 
+
+E ESSA INBOUND RULE,
+
+OS CONTAINERS E TASKS NA ECS
+
+__ NÃO SERIAM CAPAZES __ DE 'CONVERSAR' COM O EFS...
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+AÍ CRIAMOS O SECURITY GROUP..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> CRIAMOS O SECURITY GROUP....
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ASSIM QUE ELE TIVER SIDO CRIADO,
+
+O SECURITY GROUP,
+
+
+VÁ ATÉ O WIZARD 
+
+
+
+DE CRIAÇÃO DO AMAZON EFS... -------> AÍ PEGUE ESSE SECURITY GROUP, DO EFS,
+
+QUE CRIAMOS AGORA,
+
+EM VEZ DO DEFAULT...
+
+
+
+
+
+
+FAÇA ISSO PARA AMBAS AS SUBNETS DESSE 'AMAZON EFS' QUE VC ESTÁ CRIANDO AGORA....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... CRIADO ESSE FILE SYSTEM,
+
+PODEMOS O UTILIZAR COM O ECS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> LÁ EM VOLUMES,
+
+
+
+
+PODEMOS COLOCAR 'volume type EFS'...
+
+
+
+
+
+
+
+
+-> AÍ EM 'FILE SYSTEM ID',
+
+
+PODEMOS ESCOLHER ESSE RECÉM-CRIADO FILE SYSTEM...
+
+
+
+
+
+
+
+
+
+
+
+TAMBÉM PODERÍAMOS SETTAR 1 'ACCESS POINT' -> ISSO NOS PERMITIRIA  
+
+
+
+SETTAR ALGUM 'NESTED PATH'
+
+DENTRO DO FILE SYSTEM (mas é opcional) ----> O PROFESSOR NÃO VAI FAZER ISSO,
+
+
+
+
+PQ 
+ELE QUER USAR O FILESYSTEM INTEIRO COMO VOLUME, AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> mas se vc TIVESSE MÚLTIPLOS VOLUMES,
+
+E SE VC QUISESSE CRIAR APENAS 1 ÚNICO FILE SYSTEM (e não múltiplos filesystems ),
+
+
+
+VC PODERIA USAR ESSA FEATURE DE 'ACCESS POINTS' PARA TER __ MÚLTIPLOS NESTED FOLDERS
+ 
+
+ NESSE ÚNICO FILE SYSTEM, PARA SEUS DIFERENTES VOLUMES...
+
+
+
+
+
+
+
+
+
+OK... AÍ CLIQUE EM 'ADD''...
+
+
+
+
+
+
+
+
+
+
+
+ISSO VAI DEFINIR O SEU VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+ESSA ETAPA, NO CASO,
+
+É QUASE COMO O ADD DE 1 NAMED VOLUME 
+
+
+NO ARQUIVO DOCKER-COMPOSE,
+
+
+COMO FIZEMOS NO PASSADO, COM ESTES CÓDIGOS:
+
+
+
+
+
+
+
+
+
+version: '3.8'
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - data:/data/db ////////////ISTO
+    env_file:
+      - ./env/mongo.env
+  backend:
+    build: ./backend
+    ports:
+      - '80:80'
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    env_file:
+      - ./env/backend.env
+    depends_on:
+      - mongodb
+
+volumes: ///////////////ISTO 
+  data:
+
+
+
+
+
+
+
+
+----------------
+
+
+
+
+
+
+
+
+
+
+CERTO... MAS ISSO NÃO É TUDO;
+
+
+
+TAMBÉM QUEREMOS __ CONECTAR__ ESSE VOLUME AO NOSSO CONTAINER DE 'MONGO'...
+
+
+
+
+
+
+
+--> PARA ISSO, VAMOS ATÉ A DEFINIÇÃO DO CONTAINER DE 'MONGO'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ALI, DENTRO DAS CONFIG,
+
+
+
+VAMOS MANTER AS MESMAS CONFIGS,
+
+MAS VAMOS ATÉ 'STORAGE AND LOGGING'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DENTRO DISSO,
+
+
+
+
+VAMOS SETTAR 
+
+'mount points' 
+
+
+
+COMO __ SENDO 'data' ---------> ESSE É O VOLUME EFS QUE RECÉM CRIAMOS... --> 
+
+
+
+POR FIM,
+
+SETAMOS 
+
+O 
+
+
+'CONTAINER-PATH'
+
+
+DESSE VOLUME 
+
+
+
+COMO SENDO IGUAL
+
+
+
+
+
+
+
+AO 
+
+
+
+PATH 
+
+
+
+'/data/db',
+
+
+DENTRO DO CONTAINER MONGO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... É BASICAMENTE O MESMO PATH QUE USAMOS NO ARQUIVO DOCKER-COMPOSE...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PRECISAMOS USAR ESSE PATH, NO CASO,
+
+
+PQ __ É EXATAMENTE NESSE PATH QUE O MONGODB CONTAINER VAI FAZER 'WRITE TO',
+
+NO FUTURO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ASSIM QUE FIZERMOS TUDO ISSO,
+
+
+PODEMOS CLICAR EM 'CREATE' 
+
+PARA 
+
+
+
+
+APLICAR ESSA NOVA TASK REVISION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO FEITO, CLIQUE EM 'ACTIONS' --> 'UPDATE SERVICE'
+
+PARA 
+
+
+FORÇAR O REDEPLOY DE SEU SERVICE COM ESSA NOVA REVISION...
+
+
+
+
+
+
+
+
+
+
+-> COM ISSO, VC ESTÁ QUASE 'GOOD TO GO'...
+
+
+
+
+
+
+
+
+
+
+
+
+'''''QUASE'''' -> PQ LÁ EM ''Platform version'',
+
+
+
+no momento da gravação do vídeo,
+
+devemos 
+
+deixar 
+
+
+
+a versão '1.4.0' --> PQ O 'LATEST' NÃO É A VERSÃO MAIS LATEST...
+
+
+
+
+
+
+
+
+
+--> '1.4.0' É A VERSÃO MAIS LATEST DE VERDADE,
+
+NO CASO...
+
+
+
+
+
+
+
+
+VERSÃO 1.4.0 --> É UMA VERSION QUE SUPORTA EFS VOLUMES..
+
+
+
+
+
+
+
+
+--> 'SKIP TO REVIEW' --> UPDATE SERVICE.. -> COM ISSO,
+
+
+
+AS TASKS 
+
+E CONTAINERS NO SERVER VÃO RESTARTAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ASSIM QUE RESTARTAREM,
+
+PODEREMOS USAR NOSSO APP MAIS UMA VEZ,
+
+
+MAS AGORA COM 1 DATABASE EM QUE 
+
+A DATA VAI 'PERSIST'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> certo... AGORA DEVEMOS ESPERAR POR ESSA NOVA TASK FICAR 'UP AND RUNNING'...
+
+
+
+
+
+
+
+
+--> DEPOIS DISSO,
+
+
+
+
+PODEMOS IR ATÉ O POSTMAN E ENVIAR 
+
+
+
+1 REQUEST ATÉ O NOSSO 
+
+
+
+
+
+'LOAD BALANCING DOMAIN' (ecs-lb-121221241231.us-east-2.elb.amazonaws.com/goals)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... AGORA NOSSOS GOALS REALMENTE FICARÃO ARMAZENADOS NO 'AWS EFS',
+
+
+ELASTIC FILE SYSTEM,
+
+DENTRO 
+
+DAQUELE HARDDRIVE...
+
+
+
+
+
+
+
+--> PODEMOS VERIFICAR ISSO  LÁ NA PRÓPRIA AWS....
+
+
+
+
+
+
+
+
+
+
+--> SE VAMOS ATÉ OS GOALS E CLICAMOS NO NOSSO SERVICE... -> 
+
+
+PODEMOS 
+
+
+
+CLICAR EM 'UPDATE SERVICE',
+
+FORÇAR 1 NOVO DEPLOYMENT... ------------> ISSO VAI GARANTIR QUE TUDO SERÁ 'RECREATED'...
+
+
+
+
+
+
+
+
+
+--> COMO TUDO SERÁ RECREATED, ISSO NORMALMENTE LEVARIA A TODA NOSSA DATA SENDO PERDIDA....
+
+
+
+
+
+
+
+
+
+MAS COMO 
+
+ADICIONAMOS AQUELE VOLUME,
+
+COM O EFS,
+
+
+
+
+NÃO VAMOS 
+
+
+MAIS PERDER NOSSA DATA,
+
+SEMPRE QEU 
+
+
+NOSSAS TASKS/SERVICES/CONTAINERS FOREM RECRIADOS/REDEPLOYED...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... COM ISSO, TEMOS ESSE NOVO DEPLOYMENT 
+
+E A TASK SENDO PROVISIONED..
+
+
+
+
+
+
+
+OK... MAS NOVAMENTE,
+
+
+TEREMOS 1 PROBLEMA...
+
+
+
+
+
+
+
+
+
+
+
+
+--_> TEREMOS 1 MONTE DE STOPPED TASKS... --> E __ ENTENDEREMOS A RAZÃO 
+
+
+
+
+
+DE ISSO TUDO TER PARADO,
+
+
+
+SE __ ABRIRMOS 1 DAS STOPPED TASKS,
+
+
+NO CASO 
+
+
+
+OS LOGS 
+
+
+
+
+
+DO CONTAINER DE MONGODB --> O PROBLEMA/ERRO PODE 
+
+SER 
+
+VISTO 
+
+
+
+
+EM ALGUM 
+
+DOS OUTPUTSS... -----> 'UNABLE TO LOCK THE LOCK FILE /data/db/mongodb.lock' 
+
+
+
+
+'''ANOTHER MONGODB INSTANCE IS ALREADY RUNNING ON THE /DATA/DB DIRECTORY'''...
+
+
+
+
+
+
+
+
+
+
+
+
+--> o problema, no caso,
+
+é que 
+
+ESTAMOS USANDO 
+
+
+
+'''ROLLING DEPLOYMENT''' --> ISSO QUER DIZER QUE 
+
+
+
+
+
+
+
+
+''''UMA NOVA TASK É _ COMEÇADA _ _AO MESMO TEMPO QUE A 
+
+__ PREVIOUS ONE AINDA ESTÁ RODANDO'''' ---> E SOMENTE 
+
+
+SE A NOVA 
+
+TASK 
+
+
+
+STARTOU COM SUCESSO,
+
+E ESTÁ 'UP AND RUNNING' DE MANEIRA HEALTHY,
+
+
+A 
+
+
+PREVIOUS TASK 
+
+
+SERÁ INTERROMPIDA/PARADA... --> ESSA  É UMA BOA ESTRATÉGIA/ROTINA,
+
+
+
+
+
+
+
+MAS AQUI ISSO SIGNIFICA QUE TEREMOS 2 TASKS,
+
+COM 
+
+2 MONGODB CONTAINERS (
+cada 1 com 1 mongodb instance
+
+)
+
+
+
+__ QUE __ ESTARÃO TENTANDO INTERAGIR COM O MESMO FILE SYSTEM AO MESMO TEMPO..
+
+
+
+
+
+
+
+
+
+
+
+
+-> E ISSO CAUSA 1 ERRO,
+
+
+
+PQ __ 2 DATABASES __TENTARAM WRITTAR 
+
+AO MESMO ARQUIVO,
+
+NO MESMO FOLDER, 
+
+AO MESMO TEMPO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE É UM CENÁRIO BEM NICHO, NO CASO... ----> PQ '''SÓ TEREMOS __ 2 TASKS 
+
+RODANDO 
+
+
+
+AT THE SAME TIME _ QUANDO TENTARMOS DEPLOYAR UMA NOVA TASk''' --> PQ QUANDO 
+
+
+
+
+NOSSA TASK TIVER SIDO DEPLOYADA,
+
+NUNCA MAIS TEREMOS ESSE PROBLEMA (PQ A TASK ANTIGA TERÁ SIDO REMOVIDA/DELETADA)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... ISSO QUER DIZER QUE A 'TO-BE  DEPLOYED TASK'
+
+
+E 
+
+a  'OLD TASK'
+
+
+estãO TENTANDO FAZER WRITE 
+
+
+
+
+
+__ à EXATA MESMA FILE,
+
+NO MESMO FOLDER,
+
+
+
+
+EM 'EFS',
+
+
+
+NO MESMO TEMPO... ---------> E ISSO NÃO VAI ACONTECER 
+
+PARA 
+
+MAIS NADA 
+
+
+QUE VC RODAR NO SEU APP... --------> SE VC 
+
+
+
+TIVER 1 CASO 
+
+EM QUE 
+
+
+VC VAI QUERER 
+
+
+
+WRITAR 1 FILE AO DISK,
+
+
+
+QUANDO 1 USER ENVIAR 1 REQUEST,
+
+
+
+
+ISSO VAI ACONTECER 
+
+
+APENAS NA 'CURRENTLY RUNNING TASK',
+
+E NÃO 
+
+
+
+
+
+NA ___ TASK QUE ESTÁ 'TO-BE DEPLOYED'.... ------> 
+
+
+
+
+
+TAMBÉM PQ _ VC PROVAVELMENTE VAI ESCREVER A UMA 'DIFFERENT FILE' 
+
+PARA 
+
+CADA 
+
+
+
+
+REQUEST QUE VAI ENTRAR NO SEU APP... RARAMENTE VC VAI FAZER WRITE EM 1 MESMA FILE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE 
+
+
+
+ESSE CASO É BEM ESPECÍFICO 
+
+A ESSE CENÁRIO,
+
+
+CENÁRIO DE MONGODB,
+
+
+EM QUE 
+
+
+
+
+''THE CURRENTLY RUNNING AND THE TO BE DEPLOYED TASK 
+
+ATTEMPT TO WRITE AT THE SAME FILE,
+
+ON THE EXACT SAME FOLDER,
+
+ON EFS''.... ----->  O PROFESSOR APONTA QUE 
+
+
+
+
+'''PODERÍAMOS PROCURAR POR 1 WORKAROUND''',
+
+
+
+e ele deve existir... --> ENTRETANTO,
+
+
+
+
+
+
+
+
+
+O PROFESSOR VAI SUBSTITUIR O MONGODB CONTAINER 
+
+POR 
+
+1 
+
+
+SOLUÇÃO DIFERENTE ANYWAYS,
+
+
+
+
+POR __ ISSO_ _ 
+
+ELE NÃO 
+
+
+VAI 
+
+
+GASTAR TEMPO COM ESSE PROBLEMA NICHO...
+
+
+
+
+
+
+
+
+
+
+
+
+-> em vez disso, o professor vai manualmente, por enquanto,
+
+REMOVER A 'CURRENTLY RUNNING TASK',
+
+
+
+TUDO PARA QUE A 'TO-BE DEPLOYED TASK'
+
+
+TENHA 1 CHANCE DE FICAR COMO 
+
+
+'ACTIVE'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... QUANDO ESSA TASK FICAR 'UP AND RUNNING',
+
+
+
+
+AQUELA TASK QUE ERA 'TO-BE DEPLOYED',
+
+
+
+
+
+
+AS COISAS VÃO FUNCIONAR BEM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+A DATA 
+
+
+DE NOSSO APP AGORA FICARÁ ARMAZENADA EM VOLUMES...
+
+
+
+
+
+
+
+
+--> E, AO CONTRÁRIO DOS VOLUMES 
+
+
+
+
+QUE ESCREVÍAMOS COM O 'DOCKER RUN' OU 
+
+'DOCKER-COMPOSE,
+
+
+
+
+
+
+
+
+EM QUE 'O DOCKER MANAGEAVA 
+
+ALGUNS FOLDERS,
+
+ EM  ALGUM LUGAR,
+
+
+ NA NOSSA LOCAL HOST MACHINE',
+
+  
+
+
+
+
+
+
+
+
+  AGORA ESTAMOS ARMAZENANDO ESSA DATA EM 
+
+
+  1 VOLUME 
+
+  DO EFS,
+
+
+
+  POR ISSO SABEMOS QUE A DATA VAI FICAR NO EFS... -> MAS AINDA NÃO 
+
+  ESTAMOS 
+
+
+
+
+  FAZENDO ISSO PARA  'CHANGE THAT DATA FROM OUTSIDE',
+
+  E SIM 
+
+
+  PARA 
+
+
+
+
+
+  DAR 1 CHANCE DO CONTAINER SALVAR DATA EM ALGUM LUGAR,
+
+
+  PARA QUE ESSA DATA SOBREVIVA AO 'CONTAINER SHUTDOWN'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -> OK.. É ASSIM QUE PODEMOS DEPLOYAR MÚLTIPLOS CONTAINERS,
+
+  COM O EXEMPLO DO ECS...
+
+
+
+
+
+
+
+
+  -> E É ASSIM QUE PODEMOS USAR VOLUMES,
+
+  COM O EXEMPLO 
+
+
+  DO 'EFS' SENDO USADO COM O 'ECS'...
+
+
+
+
+
+
+
+
+
+
+
+
+  --> OK... COMO PODEMOS PERCEBER, O DEPLOY 
+
+É BEM DIFERENTE 
+
+DO WRITE DE UM ARQUIVO 'DOCKER-COMPOSE'...
+
+
+
+
+
+
+
+
+
+AINDA ASSIM, NÃO É TÃO MAIS DIFÍCIL..
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> NO FINAL DAS CONTAS,
+
+
+É ALL ABOUT 
+
+SETTAR AQUELA 'TASK DEFINITION',
+
+
+
+EM QUE 
+
+
+DEFINIMOS TODOS NOSSOS CONTAINERS, COMO DEVEM SER EXECUTADOS,
+
+E QUAIS VOLUMES VAMOS QUERER USAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS CONFORME O PROFESSOR APONTOU ANTERIORMENTE,
+
+
+VAMOS DEIXAR DE USAR ESSE MONGODB CONTAINER,..
+
+
+
+
+
+
+
+
+
+
+
+
+--> ELE NOS EXPLICARÁ A RAZÃO DE DEIXARMOS ESSE CONTAINER PARA TRÁS,
+
+
+E COMO FAZER ISSO,
+ NA PRÓXIMA AULA...
