@@ -1,0 +1,1898 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+
+
+AGORA QUE VIMOS COMO PODEMOS DEPLOYAR 1 SINGLE CONTAINER 
+
+
+
+AO ECS,
+
+
+
+E VIMOS 
+
+COMO 
+
+
+
+PODEMOS USAR ESSE ENVIRONMENT MAIS 'MANAGED',
+
+
+
+DEVEMOS 
+
+VER 
+
+
+
+
+1 EXEMPLO COM MÚLTIPLOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ENCONTRAMOS 
+
+1 PROJETO PREPARADO PELO PROFESSOR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSE PROJETO, NA VERDADE,
+
+
+É 
+
+UMA PARTE 
+
+DO PROJETO QUE 
+
+
+ESCREVEMOS LÁ 
+
+
+
+NA SECTION DO DOCKER-COMPOSE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+A ÚNICA COISA QUE ESTÁ FALTANOD,
+
+
+NO CASO,
+
+
+
+
+É 
+
+O FRONTEND...
+
+
+
+
+
+
+
+
+--> NO CASO,
+
+O PROFESSOR 
+
+
+TEM 
+
+
+ESSA API 
+
+
+
+DO BACKEND,
+
+
+
+
+
+
+
+
+
+
+A ' GOALS API',
+
+
+
+EM QUE 
+
+PODEMOS 
+
+FAZER ADD E DELETE DE GOALS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->  É POR ISSO QUE O 
+
+
+ARQUIVO docker-compose.yaml 
+
+
+
+
+
+
+SETTA APENAS O MONGODB 
+
+E O BACKEND...
+
+
+
+
+
+
+
+
+
+O ARQUIVO DOCKER-COMPOSE:
+
+
+
+
+
+
+
+
+
+
+
+
+version: '3.8'
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - data:/data/db
+    env_file:
+      - ./env/mongo.env
+  backend:
+    build: ./backend
+    ports:
+      - '80:80'
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    env_file:
+      - ./env/backend.env
+    depends_on:
+      - mongodb
+
+volumes:
+  data:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  OK.. AINDA ASSIM, TEMOS 
+
+  TUDO ISSO..
+
+
+
+
+
+
+
+
+
+
+
+
+  TEMOS 1 PROJETO QUE USA 2 CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+  O CONTAINER DO MONGODB E O CONTAINER DO BACKEND 
+
+  NODEJS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -> O PROFESSOR AGORA QUER DEPLOYAR ESSES 2 CONTAINERS 
+
+  AO 
+
+  AWS 
+
+  ECS,
+
+  PARA QUE 
+
+
+
+
+  VEJAMOS COMO ISSO FUNCIONA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR DELETA TODOS OS RECURSOS DO AWS ECS...
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR DELETA O SERVICE... --> 
+
+
+AÍ ELE DELETA O SERVICE...
+
+
+
+
+
+
+
+
+
+
+--> DEPOIS, ELE DELETA O OVERALL CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ATÉ O CLUSTER SER DELETADO,
+
+
+
+ESPERAMOS ALGUNS MINUTOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... VOLTAMOS AO CÓDIGO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR VAI FALAR 1 POUCO SOBRE O DOCKER-COMPOSE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+A PRIMEIRA COISA IMPORTANTE:
+
+
+
+
+
+
+
+1) NÃO VAMOS USAR O DOCKER COMPOSE PARA __ DEPLOYMENT...
+
+
+
+
+
+--> O DOCKER COMPOSE É UMA ÓTIMA FERRAMENTA PARA O RUN 
+
+DE CONFIGURATIONS 
+
+DEFINIDAS 
+
+
+__PARA CONTAINERS __ 
+
+
+EM 1 ARQUIVO 'docker-compose'... --> É BOM PARA 
+
+
+
+
+CONTAINER/CONTAINERS,
+
+
+
+
+
+
+
+
+
+MAS __ NÃO É UMA 
+
+
+BOA FERRAMENTA PARA DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+UÉ, MAS PQ NÃO É UMA BOA FERRAMENTA PARA DEPLOYMENT?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR DIZ QUE ISSO FAZ SENTIDO....
+
+
+
+
+
+
+
+
+
+
+
+
+-> COM O DOCKER-COMPOSE,
+
+
+PODEMOS FACILMENTE RODAR MÚLTIPLOS CONTAINERS
+
+NA NOSSA LOCAL MACHINE --> PODEMOS 
+
+
+
+ATÉ 
+
+MESMO RODAR CONTAINERS QUE FAZEM LISTEN EM 
+
+DIFERENTES PORTS... ->  E, PORTANTO,
+
+
+PODEMOS 
+
+TER 
+
+
+NOSSA BACKEND,
+
+NOSSA DATABASE 
+
+
+E 
+
+NOSSO FRONTEND 
+
+
+
+TODOS RODANDO NA MESMA MÁQUINA,
+
+COM O DOCKER-COMPOSE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS __ SE VC __ FAZ DEPLOY DE ALGO,
+
+SE 
+
+VC 
+
+
+
+
+__ 'MOVE'
+
+
+
+PARA __ UMA 
+
+
+
+REMOTE MACHINE,
+
+
+
+AS COISAS 
+
+
+FICAM MAIS COMPLEXAS... -> TALVEZ VOCê 
+
+
+PRECISE 
+
+
+
+'DEFINIR O QUANTO DE CPU 1 CERTO PROCESSO VAI 
+
+
+PRECISAR'... -> DO NADA,
+
+
+CERTAS COISAS COMEÇAM 
+
+A IMPORTAR,
+
+
+
+
+COISAS 
+
+QUE 
+
+
+NÃO IMPORTAVAM
+ 
+ ANTIGAMENTE,
+
+ NO CONTEXTO 
+
+ DE SUA MÁQUINA LOCAL... ->  e É CLARO QUE 
+
+
+ TUDO ISSO 
+
+
+
+ DEPENDE 
+
+
+
+ DO 
+
+ HOSTING PROVIDER QUE VC ESTÁ USANDO,
+
+
+ PQ 
+
+
+ CADA HOSTING PROVIDER 
+ EXIGE 
+
+ CERTAS 
+
+
+ INFOS EXTRAS.... OUTROS 
+
+
+ CLOUD PROVIDERS,
+
+ COMO 
+
+
+
+ O MICROSOFT AZURE,
+
+
+
+
+ TALVEZ PRECISEM DE OUTROS TIPOS DE 'EXTRA DATA',
+
+
+
+
+ DATA QUE 
+
+ NÃO FAZ PARTE DO ARQUIVO 'docker-compose'...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> É POR ISSO QUE 
+
+
+
+
+ 1 COMPOSE FILE PODE SER ÓTIMA PARA MANAGEAR 
+
+ E RODAR 
+
+
+
+ MÚLTIPLOS 
+
+ CONTAINERS 
+
+ EM 
+
+
+ 1 
+ MESMA MÁQUINA...
+
+
+
+
+
+
+
+
+
+
+ MAS QUANDO VC MOVE TUDO ISSO PARA A CLOUD,
+
+
+ EM QUE 
+
+
+
+ POTENCIALMENTE VC 
+ TERÁ 
+
+ 'MÚLTIPLAS MACHINES,
+
+ TRABALHANDO EM CONJUNTO,
+ CADA 1 COM ESPECIFICAÇÕES PRÓPRIAS',
+
+
+
+
+
+ VOCê RAPIDAMENTE CHEGARÁ AO LIMITE DESSE ARQUIVO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> CERTO... MAS ISSO NÃO É PROBLEMA... --> VC VERÁ 
+
+ QUE 
+
+ O 
+ DEPLOY 
+
+ DESSES INDIVIDUAL 
+
+
+ CONTAINERS 
+
+ AINDA 
+ VAI 
+
+ SER SUPER FÁCIL,
+
+ E QUE 
+
+PODEMOS USAR 
+
+
+
+
+O ARQUIVO DOCKER-COMPOSE 
+
+DE INSPIRAÇÃO,
+
+
+PARA 
+
+SABER  
+
+QUAIS 
+DEPLOYMENT 
+
+SETTINGS PRECISAMOS SETTAR, 
+
+QUANDO 
+USAMOS 
+O AWS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> CERTO... PODEMOS USAR 
+
+
+O 
+
+
+
+DOCKER-COMPOSE COMO INSPIRATION 
+
+DO 
+
+QUE 
+PRECISAMOS 
+
+FAZER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ENTENDENDO 1 POUCO O QUE CADA CONTAINER FAZ,
+
+
+PODEMOS 
+IR FAZENDO DEPLOY 
+
+DE 
+CADA 
+
+1 
+DESSES CONTAINERS,
+
+
+DESSES 
+
+SERVICES,
+
+
+AO __ AWS ECS... -> PQ ESSE É O EXAMPLE 
+
+
+HOSTING PROVIDER QUE ESTAMOS USANDO,
+NESTE MÓDULO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR COMEÇA COM O BACKEND...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PRECISAMOS COMEÇAR COM A BACKEND IMAGE... -----> 
+
+
+
+
+
+ANTES DE MAIS NADA,
+
+PRECISAMOS CRIAR 1 BACKEND IMAGE...
+
+
+
+
+
+
+
+
+
+
+VAMOS FAZER PUSH 
+
+DESSA IMAGE AO DOCKERHUB,
+
+PARA QUE MAIS TARDE ELA CONSIGA SER 
+
+USADA 
+
+
+
+NO 
+
+
+AWS ECS...
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+ABRIMOS NOSSO TERMINAL...
+
+
+
+
+
+
+
+
+
+--> AÍ RODAMOS 
+
+'docker build -t nothingnothings/node-multi-container'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... MAS DEVEMOS TER EM MENTE 1 DETALHE,
+ QUANDO TENTARMOS FAZER O DEPLOY DESSA IMAGE/CONTAINER COM ESSA IMAGE...
+
+
+
+
+
+
+
+
+
+INFELIZMENTE,
+
+
+POR CONTA DO AWS ECS, 
+
+
+
+NÃO SEREMOS CAPAZES DE 
+
+
+
+
+USAR AQUELA FEATURE DE 
+
+
+
+'AUTOMATIC FIND THE CONTAINER IP __ BY _ CONTAINER NAME'',
+
+
+
+
+AQUELA FEATURE QUE FUNCIONOU TÃO BEM LOCALMENTE...
+
+
+
+
+
+
+(
+    ou seja,
+
+    não podemos 
+
+    escrever algo como 'mongodb://xxxx:xxxx@mongodb-pure:27017/course-goals?authSource=admin
+)
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+mongoose.connect(
+
+
+  //! ESSA FEATURE DE 'AUTO-RESOLVE CONTAINER NAME TO IP' NÃO _ VAI _ FUNCIONAR __ NO CONTEXTO DO 'ECS', justamente PQ A IDEIA DE 'NETWORKS', do DOCKER, NÃO VAI EXISTIR LÁ....
+  // `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb:27017/course-goals?authSource=admin`,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB');
+      console.error(err);
+    } else {
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO NÃO VAI FUNCIONAR ASSIM, NO AWS ECS..
+
+
+
+
+
+
+
+
+
+
+
+-> OK... MAS PQ DIABOS NÃO PODEMOS USAR 
+
+
+ESSE CONTAINER NAME E DOCKER NETWORKS,
+
+
+QUANDO FAZEMOS DEPLOY 
+
+DE NOSSO 
+DOCKERIZED APP?
+
+
+
+
+
+
+
+
+
+
+
+--> A RAZÃO PARA ISSO É BEM SIMPLES:
+
+
+
+QUANDO RODAMOS O DOCKER LOCALMENTE, 
+NA NOSSA LOCAL MACHINE,
+
+
+TUDO FUNCIONA 
+
+
+__LOCALMENTE__... ->  E AÍ, O DOCKER RODA OS DIFERENTES CONTAINERS 
+
+LÁ... E QUANDO VC __ CRIA_  1 DOCKER NETWORK,
+
+COM O COMANDO DE 
+
+'docker network create xxx',
+
+
+ou 
+
+'docker-compose',
+
+
+
+
+
+
+
+__ TODOS ESSES CONTAINERS SÃO/PODEM SER COLOCADOS 
+
+
+__ NA MESMA NETWORK,
+
+NA SUA LOCAL MACHIINE...... -> MAS 
+
+NO MOMENTO EM QUE 
+
+VC 
+
+
+FAZ DEPLOY 
+
+
+
+DE SEU CONTAINER 
+
+
+
+EM ALGO COMO O 'ECS',
+
+
+
+AS COISAS JÁ NÃO SERÃO TÃO SIMPLES.... ----> ISSO PQ _ OS SEUS CONTAINERS 
+
+
+E AS DIFERENTES INSTANCES DOS CONTAINERS 
+
+
+
+__ SERÃO MANAGEADAS POR SEU CLOUD PROVIDER.... -> E __ ESSES CONTAINERS,
+
+SEUS CONTAINERS,
+
+
+
+NEM SEMPRE VÃO RODAR NA MESMA MÁQUINA,
+
+
+
+
+LÁ NO AWS ECS... --------> ISSO PQ O AWS TEM MÚLTIPLOS DATA CENTERS,
+
+
+
+COM 
+CENTENAS DE MILHARES DE MÁQUINAS E SERVERS... -> 
+
+
+
+
+
+É POR ISSO QUE SERÁ MT UNLIKELY 
+
+
+QUE 
+
+SEUS 2 CONTAINERS 
+
+RODARÃO 
+
+EM 1 MESMA MÁQUINA, AO MESMO TEMPO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-. ISSO QUER DIZER QUE 
+
+O NAME-RESOLVING,
+
+
+ESSE DOCKER NETWORK APPROACH,
+
+
+NÃO VAI FUNCIONAR MAIS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS HÁ UMA EXCEÇÃO,
+
+ALGO QUE PODEMOS FAZER PARA CONTINUAR USANDO ESSA FEATURE DO DOCKER NETWORK..
+
+
+
+
+
+
+
+
+
+
+
+
+
+QUE EXCEÇÃO É ESSA?
+
+
+
+
+
+
+
+
+
+
+BEM, SE SEUS CONTAINERS SÃO ADICIONADOS
+
+EM 1 MESMA TASK,
+
+
+
+
+
+QUE É O QUE O ECS TE DEIXA FAZER,
+
+
+
+
+
+
+
+
+__ AÍ __ 
+
+
+
+OS SEUS CONTAINERS VÃO GARANTIDAMENTE RODAR EM 1 MESMA MÁQUINA... ------>
+
+
+
+
+
+
+
+AINDA ASSIM,
+
+
+MESMO COM OS 2 CONTAINERS RODANDO EM 1 MESMA MÁQUINA (lá na ecs),
+
+
+
+
+
+
+
+
+O __ ECS _ MESMO 
+
+
+
+ASSIM NÃO VAI _ CRIAR __ 1 DOCKER NETWORK PARA ELES.... -------> 
+
+
+
+
+
+
+
+
+
+
+EM VEZ DISSO,
+
+ELE VAI 
+
+TE DEIXAR 
+USAR 
+
+'LOCALHOST'
+
+
+
+COMO 1 ADDRESS,
+
+DENTRO DO CÓDIGO 
+
+
+DO 
+
+
+APP 
+
+
+
+QUE FICA DENTRO DO SEU CONTAINER...
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE PODEMOS TROCAR 'mongodb-pure' ou 'mongodb'
+por 
+
+
+'localhost',
+
+
+
+
+
+
+
+QUANDO FAZEMOS DEPLOY DESSE CONTAINER COM 
+
+O ECS...
+
+
+
+
+
+
+
+
+
+
+
+-> TUDO PQ __ O 'mongodb container'
+
+e o 
+'
+backend container'
+
+
+VÃO FAZER PARTE DA MESMA TASK,
+
+
+O QUE QUER DIZER QUE 
+
+GARANTIDAMENTE RODARÃO EM 1 MESMA MÁQUINA...
+
+
+
+
+
+
+
+
+
+
+
+-> E É EXATAMENTE POR ISSO QUE O AWS ECS 
+
+NOS DÁ ACESSO 
+
+
+
+
+
+
+
+AO NETWORK NESSA MÁQUINA DELE,
+
+
+
+E 
+
+
+
+ACESSO AOS OUTROS CONTAINERS QUE FAZEM PARTE 
+
+DESSA TASK,
+
+
+
+POR MEIO DO 'localhost' address...
+
+
+
+É POR ISSO QUE O CÓDIGO FICARÁ ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mongoose.connect(
+
+
+  //! ESSA FEATURE DE 'AUTO-RESOLVE CONTAINER NAME TO IP' NÃO _ VAI _ FUNCIONAR __ NO CONTEXTO DO 'ECS', justamente PQ A IDEIA DE 'NETWORKS', do DOCKER, NÃO VAI EXISTIR LÁ....
+  // `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb:27017/course-goals?authSource=admin`,
+  
+  //? PARA QUE SEU CONTAINER DO BACKEND CONSIGA ENCONTRAR O CONTAINER DO MONGODB NO 'AWS ECS', VC DEVE COLOCAR 'localhost' E __ OS SEUS 2 CONTAINERS EM 1 MESMA TASK (pq, em 1 mesma task, todos os containers ficam no CONTEXTO DE 1 MESMO 'LOCALHOST', NO CONTEXTO DE 1 MESMA MÁQUINA)...
+  `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@localhost:27017/course-goals?authSource=admin`,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB');
+      console.error(err);
+    } else {
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+);
+
+
+
+
+
+------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... 
+
+
+
+
+
+É CLARO QUE 
+
+
+
+MUDAR O ADDRESS 
+
+
+
+DESSE NEGÓCIO 
+PARA 
+
+QUE 
+
+FIQUE COMO 
+
+'localhost'
+
+
+
+
+
+É 1 POUCO CONTRA 
+
+A NOÇÃO DE QUE 
+
+
+
+''''TEREMOS O MESMO ENVIRONMENT LOCALLY E EM PRODUCTION''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> AINDA ASSIM,
+
+
+
+PODEMOS USAR ENVIRONMENT VARIABLES 
+
+
+
+PARA ___ 
+
+MUDAR 
+
+
+ESSE VALUE DINAMICAMENTE...
+
+
+
+
+
+
+
+
+
+
+-> TALVEZ 
+
+
+
+POSSAMOS COLOCAR UMA VARIABLE COMO 
+
+'MONGODB_URL'...
+
+
+
+
+
+
+
+tipo assim:
+
+
+
+
+
+
+  `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}:27017/course-goals?authSource=admin`,
+  
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  (err) => {
+    if (err) {
+      console.error('FAILED TO CONNECT TO MONGODB');
+      console.error(err);
+    } else {
+      console.log('CONNECTED TO MONGODB!!');
+      app.listen(80);
+    }
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... 
+
+LÁ NO 'backend.env',
+
+EM QUE TEMOS NOSSOS ENVIRONMENT VARIABLES,
+
+PODEMOS DEFNIR 
+
+
+
+O VALOR DA ENV VAR 
+
+
+de '' MONGODB_URL''
+
+
+
+COMO SENDO IGUAL A 'mongodb-pure'.... (modo de DEVELOPMENT)
+
+
+
+
+EX:
+
+
+
+
+MONGODB_USERNAME=max
+MONGODB_PASSWORD=secret
+MONGODB_URL=mongodb
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AÍ, QUANDO  ESTIVERMOS FAZENDO DEPLOY (modo de production), PODEMOS SIMPLESMENTE 
+
+PASSAR O VALUE DESSA VARIABLE COMO SENDO 'localhost',
+O QUE FARÁ 
+OVERWRITE 
+
+DO VALUE DE development (que é 'mongodb-pure')...
+
+
+
+
+
+
+--> E PODEMOS PASSAR VALUES PARA ENV variables 
+
+LÁ 
+
+DE DENTRO DO AWS ECS...
+
+
+
+
+
+
+
+
+
+-> E ISSO VAI GARANTIR QUE 
+
+
+
+ESSE CÓDIGO NODE VAI FUNCIONAR TANTO EM DEVELOPMENT 
+
+COMO 
+
+EM 
+
+
+PRODUCTION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... ISSO FEITO,
+O PROFESSOR EXPLICA QUE PODEMOS BUILDAR NOSSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR VAI COMEÇAR PELO BUILD 
+
+
+
+DA IMAGE DO BACKEND..
+
+
+
+
+
+
+
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+
+docker build -t goals-node ./backend 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO VAI CONSTRUIR A IMAGE...
+
+
+
+
+
+
+
+
+AGORA PRECISAMOS FAZER PUSH DESSA IMAGE AO DOCKERHUB..
+
+
+
+
+
+
+
+
+
+O PROFESSOR CRIA 1 NOVO REPOSITORY..
+
+
+
+
+
+
+
+
+'nothingnothings/goal-node'..
+
+
+
+
+
+
+
+
+
+--> SERÁ 1 PUBLIC REPOSITORY...
+
+
+
+
+
+
+
+-> ISSO FEITO,
+
+
+
+DEFINIMOS 
+
+
+
+NOSSA IMAGE 
+
+ANTIGA COMO SENDO 
+
+'docker tag goals-node academind/goals-node'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> AÍ RODAMOS 'docker push nothingnothings/goals-node' 
+
+
+
+
+
+
+
+
+PARA FAZER PUSH 
+
+DE NOSSA IAMGE AO DOCKERHUB...
+
+
+
+
+
+
+
+
+
+
+--> COMO ESTAMOS FAZENDO PUSH 
+DE APENAS 
+
+A IMAGE 
+
+
+
+
+
+
+
+AO DOCKERHUB,
+
+coisas 
+
+
+COMO 
+AS __ ENVIRONMENT 
+
+VARIABLES,
+
+SEUS VALUES,
+
+NAÕ 
+
+
+ESTÃO SENDO USADAS AGORA... ------> ESSAS VARIABLES SÓ SERÃO 
+
+'FED IN'
+
+
+QUANDO 
+RODARMOS 
+
+COMANDOS 'docker run'
+
+
+
+COM BASE NESSAS IMAGES...
+
+
+
+
+
+
+
+
+
+
+OK, MAS O QUE INTERESSA É QUE ESSA IMAGE 
+
+
+
+FOI PUSHADA PARA O DOCKERHUB...
+
+
+
+
+
+
+
+AGORA PODEMOS USAR ESSA IMAGE COM O ECS...
