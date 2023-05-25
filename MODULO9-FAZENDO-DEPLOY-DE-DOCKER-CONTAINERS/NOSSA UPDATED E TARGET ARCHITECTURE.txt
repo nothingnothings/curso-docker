@@ -1,0 +1,357 @@
+
+
+
+
+
+
+A ARQUITETURA ATUAL DE NOSSO APP:
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. AO LONGO DAS ÚLTIMAS LIÇÕES,
+
+TROCAMOS 
+
+DE 
+
+
+
+NOSSO SETUP MULTI-CONTAINER 
+
+
+PARA 
+
+1 
+
+SETUP 
+
+'SINGLE CONTAINER' DEPLOYMENT,
+
+
+
+
+
+
+
+
+EM QUE BASICAMENTE 
+
+
+
+
+
+
+FICAMOS COM:
+
+
+
+
+
+
+
+1 CONTAINER NODE APP REST API...
+
+
+
+
+E o USO DO MONGODB ATLAS,
+
+SEM NENHUM CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA O PROFESSOR QUER __ TERMINAR __ NOSSA DEPLOYED APPLICATION...
+
+
+
+
+
+
+
+
+
+
+QUER TERMINAR TUDO E __ ALCANÇAR A FINAL ARCHITECTURE DE NOSSO APP....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANTERIORMENTE, QUANDO APRENDEMOS SOBRE DOCKER-COMPOSE,
+
+
+
+
+TÍNHAMOS 1 BACKEND E 1 FRONTEND...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA O PROFESSOR TROUXE O FRONTEND DE VOLTA...
+
+
+
+
+
+
+
+
+--> ENCONTRAMOS O PROJETO UPDATADO ANEXADO A ESTA AULA.. --> A DOCKERFILE SEM O MONGODB,
+
+
+
+E TBM 
+
+O PROJETO COM O FRONTEND REACT...
+
+
+
+
+
+
+
+
+
+-> O GOAL FINAL:
+
+
+
+
+
+
+1) CONTINUAR USANDO O MONGODB ATLAS 
+
+
+
+2) CONTINUAR USANDO O NODEJS REST API APP, EM 1 CONTAINER...
+
+
+
+
+3) UPLOADAR O CONTAINER DO REACT APP,
+
+FRONTEND,
+
+QUE DEVERÁ 'CONVERSAR' COM NOSSO NODEJS REST API APP....
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+ EX:
+
+
+
+
+
+
+
+
+
+
+ version: '3.8'
+services:
+  # mongodb: /// AGORA PASSAMOS A USAR O SERVICE DO 'MONGODB ATLAS' (tanto em DEVELOPMENT, como em production), POR ISSO NÃO PRECISAMOS MAIS DESSE CONTAINER.. o dbatlas é melhor pq é uma MANAGED SOLUTION...
+  #   image: 'mongo'
+  #   volumes:
+  #     - data:/data/db
+  #   env_file:
+  #     - ./env/mongo.env
+  backend:
+    build: ./backend
+    ports:
+      - '80:80'
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    env_file:
+      - ./env/backend.env
+    # depends_on:
+    #   - mongodb
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend/src:/app/src
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+
+
+
+
+
+
+
+
+
+
+------------------
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... PORTANTO,
+
+O PROFESSOR QUER DEPLOYAR ESSE SEGUNDO CONTAINER,
+
+ESSE REACT FRONTEND APP,
+
+
+
+
+
+ESSE REACT SPA,
+
+
+
+
+
+
+DENTRO DA NOSSA TASK DO ECS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSA É A PRÓXIMA COISA QUE VEREMOS...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODE PARECER SUPER FÁCIL,
+
+
+MAS FAZER DEPLOY DE APPS ASSIM,
+
+
+
+
+
+APPS COMO ESSE REACT SPA,
+
+
+
+
+
+
+__POSSUEM SUAS PRÓPRIAS 
+
+IDIOSSINCRASIAS,
+
+
+SEUS PRÓPRIOS 'ELEMENTOS-DESAFIO'
+
+
+
+QUE PRECISAMOS _ ENTENDER E SOLUCIONAR ANTES DE PODER DEPLOYAR QUALQUER COISA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E É POR ISSO QUE O REACT APP,
+
+E QUALQUER FRONTEND APP,
+
+
+
+
+TIPICAMENTE POSSUEM __ BUILD STEPS.. --> ISSO SIGNIFICA QUE 
+
+NÃO PODEMOS 
+
+__RODAR__ OS FRONTEND APPS, NOS SERVERS,
+
+DA MESMA FORMA QUE OS RODAMOS LOCALMENTE..
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR LOGO NOS MOSTRARÁ AS RAZÕES DESSA INCOMPATIBILIDADE..
