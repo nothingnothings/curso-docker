@@ -1,0 +1,934 @@
+
+
+
+
+
+
+
+
+
+
+
+OK......
+
+
+
+
+
+
+
+AGORA VAMOS REPETIR O DEPLOYMENT EXAMPLE DE ANTES,
+
+
+
+
+
+
+DO APP NODE, 
+
+
+
+MAS NÃO COM O 
+
+'EC2',
+
+
+
+E SIM COM OUTRO SERVICE,
+
+COM O 'ECS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PODEMOS ENCONTRAR ESSE SERVICE PROCURANDO POR 'ECS'...
+
+
+
+
+
+
+
+
+
+-> VAMOS USAR ESSE ELASTIC CONTAINER SERVICE..
+
+
+
+
+
+
+
+
+
+
+
+-> O EC2 ERA 'FREE'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> O ECS --> NÃO É FREE...
+
+
+
+
+
+
+
+
+
+
+
+-> SE NÃO QUEREMOS 
+
+
+
+
+
+TER QUALQUER CUSTO,
+
+
+
+
+
+
+DEVEMOS SEGUIR 
+
+
+PASSIVAMENTE (apenas com vídeos)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR QUER ENFATIZAR ISSO, 
+
+
+
+
+PARA QUE 
+
+NÃO OCORRAM PROBLEMAS...
+
+
+
+
+
+
+
+
+
+
+--> QUALQUER PROVIDER 
+
+
+
+PEDE DINHEIRO...
+
+
+
+
+
+
+
+--> O PROFESSOR COMEÇA 
+
+
+
+
+
+COM A TELA DE 'ECS'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PARECE QUE TUDO É PAGO...
+
+
+
+
+
+
+
+
+
+--> tentar usar a versão 'Modelo de tipo de execução do Amazon EC2'
+
+
+
+
+
+
+
+
+
+
+--> criei 1 instance... é melhor terminar essas aulas rápido, para não pagar tanto em ECS...
+
+
+
+
+
+
+
+
+
+
+temos 1 tela de 'definição de tarefa' --> essa tela é usada para ESPECIFICAR COMO 
+
+
+O ECS DEVERÁ RODAR NOSSAS TAREFAS, MAIS TARDE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PRECISAMOS COLOCAR 1 nome para o container,
+
+
+e depois a URI da nossa image,
+
+
+
+
+tipo 
+
+'repository-url/image:tag'...
+
+
+
+
+
+
+
+no caso,
+
+será 
+
+
+
+'nothingnothings/node-app-aws:default'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ a port está como '80',
+
+
+ e é isso que queremos...
+
+
+
+
+
+
+
+
+ IGNORAMOS O 'HEALTH CHECK'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ EM 'ENVIRONMENT',
+
+
+
+
+
+ podemos FAZER OVERWRITE DO DEFAULT 'ENTRYPOINT' ou 'CMD' QUE É 
+
+ RODADO EM 1 IMAGE... -----> PODEMOS DEFINIR 
+
+
+
+
+
+ 1 COMANDO 
+
+
+
+
+ CUSTOM,
+
+
+
+
+ para overwrittar o 
+
+
+ comando 
+
+
+ default de 1  image...
+
+
+
+
+
+
+
+
+
+
+
+ --> VOCê TAMBÉM PODE OVERWRITTAR O WORKING DIRECTORY DO SEU CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> '--workdir' --> te deixa OVERWRITTAR O WORKING DIRECTORY PARA SEU CONTAINER,
+
+ QUANDO ELE É RODADO...
+
+
+
+
+
+
+
+
+
+
+ -> LOCALMENTE, PASSAMOS ENVIRONMENT VARIABLES NO RUN COM 
+
+
+ 'docker run -e'
+
+
+
+
+
+
+
+
+ --> NO ECS,
+
+
+ PASSAMOS ESSAS ENVIRONMENT VARIABLES 
+
+ NA PRÓPRIA SEÇÃO DE 'ENVIRONMENT VARIABLES' de 1 container...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ PODERÍAMOS DEFINIR 'STORAGE POINTS' E 'VOLUMES'... 
+
+
+
+
+(É O EQUIVALENTE à OPÇÃO DE '-v', com o 'docker run -v'...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEPOIS DISSO,
+
+
+
+PODEMOS CONFIGURAR 'LOGGING',
+
+
+
+
+
+
+COMO VISTO NO 'AUTO-CONFIGURE CLOUDWATCH LOGS'... (com isso, usamos outro service do aws, 'cloudWatch'...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, NOSSO CONTAINER TERÁ SIDO CONFIGURADO...
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR VAI CONTINUAR COM ESSE SINGLE-CONTAINER EXAMPLE...
+
+
+
+
+
+
+
+
+
+
+
+
+TAREFAS -> DIZEMOS 'COMO DEVE SER RODADO O NOSSO CONTAINER'...
+
+
+
+
+(
+    NAO COMO DEVE SER EXECUTADO O DOCKER RUN,
+
+    E SIM 
+
+    '''COMO O SERVER, QUE RODA O DOCKER RUN,
+    DEVE SER CONFIGURADO''...
+)
+
+
+
+
+
+
+
+
+
+1 task PODE COMPREENDER MAIS DE 1 ÚNICO CONTAINER,
+
+E VEREMOS ISSO MAIS TARDE,
+
+QUANDO INCLUIRMOS 
+
+
+
+
+MAIS DE 1 CONTAINER A 1 MESMA TASK...
+
+
+
+
+
+
+
+
+
+
+
+1 'TASK' ---> É QUASE COMO 1 REMOTE SERVER,
+
+
+
+QUASE COMO 1 EC2 INSTANCE,
+
+
+
+
+
+
+
+QUE RODA 1 OU MAIS CONTAINERS... --> É UM POUCO COMO AS EC2 INSTANCES 
+
+QUE GERENCIAMOS 
+
+ANTES,
+
+
+MAS 
+
+
+
+SEM 
+
+
+NÓS FAZERMOS MANAGE POR NÓS MESMOS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NÃO VAMOS MANAGEAR POR NÓS MESMOS,
+
+
+
+
+MAS _ AINDA _ ESTAMOS DIZENDO AO AWS 
+
+COMO _ ELE _ DEVERÁ __ EXECUTAR NOSSOS CONTAINERS,
+
+
+E DIZENDO QUAL ENVIRONMENT DEVERÁ 
+
+
+
+SETTAR PARA ELES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E AQUI, NO CASO,
+
+ESTAMOS USANDO O FARGATE... --> ESSA É UMA MANEIRA 
+
+
+ESPECÍFICA DE RODAR NOSSOS CONTAINERS ... ----> ESSA MANEIRA É TIPO UM 
+
+
+'SERVERLESS MODE'...
+
+
+
+
+
+
+
+
+
+
+--> ISSO SIGNIFICA QUE O EC2 NÃO CRIA 1 EC2 INSTANCE PARA NÓS,
+
+
+E SIM 
+
+
+
+
+ele 'armazena seu container e suas run settings'... -> e, sempre que 
+
+
+EXISTIR 1 REQUEST QUE PEÇA PARA O CONTAINER FAZER ALGUMA COISA,
+
+
+
+O 
+
+
+
+ECS VAI 'START THAT CONTAINER UP',
+
+HANDLAR  O REQUEST,
+
+
+
+E AÍ 
+
+VAI 
+
+
+STOPPAR AQUELE CONTAINER... -> ISSO É MT COST-EFFECTIVE,
+
+
+PQ __ AÍ __ VOCÊ 
+
+
+
+
+
+
+
+
+'SÓ PAGA PELO TEMPO EM QUE SEU CONTAINER ESTÁ SENDO EXECUTADO,
+
+
+E NÃO PELO TEMPO QUE ELE ESTÁ 'JUST SITTING AROUND, IDLE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> É POR ISSO QUE VAMOS USAR O FARGATE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... ENTÃO DEFINIMOS 1 'SERVICE'... -> CONFIGURAMOS 
+
+
+
+COMO ESSA TASK, ESSA CONFIGURED APPLICATION E O CONTAINER QUE PERTENCE A ELA,
+
+
+DEVEM SER EXECUTADOS..
+
+
+
+
+
+
+
+
+
+
+
+
+--> É AQUI QUE PODERÍAMOS ADICIONAR 1 'APPLICATION LOAD BALANCER'... -> ISSO 
+
+
+
+
+
+
+AÍ FAZ TODO O HEAVY LIFTING DE 'HANDLING ALL THE INCOMING REQUESTS 
+
+
+
+AND REDIRECTING TO THE UP AND RUNNING CONTAINERS',
+
+
+
+E
+ TUDO ISSO POR TRÁS DAS CENAS....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> NÃO VAMOS ADICIONAR 1 LOAD BALANCER AGORA,
+
+ MAS VAMOS ADICIONAR DEPOIS...
+
+
+
+
+
+
+
+
+
+
+
+ -> NO 'CREATE',
+
+
+
+ O 
+
+
+
+
+ AWS ECS 
+
+ VAI 
+
+
+ SETTAR E DEPLOYAR SEU APP QUANDO TUDO ESTIVER PRONTO...
+
+
+
+
+
+
+
+
+
+
+
+ --> COM O NEGÓCIO TERMINADO,
+
+ PODEMOS CLICAR EM 'VIEW SERVICE'... 
+
+
+
+
+
+
+
+
+ --> ESSA PAGE TE MOSTRA 1 MONTE DE DETALHES SOBRE A CONFIGURATION QUE FOI CRIADA PELO AWS..
+
+
+
+
+
+
+
+
+ --> PODEMOS VER A RUNNING APPLICAITON LÁ EM 'tasks',
+
+
+ E AÍ 
+
+
+ CLICAMOS 
+
+
+
+
+ NA TASK EM SI... -> clique  no 'public ip' --> PODERÍAMOS 
+
+
+ MAPPEAR NOSSO CUSTOM DOMAIN 
+
+
+ A ESSE IP,
+
+
+
+
+ mas aqui vamos só copiar e colar esse public ip 
+
+
+
+ no chrome...
+
+
+
+
+
+
+
+
+
+ essa parte do curso está uma confusão...
+
+
+
+
+
+
+
+
+
+
+ preciso de uma versão ATUALIZADA DO CURSO,
+
+
+
+ que mostre a página atualizada da aws...
+
+
+
+
+
+
+
+
+
+
+ a versão 2023 do curso deve servir...
+
+
+
+
+
+
+
+
+
+ --> meu app não funcionou, btw, com o ECS...
+
+
+
+
+
+
+ -> MAS A GRANDE VANTAGEM DO ECS É QUE NÃO É NECESSÁRIO 
+
+
+
+ 
+
+ GERENCIAR TUDO...
+
+
+
+
+
+
+
+
+ AGORA O PROFESSOR AGORA VAI NOS MOSTRAR COMO PODEMOS 'UPDATE' NOSSA IMAGE 
+
+
+ E REFLETIR ESSAS CHANGES 
+
+
+ NO RUNNING CLUSTER...
+
+
+
+
+
+
+
+
+
+
+ DEPOIS VEREMOS COMO FAZER ISSO COM __MULTI-CONTAINER APPS...
