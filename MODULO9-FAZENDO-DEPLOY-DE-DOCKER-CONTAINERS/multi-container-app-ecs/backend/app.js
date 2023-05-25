@@ -83,7 +83,15 @@ mongoose.connect(
   
   //? PARA QUE SEU CONTAINER DO BACKEND CONSIGA ENCONTRAR O CONTAINER DO MONGODB NO 'AWS ECS', VC DEVE COLOCAR 'localhost' E __ OS SEUS 2 CONTAINERS EM 1 MESMA TASK (pq, em 1 mesma task, todos os containers ficam no CONTEXTO DE 1 MESMO 'LOCALHOST', NO CONTEXTO DE 1 MESMA MÁQUINA)...
   // `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@localhost:27017/course-goals?authSource=admin`,
-  `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}:27017/course-goals?authSource=admin`,
+  // ! UMA ALTERNATIVA MELHOR DO QUE USAR 1 CONTAINER DE 'MONGODB'/MYSQL DURANTE PRODUCTION É USAR UMA __ MANAGED SOLUTION, COMO 'MONGODB ATLAS' OU 'RDS' (RELATIONAL DATABASE SERVICE, NA AWS).
+  // ! PODEMOS USAR O MONGODB ATLAS TANTO DURANTE DEVELOPMENT COMO PRODUCTION, BASTA PASSAR DIFERENTES VALUES PARA A PARTE DE 'DATABASE' NA CONNECTION STRING, POR MEIO DE ENVIRONMENT VARIABLES (aí usamos 1 DATABASE, no cluster, PARA DEV, PARA TESTES, E OUTRA DATABASE, NO CLUSTER, PARA __ PRODUCTION, PARA O MUNDO REAL)...
+//  `mongodb+srv//nothingnothings:SENHA@cluster0.nhtjo.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`,
+
+// `mongodb+srv//${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.nhtjo.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`,
+  
+`mongodb+srv//${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`,
+
+// `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}:27017/course-goals?authSource=admin`,
   
   {
     useNewUrlParser: true,

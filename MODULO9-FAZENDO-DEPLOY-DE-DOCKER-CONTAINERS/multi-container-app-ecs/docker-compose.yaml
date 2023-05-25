@@ -1,11 +1,11 @@
 version: '3.8'
 services:
-  mongodb:
-    image: 'mongo'
-    volumes:
-      - data:/data/db
-    env_file:
-      - ./env/mongo.env
+  # mongodb: /// AGORA PASSAMOS A USAR O SERVICE DO 'MONGODB ATLAS' (tanto em DEVELOPMENT, como em production), POR ISSO NÃO PRECISAMOS MAIS DESSE CONTAINER.. o dbatlas é melhor pq é uma MANAGED SOLUTION...
+  #   image: 'mongo'
+  #   volumes:
+  #     - data:/data/db
+  #   env_file:
+  #     - ./env/mongo.env
   backend:
     build: ./backend
     ports:
@@ -15,8 +15,9 @@ services:
       - /app/node_modules
     env_file:
       - ./env/backend.env
-    depends_on:
-      - mongodb
+    # depends_on:
+    #   - mongodb
 
-volumes:
-  data:
+# se vamos usar 1 container de mongodb, é necesário definir o 'named volume' aqui embaixo, também...
+# volumes:
+#   data:

@@ -1,0 +1,1402 @@
+
+
+
+
+
+
+
+
+
+
+ok....
+
+
+
+
+
+
+
+
+
+PARA MOSTRAR COMO PODEMOS TRABALHAR COM O MONGODB ATLAS EM VEZ DE NOSSO MONGO CONTAINER,
+
+
+
+
+
+
+O PROFESSOR COMEÇA CRIANDO 1 CONTA..
+
+
+
+
+
+
+
+
+A CONTA INICIAL É GRÁTIS...
+
+
+
+
+
+
+
+
+
+-_> A VERSÃO BÁSICA É GRÁTIS...
+
+
+
+
+
+
+
+
+
+
+MONGODB COMPASS...
+
+
+
+
+--> O PROFESSOR CRIA 1 CLUSTER...
+
+
+
+
+
+
+
+OS CLUSTERS DO 
+
+
+
+MONGODB 
+
+
+SÃO 
+TOTALMENTE DIFERENTES DOS CLUSTERS DA AWS...
+
+
+
+
+
+
+OK... 
+
+
+ISSO SETTARÁ OS CLOUD RESOURCES, POR TRÁS DAS CENAS...
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+NOSSO 
+
+CLUSTER ESTARÁ 
+
+
+RODANDO..
+
+
+
+
+
+
+
+
+
+
+--> AÍ VAMOS QUERER CONECTAR NOSSO APP  A ESSE CLUSTER...
+
+
+
+
+
+
+
+
+
+ATUALMENTE,
+
+
+ESTAMOS 
+
+
+NOS CONECTANDO AO NOSSO MONGODB CONTAINER..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS AGORA QUEREMOS NOS CONECTAR A ESSE CLOUD MONGDB SERVICE...
+
+
+
+
+
+
+
+
+
+
+--> TEMOS A CONNECTION STRING,
+
+E ELA É BEM SIMILAR à CONNECTION STRING QUE USAMOS PARA CONECTAR 
+
+
+AO 
+
+
+CONTAINER LOCAL DO MONGODB...
+
+
+
+
+
+
+
+
+
+
+
+
+mongodb+srv//username:password@domain-name/database-name?retryWrites=true&w=majority
+
+
+
+
+
+
+
+
+
+
+
+--> ok...
+
+
+
+
+
+
+
+--> OK... VAMOS ALTERAR 1 POUCO A CONNECTION STRING...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS SUBSTITUIR 
+
+
+A CONNECTION STRING ANTERIOR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS AGORA TEMOS UMA DECISÃO A FAZER:
+
+
+
+
+
+
+
+'''DEVEMOS USAR O MONGODB ATLAS ___ EM PRODUCTION-ONLY,
+
+
+OU TAMBÉM DURANTE O DEVELOPMENT?'''
+
+
+
+
+
+
+
+
+
+
+-->  VOCê TERÁ ARGUMENTOS PARA AMBOS OS APPROACHES...
+
+
+
+
+
+
+
+
+
+
+--> PODERÍAMOS USAR 1 MONGODB CONTAINER DURANTE O DEVELOPMENT,
+E 
+
+1 
+
+MONGODB ATLAS DURANTE O PRODUCTION,
+
+TUDO PARA QUE 
+
+
+NÃO 
+
+ATINJAMOS 
+
+
+
+
+
+O NOSSO 'CLOUD MONGODB DATABASE' enquanto estivermos 
+
+TRABALHANDO NO NOSSO APP,
+
+TESTANDO NOSSO APP...
+
+
+
+
+
+
+
+
+
+
+
+
+--> É CLARO QUE PODERÍAMOS CONSERTAR ESSE PROBLEMA,
+
+NO CASO,
+
+POR MEIO 
+
+DO SET 
+
+DE 
+
+'databaseS' DIFERENTES, 'deployment' vs 'development',
+
+ali 
+
+
+NA CONNECTION STRING:
+
+
+
+EX
+
+
+
+
+
+mongodb+srv//username:password@domain-name/dev-database?retryWrites=true&w=majority
+
+
+
+
+
+mongodb+srv//username:password@domain-name/prod-database?retryWrites=true&w=majority
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+mongodb+srv//username:password@domain-name/${process.env.DATABASE_NAME}?retryWrites=true&w=majority
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> certo...
+
+
+
+
+
+É POR ISSO QUE NÃO VAMOS PRECISAR DE 1 CONTAINER EM DEVELOPMENT PARA O MONGODB,
+
+
+PQ 
+
+PODEMOS 
+
+
+
+
+SIMPLESMENTE USAR 1 DIFERENTE 
+
+
+DATABASE NAME NAQUELA MESMA 'CONNECTION STRING'/cluster do mongodb...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AINDA ASSIM,
+
+
+PODERÍAMOS ARGUMENTAR QUE QUEREMOS USAR 
+
+
+1 
+
+CONTAINER DURANTE O DEVELOPMENT PARA TER ESSE 
+
+
+'FULLY-ISOLATED DEVELOPMENT-ONLY ENVIRONMENT',
+
+
+E AÍ 
+
+
+
+
+USAR A CLOUD DATABASE APENAS PARA PRODUCTION....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS ISSO SIGNIFICARIA QUE 
+
+DEIXARÍAMOS DE TER O 'EXATO MESMO ENVIRONMENT DURANTE O DEVELOPMENT E DURANTE A PRODUCTION'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PQ, APONTA O PROFESSOR,
+
+
+
+NOSSO MONGODB CLUSTER DO ATLAS 
+USA 
+
+
+
+1 
+
+CERTA VERSÃO DO MONGODB (
+
+    versão '4.2.9'...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO SIGNIFICA QUE 
+
+
+
+__ QUANDO _ 
+
+
+
+
+NÓS 
+
+QUISERMOS USAR 1 CONTAINER, DURANTE O DEVELOPMENT,
+
+TEREMOS 
+
+
+QUE NOS CERTIFICAR DE QUE 
+
+
+
+
+USAMOS A __ EXATA __ MESMA __ VERSÃO _ 
+
+
+
+DA IMAGEM MONGODB, LÁ DO DOCKERHUB,
+
+DURANTE DEVELOPMENT...
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ----> PQ, SE FIZÉSSEMOS ISSO,
+
+ESTARÍAMOS USANDO 
+
+
+1 VERSÃO POSTERIOR/ANTERIOR DO MONGO, DURANTE DEVELOPMENT,
+
+
+
+
+
+EM RELAÇÃO À VERSION QUE ESTAMOS USANDO EM PRODUCTION --> ISSO PODE NOS LEVAR A 
+
+
+
+__ ACIDENTALMENTE_ USAR _ ALGUMA 
+
+
+
+
+NEXT-GEN 
+
+
+MONGODB FEATURE (que pode funcionar durante o development),
+
+
+
+FEATURE
+
+QUE TALVEZ NÃO FUNCIONE 
+
+
+__ QUANDO USARMOS ESSE 
+
+
+
+CLOUD SERVICE __DURANTE__ PRODUCTION (Versions diferentes, diferença entre ambiente de dev e de prod)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO TUDO DERROTA A IDEIA DE USAR CONTAINERS,
+
+A IDEIA DE TER O MESMO ENVIRONMENT 
+
+EM DEVELOPMENT
+E 
+
+EM
+
+PRODUCTION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OU SEJA,
+
+TEMOS QUE CHECAR A VERSÃO DO CLUSTER  DO MONGODB ATLAS QUE ESTAMOS USANDO,
+
+
+E AÍ 
+
+TEMOS QUE 
+
+COLOCAR 
+
+
+A
+ MESMA VERSION 
+
+
+
+ NO CONTAINER MONGO 
+
+
+
+ QUE USARÍAMOS DURANTE O DEVELOPMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... NÓS APENAS PRECISARÍAMOS 
+
+
+ELABORAR 1 MANEIRA DIFERENTE DE CONSTRUIR A CONNECTION STRING,
+
+COM ENV VARIABLES,
+
+
+PARA QUE 
+
+
+
+SEJAM USADAS URLS 
+
+
+
+DIFERENTES 
+
+
+
+
+EM DEV VS PROD...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> HÁ ARGUMENTOS PARA AS 2 ALTERNATIVAS,
+
+
+
+MAS O PROFESSOR ACHA QUE É MELHOR SE REALMENTE USARMOS 
+
+
+
+O EXATO MESMO ENVIRONMENT EM DEVELOPMENT E PRODUCTION,
+
+
+
+POR ISSO ELE VAI SEMPRE QUERER 
+
+USAR 
+
+
+
+O NOSSO CLOUD SERVICE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR VAI COPIAR A CONNECTION STRING,
+
+
+
+E VAI 
+
+COLOCAR LÁ NO NOSSO CÓDIGO...
+
+
+
+
+
+
+VAI FICANDO ASSIM:
+
+
+
+
+`mongodb+srv//${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.nhtjo.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`,
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... 
+
+
+AÍ LÁ NOS ARQUIVOS ENV,
+
+
+PODEMOS DEFINIR O VALUE DEFAULT COMO SENDO A DATABASE DE DEV,
+TIPO ASSIM:
+
+
+
+(Dockerfile de 'backend'):
+
+
+
+
+
+
+FROM node
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 80
+
+ENV MONGODB_USERNAME=root
+ENV MONGODB_PASSWORD=secret
+ENV MONGODB_URL=mongodb
+ENV DATABASE_NAME=goals-dev
+
+CMD ["node", "app.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MONGODB_USERNAME=max
+MONGODB_PASSWORD=secret
+MONGODB_URL=mongodb
+DATABASE_NAME=goals-dev 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA TEMOS ESSAS DEV VARIABLES SETTADAS...
+
+
+
+
+
+
+
+
+
+
+NOSSO CÓDIGO AGORA ESTÁ FLEXÍVEL O SUFICIENTE PARA 
+
+USAR 
+
+
+
+
+
+
+1 MESMO CLOUD PROVIDER (mongodb atlas)
+
+
+
+DURANTE 
+
+
+
+DEVELOPMENT E PRODUCTION (a única coisa que muda é a database usada durante development e production)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS O QUE ISSO TUDO SIGNIFICA,
+
+
+PARA NOSSOS DEPLOYED CONTAINERS?
+
+
+
+
+
+
+
+
+
+
+E O QUE ISSO SIGNIFICA PARA NOSSO ARQUIVO 'docker-compose'?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+BEM... ---> DEVEMOS COMEÇAR COM O DOCKER-COMPOSE 
+
+
+E COM NOSSO LOCAL SETUP....
+
+
+
+
+
+
+
+
+
+
+
+
+-> COMO AGORA TEMOS NOSSA PRÓPRIA DATABASE NA NUVEM,
+
+
+
+
+
+NÓS 
+
+
+NÃO VAMOS MAIS PRECISAR LANÇAR NOSSO PRÓPRIO CONTAINER DO MONGODB...
+
+
+
+
+
+
+
+
+
+ISSO SIGNIFICA QUE VAMOS COMENTAR PARA FORA O CÓDIGO 
+
+
+
+
+DO SERVICE DE 'mongodb',
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+version: '3.8'
+services:
+  # mongodb: /// AGORA PASSAMOS A USAR O SERVICE DO 'MONGODB ATLAS' (tanto em DEVELOPMENT, como em production), POR ISSO NÃO PRECISAMOS MAIS DESSE CONTAINER.. o dbatlas é melhor pq é uma MANAGED SOLUTION...
+  #   image: 'mongo'
+  #   volumes:
+  #     - data:/data/db
+  #   env_file:
+  #     - ./env/mongo.env
+  backend:
+    build: ./backend
+    ports:
+      - '80:80'
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    env_file:
+      - ./env/backend.env
+    depends_on:
+      - mongodb
+
+# volumes:
+#   data:
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+version: '3.8'
+services:
+  # mongodb: /// AGORA PASSAMOS A USAR O SERVICE DO 'MONGODB ATLAS' (tanto em DEVELOPMENT, como em production), POR ISSO NÃO PRECISAMOS MAIS DESSE CONTAINER.. o dbatlas é melhor pq é uma MANAGED SOLUTION...
+  #   image: 'mongo'
+  #   volumes:
+  #     - data:/data/db
+  #   env_file:
+  #     - ./env/mongo.env
+  backend:
+    build: ./backend
+    ports:
+      - '80:80'
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    env_file:
+      - ./env/backend.env
+    depends_on:
+      - mongodb
+
+# se vamos usar 1 container de mongodb, é necesário definir o 'named volume' aqui embaixo, também...
+# volumes:
+#   data:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+A MONGODB_URL TAMBÉM NÃO SERÁ MAIS USADA,
+
+PQ 
+
+AGORA 
+
+
+
+
+NÃO VAMOS MAIS USAR 1 CONTAINER DE MONGODB DENTRO DO 'ECS', e não vamos mais usar o 'EFS'...
+
+
+
+
+
+
+
+
+
+
+-> PODERÍAMOS TAMBÉM APAGAR A ENV FILE DE 'mongo.env',
+
+
+PQ 
+
+
+NÃO VAMOS MAIS TER 1 CONTAINER MONGODB.... (sem necessidade de definirmos 
+
+1 username e password nesse container-servidor, pq ele não vai mais existir)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... O PROFESSOR RODA 'docker-compose up' 
+
+
+
+
+
+
+PARA VER SE ISSO TUDO FUNCIONA..
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> RECEBEMOS 1 ERROR DE 'DEPENDS'
+
+pq ainda temos a key de 
+
+
+'depends_on:
+    - mongodb' 
+
+    LÁ NO BACKEND...
+
+
+
+
+
+
+
+
+
+    CERTO...
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+
+
+RODADO O DOCKER-COMPOSE,
+
+
+
+AGORA O CONTAINER DO BACKEND VAI SE CONECTAR AO MONGODB 
+
+
+NA NUVEM, NO ATLAS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O NEGÓCIO FALHA.. --> FALHA PQ _ NÃO COLOCAMOS 
+
+
+WHITELIST 
+
+NESSE NOSSO IP...
+
+
+
+
+
+
+
+
+
+
+
+--> O MONGODB ATLAS 
+
+
+
+
+TEM 1 FEATURE DE WHITELIST,
+
+
+
+WHITELISTAR QUAIS IPS 
+
+
+PODEM SE CONECTAR à NOSSA DATABASE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É CLARO QUE DEVEMOS USAR ISSO, E AÍ CONFIGURAR NOSSO CLUSTER,
+
+PARA DEFINIR QUEM PODE SE CONECTAR...
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS ADICIONAR 1 IP ADDRESS.. . -> 
+
+
+
+
+
+
+
+
+NÃO VAMOS DEIXAR 'ACCESS FROM ANYWHERE',
+
+
+
+
+
+
+PQ _ NÃO QUEREMOS DEIXAR A SEGURANÇA MT FRACA...
+
+
+
+
+
+
+
+
+
+
+
+-----> O ACESSO DEVERÁ SER APENAS AOS SEUS PROGRAMADORES E AOS 
+
+SEUS SERVICES 
+
+
+DA AWS...
+
+
+
+
+
+
+
+
+
+-> VC TAMBÉM DEVE CRIAR 1 USER,
+
+E AÍ 
+
+DAR 
+
+
+
+A ESSE USER ACESSO READ E WRITE À DATABASE..
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR CRIA 1 CONTA PARA SI MESMO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, VOLTAMOS AO NOSSO ARQUIVO BACKEND.ENV...
+
+
+
+
+
+
+
+
+
+
+
+
+----> LÁ O PROFESSOR COLOCA O USERNAME 
+
+E O GENERATED PASSWORD, PARA O CONNECT...
+
+
+
+
+
+
+
+
+
+
+
+-> assim que tudo isso tiver acabado,
+
+
+DEVEMOS CONSEGUIR NOS CONECTAR 
+
+
+AO MONGODB ATLAS...
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+`mongodb+srv//${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA NOSSO AMBIENTE LOCAL VAI CONSEGUIR SE CONECTAR AO MONGODB... -> SINAL QUE 
+
+
+
+
+ESTAMOS 
+
+
+QUERIANDO A DATABASE COM SUCESSO...
+
+
+
+
+
+
+
+
+
+
+--. É ASSIM QUE PODEMOS USAR O MONGODB ATLAS 
+
+DURANTE O DEVELOPMENT... -----> OK... MAS A RAZÃO 
+
+PRINCIPAL 
+
+
+PARA USAR O MONGODB ATLAS 
+
+É PARA NOS 
+
+
+AJUDAR NA PRODUCTION (pq aí ficamos com 1 managed solution, menos responsabilidade e maior segurança... menos chance de fazer porcaria)...
+
+
+
+
