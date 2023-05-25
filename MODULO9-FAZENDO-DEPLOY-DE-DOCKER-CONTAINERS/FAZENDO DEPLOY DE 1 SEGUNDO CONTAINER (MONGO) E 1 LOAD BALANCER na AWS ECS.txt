@@ -1,0 +1,1153 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------>  OK... PARA ADICIONAR O MONGODB,
+
+DEVEMOS SIMPLESMENTE ADICIONAR 1 SEGUNDO CONTAINER 
+
+NESSA TASK DEFINITION QUE TEMOS AGORA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> OK... COLOCAMOS O NOME DESSE CONTAINER DE 'mongodb'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... COLOCAMOS, LÁ NO 'IMAGE' (image name),
+
+
+
+O NOME 'mongo',
+
+
+
+
+
+
+
+PQ ESSA IMAGE EXISTE 
+
+
+
+NO DOCKERHUB,
+
+E O 
+
+
+
+
+AWS ECS 
+
+VAI AUTOMATICAMENTE PROCURAR POR 
+
+ESSA IMAGE,
+
+
+
+
+
+
+
+
+LÁ NO DOCKERHUB...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DEPOIS DISSO,
+ 
+ VAMOS MAPPEAR A PORT 
+
+
+'27017',
+
+
+QUE 
+
+É 
+
+
+A DEFAULT PORT EXPOSTA PELO MONGODB... 
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+MAIS EMBAIXO,
+
+VAMOS DEIXAR TUDO IGUAL,
+
+MENOS A PARTE 
+
+DE ENVIRONMENT VARIABLES,
+
+EM QUE 
+
+
+
+
+VAMOS 
+
+
+COLOCAR OS ENVIRONMENT VARIABLES QUE FORAM DEFINIDOS NO ARQUIVO 'mongo.env'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE COLOCAMOS ASSIM:
+
+
+
+
+
+
+I 'MONGODB_INITDB_ROOT_USERNAME' I     I   arthur  I
+I 'MONGODB_INITDB_ROOT_PASSWORD' I     I   password  I 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, GARANTIMOS QUE ESSAS 2 ENVIRONMENT VARIABLES SERÃO SETTADAS DENTRO DE NOSSO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS IGNORAR AS 'NETWORK SETTINGS',
+
+MAS 
+
+
+
+PARA O 'STORAGE AND LOGGING',
+
+
+
+
+
+
+
+
+
+VAMOS PRECISAR DE 1 VOLUME,
+
+PQ 
+
+VAMOS QUERER QUE A DATA 'PERSISTS'.
+
+
+
+
+
+
+
+
+
+
+
+ISSO PQ, LÁ NO ARQUIVO 'docker-compose.yaml',
+
+TEMOS 
+
+
+
+
+ESTA CONFIGURAÇÃO:
+
+
+
+
+
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - data:/data/db
+    env_file:
+      - ./env/mongo.env
+
+
+
+
+
+
+
+
+
+
+
+
+-> OU SEJA,
+
+
+colocamos que temos 1 volume NAMED,
+
+de nome 'data',
+
+
+
+
+QUE SERÁ CRIADO PELA PASTA INTERNA, DO CONTAINER MONGO,
+
+DE 'data/db'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... O PROFESSOR, POR ENQUANTO,
+
+
+VAI DEIXAR AS COISAS ASSIM,
+
+
+VAI DEIXAR ESSE SETUP ASSIM (
+
+    sem adicionar 1 option de STORAGE na ECS
+),
+
+
+
+
+
+
+
+
+MAS MAIS TARDE ELE VAI VOLTAR A ESSA QUESTÃO, A ESSA OPÇÃO DE 'STORAGE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+POR ENQUANTO,
+DEVEMOS 
+DEIXAR 
+
+ESSA PARTE DE STORAGE E LOGGING VAZIA,
+
+
+E DEVEMOS DEIXAR ESSE CONTAINER DE MONGO ASSIM....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COLOCAMOS 'CREATE',
+
+PARA CRIAR ESSA NOVA TASK DEFINITION,
+
+
+
+COM NOSSOS 2 CONTAINERS 
+
+
+
+NO SEU INTERIOR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO CRIADO,
+
+
+DEVEMOS ACTUALLY RODAR 1 'SERVICE' COM BASE NESSAS TASKS...
+
+
+
+
+
+
+
+
+
+
+
+NA VERDADE, A HIERARQUIA É:
+
+
+
+
+
+
+
+CLUSTER (pode ter MÚLTIPLOS SERVICES)
+SERVICE (só pode ter 1 task)
+TASK (pode ter múltiplos containers)
+CONTAINER
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... É POR ISSO QUE O PROFESSOR VAI CRIAR 1 SERVICE...
+
+
+
+
+
+
+
+
+
+
+--> EM 'TASK DEFINITION',
+
+
+DEVEMOS 
+
+COLOCAR A TASK DEFINITION QUE ALTERAMOS AGORA,
+
+EM QUE COLOCAMOS 2 CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+--> COLOCAMOS 1 NOME DE 'goals-service'...
+
+
+
+
+
+-> apenas 1 task...
+
+
+
+--> DEIXAMOS O DEPLOYMENT TYPE PADRÃO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EM 'CONFIGURE NETWORK',
+
+
+VC DEVE ESCOLHER O VPC 
+
+DEFAULT,
+
+
+
+
+
+
+O VPC QUE JÁ FOI CRIADO QUANDO VC CRIOU 
+
+
+O CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+
+EM 'SUBNETS',
+
+
+ESCOLHA AS SUBNETS QUE VC É CAPAZ DE ESCOLHER..
+
+
+
+
+
+
+
+
+
+------> TAMBÉM COLOQUE 'auto-assign public ip'
+
+
+COMO ENABLED,
+
+PARA QUE 
+
+NOSSO APP CONSIGA SER 
+
+ATINGIDO POR MEIO DE SEU PUBLIC IP...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... EM 'LOAD BALANCING',
+
+
+
+COLOQUE 
+
+'APPLICATION LOAD BALANCER' --> ISSO VAI GARANTIR QUE 
+
+INCOMING TRAFFIC
+ 
+SEJA HANDLADO DE MANEIRA EFICIENTE,
+
+
+
+
+
+
+
+
+
+MAS TAMBÉM VAI NOS AJUDAR COM __ O _  SET __ 
+
+
+
+DE 1 'CUSTOM DOMAIN' MAIS TARDE,
+
+SE ASSIM O DESEJARMOS...
+
+
+
+
+
+
+
+
+
+
+
+--> OK... É CLARO QUE, POR DEFAULT,
+
+
+O AWS ECS NÃO VAI ENCONTRAR 1 LOAD BALANCER...
+
+
+
+
+
+
+
+-> CERTO... MAS SE VC SEGUIU O PRIMEIRO WIZARD,
+
+
+O DE CRIAÇÃO DE CLUSTER,
+
+ELE JÁ CRIARIA 1 LOAD BALANCER 
+
+AUTOMATICAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NO AWS CONSOLE,
+
+
+
+CLIQUE EM 'CREATE APPLICATION LOAD BALANCER'...
+
+
+
+
+
+
+
+
+
+--> COLOQUE QUALQUER NOME PARA SEU APPLICATION LOAD BALANCER...
+
+
+
+
+
+
+
+
+
+
+-> será 'internet-facing',
+
+para que consiga SER ATINGIDA DA INTERNET...
+ 
+
+
+
+
+
+
+
+
+
+
+ -> deverá EXPOR A PORT 80....
+
+
+
+
+
+
+
+
+ -> E DEVERÁ FICAR CONECTADO AO MESMO VPC QUE VC ESCOLHEU 
+
+
+ PARA O SEU SERVICE (
+
+    isso 
+
+    vai garantir que o LOAD BALANCER VAI RODAR NA SUA MESMA NETWORK...
+ )
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO, PODEMOS CLICAR EM 'CONFIGURE SECURITY SETTINGS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+VAMOS DEIXAR 
+
+
+
+
+
+
+ISSO VAZIO, POR ENQUANTO.... -> PODERÍAMOS 
+
+
+
+COLOCAR SSL,
+
+
+
+
+
+HTTPS,
+
+
+
+
+
+
+
+
+
+
+
+MAS NEM MESMO NOSSO APP NODE ESTÁ USANDO HTTPS... por isso vamos deixar assim...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> CONFIGURE SECURITY GROUPS -> CLIQUE EM 1 SECURITY GROUP QUE JÁ EXISTE...
+
+
+
+
+
+
+
+
+
+
+
+--> CLIQUE EM 'CONFIGURE ROUTING' -> 
+
+
+
+
+
+
+* COLOQUE QUALQUER NOME 
+
+
+
+* ESCOLHA 'IP' COMO TARGET TYPE (
+
+
+ISSO É NECESSÁRIO PQ _ USAMOS O 'FARGATE' COMO 
+
+NOSSO CONTAINER, PARA O RUN DE NOSSOS CONTAINERS...
+)
+
+
+
+* ISSO FEITO, CLIQUE EM 'REGISTER  TARGETS',
+
+MAS NÃO FAÇA NADA.... ------> ISSO PQ O AWS ECS 
+
+VAI AUTOMATICAMENTE REGISTRAR 
+
+RUNNING 
+
+
+CONTAINERS COMO TARGETS, AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COLOCAMOS 'NEXT AND REVIEW',
+
+E AÍ 
+NOSSO 
+
+LOAD BALANCER 
+
+
+TERÁ 
+
+
+SIDO CRIADO...
+
+
+
+
+
+
+
+
+
+
+
+--> É CLARO QUE O LOAD BALANCER NÃO É DE GRAÇA... -> VC DEVE VER O PRICING DO AWS 
+
+ANTES DE PROSSEGUIR COM TUDO ISSO...
+
+
+
+
+
+
+
+
+
+
+
+-> OK...
+
+
+
+
+
+LÁ NO 
+
+AWS ECS,
+
+
+
+REFRESHAMOS 
+A LISTA DE LOAD BALANCERS,
+
+PARA 
+
+AÍ 
+
+PODERMOS ESCOLHER ESSE LOAD BALANCER QUE RECÉM CRIAMOS...
+
+
+
+
+
+
+
+
+
+--> EM 'CONTAINER TO LOAD BALANCE',
+
+
+
+ESCOLHEMOS 
+
+O 
+
+'goals-backend:80:80'...
+
+
+
+
+
+
+
+
+--> CERTO... AÍ ADICIONAMOS 
+
+
+ESSE CONTAINER NO TARGET GROUP QUE CRIAMOS ANTES...
+
+
+
+
+
+
+
+
+COM TUDO ISSO, CLICAMOS EM 'NEXT STEP'...
+
+
+
+
+
+
+
+
+
+
+-> IGNORE A OPÇÃO DE 'SET AUTO SCALING'....
+
+
+
+
+
+
+
+
+
+
+-- AUTO-SCALING, COMO SIDE-NOTE,
+
+PODERIA
+ 
+
+ SER 
+
+
+ CONFIGURADO PARA QUE ''DE ACORDO COM A QUANTIDADE 
+
+ DOS INCOMING HTTP REQUESTS,
+
+
+ MÚLTIPLAS INSTANCES DE SEU CONTAINER 
+
+ SERÃO EXECUTADAS, PARA QUE 
+
+ OS REQUESTS SEJAM HANDLADOS SEM DELAY'''... ----> se vc planeja 
+
+
+
+
+ EM 
+
+ DEPLOYAR 
+
+
+ APPS MAIORES E MAIS REALISTAS COM O AWS,
+
+ VC TERÁ 
+
+
+ DE 
+
+
+
+ ESTUDAR MAIS OS DOCS DA AWS DE QUALQUER FORMA...
+
+
+
+
+
+
+
+
+ -> COLOCAMOS 'CREATE SERVICE',
+
+
+ E COM ISSO 
+
+ TEREMOS TODAS AS COISAS NECESSÁRIAS 
+
+ PARA RODAR NOSSOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> VAMOS LÁ EM 'CLUSTERS' --> TEMOS 'SERVICES',
+
+ E AÍ 
+
+
+ NESSES SERVICES TEMOS O 'GOALS-SERVICE'...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> SE CLICAMOS NESSE SERVICE,
+ VISUALIZAMOS AS TASKS 
+
+ ASSOCIADAS A ELE..
+
+
+
+
+
+
+
+
+ -> SE CLICAMOS NA TASK QUE RECÉM CRIAMOS,
+ VEREMOS 
+ O 
+
+
+
+PUBLIC IP 
+
+
+
+DESSA TASK...
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR APONTA QUE O __ LOAD __ BALANCER NÃO 
+
+ESTÁ CONFIGURADO CORRETAMENTE AINDA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+
+COMO NOSSO APP NÃO TEM FRONTEND,
+
+
+PODEMOS APENAS USAR O ip 
+
+
+PARA 
+
+
+
+
+CHECAR SE TEMOS AS ENDPOINTS...
+
+
+
+
+
+
+
+-> É POR ISSO QUE O PROFESSOR USA O POSTMAN 
+
+
+
+
+COM 
+
+
+
+OS ENDPOINTS DE 
+
+
+'public-ip (seu public ip aqui)/goals',
+
+
+
+
+
+DE TIPO GET,
+
+PARA CONSEGUIR 
+
+
+
+'
+goals: []' (
+    MOSTRA QUE 
+
+
+    NOSSO APP REALMENTE FOI DEPLOYADO...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+SE TENTAMOS CRIAR 1 NOVO GOAL E DELETAR 1 GOAL,
+
+TUDO FUNCIONA...
+
+
+
+
+
+
+
+
+
+ISSO TUDO PROVA QUE NOSSOS CONTAINERS FORAM 'SUCCESSFULLY DEPLOYED' COM 
+
+
+
+
+O __ AWS ECS,
+
+
+TUDO AGORA FUNCIONANDO COM 1 MULTI-CONTAINER APP...
