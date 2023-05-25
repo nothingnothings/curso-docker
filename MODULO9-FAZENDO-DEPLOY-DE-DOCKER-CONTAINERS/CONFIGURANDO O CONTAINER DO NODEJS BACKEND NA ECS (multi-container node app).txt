@@ -1,0 +1,1352 @@
+
+
+
+
+AGORA QUE O PRIMEIRO CLUSTER QUE CRIAMOS NA AWS FOI DELETADO,
+
+PODEMOS CRIAR 1 NOVO CLUSTER,
+
+
+NOVAS TASKS,
+
+NOVOS SERVICES,
+
+TUDO PARA RODAR 
+
+NOSSOS 
+
+
+
+2 CONTAINERS (MONGODB + NODE)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PROFESSOR CLICA EM 'CREATE CLUSTER'... ->   AÍ ELE COLOCA 
+
+
+'NETWORKING ONLY' ... --> ISSO FEITO,
+
+
+
+
+
+COLOCA 1 NOME DE 'goals-app' ao cluster..
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR 
+
+
+
+COLOCA
+
+'CREATE A NEW VPC FOR THIS CLUSTER ''--> ISSO 
+
+
+
+FAZ COM QUE o
+
+
+
+AWS CRIE UMA 'VIRTUAL PRIVATE CLOUD'
+
+PARA 
+
+TODOS 
+
+
+
+OS CONTAINERS NAQUELE CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO FEITO, O PROFESSOR CLICA EM 'CREATE'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ISSO CRIARÁ ESSE CLUSTER...
+
+
+
+
+
+
+O CLUSTER É APENAS A 'SURROUNDING NETWORK'
+
+PARA SEUS CONTAINERS...
+
+
+
+
+
+
+
+
+
+--> ESPERAMOS PELO FIM DA CLUSTER CREATION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> COM ISSO TERMINADO,
+
+
+
+
+PODEMOS ADICIONAR SERVICES E TASKS AO NOSSO CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> SERVICES SÃO 'BASED ON TASKS',
+
+
+
+
+
+POR ISSO PRECISAMOS CRIAR TASKS ANTES...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR VAI CRIAR 1 TASK DEFINITION ... --> O PROFESSOR 
+
+
+CRIA 1 NOVA TASK DEFINITION, E AÍ ESCOLHE O FARGATE,
+
+
+
+
+
+PARA TER ESSE 'SERVERLESS CONTAINER EXECUTION ENVIRONMENT',
+
+EM QUE 
+
+SEUS CONTAINERS 
+
+
+PODEM ESCALAR INFINITAMENTE,
+
+E EM QUE 
+
+VC APENAS PAGA PELO QUE VOCÊ PRECISA...
+
+
+
+
+
+
+
+
+------> colocamos o nome da task de 'goals'...
+
+
+
+
+
+
+
+--> em 'task role',
+
+
+COLOCAMOS 'ecsTaskExecutionRole' --> DEVEMOS ESCOLHER ESSA...
+
+
+
+
+
+
+
+
+-> SE NÃO TIVERMOS ESSA ROLE,
+
+DEVEMOS 
+
+
+DELETAR ESSE CLUSTER E RODAR 
+
+
+
+O WIZARD DE CRIAÇÃO DE PRIMEIRA TASK,
+
+
+PQ AÍ ELE VAI CRIAR ESSE ROLE PARA NÓS NOVAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO FEITO,
+
+
+ESCOLHA OS MENORES TAMANHOS PARA A TASK MEMORY E TASK CPU...
+
+
+
+
+
+
+
+
+
+--> PARA APPS DE VERDADE,
+
+PRECISAREMOS 
+
+DE 
+
+
+
+OPÇÕES MAIS FORTES AQUI,
+
+
+
+DEPENDENDO 
+DE NOSSAS NECESSIDADES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> JÁ EM 'CONTAINER DEFINITIONS',
+
+DEVEMOS 
+
+
+
+
+ADICIONAR CONTAINERS A ESSA TASK...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR COLOCA 1 PRIMEIRO CONTAINER DE 'goals-node-backend'...
+
+
+
+
+
+
+
+
+
+
+-> AÍ ELE APONTA A 'nothingnothings/node-multi-container-aws:latest'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+EM 'PORT MAPPINGS',
+
+
+COLOQUE A PORT 80... --> ESSA É A PORT EXPOSTA POR NOSSO APP,
+
+
+
+
+
+
+
+ESTAMOS FAZENDO LISTEN TO NA PORT 80...
+
+
+
+
+
+
+
+
+
+
+--> CERTO..
+
+
+
+
+
+
+
+
+IGNORE O HEALTH CHECK,
+
+MAS PRESTE ATENÇÃO 
+
+
+
+NAS 'ENVIRONMENT VARIABLES'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO PQ,
+
+
+LÁ NA NOSSA DOCKERFILE,
+
+PARA ESSA IMAGE DO BACKEND,
+
+ESTAMOS EXECUTANDO 
+
+
+'npm start'
+
+
+COMO 
+COMANDO FINAL (CMD["npm", "start"])
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ISSO ESTÁ ERRADO,
+
+PQ O QUE COLOCAMOS COMO STARTER, NESSE APP NODE.JS, 
+
+FOI O NODEMON:
+
+
+
+
+
+
+
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "Maximilian Schwarzmüller / Academind GmbH",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> COMO NÃO QUEREMOS TER 'AUTO-RELOAD'
+
+
+
+
+NO NOSSO 
+
+APP,
+ EM PRODUCTION,
+
+ DEVEMOS TIRAR ESSA PARTE DE '["npm", "start"]
+
+
+ e colocar 
+
+
+ "["node", "app.js"]',
+
+
+
+
+ PARA STARTAR NOSSO APP NODE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NÓS TAMBÉM NÃO TEREMOS BIND MOUNTS EM production...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NA PARTE DE 'command'
+
+
+
+
+
+do ecs, em environment,
+
+
+coloque 
+
+
+
+
+
+'node,app.js'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO JÁ NOS MOSTRA 'COMO PODEMOS 
+
+LEVERAGE O MESMO CONTAINER, DURANTE DEVELOPMENT E PRODUCTION,
+
+E MESMO ASSIM FINE-TUNE INDIVIDUAL ASPECTS AOS DIFERENTES ENVIRONMENTS 
+
+EM QUE RODAMOS O CONTAINER''... -> E ISSO NÃO É UM PROBLEMA,
+
+E SIM 
+
+UMA ___ FEATURE __ DO DOCKER...
+
+
+
+
+
+
+
+
+
+
+
+
+--> AINDA TEREMOS O 'LOCKED-IN' 
+
+
+CODE E O __ 'LOCKED-IN' RUNTIME... ------>
+
+
+COM ESSAS LINHAS:
+
+
+
+
+
+
+
+FROM node
+
+WORKDIR /app
+
+
+
+
+
+
+
+
+
+
+OU SEJA,
+
+
+TEMOS ESSA GARANTIA DE QUE TEREMOS ESSE MESMO APP E APP ENVIRONMENT 
+
+DURANTE 
+
+
+
+DEVELOPMENT E PRODUCTION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE É O PONTO PRINCIPAL DO DOCKER...
+
+
+
+
+
+
+
+
+
+
+
+-> APENAS OS ASPECTOS QUE 'NEED FINE-TUNING',
+
+OS ASPECTOS MAIS FINOS,
+
+
+COMO 
+
+
+ESSA PARTE DE 'CMD[]',
+
+
+
+
+
+PODEM SER ALTERADOS,
+
+
+
+PQ ESSA É OUTRA DAS FEATURES DO DOCKER (tipo 'adaptabilidade', podemos adaptar esses detalhes menores para A NECESSIDADE DO MOMENTO, DEPLOYMENT VS PRODUCTION)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... AGORA DEVEMOS ESPECIFICAR 
+
+
+AS ENVIRONMENT VARIABLES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AS ENV VARIABLES DEVERÃO ESTAR SETTADAS ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+(DOCKERFILE DO BACKEND)
+
+
+
+FROM node
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 80
+
+ENV MONGODB_USERNAME=root
+ENV MONGODB_PASSWORD=secret
+ENV MONGODB_URL=mongodb
+
+CMD ["node", "app.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... COM ISSO FEITO,
+
+DE VOLTA AO AMAZON ECS,
+
+
+
+
+
+DEVEMOS ESPECIFICAR OS VALUES DAS ENVIRONMENT VARIABLES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO É IMPORTANTE --> LOCALMENTE,
+
+QUANDO RODAMOS NOSSOS CONTAINERS LOCALMENTE,
+
+
+
+USÁVAMOS O DOCKER-COMPOSE PARA RODAR ESSES 
+
+CONTAINERS...
+
+
+
+
+
+
+E COMO ESTÁVAMOS RODANDO O DOCKER-COMPOSE,
+
+
+
+ERA ELE 
+
+QUE 
+
+'APONTAVA'
+
+
+PARA OS ARQUIVOS 
+de 
+
+
+
+'mongo.env'
+
+
+e 
+
+'backend.env',
+
+
+
+
+
+
+
+COMO  VISTO NESTE TRECHO:
+
+
+
+
+version: '3.8'
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - data:/data/db
+    env_file:
+      - ./env/mongo.env
+  backend:
+    build: ./backend
+    ports:
+      - '80:80'
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    env_file:
+      - ./env/backend.env
+    depends_on:
+      - mongodb
+
+volumes:
+  data:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''env_file:''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E AS ENV FILES ESTAVAM ASSIM: 
+
+
+
+
+
+
+
+MONGODB_USERNAME=max
+MONGODB_PASSWORD=secret
+MONGODB_URL=mongodb
+
+
+
+
+
+
+
+E ASSIM:
+
+
+
+MONGO_INITDB_ROOT_USERNAME=max
+MONGO_INITDB_ROOT_PASSWORD=secret
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO QUER DIZER QUE 'ESSES ERAM OS VALUES PASSADOS,
+
+POR DEFAULT,
+
+
+AOS CONTAINERS QUE ESTAVAM SENDO RODADOS'...
+
+
+
+
+
+
+
+
+
+
+--> PARA CONSEGUIRMOS _ OVERWRITTAR ESSES VALUES,
+
+
+OVERWRITTAR 1 VALUE COMO 
+
+'MONGODB_URL',
+
+
+
+BASTA ESPECIFICAR 
+
+
+
+
+A URL,
+
+
+
+
+LÁ NA ECS,
+
+tipo 
+
+
+
+
+
+
+
+
+
+
+I 'MONGODB_URL' I     I   localhost  I
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COLOCAMOS 'localhost'
+
+JUSTAMENTE 
+
+
+PQ QUEREMOS __ QUE 
+
+
+
+
+
+
+
+'localhost' fique 
+
+
+
+
+
+COMO ENDEREÇO/DOMÍNIO DO MONGODB,
+
+
+no contexto dessa task (
+
+    pq a task,
+
+    na ecs,
+
+    É QUASE COMO 1 DOCKER NETWORK EM SI... UMA DOCKER NETWORK
+
+    EM QUE 'localhost' É O LOCAL EM QUE TODOS OS CONTAINERS RODAM..
+
+
+
+
+
+
+
+    é por isso que trocamos 
+
+
+
+    '''
+`mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb-pure:27017/course-goals?authSource=admin`
+
+
+
+
+POR 
+
+
+
+  `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@localhost:27017/course-goals?authSource=admin`,
+
+
+),
+
+
+
+
+
+E É POR ISSO QUE 
+
+
+
+COLOCAMOS 
+
+
+  
+  `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}:27017/course-goals?authSource=admin`,
+
+
+
+
+
+
+
+
+
+
+
+
+
+  PQ QUEREMOS QUE 'process.env.MONGODB_URL'
+   
+   SEJA SUBSTITUÍDO 
+
+
+
+
+   POR 'localhost'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> TAMBÉM PRECISAMOS COLOCAR AS OUTRAS ENVIRONMENT VARIABLES,
+
+PQ 
+
+
+
+OS ARQUIVOS '.env'
+
+
+QUE ESTÃO SENDO USADOS COM O DOCKER-COMPOSE 
+
+
+NÃO 
+
+SERÃO 
+
+
+
+USADOS ___ DIRETAMENTE NO AWS ECS (pq NÃO TEREMOS O DOCKER-COMPOSE LÁ, NÃO USAREMOS O DOCKER-COMPOSE)...
+
+
+
+
+
+
+
+
+
+
+
+
+--> FICA TIPO ASSIM:
+
+
+
+
+I 'MONGODB_URL' I     I   localhost  I
+I 'MONGODB_USERNAME' I     I   arthur  I
+I 'MONGODB_PASSWORD' I     I   password  I
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... COM 'LOCALHOST'
+
+
+
+PODEMOS ENVIAR 1 REQUEST A OUTRO CONTAINER, NO MESMO LEVEL DESSA TASK,
+
+
+
+
+NO AMAZON ECS...
+
+
+
+
+(EM DEVELOPMENT, O 'LOCALHOST' NÃO FUNCIONARIA)...
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO, ESTAMOS ESCREVENDO O CÓDIGO DE DEPLOY 
+
+
+DE MANEIRA QUE O 'APPLICATION CODE'
+
+
+NÃO É AFETADO (
+
+    pq estamos usando uma ENV VARIABLE PARA 
+    CONSEGUIR 
+
+    O 
+
+
+    REAL ADDRESS,
+
+    E AÍ O VALUE PARA ESSE ADDRESS 
+
+    SIMPLESMENTE DEPENDE DO ENVIRONMENT EM QUE 
+
+    ESTAMOS RODANDO O CONTAINER (
+
+        se estamos em development, com o docker-compose,
+
+        ou se estamos em PRODUCTION, SEM O DOCKER-COMPOSE,
+        COM A ECS,
+
+        etc...
+    )
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. NÃO PRECISAMOS SETTAR MAIS NADA AQUI, NAS OUTRAS PARTES...
+
+
+
+
+
+
+
+
+
+
+
+
+------> TAMBÉM NÃO PRECISAMOS SETTAR NADA PARA 'STORAGE' E 'LOGGING',
+
+
+
+PQ __ O __ PROFESSOR REMOVEU OS LOGS USADOS 
+
+
+
+
+
+NO DOCKER-COMPOSE... --> OS ÚNICOS VOLUMES QUE 
+
+
+
+SOBRARAM, NO DOCKER-COMPOSE,
+
+
+FORAM 
+
+
+O 
+
+
+'bind-mount'
+
+
+e o 
+
+'anon-volume' do NODE-MODULES... -> MAS NÃO PRECISAMOS DE NENHUM DELES DURANTE PRODUCTION, PORQUE:
+
+
+
+
+
+
+
+
+
+1) NÃO USAMOS BIND MOUNTS DURANTE PRODUCTION 
+
+
+
+
+
+
+
+2) OS NODE_MODULES SEREM PROTEGIDOS POR 1 ANON VOLUME 
+
+
+É ALGO TAMBÉM DESNECESSÁRIO, PQ 
+
+SÓ HAVÍAMOS USADO ISSO, EM DEVELOPMENT,
+
+PARA 
+
+PROTEGER OS NODE_MODULES DO OVERWRITE CAUSADO POR BIND-MOUNTS... COMO 
+
+DEIXAMOS DE TER BIND-MOUNTS,
+
+
+
+A NECESSIDADE DE TER ESSE VOLUME TAMBÉM DEIXA DE EXISTIR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... É POR ISSO QUE NÃO PRECISAMOS DE VOLUME ALGUM, NESSE CONTAINER AÍ...
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS É CLARO QUE ESSE NÃO É O ÚNICO CONTAINER QUE 
+
+SERÁ NECESSÁRIO, AQUI...
+
+
+
+
+
+
+
+
+
+
+NOSSO APP TBM TEM OUTRO CONTAINER, O DE MONGODB,
+
+POR ISSO DEVEMOS O ADICIONAR NESSA TASK TAMBÉM...
