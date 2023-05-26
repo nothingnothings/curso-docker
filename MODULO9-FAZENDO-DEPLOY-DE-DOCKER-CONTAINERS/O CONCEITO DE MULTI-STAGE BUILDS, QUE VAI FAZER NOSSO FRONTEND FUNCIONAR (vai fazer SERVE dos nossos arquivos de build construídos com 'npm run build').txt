@@ -13,3 +13,1770 @@ INTRODUZINDO MULTI-STAGE BUILDS...
 
 
 MULTI-STAGE BUILDS TE DEIXAM 
+
+
+
+
+
+
+TER APENAS 1 ÚNICA DOCKERFILE,
+
+
+
+
+
+AO MESMO TEMPO QUE 
+
+TE DEIXAM 
+
+
+_ TER MÚLTIPLAS STEPS/STAGES 
+
+
+DENTRO DAQUELA 
+
+FILE...
+
+
+
+
+
+
+
+
+
+
+--> A GRANDE VANTAGEM DE 'STAGES'
+
+É QUE 
+
+ELES PODEM 
+
+
+
+
+
+
+
+
+__ 'COPY' OS RESULTS,
+
+DE 
+
+
+
+1 STAGE PARA OUTRO,
+
+
+
+
+
+DENTRO DESSA FILE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE PODEMOS TER:
+
+
+
+
+
+
+
+1) 1 STAGE PARA CRIAR AS OPTIMIZED FILES 
+
+
+
+
+
+
+
+
+
+2) OUTRO STAGE, PARA FAZER SERVE DESSAS FILES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E PODEMOS OU:
+
+
+
+
+1) CONSTRUIR TODA A DOCKERFILE,
+
+
+INDO POR TODOS OS STAGES,
+
+ETAPA-POR-ETAPA,
+
+TOP TO BOTTOM,
+
+
+
+
+
+
+OU:
+
+
+
+
+
+
+2) PODEMOS SELECIONAR INDIVIDUAL STAGES ATÉ O STAGE 
+
+
+QUE QUEREMOS BUILDAR,
+
+
+SKIPPANDO 
+
+TODOS OS 
+
+STAGES 
+
+QUE 
+
+
+VIRIAM DEPOIS DO STAGE ESPECIFICADO POR NÓS...
+
+
+
+
+
+
+
+
+
+
+
+--> É ISSO QUE SÃO MULTI-STAGE BUILDS,
+
+
+MULTI-STAGE DOCKER FILES,
+
+E É ISSO QUE PODEMOS FAZER AQUI....
+
+
+
+
+
+
+
+
+PODEMOS 
+
+
+
+
+PENSAR NESSA 'BUILD STEP'
+
+COMO 
+
+NOSSO PRIMEIRO STAGE:
+
+
+
+
+
+
+
+
+FROM node:14-alpine 
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+CMD ["npm", "run", "build"]
+
+
+
+
+
+
+
+
+
+
+
+
+NÓS PEGAMOS E INSTALAMOS NOSSAS DEPENDENCIES,
+
+
+
+PEGAMOS NOSSO SOURCE CODE,
+
+COPIAMOS PARA DENTRO DO CONTAINER,
+
+
+E AÍ 
+BUILDAMOS 
+
+NOSSO SOURCE CODE FINALIZADO,
+
+
+
+
+
+
+QUE FICA 'FINALIZADO'
+ 
+
+
+
+ NO FINAL DESSA 'BUILD STEP'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> CERTO... ENTRETANTO,
+
+
+ COM MULTI STAGE BUILDS,
+
+
+ DEVEMOS TROCAR 'CMD'
+
+
+
+ POR RUN (senão, as coisas não funcionam)...
+
+
+
+
+
+
+
+
+ ex:
+
+
+
+
+
+
+
+
+
+
+ FROM node:14-alpine 
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+#! NÃO FAÇA ASSIM: CMD ["npm", "run", "build"]
+
+#? COM MULTI-STAGE BUILDS, DEVEMOS USAR 'RUN' em vez de 'CMD'... (pq 'RUN' vai nos deixar ESPECIFICAR MAIS ETAPAS, POSTERIORMENTE)...
+RUN npm run build
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+
+MAS PQ USEI 'RUN', ALI?
+
+
+
+
+
+
+
+
+
+
+--> É PQ __ EU VOU ESPECIFICAR MAIS ETAPAS, DEPOIS DO RUN....
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODERÍAMOS ESCREVER ISSO EM UMA DOCKERFILE 
+
+COMUM,
+
+SIM,
+
+
+
+MAS AQUI HÁ ALGO ESPECIAL...
+
+
+
+
+
+
+
+
+
+
+
+-> DEPOIS DE RODAR O COMANDO DE 'npm run build',
+
+
+
+
+
+O PROFESSOR QUER __ ''''TROCAR PARA UMA BASE-IMAGE __ DIFERENTE DA QUE 
+
+
+TIVEMOS INICIALMENTE NESSE ARQUIVO (uma image diferente de 'node:14-alpine)'''''....
+
+
+
+
+
+
+
+
+
+--> MAS PQ ISSO?
+
+
+
+
+
+
+
+
+
+
+--> É PQ __ APENAS PRECISAMOS DO NODE__ PARA BUILDAR AS OPTIMIZED FILES.... ---->
+
+
+
+PRECISAMOS DO NODE POR CONTA DO COMANDO DE 'npm',
+
+
+
+QUE VEM JUNTO COM O NODE,
+
+E TAMBÉM 
+
+PQ 
+O 
+
+
+
+
+BUILD SCRIPT (npm run build) 
+
+TAMBÉM 
+
+
+USA O NODE, POR TRÁS DAS CENAS... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS ASSIM QUE TIVERMOS ESSAS OPTIMIZED FILES,
+
+
+
+
+
+ESSA NODE IMAGE SE TORNA DESNECESSÁRIA,
+
+
+A NÃO SER QUE 
+
+
+VC QUEIRA 'BRING UP'
+
+SEU PRÓPRIO 
+
+NODE SERVER, para servir essas files...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS NÃO PRECISAMOS FAZER ISSO,
+
+
+
+PQ PODERÍAMOS/PODEMOS USAR O 'NGINX' PARA ISSO... ----> PODEMOS USAR O NGINX
+
+
+PQ 
+
+ELE É UM SERVER 
+
+
+MT LIGHTWEIGHT E SLIM,
+
+QUE 
+
+VAI 
+
+
+
+
+
+SER BOM PARA NÓS, AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+-> É POR ISSO QUE O PROFESSOR 
+
+VAI USAR 
+
+
+O 
+
+
+
+nginx, aqui,
+
+
+
+DEPOIS DE RODAR O 'npm run build'...
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+FROM node:14-alpine 
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+#! NÃO FAÇA ASSIM: CMD ["npm", "run", "build"]
+
+#? COM MULTI-STAGE BUILDS, DEVEMOS USAR 'RUN' em vez de 'CMD'... (pq 'RUN' vai nos deixar ESPECIFICAR MAIS ETAPAS, POSTERIORMENTE)...
+RUN npm run build
+
+
+#? AQUI COMEÇA A SEGUNDA 'STEP' DE NOSSA MULTI-STAGE BUILD...
+
+
+FROM nginx:alpine3.17
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ISSO PQ, TIPICAMENTE,
+
+VC 
+
+
+
+DEVE TER APENAS 1 ÚNICA BASE IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+AINDA ASSIM,
+
+VC PODE FAZER 'SWITCH' --> NESSE CASO,
+
+
+
+
+
+A 'PREVIOUS STEP' SERÁ __ DESCARTADA,
+
+
+
+
+E AÍ 
+
+VC VAI TROCAR PARA UMA 'NOVA BASE IMAGE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> '''DESCARTADA''' --> ISSO PQ 'CADA 
+
+
+INSTRUÇÃO FROM CRIA UM NOVO __ STAGE__ NA SUA DOCKERFILE....
+
+
+
+ISSO ACONTECE __ MESMO _ SE VC COLOCAR A MESMA IMAGE QUE VC COLOCOU NA STEP ANTERIOR' (
+
+    ou seja,
+
+
+    se tentássemos colocar '''FROM node:14-alpine''',
+
+
+    UMA NOVA STEP SERIA INICIADA, MESMO ASSIM...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AQUI O PROFESSOR QUER TROCAR PARA O NGINX:stable-alpine
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node:14-alpine 
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+#! NÃO FAÇA ASSIM: CMD ["npm", "run", "build"]
+
+#? COM MULTI-STAGE BUILDS, DEVEMOS USAR 'RUN' em vez de 'CMD'... (pq 'RUN' vai nos deixar ESPECIFICAR MAIS ETAPAS, POSTERIORMENTE)...
+RUN npm run build
+
+
+#? AQUI COMEÇA A SEGUNDA 'STEP' DE NOSSA MULTI-STAGE BUILD...
+
+
+FROM nginx:stable-alpine
+
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA VAMOS QUERER FAZER ALGO ESPECIAL, NO ENTANTO...
+
+
+
+
+
+
+
+
+
+
+
+
+-> EM VEZ DE DESCARTARMOS COMPLETAMENTE OS ARQUIVOS E A 'STEP' ANTERIOR INTEIRA,
+
+
+
+
+
+VAMOS QUERER AS UTILIZAR...
+
+
+
+
+
+
+
+
+
+
+QUEREMOS UTILIZAR AS 'OPTIMIZED FILES',
+ 
+ E AÍ 
+
+
+
+ FAZER 'SERVE' DELAS...
+
+
+
+
+
+
+
+
+
+
+ PARA ISSO,
+
+ VC PODE ADICIONAR 1 INSTRUCTION ESPECIAL...
+
+
+
+
+
+
+
+
+
+ ESSA INSTRUCTION ESPECIAL __ PODE __ SER ADICIONADA __ DEPOIS 
+
+
+ DE TODA E QUALQUER INSTRUCTION DE 'FROM'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> ESSA INSTRUCTION ESPECIAL TEM UMA SINTAXE MEIO SQL,
+
+
+ PQ 
+
+
+
+ é a keyword de 'as'...
+
+
+
+
+
+
+
+
+
+
+ --> VOCÊ ESCREVERÁ TIPO ASSIM:
+
+
+
+
+
+
+
+FROM node:14-alpine as build
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+
+RUN npm run build
+
+
+
+FROM nginx:stable-alpine
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> 'as build'...
+
+
+
+
+
+
+
+O PROFESSOR COLOCOU A PALAVRA 'BUILD' como nome...
+
+
+
+
+
+
+
+
+
+
+
+--> AÍ, NA SEGUNDA PARTE
+
+
+
+
+DA DOCKERFILE,
+
+
+QUE COMEÇA COM A SEGUNDA 'IMAGE'  (é o FROM nginx),
+
+
+
+
+
+
+DEVEMOS __ ___ESCREVER 
+
+
+
+'COPY' ...
+
+
+
+
+
+
+
+
+
+
+--> MAS VAMOS COPIAR ALGO ESPECIAL... VAMOS COPIAR __ COISAS __ LÁ DO 'PRIMEIRO STAGE',
+
+
+
+TUDO 
+
+
+POR MEIO 
+
+
+
+
+DA OPTION ESPECIAL DE '--from'...
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+FROM node:14-alpine as build
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+
+RUN npm run build
+
+
+
+FROM nginx:stable-alpine
+
+
+COPY --from ///////////EIS O CÓDIGO EM QUESTÃO..
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node:14-alpine as build
+# 'as' é NECESSÁRIO PARA QUE VOCÊ CONSIGA COLOCAR 1 'ALIAS' PARA ESSA IMAGE INTEIRA... ESSE ALIAS DEPOIS PODE/SERÁ USADO PARA COISAS COMO 'COPIAR OS ARQUIVOS DA IMAGE ANTERIOR', como visto logo abaixo...
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+#! NÃO FAÇA ASSIM: CMD ["npm", "run", "build"]
+
+#? COM MULTI-STAGE BUILDS, DEVEMOS USAR 'RUN' em vez de 'CMD'... (pq 'RUN' vai nos deixar ESPECIFICAR MAIS ETAPAS, POSTERIORMENTE)...
+RUN npm run build
+
+
+#? AQUI COMEÇA A SEGUNDA 'STEP' DE NOSSA MULTI-STAGE BUILD...
+
+
+FROM nginx:stable-alpine
+
+# ESTE COPY AQUI É ESPECIAL... ESTAMOS USANDO A SINTAXE DE 'COPIAR COISAS LÁ DE OUTRA STEP/STEPS'... --> no caso, vamos COPIAR OS ARQUIVOS DA 'FINAL BUILD', buildados pela PRIMEIRA STEP de nossa docker file (ou seja, até o trecho de 'npm run build'.... pegaremos o output desse trecho aí, as build files, o build output)...
+COPY --from=build   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO SIGNIFICA QUE VAMOS COPIAR O 'FINAL CONTENT' 
+
+
+
+
+DAQUELE STAGE DE BUILD.... ----> ou seja,
+
+
+
+VAMOS COPIAR O FINAL CONTENT ADVINDO DE TODAS AS LINHAS DE INSTRUÇÃO ATÉ A PARTE DE 'npm run build'...
+
+
+
+
+
+
+
+
+--> VAMOS COPIAR TUDO ISSO PARA DENTRO DESSE NOVO STAGE..
+
+
+
+
+
+
+
+
+
+
+--> MAS É CERTO QUE __ NÃO VOU QUERER COPIAR TUDO QUE ESTAVA NAQUELE FILE SYSTEM...
+
+
+
+
+
+
+--> É POR ISSO QUE, DEPOIS DE '--from=build',
+
+VC 
+
+
+AINDA PRECISA ESPECIFICAR O 'SOURCE PATH'...
+
+
+
+
+(como visto com 'COPY . . ')..
+
+
+
+
+
+
+
+
+
+
+
+--> NO CASO,
+
+
+COM A OPTION DE '--from',
+
+
+ESTAMOS DIZENDO AO DOCKER QUE __ ESSA COPY NÃO VAI SE REFERIR AO 
+
+'LOCAL HOST PROJECT FOLDER',
+
+
+
+E SIM 
+
+VAI SE REFERIR AO FILE SYSTEM DE NOSSO BUILD STAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E O PROFESSOR VAI ESPECIFICAR '/app/build'...
+
+
+
+
+
+
+
+--> ELE ESPECIFICA ISSO PQ, EM APPS REACTS,
+
+
+O APP SEMPRE VAI PRODUZIR 1 FOLDER DE 'build'
+
+
+
+COM TODOS OS FINAL SERVABLE FILES...
+
+
+
+
+
+
+
+
+
+
+
+-> OK.. VAMOS COPIAR DO FOLDER DE '/app/build'
+
+PARA 
+
+
+
+O 
+FOLDER DE 
+
+
+
+'/usr/share/nginx/html' 
+
+
+(PQ O NGINX FAZ SERVE DE FILES NESSE FOLDER AÍ,
+
+COMO DEVEMOS NOS LEMBRAR)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+FROM node:14-alpine as build
+# 'as' é NECESSÁRIO PARA QUE VOCÊ CONSIGA COLOCAR 1 'ALIAS' PARA ESSA IMAGE INTEIRA... ESSE ALIAS DEPOIS PODE/SERÁ USADO PARA COISAS COMO 'COPIAR OS ARQUIVOS DA IMAGE ANTERIOR', como visto logo abaixo...
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+#! NÃO FAÇA ASSIM: CMD ["npm", "run", "build"]
+
+#? COM MULTI-STAGE BUILDS, DEVEMOS USAR 'RUN' em vez de 'CMD'... (pq 'RUN' vai nos deixar ESPECIFICAR MAIS ETAPAS, POSTERIORMENTE)...
+RUN npm run build
+
+
+#? AQUI COMEÇA A SEGUNDA 'STEP' DE NOSSA MULTI-STAGE BUILD...
+
+
+FROM nginx:stable-alpine
+
+# ESTE COPY AQUI É ESPECIAL... ESTAMOS USANDO A SINTAXE DE 'COPIAR COISAS LÁ DE OUTRA STEP/STEPS'... --> no caso, vamos COPIAR OS ARQUIVOS DA 'FINAL BUILD', buildados pela PRIMEIRA STEP de nossa docker file (ou seja, até o trecho de 'npm run build'.... pegaremos o output desse trecho aí, as build files, o build output)...
+COPY --from=build /app/build /usr/share/nginx/html
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+# ESTE COPY AQUI É ESPECIAL... ESTAMOS USANDO A SINTAXE DE 'COPIAR COISAS LÁ DE OUTRA STEP/STEPS'... --> no caso, vamos COPIAR OS ARQUIVOS DA 'FINAL BUILD', buildados pela PRIMEIRA STEP de nossa docker file (ou seja, até o trecho de 'npm run build'.... pegaremos o output desse trecho aí, as build files, o build output)...
+COPY --from=build /app/build /usr/share/nginx/html
+
+
+### E É CLARO QUE AINDA PRECISAMOS ESPECIFICAR 'DE QUE FOLDER, DA STEP ANTERIOR, VOCê QUER COPIAR O CONTEÚDO'... E 'PARA QUAL FOLDER, DA NOSSA IMAGE/STEP ATUAL, VOCÊ VAI QUERER COPIAR O CONTEÚDO?'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK....
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node:14-alpine as build
+# 'as' é NECESSÁRIO PARA QUE VOCÊ CONSIGA COLOCAR 1 'ALIAS' PARA ESSA IMAGE INTEIRA... ESSE ALIAS DEPOIS PODE/SERÁ USADO PARA COISAS COMO 'COPIAR OS ARQUIVOS DA IMAGE ANTERIOR', como visto logo abaixo...
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+#! NÃO FAÇA ASSIM: CMD ["npm", "run", "build"]
+
+#? COM MULTI-STAGE BUILDS, DEVEMOS USAR 'RUN' em vez de 'CMD'... (pq 'RUN' vai nos deixar ESPECIFICAR MAIS ETAPAS, POSTERIORMENTE)...
+RUN npm run build
+
+
+#? AQUI COMEÇA A SEGUNDA 'STEP' DE NOSSA MULTI-STAGE BUILD...
+
+
+FROM nginx:stable-alpine
+
+# ESTE COPY AQUI É ESPECIAL... ESTAMOS USANDO A SINTAXE DE 'COPIAR COISAS LÁ DE OUTRA STEP/STEPS'... --> no caso, vamos COPIAR OS ARQUIVOS DA 'FINAL BUILD', buildados pela PRIMEIRA STEP de nossa docker file (ou seja, até o trecho de 'npm run build'.... pegaremos o output desse trecho aí, as build files, o build output)...
+COPY --from=build /app/build /usr/share/nginx/html
+
+
+### E É CLARO QUE AINDA PRECISAMOS ESPECIFICAR 'DE QUE FOLDER, DA STEP ANTERIOR, VOCê QUER COPIAR O CONTEÚDO'... E 'PARA QUAL FOLDER, DA NOSSA IMAGE/STEP ATUAL, VOCÊ VAI QUERER COPIAR O CONTEÚDO?'
+### vamos colocar os arquivos nesse folder de 'usr/share/nginx/html', QUE É O DEFAULT FOLDER EM QUE _O NGINX VAI TENTAR FAZER SERVE DAS FILES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... E ISSO TUDO É ALGO QUE PODEMOS VER LÁ NOS DOCS DA IMAGE DO NGINX,
+
+NO DOCKER HUB...
+
+
+
+
+
+
+
+O NEGÓCIO NOS MOSTRA QUE 
+
+
+''SE QUEREMOS FAZER SERVE 
+
+DE 
+
+
+SIMPLE STATIC CONTENT''' (que é exatamente o que temos aqui,
+
+que 
+
+é basicamente 
+
+
+
+1 ÚNICA HTML FILE,
+
+E UM MONTE DE ARQUIVOS JAVASCRIPT... STATIC CONTENT...
+
+
+) --------> EM CASOS COMO ESSES, 
+
+
+
+
+APENAS TEMOS QUE 
+
+
+
+FAZER HOST DO CONTEÚDO DESSE 'usr/share/nginx/html' folder...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+PORTANTO,
+ ESSE É O FOLDER A QUE VAMOS COPIAR, AQUI...
+
+
+
+
+
+
+
+ --> COM ISSO,
+
+
+
+ ESTAMOS USANDO ESSA FEATURE DE 'MULTI-STAGE' 
+
+
+
+
+PARA __ COPIAR __ O RESULTADO DO _ PRIMEIRO STAGE _ 
+
+PARA O SEGUNDO STAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS É CLARO QUE O 'FINAL CONTAINER' 
+
+
+
+VAI INCLUIR APENAS AQUELE SEGUNDO STAGE... ENTRETANTO,
+
+
+
+
+ELE PRIMEIRAMENTE VAI BUILDAR AQUELE PRIMEIRO STAGE,
+PARA 
+
+SÓ ENTÃO CONSEGUIR DERIVAR AQUELE SEGUNDO STAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E É CLARO QUE PODEMOS TER MAIS DE 2 STAGES EM 1 DOCKER FILE...
+
+
+
+
+
+
+PODEMOS TER QUANTOS STAGES QUISERMOS...
+
+
+
+
+
+
+
+
+
+
+
+- POR EXEMPLO,
+
+
+PODEMOS TER 1 EXTRA STAGE PARA __ RODAR NOSSOS TESTS (testar antes de rodar as nossas  coisas)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... DEPOIS DE COPIAR ESSES ARQUIVOS,
+
+
+O PROFESSOR 
+
+
+VAI 
+
+DEIXAR EXPOSTA A PORT '80',
+
+
+PQ É ESSA A PORT 
+
+
+
+
+
+QUE O NGINX DEIXA EXPOSTA, INTERNAMENTE...
+
+
+
+
+
+
+
+
+
+-> POR FIM, O COMANDO FINAL,
+
+AQUI,
+
+SERÁ 
+
+
+
+STARTAR O NGINX SERVER,
+
+COM 
+
+'CMD ["nginx"]' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR TAMBÉM COLOCA 1 OPTION DE '-g daemon off;',
+
+
+
+
+PQ OS DOCS DO NGINX IMAGE 
+
+RECOMENDAM ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, NOSSO CÓDIGO DA DOCKERFILE MULTI-STEP FICOU ASSIM:
+
+
+
+
+
+
+
+
+FROM node:14-alpine as build
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+RUN npm run build
+
+FROM nginx:stable-alpine
+
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80 
+
+CMD ["nginx", "-g", "daemon off;"]
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node:14-alpine as build
+# 'as' é NECESSÁRIO PARA QUE VOCÊ CONSIGA COLOCAR 1 'ALIAS' PARA ESSA IMAGE INTEIRA... ESSE ALIAS DEPOIS PODE/SERÁ USADO PARA COISAS COMO 'COPIAR OS ARQUIVOS DA IMAGE ANTERIOR', como visto logo abaixo...
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+#! NÃO FAÇA ASSIM: CMD ["npm", "run", "build"]
+
+#? COM MULTI-STAGE BUILDS, DEVEMOS USAR 'RUN' em vez de 'CMD'... (pq 'RUN' vai nos deixar ESPECIFICAR MAIS ETAPAS, POSTERIORMENTE)...
+RUN npm run build
+
+
+#? AQUI COMEÇA A SEGUNDA 'STEP' DE NOSSA MULTI-STAGE BUILD...
+
+
+FROM nginx:stable-alpine
+
+# ESTE COPY AQUI É ESPECIAL... ESTAMOS USANDO A SINTAXE DE 'COPIAR COISAS LÁ DE OUTRA STEP/STEPS'... --> no caso, vamos COPIAR OS ARQUIVOS DA 'FINAL BUILD', buildados pela PRIMEIRA STEP de nossa docker file (ou seja, até o trecho de 'npm run build'.... pegaremos o output desse trecho aí, as build files, o build output)...
+COPY --from=build /app/build /usr/share/nginx/html
+
+
+### E É CLARO QUE AINDA PRECISAMOS ESPECIFICAR 'DE QUE FOLDER, DA STEP ANTERIOR, VOCê QUER COPIAR O CONTEÚDO'... E 'PARA QUAL FOLDER, DA NOSSA IMAGE/STEP ATUAL, VOCÊ VAI QUERER COPIAR O CONTEÚDO?'
+### vamos colocar os arquivos nesse folder de 'usr/share/nginx/html', QUE É O DEFAULT FOLDER EM QUE _O NGINX VAI TENTAR FAZER SERVE DAS FILES...
+
+# DEIXAMOS EXPOSTA A PORT 80, pq é essa port que fica aberta na image do nginx out of the box, é a setting default dele...
+EXPOSE 80 
+
+## COM ISSO, EXECUTAMOS NOSSO SERVIDOR NGINX... a option de '-g daemon off' é algo recomendado pela própria image do nginx, no docker hub...
+CMD ["nginx", "-g", "daemon off;"] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... É ASSIM QUE DEVEMOS STARTAR O NGINX SE 
+
+
+
+NÓS FIZEMOS START DELE 
+
+POR CONTA PRÓPRIA... -> QUE É O QUE FAREMOS AQUI,
+
+
+
+
+LOGO DEPOIS DE TERMOS COPIADO NOSSO CUSTOM CODE...
+
+
+
+
+
+
+
+
+
+
+
+--> E ESSA É UMA BRAND NEW FEATURE, É CLARO... AINDA NÃO VIMOS ESSA FEATURE ANTERIORMENTE,
+
+
+
+NÃO VIMOS ISSO NAS DOCKERFILE,
+
+
+MAS É UMA ÓTIMA E POWERFUL FEATURE,
+
+
+
+
+PQ É ÓTIMA PARA SITUAÇÕES COMO ESTA,
+
+EM QUE 
+
+
+
+
+TEMOS 1 APP QUE PRECISA SER 'BUILT' 
+
+ANTES DE TER SEUS ARQUIVOS SERVED.. .-> EM CASOS COMO ESSE ,
+
+
+TER 
+
+
+1 MULTI-STAGE DOCKERFILE 
+
+
+É ALGO ÓTIMO...
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO TERMINADO,
+
+
+
+E COM NOSSA MULTI-STAGE DOCKERFILE 
+
+
+
+CONSTRUÍDA,
+
+
+
+
+
+
+
+
+
+DEVEMOS VER 'COMO FARÍAMOS DEPLOY DISSO'..
+
+
+
