@@ -1,0 +1,315 @@
+
+
+
+
+
+
+
+
+
+
+
+
+AWS VS OUTROS PROVIDERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O AWS FOI USADO COMO EXEMPLO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS NÃO INTERESSA O CLOUD PROVIDER QUE VC USAR...
+
+
+
+
+
+
+
+
+
+VC SEMPRE TERÁ A ESCOLHA ENTRE:
+
+
+
+
+
+
+
+1) FULL CONTROL,
+
+MANUAL CONTROL AND INSTALLATION,
+
+EM QUE 
+
+TEMOS 
+1 REMOTE MACHINE EM QUE INSTALAMOS 
+
+O DOCKER 
+
+E MANAGEAMOS O UNDERLYING SERVER....
+
+
+
+
+
+
+
+
+
+
+
+
+2) USO DE MANAGED SERVICES,
+
+QUE TE DEIXAM DEPLOYAR CONTAINERS 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+VIMOS AMBOS OS APPROACHES NESTE MÓDULO --> VIMOS O EC2,
+
+
+
+O APPROACH 'DO IT ON YOUR OWN',
+
+
+
+
+
+
+MAS AÍ 
+
+
+VIMOS O 'ECS',
+
+PARA 
+
+TERMOS AQUELE 
+
+
+MANAGED SERVICE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> O APPROACH 'EC2',
+
+
+MANUAL INSTALLATION APPROACH,
+
+
+
+
+
+É DISPONIBILIZADO _ POR __ MTOS PROVIDERS... ----> ISSO PQ 
+
+
+
+TER 1 REMOTE MACHINE, 
+
+
+
+QUE OS USUÁRIOS FAZEM MANAGE POR CONTA PRÓPRIA,
+
+
+É ALGO BEM FÁCIL DE VENDER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MANAGEMENT SERVICES MAIS COMPLEXOS,
+
+COMO O ECS,
+
+
+
+
+EXISTEM NOS BIG PROVIDERS,
+
+
+
+
+
+OS MAIORES POSSUEM 
+
+
+SERVICES 
+
+
+
+PARECIDOS... 
+
+
+
+
+
+
+
+
+
+
+
+--> O PROF JÁ MENCIONOU:
+
+
+
+
+
+
+
+NÃO É POSSÍVEL COBRIR TODOS OS PROVIDERS,
+
+E AS 
+
+
+EXATAS ETAPAS DIFEREM ENTRE PROVIDERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->  O QUE O PROFESSOR QUERIA FAZER É 
+
+MOSTRAR 
+
+ESSAS 
+
+2 
+
+MAIN 
+
+'PHILOSOPHIES'
+
+PARA O DEPLOY DE CONTAINER (
+
+
+    instalar o docker em 1 remote machine vs MANAGED SERVICES...
+)
+
+
+
+
+
+
+
+
+
+
+
+--> ELE QUERIA NOS MOSTRAR POTENCIAIS DESAFIOS,
+
+O QUE DEVEMOS TER EM MENTE,
+
+E COMO CERTAS FEATURES QUE 
+
+USAMOS 
+
+LOCALMENTE,
+
+COMO 'docker' e 'docker-compose'
+
+
+
+
+PODEM SER TRADUZIDOS PARA MANAGED SERVICES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> ISSO QUER DIZER QUE O QUE APRENDEMOS AQUI PODE NOS AJUDAR 
+NÃO SÓ COM O AWS ,
+
+MAS COM QUALQUER 
+
+
+
+PROVIDER,
+
+
+
+pq nos mostra pain points que vc pode enfrentar QUANDO DEPLOYAR CONTAINERS....
+
+
+
