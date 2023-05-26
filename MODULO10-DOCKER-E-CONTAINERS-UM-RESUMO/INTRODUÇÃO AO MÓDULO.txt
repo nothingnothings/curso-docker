@@ -1,0 +1,77 @@
+  
+
+
+
+
+
+
+
+  --> OK... ESSE SERÁ UM MÓDULO CURTO, PQ SERÁ UM 
+  MÓDULO-RESUMO...
+
+
+
+
+
+
+
+
+
+
+
+  NO PRÓXIMO MÓDULO,
+  VEREMOS KUBERNETES....
+
+
+
+
+
+
+
+
+
+
+
+
+--> REVISAREMOS AS COISAS QUE VIMOS AO LONGO DO ÚLTIMO MÓDULO...
+
+
+
+
+
+
+
+
+veremos os core concepts do docker mais uma vez..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> aí vamoos diferenciar ENTRE O RUN __ DO DOCKER LOCALMENTE, NA NOSSA LOCAL HOST MACHINE (
+
+    quais tools importam lá,
+
+    e o que fazemos lá...
+)
+
+
+E O RUN 
+
+
+
+
+EM PRODUCTION,
+
+
+
+E O QUE MUDA LÁ...
