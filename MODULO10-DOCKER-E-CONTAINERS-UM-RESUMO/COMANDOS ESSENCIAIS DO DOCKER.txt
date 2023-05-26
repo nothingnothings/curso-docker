@@ -1,0 +1,335 @@
+
+
+
+
+
+
+
+
+
+
+
+--> OK... PARA TRABALHAR COM IMAGES E CONTAINERS,
+
+TEMOS ALGUNS CORE COMMANDS..
+
+
+
+
+
+
+
+
+
+
+
+
+----> TEMOS O COMANDO 'docker build -t .' ...
+
+
+
+
+
+
+
+
+--> o docker build PODE SER USADO PARA CONSTRUIR UMA IMAGE COM 
+
+
+BASE EM UMA DOCKER FILE....
+
+
+
+
+
+
+
+
+
+
+
+-> especificamos o 'build context',
+o path 
+
+AO FOLDER EM QUE TEMOS A DOCKERFILE,
+
+
+E ESSE É O MESMO FOLDER EM QUE ESSA IMAGE SERÁ CONSTRUÍDA( o docker vai considerar 
+essa folder, seus conteúdos, para construir a image)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DEVEMOS COLOCAR O NOME DA IMAGE QUE QUEREMOS TER,
+
+
+E AÍ 
+DEVEMOS COLOCAR A 'TAG'
+
+QUE AQUELA IMAGE DEVERÁ TER (podemos ter múltiplas versões de 1 mesma image)..
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+docker build -t NAME:TAG .
+
+
+
+
+
+--------------------
+
+
+
+
+
+
+
+
+
+
+POR EXEMPLO, NA IMAGE DE 'NODE',
+
+
+TEMOS A TAG 
+
+
+
+
+
+de ':14' 
+
+
+e 
+':16'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... 
+
+
+
+
+
+
+
+
+QUANDO RODAMOS 1 IMAGE COMO CONTAINER,
+
+
+COLOCAMOS 1 NAME NESSE CONTAINER, COM 
+
+'--name'...
+
+
+
+
+
+
+
+
+
+--> PODEMOS TAMBÉM FAZER O CONTAINER SER REMOVIDO AUTOMATICAMENTE QUANDO É STOPPED,
+
+COM 
+
+'--rm',
+
+
+
+
+
+
+e
+ também rodar em    DETACHED MODE,
+
+ COM 
+
+ '-d'...
+
+
+
+
+
+
+
+
+ TIPO 
+
+
+
+
+ docker run --name NOME-QUE-SEU-CONTAINER-TERÁ --rm -d image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --. OK... E QUANDO RODAMOS 1 CONTAINER,
+
+ PRECISAMOS PROVIDENCIAR O NOME E A TAG DA IMAGE QUE QUEREMOS USAR,
+
+ PQ O DOCKER RUN SEMPRE PRECISA DESSA INFO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> PODEMOS FAZER 'SHARE' DE NOSSAS IMAGES,
+ COM 
+
+
+ DOCKER PUSH 
+
+ E DOCKER PULL...
+
+
+
+
+
+
+
+
+
+
+
+ --> DEVEMOS TER EM MENTE QUE, PARA FAZER PUSH DE 1 IMAGE AO DOCKERHUB,
+
+
+ DEVEMOS 
+
+
+ USAR O MESMO NOME, NESSA IMAGE LOCAL,
+
+
+
+
+ QUE O NOME 
+
+
+
+
+ DA IMAGE/REPOSITORY USADO NO DOCKERHUB...
+
+
+
+
+
+
+
+
+
+
+ TAMBÉM PODEMOS USAR OUTROS REPOSITORIES ALÉM DO 
+
+
+ DOCKERHUB... -> EM CASOS COMO ESSES,
+
+
+
+ O 'IMAGE NAME',
+
+
+ NO COMANDO 
+
+
+
+ 'docker pull image-name'
+
+
+
+
+
+SERÁ 
+
+
+__A URL__ A ESSA IMAGE, NESSE REPOSITORY...
+
+
+
+
+
+
+ENTRETANTO,
+COM O DOCKERHUB,
+
+SE VC ESTÁ PULLANDO DE LÁ,
+
+BASTA COLOCAR 
+
+'account-name/image-name'...
+
+
+
+
+
+
+
+
+
+
+--> VC PRECISA FAZER 'LABEL' 
+DE SUAS IMAGES 
+LOCALMENTE ANTES __ DE PODER _ FAZER PUSH DAS MESMAS AO DOCKERHUB...
+
+
+
+
+
+
+
+FOI ISSO QUE VIMOS AO LONGO DO CURSO...
