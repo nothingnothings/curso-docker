@@ -5,4 +5,2412 @@
 
 
 
-OK
+OK... AGORA É HORA DE  DEPLOYAR  NOSSO FRONTEND REACT NO
+
+ECS...
+
+
+
+
+
+
+
+
+----> O PROFESSOR CRIA UMA NOVA TASK DEFINITION/REVISION,
+
+PQ 
+
+VAMOS ADICIONAR 1 NOVO CONTAINER, O CONTAINER 
+
+DO REACT FRONTEND,
+
+NO CONTEXTO 
+
+DA TASK EM QUE JÁ TEMOS O 'GOALS-BACKEND'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS MAPPEAR A PORT 80,
+
+
+E AÍ COLOCAMOS A IMAGE DE 
+
+'nothingnothings/goals-react'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEIXAMOS EXPOSTA A PORT 80, TUDO NORMAL...
+
+
+
+
+
+
+-> NA PARTE DE HEALTH CHECKS,
+ 
+
+ NÃO COLOCAMOS COISA ALGUMA...
+
+
+
+
+
+
+
+
+
+ EM ENVIRONMENT VARIABLES, TAMBÉM NÃO DEFINIMOS NADA...
+
+ 
+
+
+ -----> MAS PODEMOS FAZER ALGO LÁ NA PARTE DE 
+
+ 'STARTUP DEPNDENCY ORDERING'...
+
+
+
+
+
+
+ COM ISSO, PODEMOS 
+
+
+ GARANTIR QUE O 'GOALS-BACKEND'
+
+
+
+ VAI SER LANÇADO ANTES DO FRONTEND REACT CONTAINER..
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> COLOCAMOS 'goals-backend'  CONDITION -> SUCCESS...
+
+
+
+
+
+
+
+
+
+
+
+
+ PRECISAMOS QUE O BACKEND ESTEJA FUNCIONANDO,
+
+ PQ O FRONTEND REACT APP NÃO VAI FUNCIONAR SEM O BACKEND..
+
+
+
+
+
+
+
+
+
+
+ (POR ISSO COLOCAMOS ESSA ORDEM AÍ)...
+
+
+
+
+
+
+
+ NÃO COLOCAMOS NENHUM NETWORK SETTING,
+
+ NEM VOLUME ALGUM....
+
+
+
+
+
+
+
+
+
+ ADICIONADA ESSA CONTAINER DEFINITION,
+
+ PODEMOS 
+
+
+ CREATE ESSA DEFINITION..
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS ANTES DE CRIARMOS A DEFINITION/REVISION,
+
+TEREMOS 1 PROBLEMA --> O BOTÃO DE 'CREATE/REVIEW'
+
+ESTARÁ 
+
+
+
+_CINZA, DESABILITADO --> E O PROBLEMA, 
+
+NO CASO,
+
+É QUE 
+
+
+ESTAMOS MAPPEANDO 2 CONTAINERS 
+
+
+A 1 MESMA PORT.....
+
+
+
+
+
+
+
+
+
+OS 2 CONTAINERS,
+
+
+GOALS-BACKEND E GOALS-FRONTEND,
+
+
+
+ESTÃO MAPPEADOS 
+
+
+À PORT 80...
+
+
+
+
+
+
+
+
+
+
+
+E, EM 1 MESMA TASK,
+
+
+ISSO NÃO É POSSÍVEL... --> APENAS 1 CONTAINER PODE FICAR MAPPEADO A DETERMINADA PORT (apenas 1 container pode ficar mappeado na port 80)..
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO FAZ SENTIDO,
+
+
+PQ AÍ 
+
+'COMO DIABOS O LOAD BALANCER E A AWS SABERIAM A QUE 
+CONTAINER 
+
+1 GIVEN REQUEST DEVERIA SER FORWARDADO, CASO CONTRÁRIO?'
+
+
+
+
+
+
+
+
+
+
+
+PARA FAZER COM QUE ISSO FUNCIONE MAIS UMA VEZ,
+
+
+HÁ UM PUNHADO DE COISAS QUE VC PODE FAZER...
+
+
+
+
+
+
+
+
+-> PRIMEIRA COISA QUE PODERÍAMOS FAZER:
+
+
+
+
+
+
+1) TENTAR MERGEAR O FRONTEND E O BACKEND EM 1 MESMO CONTAINER...
+
+
+
+
+(
+
+    PQ NOSSO BACKEND JÁ TEM 1 NODE-SERVER,
+
+    POR ISSO TECNICAMENTE PODERÍAMOS USAR 
+
+    ESSE NODE-SERVER PARA SERVIR NOSSO NODE APP....
+)
+
+
+
+
+
+
+
+2) TAMBÉM PODERÍAMOS __ EXPOR _ O NOSSO BACKEND EM UMA OUTRA PORT,
+
+PARA QUE NÃO FIQUEMOS COM 
+
+
+1 'PORT CLASH'...
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS O PROFESSOR NÃO GOSTA DA IDEIA DE 'TER 1 PORT DIFERENTE',
+
+
+1 PORT DIFERENTE DE 80... ---> PQ TER 1 PORT DIFERENTE DE '80'
+
+PODE 
+
+
+SER ALGO MEIO CONFUSO...
+
+
+
+
+
+
+
+
+
+--> E TER 1 'MERGED CONTAINER' EM VEZ DE 1 SERIA ABSOLUTELY FINE,
+
+
+
+MAS O PROFESSOR 
+
+
+
+
+QUER NOS MOSTRAR 
+
+COMO PODEMOS 
+
+
+
+
+
+__ BUILD E DEPLOY MÚLTIPLOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O PROFESSOR VAI CONTINUAR COM ESSE APPROACH DE 
+
+'1 CONTAINER FRONTEND, STANDALONE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AINDA ASSIM, NÃO SERÁ POSSÍVEL HOSTEAR ESSES 
+
+2 CONTAINERS 
+
+
+
+EM 1 MESMA TASK...
+
+
+
+
+
+
+
+
+
+
+
+
+-> E ESSA NÃO É UMA 
+
+
+ECS RESTRICTION,
+
+
+
+E SIM 
+
+
+ALGO QUE __ NUNCA PODERIA FUNCIONAR, TECNICAMENTE... --------> PQ __ VOCÊ NÃO PODE 
+
+
+TER 2 WEB SERVERS 
+
+
+
+__ NO MESMO HOST... (
+
+
+    E É  EXATAMENTE ISSO QUE ESTAMOS TENTANDO FAZER...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO PQ O NODE BACKEND FAZ SPIN UP DO SEU PRÓPRIO WEB SERVER,
+
+
+QUE FAZ LISTEN TO NA PORT 80...
+
+
+
+
+
+
+
+
+-> E O 'NGINX' FRONTEND ESTÁ FAZENDO A MESMA COISA, TENTANDO 
+
+FAZER LISTEN TO NA PORT 80...
+
+
+
+
+
+
+
+
+
+
+
+E 2 WEB SERVERS EM 1 MESMO HOST,
+
+EM 1 MESMA PORT,
+
+ 
+
+
+ ISSO REALMENTE NÃO VAI FUNCIONAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> É POR ISSO QUE, AQUI,
+
+
+ QUANDO FALAMOS SOBRE ECS,
+
+
+
+
+ __PRECISAMOS __ DE DIFERENTES TASKS,
+
+ 1 PARA O BACKEND,
+
+ E OUTRA PARA O FRONTEND...
+
+
+
+
+
+
+
+
+ VAMOS CRIAR 1 NOVA TASK DEFINITION NESSE CLUSTER....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR VAI USAR O FARGATE NOVAMENTE,
+
+
+
+MAS 
+
+
+
+
+VAI COLOCAR 1 NOME DE TASK DE 'goals-react'...
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR COLOCA O MESMO 'TASK ROLE' QUE ELE USOU PARA O BACKEND...
+
+
+
+
+
+
+
+
+
+
+ELE TAMBÉM ASSIGNA OS VALUES MÍNIMOS PARA CPU E MEMÓRIA...
+
+
+
+
+
+
+
+
+
+--> aí o professor assigna a image de 'nothingnothings/react-goals'
+
+
+
+A ESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEPOIS, O PROFESSOR MAPPEIA A PORT 80... AGORA ESSE MAPPING VAI FUNCIONAR,
+
+PQ ESSA É UMA NOVA TASK E UM NOVO PROCESS... --> ISSO TAMBÉM SIGNIFICA QUE 
+
+ESSA TASK,
+
+
+ESSE SERVICE QUE VAI RODAR A TASK MAIS TARDE,
+
+
+
+VAI __ TER __ SUA PRÓPRIA URL... -> COM ISSO,
+
+
+TEREMOS 
+
+
+2 URLS 
+
+DIFERENTES,
+
+
+
+1 PARA O BACKEND 
+
+E 
+
+OUTRA 
+
+
+PARA O FRONTEND..
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+PODEMOS CLICAR EM 'CREATE', PARA CRIAR ESSA TASK..
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+-> PODEMOS VER A DEFINITION DESSA TASK,
+
+E AÍ 
+PODEMOS CRIAR 1 SERVICE COM BASE NESSA TASK...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS ANTES DE CRIARMOS 1 SERVICE COM BASE NESSA TASK,
+
+
+O PROFESSOR QUE REVISAR O CÓDIGO BREVEMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR VOLTA AO 'Dockerfile.prod'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR ACABOU DE MENCIONAR QUE ,
+
+
+'SE USARMOS 2 DIFERENTES TASKS,
+
+TEREMOS 2 DIFERENTES URLS'...
+
+
+
+
+
+
+
+
+
+
+
+-> E ISSO SIGNIFICA QUE NOSSA SOLUÇÃO, QUE ERA 
+
+
+
+'''OMITIR O DOMAIN E __ CONFIAR NO BEHAVIOR DO 
+
+REQUEST SENDO ENVIADO AO localhost''',
+
+
+
+
+
+
+
+
+
+ESSA SOLUÇÃO NÃO VAI MAIS FUNCIONAR...
+
+
+
+
+
+
+
+
+
+
+
+
+ISTO AQUI NÃO VAI MAIS FUNCIONAR:
+
+
+
+
+
+      const response = await fetch('/goals/' + goalId, {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NÃO VAI MAIS FUNCIONAR PQ __ O FRONTEND AGORA VAI SER SERVIDO EM UMA URL 
+DIFERENTE 
+
+DA DO BACKEND,
+
+POR ISSO NÃO PODEREMOS MAIS DEPENDER DO BEHAVIOR DO BROWSER DE 'FIND THAT URL AUTOMATICALLY'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> BTW,
+
+
+ESSA COISA DE DEIXAR SÓ '/goals'
+
+NÃO FUNCIONARIA 
+TAMBÉM 
+
+LOCALMENTE,
+ 
+
+
+ EM DEVELOPMENT,
+
+
+
+
+ 
+
+ NA HORA QUE RODÁSSEMOS AS 2 COISAS 
+
+
+ EM CONTAINERS SEPARADOS, 1 NA PORT 3000 E O OUTRO NA PORT 80... (em development),
+
+
+
+
+
+OS REQUESTS NÃO CONSEGUIRIAM ENCONTRAR O NODEJS REST API CONTAINER 
+
+MESMO EM DEVELOPMENT, COM ESSE SETUP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... É POR ISSO QUE PRECISAMOS ADICIONAR UMA URL DE VOLTA NO NOSSO CÓDIGO...
+
+
+
+
+
+
+
+
+
+--> E ESSA URL PRECISARÁ SER UMA URL FLEXÍVEL,
+
+PQ 
+
+ELA __ VAI VARIAR, A DEPENDER DO _ ENVIRONMENT EM QUE 
+
+
+RODARMOS O NOSSO APP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS 1 COISA QUE DEVEMOS TER EM MENTE, AQUI,
+
+
+É __ QUE __ 
+
+
+NÃO PODEMOS SIMPLESMENTE USAR 
+
+DOCKER ENVIRONMENT VARIABLES 
+
+
+
+
+
+COM O CÓDIGO REACT... --> PQ O CÓDIGO REACT __ NÃO SERÁ 
+
+
+
+EXECUTADO DENTRO DE 1 DOCKER CONTAINER,
+
+E SIM 
+
+EM 
+
+
+1 BROWSER... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PORÉM, AINDA PODEMOS USAR ENVIRONMENT VARIABLES DENTRO DO CÓDIGO REACT,
+
+
+
+
+
+
+
+
+MAS __ É O 'REACT BUILD PROCESS' QUE 
+
+VAI 
+
+
+INJETAR ESSAS VARIABLES,
+E NÃO O DOCKER EM SI....
+
+
+
+
+
+
+
+
+
+
+
+--> E, GRAÇAS A DEUS,
+
+O REACT PROJECT SETUP 
+
+
+
+
+__SUPORTA__ ENVIRONMENT VARIABLES --> A ÚNICA DIFERENÇA É QUE 
+
+O 
+
+REACT APP VAI 'MANAGE' ESSAS ENV VARIABLES POR CONTA PRÓPRIA,
+
+'DETACHED FROM DOCKER',
+
+
+
+
+
+JUSTAMENTE POR CONTA DAS RAZÕES QUE O PROFESSOR EXPLICOU (
+
+
+    O CÓDIGO REACT É RODADO APENAS NO BROWSER,
+
+    SEM INTERAGIR COM O DOCKER E AS ENV VARIABLES DO DOCKER...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> PORTANTO,
+
+POODEMOS FAZER 'LEVERAGE' 
+
+
+
+
+
+
+
+DE ENVIRONMENT VARIABLES DENTRO DO CÓDIGO REACT ,
+
+E PODEMOS 
+
+TROCAR 
+
+ENTRE DIFERENTES URLS COM BASE NO ENVIRONMENT 
+
+EM QUE 
+
+ESSE CÓDIGO ESTÁ SENDO EXECUTADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PARA ISSO, O PROFESSOR ADICIONA UMA CONSTANTE 
+
+LÁ EM CIMA NO ARQUIVO,
+
+DE NOME 
+
+
+'backendUrl'..
+
+
+
+
+
+
+
+
+
+--> ESSA constante segurará 1 de 2 values...
+
+
+
+
+
+
+
+
+
+
+
+1 DE 2 VALUES, A DEPENDER DO ENVIRONMENT EM QUE ESSE CÓDIGO FOR EXECUTADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, O PROFESSOR ESCREVE ASSIM:
+
+
+
+
+
+
+
+
+
+
+const backendUrl = process.env.NODE_ENV;
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> essa env variable de 'NODE_ENV'
+
+
+É AUTOMATICAMENTE 
+
+
+
+
+DISPONIBILIZADA PELO REACT BUILD PROCESS.... --> PROVIDENCIADO PELO SCRIPT DE 
+
+'npm start' 
+
+e 
+
+'npm run build'...
+
+
+
+
+
+
+
+
+
+
+--> ESSA VARIABLE segura 1 value de 'development'
+
+se 
+
+executamos 'npm start',
+
+
+
+e 1 value de 'production' 
+SE 
+
+RODAMOS O BUILD SCRIPT..
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PODEMOS USAR 1 TERNARY EXPRESSION,
+TIPO ASSIM:
+
+
+
+
+
+const backendUrl = process.env.NODE_ENV === 'development' ? ''
+
+
+
+
+
+
+
+
+
+
+
+-> SE ESSA ENV VARIABLE ESTIVER COM 1 VALUE DE 'development',
+
+
+VAMOS QUERER DEFINIR A URL COMO SENDO 'localhost:80',
+
+
+
+A PORT 
+
+
+DE 80 
+
+
+
+
+
+DO NOSSO BACKEND CONTAINER... (PQ, DURANTE DEVELOPMENT,
+
+O ENDEREÇO DO BACKEND SERÁ REALMENTE 'localhost:80... já em PRODUCTION, SERÁ UMA URL FIXA)..
+
+
+
+
+
+
+
+
+
+QUER DIZER QUE O CÓDIGO FICA ASSIM:
+
+
+
+
+
+
+const backendUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:80' : 'URL-EM-QUE-VAMOS-RODAR-O-BACKEND-NO-AWS-ECS'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+
+import GoalInput from './components/goals/GoalInput';
+import CourseGoals from './components/goals/CourseGoals';
+import ErrorAlert from './components/UI/ErrorAlert';
+
+
+
+//  é assim que vamos DIFERENCIAR O CÓDIGO DE CONNECT DO REACT APP FRONTEND, durante development e production (PQ NÃO PODEMOS USAR AS ENVIRONMENT VARIABLES DO DOCKER COM O REACT APP, JUSTAMENTE PQ O REACT APP VAI RODAR NO BROWSER DOS USERS, E NÃO EM 1 MÁQUINA EM QUE O DOCKER ESTÁ RODANDO)...
+const backendUrl =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:80'
+    : 'URL-EM-QUE-VAMOS-RODAR-O-BACKEND-NO-AWS-ECS';
+
+
+
+
+
+
+function App() {
+  const [loadedGoals, setLoadedGoals] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(function () {
+    async function fetchData() {
+      setIsLoading(true);
+
+      try {
+        //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+        // const response = await fetch('http://localhost/goals');
+
+        //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+        ///? MAS PQ ISSO FUNCIONA?
+        // É PQ, POR DEFAULT,
+
+        // ESSE REQUEST VAI SER ENVIADO
+
+        // AO '''MESMO SERVER QUE FOI USADO PARA FAZER SERVE DESSE WEBSITE'''... (que, no caso, será o servidor node em que DEFINIMOS OS ENDPOINTS...)
+
+        //   (ESSE É UM COMPORTAMENTO DEFAULT DO BROWSER...)...
+        //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+        //?  mas como NÃO  CONSEGUIMOS FAZER SERVE DO FRONTEND E DO BACKEND EM 1 MESMO SERVICE/TASK, SOMOS FORÇADOS A DEIXAR DE LADO ESSE APPROACH...
+        // const response = await fetch('/goals');
+
+        const response = await fetch(backendUrl);
+
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(resData.message || 'Fetching the goals failed.');
+        }
+
+        setLoadedGoals(resData.goals);
+      } catch (err) {
+        setError(
+          err.message ||
+            'Fetching goals failed - the server responsed with an error.'
+        );
+      }
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  async function addGoalHandler(goalText) {
+    setIsLoading(true);
+
+    try {
+      //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+      // const response = await fetch('http://localhost/goals', {
+      //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque, na ecs, O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+      //?  mas como NÃO  CONSEGUIMOS FAZER SERVE DO FRONTEND E DO BACKEND EM 1 MESMO SERVICE/TASK, SOMOS FORÇADOS A DEIXAR DE LADO ESSE APPROACH...
+      // const response = await fetch('/goals', {
+      const response = await fetch(backendUrl, {
+        method: 'POST',
+        body: JSON.stringify({
+          text: goalText,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Adding the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = [
+          {
+            id: resData.goal.id,
+            text: goalText,
+          },
+          ...prevGoals,
+        ];
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Adding a goal failed - the server responsed with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  async function deleteGoalHandler(goalId) {
+    setIsLoading(true);
+
+    try {
+      //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+      // const response = await fetch('http://localhost/goals/' + goalId, {
+
+      //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque, na ecs, O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+      //?  mas como NÃO  CONSEGUIMOS FAZER SERVE DO FRONTEND E DO BACKEND EM 1 MESMO SERVICE/TASK, SOMOS FORÇADOS A DEIXAR DE LADO ESSE APPROACH...
+      // const response = await fetch('/goals/' + goalId, {
+      const response = await fetch(backendUrl + '/' + goalId, {
+        method: 'DELETE',
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Deleting the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = prevGoals.filter((goal) => goal.id !== goalId);
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Deleting the goal failed - the server responsed with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  return (
+    <div>
+      {error && <ErrorAlert errorText={error} />}
+      <GoalInput onAddGoal={addGoalHandler} />
+      {!isLoading && (
+        <CourseGoals goals={loadedGoals} onDeleteGoal={deleteGoalHandler} />
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+OK... NO CASO,
+
+EM PRODUCTION,
+
+QUEREMOS 
+
+
+SETTAR 
+
+
+
+ESSE VALUE COMO A 'URL EM QUE VAMOS RODAR NOSSO BACKEND NODE REST API'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK...VAMOS PEGAR AQUELE BACKEND URL 
+
+DO LOAD BALANCER QUE JÁ CRIAMOS NO PASSADO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TAMBÉM VAMOS CRIAR 1 LOAD BALANCER __ PARA __ O FRONTEND APP --> QUE VAI 
+
+RODAR 
+
+NA SUA PRÓPRIA TASK... COMO RODA NA SUA PRÓPRIA TASK,
+
+ELE 
+
+TAMBÉM 
+
+
+VAI 
+
+
+PRECISAR DE UMA 'UNCHANGEABLE URL',
+
+
+EM VEZ DAQUELE IP ADDRESS QUE MUDA TODA VEZ QUE FAZEMOS O DEPLOY DE 1 NOVA TASK...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O PROFESSOR ADICIONA 1 NOVO LOAD BALANCER... NOVO APPLICATION LOAD BALANCER...
+
+
+
+
+
+
+
+
+
+
+'goals-react-lb' -> SERÁ INTERNET FACING...
+
+
+
+
+
+
+
+
+
+-> EXPOMOS A PORT DE '80'...
+
+
+
+
+
+
+
+
+
+--> COLOCAMOS O MESMO VPC 
+
+
+
+
+DO OUTRO LOAD BALANCER (PQ 
+
+
+ESSAS 2 TASKS VÃO FAZER PARTE DO MESMO CLUSTER)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... 
+
+
+
+
+depois, colocamos em 'configure security groups' -> COLOCAMOS NO MESMO SECURITY 
+
+
+
+
+
+
+
+
+
+DO OUTRO LOAD BALANCER (security group que abre a port 80, e só a port 80, a incoming traffic)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-. OK.. NO ROUTING,
+
+
+PRECISAMOS 
+
+
+CRIAR 1 NOVO TARGET GROUP...
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR COLOCA 'REACT-TARGET-GROUP'... --> E ESSE SERÁ O GROUP 
+
+
+EM QUE 
+
+O ECS VAI AUTOMATICAMENTE ADICIONAR OS 'DEPLOYED CONTAINERS'...
+
+
+
+
+
+
+
+
+COLOCAMOS 'IP' (em vez de instance, e em vez de 'lambda function'),
+
+
+e colocamos o port de 80..
+
+
+
+
+
+
+
+
+
+EM HEALTH CHECKS, COLOCAMOS 
+
+
+
+
+
+
+'/' ,
+
+
+
+
+
+
+
+SLASH NOTHING, 
+
+PQ O REACT APP VAI _ RETORNAR 1 VALID RESPONSE NESSE PATH... (será o index.html padrão, com a landing page)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COLOCAMOS EM 'REGISTER TARGETS',
+
+
+NÃO APERTAMOS EM NADA,
+
+E ISSO AÍ VAI CRIAR O LOAD BALANCER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> COM O LOAD BALANCER CRIADO,
+
+
+PODEMOS PEGAR SUA URL,
+
+SEU 'DNS NAME',
+
+
+
+PQ 
+
+
+ESSE SERÁ 
+
+__ A URL _ DO NOSSO REACT APP,
+
+QUE USAREMOS NO FUTURO,
+
+PARA ACESSAR NOSSO APP...
+
+
+
+
+
+
+
+(
+    tipo 'goals-react-lb-1251212554124.us-east-2.elb.amazonaws.com
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA O REACT APPLICATION CODE,
+
+
+
+
+O CÓDIGO JAVASCRIPT,
+
+PRECISAMOS 
+
+
+DA URL DO BACKEND... -> É A URL DO BACKEND 
+
+
+EM SI, DO LOAD BALANCER DO NODE APP REST API...
+
+
+
+
+
+
+
+
+
+
+---> COPIAMOS ESSA URL E A COLOCAMOS 
+
+COMO NOSSO 'PRODUCTION DOMAIN',
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+
+import GoalInput from './components/goals/GoalInput';
+import CourseGoals from './components/goals/CourseGoals';
+import ErrorAlert from './components/UI/ErrorAlert';
+
+
+
+//  é assim que vamos DIFERENCIAR O CÓDIGO DE CONNECT DO REACT APP FRONTEND, durante development e production (PQ NÃO PODEMOS USAR AS ENVIRONMENT VARIABLES DO DOCKER COM O REACT APP, JUSTAMENTE PQ O REACT APP VAI RODAR NO BROWSER DOS USERS, E NÃO EM 1 MÁQUINA EM QUE O DOCKER ESTÁ RODANDO)...
+const backendUrl =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:80'
+    : 'URL-EM-QUE-VAMOS-RODAR-O-BACKEND-NO-AWS-ECS'; //FORMATO: 'https://ecs-lb-121251251.us-east-2.elb.amazonaws.com'
+
+
+
+
+
+
+function App() {
+  const [loadedGoals, setLoadedGoals] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(function () {
+    async function fetchData() {
+      setIsLoading(true);
+
+      try {
+        //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+        // const response = await fetch('http://localhost/goals');
+
+        //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+        ///? MAS PQ ISSO FUNCIONA?
+        // É PQ, POR DEFAULT,
+
+        // ESSE REQUEST VAI SER ENVIADO
+
+        // AO '''MESMO SERVER QUE FOI USADO PARA FAZER SERVE DESSE WEBSITE'''... (que, no caso, será o servidor node em que DEFINIMOS OS ENDPOINTS...)
+
+        //   (ESSE É UM COMPORTAMENTO DEFAULT DO BROWSER...)...
+        //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+        //?  mas como NÃO  CONSEGUIMOS FAZER SERVE DO FRONTEND E DO BACKEND EM 1 MESMO SERVICE/TASK, SOMOS FORÇADOS A DEIXAR DE LADO ESSE APPROACH...
+        // const response = await fetch('/goals');
+
+        const response = await fetch(backendUrl);
+
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(resData.message || 'Fetching the goals failed.');
+        }
+
+        setLoadedGoals(resData.goals);
+      } catch (err) {
+        setError(
+          err.message ||
+            'Fetching goals failed - the server responsed with an error.'
+        );
+      }
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  async function addGoalHandler(goalText) {
+    setIsLoading(true);
+
+    try {
+      //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+      // const response = await fetch('http://localhost/goals', {
+      //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque, na ecs, O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+      //?  mas como NÃO  CONSEGUIMOS FAZER SERVE DO FRONTEND E DO BACKEND EM 1 MESMO SERVICE/TASK, SOMOS FORÇADOS A DEIXAR DE LADO ESSE APPROACH...
+      // const response = await fetch('/goals', {
+      const response = await fetch(backendUrl, {
+        method: 'POST',
+        body: JSON.stringify({
+          text: goalText,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Adding the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = [
+          {
+            id: resData.goal.id,
+            text: goalText,
+          },
+          ...prevGoals,
+        ];
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Adding a goal failed - the server responsed with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  async function deleteGoalHandler(goalId) {
+    setIsLoading(true);
+
+    try {
+      //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+      // const response = await fetch('http://localhost/goals/' + goalId, {
+
+      //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque, na ecs, O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+      //?  mas como NÃO  CONSEGUIMOS FAZER SERVE DO FRONTEND E DO BACKEND EM 1 MESMO SERVICE/TASK, SOMOS FORÇADOS A DEIXAR DE LADO ESSE APPROACH...
+      // const response = await fetch('/goals/' + goalId, {
+      const response = await fetch(backendUrl + '/' + goalId, {
+        method: 'DELETE',
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Deleting the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = prevGoals.filter((goal) => goal.id !== goalId);
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Deleting the goal failed - the server responsed with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  return (
+    <div>
+      {error && <ErrorAlert errorText={error} />}
+      <GoalInput onAddGoal={addGoalHandler} />
+      {!isLoading && (
+        <CourseGoals goals={loadedGoals} onDeleteGoal={deleteGoalHandler} />
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok...
+
+
+
+
+
+
+
+
+
+
+agora essa constante vai segurar o DEVELOPMENT ou PRODUCTION URL,
+
+A DEPENDER DESSE AUTOMATICALLY SET 
+
+ENVIRONMENT VARIABLE (
+    que é settada pelo 
+
+    REACT BUILD PROCESS...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... COLOQUEI ESSA CONSTANTE EM TODOS OS REQUESTS DO APP.... NORMAL...
+
+
+
+
+
+JÁ CRIAMOS TODOS OS LOAD BALANCERS NECESSÁRIOS A NÓS...
+
+
+
+
+
+
+
+
+
+
+
+AGORA PODEMOS REBUILDAR ESSA IMAGE DO FRONTEND, COM O 'Dockerfile.prod',
+
+
+PUSHAR 
+ISSO PARA O 
+
+DOCKERHUB,
+
+
+E AÍ STARTAR NOSSOS SERVICES COM BASE NAS TASKS QUE USAM ESSA IMAGE... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... O PROFESSOR RODA 
+
+
+
+
+
+
+docker build -f frontend/Dockerfile.prod -t nothingnothings/goals-frontend ./frontend 
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> ISSO FEITO, ELE FAZ PUSH DA IMAGE,
+COM 
+
+docker push nothingnothings/goals-frontend
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK....
+
+
+
+
+
+
+
+
+
+
+VOLTAMOS AO ECS... --> LÁ NOSSA TASK JÁ FOI CRIADA.. --> PODEMOS 'CREATE A SERVICE'
+
+COM BASE NESSA TASK..
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS USAR O FARGATE COMO 1 LAUNCH TYPE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COLOCAMOS O CLUSTER DE 'GOALS-APP',
+
+
+
+COLOCAMOS O NOME DESSE SERVICE COMO 'GOALS-REACT'...
+
+
+
+
+
+
+
+
+
+
+
+--> DEPOIS SETTAMOS O NÚMERO DE TASKS COMO SENDO 1...
+
+
+
+
+
+
+
+
+
+
+
+ 'ROLLING UPDATE' --> VAMOS HABILITAR...
+
+
+
+
+
+
+
+
+ NA PRÓXIMA PÁGINA,
+
+ ADICIONAMOS OS 2 SUBNETS QUE 
+
+ SÃO PROVIDENCIADOS A NÓS...
+
+
+
+
+
+
+
+
+
+
+
+ NO SECURITY GROUP,
+
+
+
+ VAMOS SELECIONAR O SECURITY GROUP DE 'goals',
+
+ QUE 
+ JÁ ESTÁ EXPONDO A PORT 80...
+
+
+
+
+
+
+
+
+
+
+ 'AUTO-ASSIGN PUBLIC IP' ---> colocamos 'enabled'..
+
+
+
+
+
+
+
+
+
+
+ --> SELECIONAMOS 'APPLICATION LOAD BALANCER' ->  AÍ 
+
+
+
+
+
+
+
+
+ESCOLHEMOS O BALANCER QUE RECÉM CRIAMOS....
+
+
+
+
+
+
+
+
+--> DEPOIS ESCOLHEMOS O TARGET GROUP DO 'REACT',
+
+COM 'REACT-TARGET GROUP'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEIXAMOS O RESTO DAS SETTINGS COMO ESTÃO...
+
+
+
+
+
+
+
+
+--> DEPOIS 
+
+NÃO COLOCAMOS 'AUTO-SCALING',
+
+
+E AÍ 
+
+CRIAMOS O NOSSO SERVICE --> ISSO VAI STARTAR 
+
+
+NOSSO FRONTEND CONTAINER E FRONTEND TASK 
+
+EM 1 
+
+NOVO SERVICE,
+
+
+QUE AGORA VAI RODAR SIDE-BY-SIDE 
+
+COM 
+
+NOSSO 
+'GOALS-BACKEND'
+
+SERVICE, QUE É O BACKEND...
+
+
+
+
+
+
+
+
+
+
+
+
+
+SE TUDO FOI FEITO CORRETAMENTE,
+
+
+SEREMOS CAPAZES DE 
+
+
+USAR ESSE SERVICE PARA DISPARAR REQUESTS AO NOSSO 
+
+
+
+BACKEND...
+
+
+
+
+
+
+
+
+
+
+
+--> ASSIM QUE TUDO ESTIVER RODANDO,
+PODEMOS USAR A URL 
+
+
+DO LOAD BALANCER DO FRONTEND ...- -> QUE RECÉM FOI CRIADO..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O IP DA TASK VAI MUDAR COM CADA DEPLOYMENT,
+
+SIM,
+
+
+MAS __ OS LOAD BALANCERS TE AJUDAM A _  CONSEGUIR 1 ADDRESS QUE 'NUNCA VAI MUDAR'... -> 
+
+
+E ESSE 
+
+ADDRESS PODE ENTÃO SER 'BOUND' 
+
+A QUALQUER 
+DOMAIN DE SUA ESCOLHA (
+    e é por isso que podemos 
+
+
+    ACESSAR ESSA URL 
+
+    do frontend, que será 'FIXA', de certa forma...s
+)
+
+
+
+
+
+
+
+
+
+
+NOSSO APP GOALS ESTARÁ FUNCIONANDO, O QUE É ÓTIMO...
+
+
+
+
+
+
+
+
+
+
+
+----> COM ISSO, AGORA 
+
+
+
+
+DEPLOYAMOS COM SUCESSO OUTRO CONTAINER... -> PODERÍAMOS TER 
+
+DEPLOYADO O FRONTEND E O BACKEND 
+
+
+EM 
+
+1 MESMO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS COMO 
+
+
+
+
+AGORA TEMOS 2 WEBSERVERS,
+
+
+
+PRECISAMOS DE 2 DIFERENTES TASKS E SERVICES, PORTANTO... E É POR ISSO QUE FICAMOS 
+
+COM 2 DOMAINS SEPARADOS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ESSE É UM EXEMPLO, TAMBEM,
+
+
+
+
+DE COMO 'MULTI-CONTAINER PROJECTS'
+
+PODEM SER SPLITTADOS 
+
+__ AO LONGO DE MÚLTIPLOS HOSTS,
+
+MÚLTIPLAS TASKS,
+
+
+COM MÚLTIPLAS URLS... E COMO VC PODE IMPLEMENTAR TUDO ISSO COM O AWS ECS,
+
+
+E QUE PROBLEMAS VC DEVE TER EM MENTE, EM CASOS COMO ESSES...
