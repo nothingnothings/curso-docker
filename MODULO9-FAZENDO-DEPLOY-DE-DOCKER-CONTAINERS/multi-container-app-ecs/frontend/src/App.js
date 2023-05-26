@@ -14,7 +14,20 @@ function App() {
       setIsLoading(true);
 
       try {
-        const response = await fetch('http://localhost/goals');
+        //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+        // const response = await fetch('http://localhost/goals');
+
+        //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+        ///? MAS PQ ISSO FUNCIONA?
+        // É PQ, POR DEFAULT,
+
+        // ESSE REQUEST VAI SER ENVIADO
+
+        // AO '''MESMO SERVER QUE FOI USADO PARA FAZER SERVE DESSE WEBSITE'''... (que, no caso, será o servidor node em que DEFINIMOS OS ENDPOINTS...)
+
+        //   (ESSE É UM COMPORTAMENTO DEFAULT DO BROWSER...)...
+
+        const response = await fetch('/goals');
 
         const resData = await response.json();
 
@@ -39,14 +52,17 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost/goals', {
+      //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+      // const response = await fetch('http://localhost/goals', {
+      //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque, na ecs, O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+      const response = await fetch('/goals', {
         method: 'POST',
         body: JSON.stringify({
           text: goalText,
         }),
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       const resData = await response.json();
@@ -78,7 +94,11 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost/goals/' + goalId, {
+      //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+      // const response = await fetch('http://localhost/goals/' + goalId, {
+        
+      //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque, na ecs, O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+      const response = await fetch('/goals/' + goalId, {
         method: 'DELETE',
       });
 

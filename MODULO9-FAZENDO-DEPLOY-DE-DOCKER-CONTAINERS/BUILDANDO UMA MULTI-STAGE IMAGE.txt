@@ -1,0 +1,1417 @@
+
+
+
+
+
+
+
+
+
+
+
+OK... PARA DEPLOYAR NOSSA 'MULTI-STAGE BUILD FILE' (a dockerfile com multi-stage),
+
+
+DEVEMOS VERIFICAR SE NOSSO CÓDIGO PRECISA DE ALGUNS AJUSTES...
+
+
+
+
+
+
+
+
+
+O CÓDIGO DA DOCKERFILE DE PROD FICOU ASSIM:
+
+
+
+
+
+FROM node:14-alpine as build
+# 'as' é NECESSÁRIO PARA QUE VOCÊ CONSIGA COLOCAR 1 'ALIAS' PARA ESSA IMAGE INTEIRA... ESSE ALIAS DEPOIS PODE/SERÁ USADO PARA COISAS COMO 'COPIAR OS ARQUIVOS DA IMAGE ANTERIOR', como visto logo abaixo...
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+#! NÃO FAÇA ASSIM: CMD ["npm", "run", "build"]
+
+#? COM MULTI-STAGE BUILDS, DEVEMOS USAR 'RUN' em vez de 'CMD'... (pq 'RUN' vai nos deixar ESPECIFICAR MAIS ETAPAS, POSTERIORMENTE)...
+RUN npm run build
+
+
+#? AQUI COMEÇA A SEGUNDA 'STEP' DE NOSSA MULTI-STAGE BUILD...
+
+
+FROM nginx:stable-alpine
+
+# ESTE COPY AQUI É ESPECIAL... ESTAMOS USANDO A SINTAXE DE 'COPIAR COISAS LÁ DE OUTRA STEP/STEPS'... --> no caso, vamos COPIAR OS ARQUIVOS DA 'FINAL BUILD', buildados pela PRIMEIRA STEP de nossa docker file (ou seja, até o trecho de 'npm run build'.... pegaremos o output desse trecho aí, as build files, o build output)...
+COPY --from=build /app/build /usr/share/nginx/html
+
+
+### E É CLARO QUE AINDA PRECISAMOS ESPECIFICAR 'DE QUE FOLDER, DA STEP ANTERIOR, VOCê QUER COPIAR O CONTEÚDO'... E 'PARA QUAL FOLDER, DA NOSSA IMAGE/STEP ATUAL, VOCÊ VAI QUERER COPIAR O CONTEÚDO?'
+### vamos colocar os arquivos nesse folder de 'usr/share/nginx/html', QUE É O DEFAULT FOLDER EM QUE _O NGINX VAI TENTAR FAZER SERVE DAS FILES...
+
+# DEIXAMOS EXPOSTA A PORT 80, pq é essa port que fica aberta na image do nginx out of the box, é a setting default dele...
+EXPOSE 80 
+
+## COM ISSO, EXECUTAMOS NOSSO SERVIDOR NGINX... a option de '-g daemon off' é algo recomendado pela própria image do nginx, no docker hub...
+CMD ["nginx", "-g", "daemon off;"] 
+
+
+
+
+
+
+
+# --> NO CASO,
+
+
+# COM A OPTION DE '--from',
+
+
+# ESTAMOS DIZENDO AO DOCKER QUE __ ESSA COPY NÃO VAI SE REFERIR AO 
+
+# 'LOCAL HOST PROJECT FOLDER',
+
+
+
+# E SIM 
+
+# VAI SE REFERIR AO FILE SYSTEM DE NOSSO BUILD STAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+CÓDIGO LIMPO:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///PRIMEIRA STEP
+
+FROM node:14-alpine as build
+ 
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+RUN npm run build
+
+///SEGUNDA STEP
+
+FROM nginx:stable-alpine
+
+COPY --from=build /app/build /usr/share/nginx/html
+
+
+EXPOSE 80 
+
+CMD ["nginx", "-g", "daemon off;"] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... PRECISAMOS VERIFICAR SE 'PRECISAMOS DE QUAISQUER  ENVIRONMENT VARIABLES,
+
+QUE 
+
+DEVERÃO 
+
+SER 
+
+CONSIDERADAS DURANTE O BUILD PROCESS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... HÁ UM AJUSTE QUE O PROFESSOR DIZ QUE DEVEMOS FAZER...
+
+
+
+
+
+
+
+
+NO CÓDIGO 'App.js',
+
+ESTAMOS ENVIANDO UM MONTE DE HTTP REQUESTS... --> E ESSES REQUESTS ESTÃO SEMPRE 
+
+SENDO ENVIADOS AO 'LOCALHOST'..
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+
+import GoalInput from './components/goals/GoalInput';
+import CourseGoals from './components/goals/CourseGoals';
+import ErrorAlert from './components/UI/ErrorAlert';
+
+function App() {
+  const [loadedGoals, setLoadedGoals] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(function () {
+    async function fetchData() {
+      setIsLoading(true);
+
+      try {
+        const response = await fetch('http://localhost/goals');
+
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(resData.message || 'Fetching the goals failed.');
+        }
+
+        setLoadedGoals(resData.goals);
+      } catch (err) {
+        setError(
+          err.message ||
+            'Fetching goals failed - the server responsed with an error.'
+        );
+      }
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  async function addGoalHandler(goalText) {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost/goals', {
+        method: 'POST',
+        body: JSON.stringify({
+          text: goalText,
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Adding the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = [
+          {
+            id: resData.goal.id,
+            text: goalText,
+          },
+          ...prevGoals,
+        ];
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Adding a goal failed - the server responsed with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  async function deleteGoalHandler(goalId) {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost/goals/' + goalId, {
+        method: 'DELETE',
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Deleting the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = prevGoals.filter((goal) => goal.id !== goalId);
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Deleting the goal failed - the server responsed with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  return (
+    <div>
+      {error && <ErrorAlert errorText={error} />}
+      <GoalInput onAddGoal={addGoalHandler} />
+      {!isLoading && (
+        <CourseGoals goals={loadedGoals} onDeleteGoal={deleteGoalHandler} />
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ISSO REALMENTE FUNCIONAVA/FUNCIONA,
+
+
+
+
+
+MAS FUNCIONA APENAS NA DOCKERFILE/DOCKER-COMPOSE 
+
+
+
+__ USADO EM DEVELOPMENT... 
+
+
+
+
+
+
+
+ENTRETANTO,
+
+QUANDO 
+
+
+
+FIZERMOS 
+
+
+
+
+O DEPLOY DISSO,
+
+
+
+
+
+
+DEPLOY COM ALGO COMO O AMAZON ECS,
+
+
+
+
+
+--> ISSO __ NÃO VAI FUNCIONAR MAIS ... --->  OK... VC PODERIA ARGUMENTAR QUE 
+
+
+
+
+
+'''BEM, VC, PROFESSOR, ME ENSINOU QUE NO ECS 
+
+O __ LOCALHOST É UM NOME ESPECIAL,
+
+NOME _ QUE __ VAI DEIXAR ESSE DOCKERIZED APP A ENVIAR REQUESTS A 
+
+__ OUTROS CONTAINERS RODANDO NO MESMO AWS ECS TASK''... ----------> SIM, E ISSO FAZ SENTIDO...
+
+
+
+
+
+
+
+
+FAZ SENTIDO, MAS AQUI TEMOS 1 PROBLEMA --------> ISSO SOMENTE SERIA VERDADE 
+
+
+
+SE _ ESSE CÓDIGO AÍ FOSSE EXECUTADO __ NO SERVER,
+
+
+DENTRO DO CONTAINER.,.. -----------> ENTRETANTO,
+
+
+TODAS ESSA LINHAS DE CÓDIGO DE 'App.js',
+
+DE NOSSO FRONTEND,
+
+
+
+
+
+TODAS ELAS _ SERÃO 
+
+
+
+_ EXECUTADAS_ _ NO BROWSER DE NOSSOS USUÁRIOS,
+
+
+
+
+E _ NO BROWSER DOS USUÁRIOS NÃO EXISTIRÁ 
+
+
+
+O 'ECS' RODANDO... --> ISSO QUER DIZER QUE 
+
+A 
+
+ESCRITA DE 'localhost'
+
+NÃO VAI SER 'RESOLVED'
+
+
+PARA 
+
+O IP 
+
+
+DE ALGUM DE SEUS CONTAINERS DENTRO DO ECS, DENTRO DA TASK ECS...
+
+
+
+
+
+
+
+-----> ISSO QUER DIZER QUE 
+
+ESSES REQUESTS VÃO SER DISPARADOS 
+
+
+
+LÁ 
+
+
+DOS BROWSERS.... O QUE É UM IMENSO PROBLEMA--> 
+ PQ  AÍ 
+
+ O 
+
+ 'localhost', no código,
+
+ vai se referir à MAQUINA DOS USERS,
+
+
+ E NÃO 
+
+
+ A SUA TASK,
+ A SEU CONTAINER,
+
+
+ OU A SEU ECS MANAGED SERVER...
+
+
+
+
+
+
+
+
+
+
+
+ -> É POR ISSO QUE O 'localhost'
+
+
+ É O DOMAIN ERRADO A SER USADO EM CÓDIGOS COMO 
+
+
+
+ '' 'http://localhost/goals' '''
+
+
+
+
+
+
+
+
+
+ -> OK... ISSO QUER DIZER QUE 
+
+ O 
+
+ 'PROPER DOMAIN'
+
+
+
+ QUE UTILIZAREMOS, AQUI,
+
+
+
+
+
+ __ VAI __ DEPENDER __ DA 'MANEIRA PELA QUAL VAMOS DEPLOYAR ESSE APP'...
+
+
+
+
+
+
+
+
+
+
+
+ --> O PROFESSOR PLANEJA _ FAZER DEPLOY DE NOSSO FRONTEND _ NA MESMA __ TASK _ 
+
+
+
+ DE NOSSA REST API,
+
+
+
+ A NOSSA NODE REST API...
+
+
+
+
+
+
+
+
+
+ -> ISSO QUER DIZER QUE,
+  
+  NO FINAL DAS CONTAS,
+
+  ESSE 'FRONT END APP'
+
+
+
+  VAI 
+
+  SER 
+
+  'REACHABLE' 
+
+
+
+  ATRAVÉS DA 'MESMA URL'... 
+
+
+
+
+
+
+
+
+
+
+
+
+  -> COMO ESSE 'front end app' vai ser ATINGÍVEL ATRAVÉS DA MESMA URL,
+
+
+
+
+
+
+PODEMOS REMOVER O DOMAIN __ INTEIRO __ DE NOSSOS REQUESTS,
+
+E AÍ 
+
+
+
+DEIXAR COISAS SIMPLES COMO ISTO:
+
+
+
+
+
+
+      try {
+        const response = await fetch('/goals');
+
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(resData.message || 'Fetching the goals failed.');
+        }
+
+        setLoadedGoals(resData.goals);
+      } catch (err) {
+        setError(
+          err.message ||
+            'Fetching goals failed - the server responsed with an error.'
+        );
+      }
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  OU SEJA,
+
+  VAMOS DISPARAR REQUESTS A ROUTES COMO 
+
+
+
+  ''await fetch('/goals');''
+
+
+
+
+
+
+
+
+  MAS PQ ISSO FUNCIONA?
+
+
+
+
+
+
+
+
+
+
+  É PQ, POR DEFAULT,
+
+  ESSE REQUEST VAI SER ENVIADO 
+
+
+  AO '''MESMO SERVER QUE FOI USADO PARA FAZER SERVE DESSE WEBSITE'''...
+
+    (ESSE É UM COMPORTAMENTO DEFAULT DO BROWSER...)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O CÓDIGO FICOU ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+
+import GoalInput from './components/goals/GoalInput';
+import CourseGoals from './components/goals/CourseGoals';
+import ErrorAlert from './components/UI/ErrorAlert';
+
+function App() {
+  const [loadedGoals, setLoadedGoals] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(function () {
+    async function fetchData() {
+      setIsLoading(true);
+
+      try {
+        //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+        // const response = await fetch('http://localhost/goals');
+
+        //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+        ///? MAS PQ ISSO FUNCIONA?
+        // É PQ, POR DEFAULT,
+
+        // ESSE REQUEST VAI SER ENVIADO
+
+        // AO '''MESMO SERVER QUE FOI USADO PARA FAZER SERVE DESSE WEBSITE'''... (que, no caso, será o servidor node em que DEFINIMOS OS ENDPOINTS...)
+
+        //   (ESSE É UM COMPORTAMENTO DEFAULT DO BROWSER...)...
+
+        const response = await fetch('/goals');
+
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(resData.message || 'Fetching the goals failed.');
+        }
+
+        setLoadedGoals(resData.goals);
+      } catch (err) {
+        setError(
+          err.message ||
+            'Fetching goals failed - the server responsed with an error.'
+        );
+      }
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  async function addGoalHandler(goalText) {
+    setIsLoading(true);
+
+    try {
+      //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+      // const response = await fetch('http://localhost/goals', {
+      //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque, na ecs, O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+      const response = await fetch('/goals', {
+        method: 'POST',
+        body: JSON.stringify({
+          text: goalText,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Adding the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = [
+          {
+            id: resData.goal.id,
+            text: goalText,
+          },
+          ...prevGoals,
+        ];
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Adding a goal failed - the server responsed with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  async function deleteGoalHandler(goalId) {
+    setIsLoading(true);
+
+    try {
+      //! VERSÃO QUE FUNCIONA DE MODO LOCAL... (ambiente de dev, dockerfile de development)...
+      // const response = await fetch('http://localhost/goals/' + goalId, {
+        
+      //VERSÃO QUE FUNCIONA EM PROD, NA AWS ECS (basta que vc coloque, na ecs, O FRONTEND E O BACKEND EM 1 MESMA TASK, em 1 mesmo contexto... aí essa route sem o DOMAIN vai funcionar)...
+      const response = await fetch('/goals/' + goalId, {
+        method: 'DELETE',
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || 'Deleting the goal failed.');
+      }
+
+      setLoadedGoals((prevGoals) => {
+        const updatedGoals = prevGoals.filter((goal) => goal.id !== goalId);
+        return updatedGoals;
+      });
+    } catch (err) {
+      setError(
+        err.message ||
+          'Deleting the goal failed - the server responsed with an error.'
+      );
+    }
+    setIsLoading(false);
+  }
+
+  return (
+    <div>
+      {error && <ErrorAlert errorText={error} />}
+      <GoalInput onAddGoal={addGoalHandler} />
+      {!isLoading && (
+        <CourseGoals goals={loadedGoals} onDeleteGoal={deleteGoalHandler} />
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+
+
+------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... USAMOS A PARTE SÓ DE '/goals',
+
+em todos os requests...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... MAS SE VC FOSSE HOSTEAR ISSO EM UM SERVER DIFERENTE,
+
+
+
+VC SERIA FORÇADO
+ 
+
+ A _ 'PLUG IN' 
+
+
+
+
+ O ACTUAL DOMAIN 
+
+ DAQUELE SERVER NESSAS CONNECT STRINGS... ->  PARA ISSO,
+
+ VC 
+
+
+ PODERIA 
+
+ USAR ENVIRONMENT VARIABLES (também suportadas por esse projeto react),
+
+
+ PARA AÍ 
+
+ USAR DIFERENTES 
+
+ URLS 
+
+ DURANTE O DEVELOPMENT 
+
+
+ E DURANTE A PRODUCTION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> MAS NESSE DEMO AQUI,
+
+
+ O PROFESSOR QUER FAZER DEPLOY DO FRONTEND NO MESMO SERVIDOR DO BACKEND,
+
+
+ POR ISSO 
+
+ ESSA SOLUÇAÕ DEVE 'WORK FINE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> COM ISSO, AJUSTAMOS O CÓDIGO,
+
+
+
+E FICAMOS COM 
+
+
+
+
+
+
+
+
+1) DOCKERFILE DE DEVELOPMENT (SEM MULTI-STAGE)...
+
+
+
+ 
+2) DOCKERFILE DE PRODUCTION (com MULTI-STAGE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NOSSO ARQUIVO DOCKER-COMPOSE,
+
+
+NO CASO,
+
+
+
+AINDA ESTÁ USANDO AQUELA DOCKERFILE DE DEV,
+
+QUE É EXATAMENTE O QUE QUEREMOS FAZER...
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+ --> ENTRETANTO,
+
+
+ O PROFESSOR AGORA QUER FAZER 'BUILD' DESSA IMAGE PARA PRODUCTION,
+
+
+
+ PARA 
+
+ ENTÃO 
+
+ FAZER PUSH 
+
+ DELA 
+
+
+ PARA O DOCKERHUB,
+
+
+
+ PARA 
+
+ ENTÃO 
+
+ DEPLOYAR ESSA IMAGE,
+ COM O AWS ECS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> PARA ISSO, O PROFESSOR VAI ATÉ O DOCKERHUB 
+
+ E CRIA 1 NOVO REPOSITORY...
+
+
+
+
+
+
+
+
+
+
+
+ --> COLOCA 1 NOME DE 'GOALS-REACT' -> 
+
+
+
+
+
+
+ E AÍ ELE VAI CRIAR ESSE REPOSITORY PÚBLICO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> ISSO FEITO,
+
+
+
+ O PROFESSOR 
+ CRIA 1 IMAGE LOCALMENTE COM O NOME 
+
+  
+
+
+
+  nothingonthings/goals-react:latest,
+
+
+
+
+
+
+
+  PARA 
+
+
+  ENTÃO LOGO DEPOIS 
+
+
+  FAZER PUSH 
+
+
+  DESSA IMAGE AO DOCKERHUB...
+
+
+
+
+
+
+
+
+
+
+
+  CERTO...
+
+
+
+
+
+
+
+
+
+
+
+AÍ O PROFESSOR FICA COM 1 QUESTÃO:
+
+
+
+
+
+
+
+ELE QUER USAR A DOCKERFILE DE PROD,
+
+E NÃO A DOCKERFILE DE DEV,
+
+
+
+
+
+MAS AS 2 ESTÃO NO MESMO FOLDER... 
+
+
+
+
+
+
+
+
+
+
+-> COMO VAMOS 
+
+
+CONSEGUIR FAZER BUILD 
+
+COM ESSA DOCKER FILE ALTERNATIVA?
+
+
+
+
+
+
+
+
+
+
+
+-> DEVEMOS USAR 1 OPTION EXTRA,
+
+
+'-f',
+
+
+
+QUE TE DEIXA ESPECIFICAR O 'DOCKER FILE NAME'..
+
+
+
+
+
+
+
+
+
+
+---> POR DEFAULT, ESSA OPTION PROCURA PELO 'Dockerfile',
+
+MAS PODEMOS 
+
+
+OVERWRITTAR ISSO E COLOCAR 
+
+'-f Dockerfile.prod',
+
+
+para que NOSSO ARQUIVO DE PROD SEJA UTILIZADO.....
+
+
+
+
+
+
+
+
+É POR ISSO QUE NOSSO CÓDIGO FICA ASSIM:
+
+
+
+
+
+
+
+
+docker build -f Dockerfile.prod -t nothingnothings/goals-react 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... MAS O PROFESSOR AQUI RECEBE 1 ERROR --> AQUELE FILE  ALI, de 'Dockerfile.prod',
+
+
+ELE PRECISA _ DO _ FULL PATH...
+
+
+
+POR ISSO PRECISAMOS COLOCAr 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker build -f frontend/Dockerfile.prod -t nothingnothings/goals-react ./frontend 
+
+
+
+
+
+
+
+
+
+
+
+
+OBS:::: O ÚLTIMO ARGUMENTO, './frontend',
+
+
+
+É A PARTE 
+
+
+DE NOSSO COMANDO EM QUE ESPECIFICAMOS O   'context',
+
+EXATAMENTE COMO VISTO NOS NOSSOS ARQUIVOS DOCKER-COMPOSE:
+
+
+
+
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+
+
+
+
+
+
+
+
+
+
+--> (PQ o 'CONTEXT' É ESSENCIALMENTE 'A PASTA EM QUE NOSSA IMAGE SERÁ _BUILT___'...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... COM ISSO, TEREMOS O CONTEXT PARA ESSE COMANDO DE BUILD...
+
+
+
+
+
+
+
+
+
+-> ISSO FEITO,
+
+
+
+
+A INSTALLATION TERÁ ACABADO,
+
+E
+
+
+VEREMOS QUE 
+
+OS MÚLTIPLOS STAGES TERÃO SIDO EXECUTADOS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> CONSTRUÍDA A IMAGE, PODEMOS FAZER PUSH DELA PARA O DOCKERHUB...
+
+
+
+
+
+
+
+COM ELA PUSHADA,
+
+PODEMOS FAZER DEPLOY DELA NO AWS ECS...
