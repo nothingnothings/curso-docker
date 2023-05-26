@@ -1,0 +1,470 @@
+
+
+
+
+
+
+
+
+
+
+--> OK... AGORA PRATICAMENTE ACABAMOS COM ESTE MÓDULO...
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR QUER MOSTRAR 1 ÚLTIMA COISA SOBRE MULTI-STAGE BUILDS, NO ENTANTO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> CONFORME MENCIONADO,
+
+
+PODEMOS 
+
+
+'BUILD THE ENTIRE IMAGE',
+
+DIRETAMENTE,
+
+
+
+
+TOP TO BOTTOM,
+
+
+
+OU ENTÃO 
+
+
+'''SELECIONAR ATÉ QUAL STAGE VC QUER BUILDAR SUA IMAGE'''',
+
+
+
+se vc tiver múltiplos stages em 1 image...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... 
+
+
+
+
+
+A NOSSA IMAGE MULTI-STAGE ESTAVA ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node:14-alpine as build
+# 'as' é NECESSÁRIO PARA QUE VOCÊ CONSIGA COLOCAR 1 'ALIAS' PARA ESSA IMAGE INTEIRA... ESSE ALIAS DEPOIS PODE/SERÁ USADO PARA COISAS COMO 'COPIAR OS ARQUIVOS DA IMAGE ANTERIOR', como visto logo abaixo...
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+#! NÃO FAÇA ASSIM: CMD ["npm", "run", "build"]
+
+#? COM MULTI-STAGE BUILDS, DEVEMOS USAR 'RUN' em vez de 'CMD'... (pq 'RUN' vai nos deixar ESPECIFICAR MAIS ETAPAS, POSTERIORMENTE)...
+RUN npm run build
+
+
+#? AQUI COMEÇA A SEGUNDA 'STEP' DE NOSSA MULTI-STAGE BUILD...
+
+
+FROM nginx:stable-alpine
+
+# ESTE COPY AQUI É ESPECIAL... ESTAMOS USANDO A SINTAXE DE 'COPIAR COISAS LÁ DE OUTRA STEP/STEPS'... --> no caso, vamos COPIAR OS ARQUIVOS DA 'FINAL BUILD', buildados pela PRIMEIRA STEP de nossa docker file (ou seja, até o trecho de 'npm run build'.... pegaremos o output desse trecho aí, as build files, o build output)...
+COPY --from=build /app/build /usr/share/nginx/html
+
+
+### E É CLARO QUE AINDA PRECISAMOS ESPECIFICAR 'DE QUE FOLDER, DA STEP ANTERIOR, VOCê QUER COPIAR O CONTEÚDO'... E 'PARA QUAL FOLDER, DA NOSSA IMAGE/STEP ATUAL, VOCÊ VAI QUERER COPIAR O CONTEÚDO?'
+### vamos colocar os arquivos nesse folder de 'usr/share/nginx/html', QUE É O DEFAULT FOLDER EM QUE _O NGINX VAI TENTAR FAZER SERVE DAS FILES...
+
+# DEIXAMOS EXPOSTA A PORT 80, pq é essa port que fica aberta na image do nginx out of the box, é a setting default dele...
+EXPOSE 80 
+
+## COM ISSO, EXECUTAMOS NOSSO SERVIDOR NGINX... a option de '-g daemon off' é algo recomendado pela própria image do nginx, no docker hub...
+CMD ["nginx", "-g", "daemon off;"] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O FATO DE ESSA IMAGE SER MULTI-STAGE (2 comandos 'FROM') 
+
+
+faz mt sentido, NESSE CASO,
+
+
+
+
+pq __ PRECISÁVAMOS 
+
+
+
+
+
+
+RODAR 'npm run build'
+PARA BUILDAR 
+
+
+OS ARQUIVOS DE PRODUCTION DO REACT,
+
+ANTES DE  OS SERVIR COM O SERVIDOR NGINX...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ENTRETANTO, TEORICAMENTE PODERÍAMOS EXECUTAR APENAS O PRIMEIRO STAGE,
+
+SE QUISÉSSEMOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA FAZER ISSO, DEVEMOS EDITAR O COMANDO 
+
+DE BUILD DO DOCKER QUE ESTÁVAMOS USANDO..
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+docker build -f frontend/Dockerfile.prod ./frontend
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok..... MAS EM VEZ DE RODAR ESSE ARQUIVO 'Dockerfile.prod' INTEIRO,
+
+
+
+
+PODEMOS __ BUILDAR/RODAR APENAS PARTE 
+
+
+DA DOCKERFILE,
+
+POR MEIO 
+
+DA OPTION DE 
+
+
+
+''--target''..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... COM ESSA OPTION, PODEMOS TARGETTAR BUILD STAGES 
+
+
+__ POR MEIO DE SEUS NOMES_...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS QUE NOMES? 
+
+
+
+
+
+
+
+
+
+
+são os nomes que assignamos com 'as',
+
+
+
+
+COMO VISTO NA DOCKERFILE DE PROD:
+
+
+
+
+FROM node:14-alpine as build
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+COMO EU COLOQUEI 1 NOME PARA ESSE PRIMEIRO STAGE,
+
+
+
+posso o targettar com '--target',
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker build --target build -f frontend/Dockerfile.prod ./frontend
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO VAI FAZER COM QUE O BUILD PROCESS DA IMAGE __ PARE__ 
+
+
+DEPOIS 
+
+
+
+DO FIM DO BUILD STAGE (
+
+
+  rodaríamos o código de build e ficaríamos com as files de build,
+  MAS NÃO 
+
+  FARÍAMOS SPIN UP DO SERVER DE PRODUCTION NGINX descrito nessa dockerfile,
+
+  nesse caso...  -------> E ISSO NÃO É MT ÚTIL NESSE CASO,
+
+
+  MAS EXISTEM CASOS EM QUE ISSO É ÚTIL...
+) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CASOS EM QUE O '--target' é útil:
+
+
+
+
+
+
+
+*** IMAGINE QUE TEMOS 1 DOCKERFILE COM MÚLTIPLAS ETAPAS,
+
+
+E EM ALGUNS STAGES TERÍAMOS 'TESTS',
+
+
+
+E OUTROS TERÍAMOS O RUN DO SERVER... 
+
+
+
+
+
+
+
+**** ÀS VEZES VC GOSTARIA DE RODAR ATÉ OS TESTS,
+
+OUTRA 
+
+HORA VC GOSTARIA DE RODAR AS ETAPAS ATÉ O SPIN UP DO SERVER...
+
+
+
+
+
+
+
+
+
+
+
+
+-----> ok... nesse caso,
+
+nossa image vai parar o run de etapas no momento em que roda 'npm run build',
+
+pq esse era o fim do primeiro stage...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSA É UMA FEATURE QUE PODE FICAR HANDY 
+
+EM PROJETOS MAIS COMPLEXOS, E EM DOCKERFILES QUE TENHAM MÚLTIPLOS STAGES...
