@@ -1,0 +1,494 @@
+
+
+
+
+
+
+
+
+
+A ESSE PONTO, ESTAMOS CHEGANDO AO FIM DESTE MÓDULO..
+
+
+
+
+
+
+
+
+
+APRENDEMOS SOBRE MULTI-STAGE BUILDS,
+
+
+
+E VIMOS COMO PODEMOS DEPLOYAR MÚLTIPLOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+--> VIMOS COMO DEPLOYAR MÚLTIPLOS CONTAINERS ___ TANTO EM 1 MESMA TASK,
+
+COMO 
+
+
+
+EM DIFERENTES 'HOSTS' (
+
+    2 servidores, 1 em cada container, rodando em diferentes 
+
+    TASKS, que atuam como HOSTS.... -->  1 servidor 'node' (servidor node), e outro servidor 'nginx'... (rodando no container frontend react)
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> ok.... O PROFESSOR DIZ 'HOSTS' PQ FICAMOS COM DIFERENTES DOMAINS PARA ESSES 
+
+DEPLOYED 
+
+
+CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O PROFESSOR AGORA TENTA RODAR OS CONTAINERS LOCALMENTE,
+
+COm 'docker-compose up'...
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... COM SORTE, ISSO AINDA DEVERÁ FUNCIONAR...
+
+
+
+
+
+
+
+
+
+
+
+--> RODAMOS ISSO AÍ,
+
+E FICAMOS 
+
+
+COM o app funcionando... --> AS COISAS AINDA FUNCIONAM,
+
+
+
+
+
+
+A ÚNICA DIFERENÇA É QUE FICAMOS COM 
+
+
+
+
+DATA DE GOALS DIFERENTE NESSE APP,
+
+
+JUSTAMENTE PQ 
+
+ESTAMOS USANDO 1 DATABASE DIFERENTE, NO CLUSTER MONGODB ATLAS,
+
+
+
+
+EM DEVELOPMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... ENTÃO ISSO FUNCIONA JUST FINE, SEM NENHUM PROBLEMA.. --> ERA EXATAMENTE O QUE 
+
+QUERÍAMOS...
+
+
+
+
+
+
+
+
+
+
+OK... MAS O PROFESSOR TAMBÉM QUER FALAR SOBRE A 
+
+
+EXISTÊNCIA DE 'DIFERENTES DOCKER FILES, 1 PARA PRODUCTION E OUTRA PARA 
+
+DEVELOPMENT'..
+
+
+
+
+
+
+
+
+
+
+
+
+INICIALMENTE, ISSO DE TER 2 DOCKERFILES,
+
+1 PARA PRODUCTION E OUTRA PARA O DEVELOPMENT,
+
+PODE PARECER ESTRANHO.... --->  PQ O CONCEITO DO DOCKER ERA 
+
+TER 
+
+
+O MESMO ENVIRONMENT EM DEVELOPMENT E PRODUCTION --> O PROFESSOR ARGUMENTA 
+
+
+QUE, 
+
+NA VERDADE,
+
+
+AINDA 
+
+TEMOS O MESMO ENVIRONMENT -----------> ELE ARGUMENTA QUE TER O MESMO ENVIRONMENT 
+
+
+NAO SIGNIIFCA QUE NÃO EXISTIRÃO DIFERENÇAS ENTRE DEV E PROD...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NO CASO DO REACT,
+
+
+PRECISAMOS DAS DIFERENÇAS,
+
+PQ 
+
+O CÓDIGO PRECISA SER OPTIMIZADO --> E ISSO SERÁ FEITO 
+
+POR MEIO DO SCRIPT DE BUILD,
+
+
+
+MAS PARA ISSO REALMENTE PRECISAMOS DE UMA IMAGE SEPARADA,
+
+
+UMA 
+
+
+IMAGE
+
+
+COM A ETAPA DE 
+
+
+''
+
+
+
+
+FROM node:14-alpine as build
+# 'as' é NECESSÁRIO PARA QUE VOCÊ CONSIGA COLOCAR 1 'ALIAS' PARA ESSA IMAGE INTEIRA... ESSE ALIAS DEPOIS PODE/SERÁ USADO PARA COISAS COMO 'COPIAR OS ARQUIVOS DA IMAGE ANTERIOR', como visto logo abaixo...
+
+WORKDIR /app 
+
+COPY package.json . 
+
+RUN npm install 
+
+COPY . . 
+
+#! NÃO FAÇA ASSIM: CMD ["npm", "run", "build"]
+
+#? COM MULTI-STAGE BUILDS, DEVEMOS USAR 'RUN' em vez de 'CMD'... (pq 'RUN' vai nos deixar ESPECIFICAR MAIS ETAPAS, POSTERIORMENTE)...
+RUN npm run build
+
+
+
+''
+
+
+
+
+
+,
+
+
+
+
+
+
+QUE VAI 
+
+SE ENCARREGAR DA ETAPA DE 'BUILD' DE NOSSAS FILES,
+
+
+QUE 
+
+ENTÃO 
+
+
+
+
+SERÃO SERVIDAS COM A SEGUNDA ETAPA DESSE MESMO DOCKERFILE, QUE É ESTA:
+
+
+
+
+
+
+
+
+
+
+
+
+FROM nginx:stable-alpine
+
+# ESTE COPY AQUI É ESPECIAL... ESTAMOS USANDO A SINTAXE DE 'COPIAR COISAS LÁ DE OUTRA STEP/STEPS'... --> no caso, vamos COPIAR OS ARQUIVOS DA 'FINAL BUILD', buildados pela PRIMEIRA STEP de nossa docker file (ou seja, até o trecho de 'npm run build'.... pegaremos o output desse trecho aí, as build files, o build output)...
+COPY --from=build /app/build /usr/share/nginx/html
+
+
+### E É CLARO QUE AINDA PRECISAMOS ESPECIFICAR 'DE QUE FOLDER, DA STEP ANTERIOR, VOCê QUER COPIAR O CONTEÚDO'... E 'PARA QUAL FOLDER, DA NOSSA IMAGE/STEP ATUAL, VOCÊ VAI QUERER COPIAR O CONTEÚDO?'
+### vamos colocar os arquivos nesse folder de 'usr/share/nginx/html', QUE É O DEFAULT FOLDER EM QUE _O NGINX VAI TENTAR FAZER SERVE DAS FILES...
+
+# DEIXAMOS EXPOSTA A PORT 80, pq é essa port que fica aberta na image do nginx out of the box, é a setting default dele...
+EXPOSE 80 
+
+## COM ISSO, EXECUTAMOS NOSSO SERVIDOR NGINX... a option de '-g daemon off' é algo recomendado pela própria image do nginx, no docker hub...
+CMD ["nginx", "-g", "daemon off;"] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... NÃO HÁ UM WORKAROUND EM VOLTA DISSO.... NÃO É UMA FRAQUEZA 
+
+NO NOSSO CÓDIGO, E SIM ALGO QUE É NECESSÁRIO FAZER, EM REACT PROJECTS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COISAS COMO 'USAR DIFERENTES URLS'
+
+
+
+E 'USAR DIFFERENT DATABASE MONGODB_NAMES' 
+
+ENTRE DEVELOPMENT E PRODUCTION 
+
+
+__ É ALGO TOTALMENTE NORMAL...
+
+
+
+
+
+
+
+
+
+
+--> ISSO NÃO MUDA A MANEIRA PELA QUAL O NOSSO APP FUNCIONA,
+
+E NÃO MUDA O NOSSO ENVIRONMENT... NOSSO APP CONTINUA SENDO 1 REACT APP,
+
+
+E O BACKEND CONTINUA SENDO UM APP NODE...
+
+
+
+
+
+
+
+
+-----> ESSAS SÃO APENAS DIFERENÇAS NO NOSSO CÓDIGO QUE FAZEM MT SENTIDO,
+
+
+
+JUSTAMENTE PQ __ '''NÃO VAMOS QUERER MEXER NA PRODUCTION DATABASE 
+QUANDO ESTIVERMOS TESTANDO NOSSO CÓDIGO''' (development phase)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NÃO SE ENGANE:
+
+
+
+
+''''NÃO É PQ EXISTEM ALGUMAS DIFERENÇAS NO CÓDIGO,
+
+OU PQ LIDAMOS COM CENÁRIOS ESPECÍFICOS, como com a const de 'backendUrl' no app React,
+
+QUE _ VAMOS DEIXAR DE TER REPRODUCIBILITY''' -->  PQ O CÓDIGO 
+
+
+E O ENVIRONMENT AINDA ESTÃO 'LOCKED-IN'
+
+
+EM 1 
+
+IMAGE E 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+-> E MESMO SE TIVERMOS DIFERENTES IMAGES PARA DEVELOPMENT E PRODUCTION,
+
+
+APENAS TEREMOS ISSO PQ _ O REACT _ NOS FORÇA A FAZER ISSO....
+
+
+
+
+
+
+
+
+
+--> MAS O NOSSO CÓDIGO EM SI CONTINUA O MESMO, E O REACT SIMPLESMENTE 
+
+NÃO PRECISA 
+
+
+
+DE NODE __ PARA __ TER SEU CÓDIGO EXECUTADO... ELE SÓ PRECISA DO NODE 
+
+PARA BUILDAR O CÓDIGO DE PRODUCTION...  E É EXATAMENTE POR ISSO QUE USAMOS 
+
+
+A IMAGE DO NODE NA ETAPA DE BUILD, NAQUELA dockerfile de 'dockerfile.prod'...
+
+
+
+
+
+
+
+
+
+
+--> E É CLARO QUE PODERÍAMOS TER USADO A MESMA NODE IMAGE 
+
+NAS 2 DOCKERFILES,
+
+
+
+PARA GARANTIR QUE 
+
+TENHAMOS O EXATO MESMO SETUP...
+
+
+
+
+
+
+
+
+--> É FÁCIL SE CONFUNDIR, E PENSAR QUE '''NÃO ESTAMOS MAIS USANDO OS BENEFÍCIOS DO DOCKER''',
+
+
+MAS AINDA ESTAMOS OS UTILIZANDO, SIM...
