@@ -1,0 +1,1800 @@
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... KUBERNETES É ESSA COLEÇÃO DE CONCEITOS E TOOLS QUE NOS AJUDAM A DEPLOYAR 
+
+ESSES CONTAINERS EM QUALQUER LUGAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> AGORA DEVEMOS VER A ARQUITETURA DE 1 KUBERNETES DEPLOYMENT,
+
+E VER O QUE ELE PODE SETTAR E MANAGEAR EM QUALQUER CLOUD PROVIDER DE NOSSA ESCOLHA...
+
+
+
+
+
+
+
+
+
+
+
+
+--> TUDO COMEÇA COM 1 'CONTAINER'... 
+
+
+
+
+
+
+
+
+
+
+
+
+--> NO 'MUNDO KUBERNETES',
+
+
+
+OS CONTAINERS SÃO ACTUALLY MANAGEADOS POR AQUILO QUE CHAMAMOS DE 'PODS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> 'POD' --> É A MENOR UNIDADE POSSÍVEL, 
+
+
+NO MUNDO KUBERNETES, 
+
+
+
+
+
+
+QUE PODEMOS __ DEFINIR EM ALGUMA CONFIGURATION FILE,
+
+ 
+
+
+
+ PARA QUE O KUBERNETES O CRIE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> E O 'POD' SIMPLESMENTE SEGURA 1 CONTAINER... -------> NA VERDADE,
+
+
+
+
+
+
+
+
+
+
+
+
+ 1 POD É CAPAZ __ DE SEGURAR  __ MÚLTIPLOS CONTAINERS,
+
+
+
+
+
+
+
+
+MAS AS MENORES UNITS QUE VC PODE CRIAR,
+ 
+
+
+ MENORES UNITS POSSÍVEIS SÃO SIMPLESMENTE 
+
+
+
+
+
+ SINGLE-CONTAINER PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+1 POD WITH 1 CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ESSE POD VAI BASICAMENTE EXECUTAR O CONTAINER NO SEU INTERIOR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... E CADA 'POD',
+
+
+
+
+
+
+
+COM O CONTAINER NO SEU INTERIOR,
+
+
+
+
+
+
+
+RODA NAQUILO QUE CHAMAMOS 
+
+
+DE 
+
+
+
+'WORKER NODE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+WORKER NODE ---------> É AQUILO, NO MUNDO KUBERNETES,
+
+QUE VAI RODAR SEUS CONTAINERS....
+
+
+
+
+
+
+
+
+
+
+
+esquema:
+
+
+
+
+
+
+
+
+--------------
+
+
+WORKER NODE {
+
+    POD {
+        CONTAINER
+    }
+}
+
+
+
+
+
+
+-------------- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VOCÊ PODE PENSAR EM 'WORKER NODES'
+
+
+COMO SUAS 
+
+MÁQUINAS,
+
+
+
+SUAS VIRTUAL INSTANCES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NO MUNDO AWS,
+
+
+
+UMA EC2 INSTANCE,
+
+QUE É UMA 
+
+
+
+REMOTE MACHINE COMPLETAMENTE ALUGADA POR NÓS,
+
+
+
+É 
+
+1 
+
+WORKER NODE... PODERIA SER 1 WORKER NODE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1 WORKER NODE É SIMPLESMENTE 1 MÁQUINA EM ALGUM LUGAR, 1 COMPUTADOR,
+
+
+
+COM CERTA QUANTIDADE DE CPU E MEMÓRIA.. --> E NESSA MÁQUINA 
+
+
+
+
+
+
+
+
+PODEMOS __ RODAR NOSSOS PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E 1 MESMO WORKER NODE PODE __ TER MÚLTIPLOS PODS...
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+WORKER NODE {
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... MAS ALÉM DESSE CONCEITO 
+
+
+'WORKER-NODE  --- POD ---- CONTAINER',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O KUBERNETES TAMBÉM PRECISA DE 1 'PROXY',
+
+
+QUE É 
+
+__OUTRA FERRAMENTA, SETTADA PELO KUBERNETES, PARA NÓS,
+
+
+
+
+QUE 
+É 
+
+COLOCADA __ DENTRO __ DO WORKER NODE,
+
+
+
+E QUE 
+
+
+
+
+BASICAMENTE __ CONTROLA __ O NETWORK TRAFFIC DOS _ PODS_ _ DENTRO DAQUELE WORKER NODE...
+
+
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU SEJA,
+
+O PROXY BASICAMENTE CONTROLA SE ESSES PODS VÃO CONSEGUIR ALCANÇAR 
+
+
+A INTERNET OU NÃO,
+
+
+
+E SE 
+
+OS 
+
+
+
+CONTAINERS 
+
+
+DENTRO DOS PODS PODERÃO SER 'REACHED' LÁ DO OUTSIDE WORLD...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE VC ESTÁ __ RODANDO 1 WEB APPLICATION EM 1 CONTAINER,
+
+DENTRO DE 1 DESSES PODS,
+
+
+
+O 
+
+
+
+PROXY PRECISA SER CONFIGURADO DE MODO QUE 'TRÁFEGO DO MUNDO EXTERIOR', DOS USERS,
+
+
+SERÁ 
+
+
+CAPAZ 
+
+
+DE ALCANÇAR ESSE CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É CLARO QUE VEREMOS COMO 
+
+SETTAR TODAS ESSAS COISAS AO LONGO 
+
+
+DAS PRÓXIMAS LIÇÕES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS QUANDO TRABALHAMOS COM KUBERNETES,
+
+
+TIPICAMENTE 
+
+PRECISAMOS 
+
+
+
+
+
+DE PELO MENOS 1 WORKER NODE,
+
+
+
+
+CASO CONTRÁRIO NÃO EXISTIRÁ 
+
+
+
+
+LUGAR ALGUM PARA RODAR SEUS PODS (e seus containers, portanto)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> É CLARO QUE, PARA APPS MAIORES,
+
+VC TIPICAMENTE TERÁ MAIS DE 1 WORKER NODE,
+
+
+
+
+
+
+QUE SERÃO ENTÃO CAPAZES DE RODAR SEUS DIFERENTES PODS... -->  PQ, NESSES CASOS,
+
+
+
+VC 
+
+
+PRECISARÁ (TALVEZ)
+
+
+
+
+DE 
+
+MAIS DE 1 SERVER PARA TER __ COMPUTING POWER PARA __ RODAR TODOS SEUS CONTAINERS:
+
+
+
+
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO PQ __ O KUBERNETES VAI INCLUIR TAMBÉM A POSSIBILIDADE DE SEUS CONTAINERS 
+
+'SCALING'...
+
+
+
+
+
+
+
+
+
+
+--> SE VC  USAR O KUBERNETES PARA ADICIONAR/REMOVER 
+
+AUTOMATICAMENTE CONTAINERS (pods, na verdade),
+
+
+
+CONFORME O TRÁFEGO AUMENTAR OU DIMINUIR,
+
+
+
+
+ESSES PODS SÃO AUTOMATICAMENTE 
+
+
+'''DISTRIBUTED '''',
+
+
+PELO KUBERNETES,
+
+
+
+AO LONGO 
+DE TODOS 
+
+
+
+
+
+OS _ AVAILABLE WORKER NODES ---------> ISSO QUER DIZER QUE 
+
+
+VC 
+
+
+PODE/VAI 
+
+
+
+
+
+
+
+TER DIFERENTES E EQUAL CONTAINERS,
+
+
+
+RODANDO EM __ MÚLTIPLOS WORKER NODES,
+
+TUDO 
+
+
+PARA DISTRIBUIR 
+
+
+
+SUA WORKLOAD 
+
+IGUALMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS TODOS ESSES WORKER NODES,
+
+E OS PODS 
+
+E CONTAINERS RODANDO NELES,
+
+PRECISAM 
+
+
+
+
+
+
+
+SER CONTROLADOS DE ALGUMA FORMA...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ALGUÉM PRECISA __ CRIAR E COMEÇAR ESSES CONTAINERS E PODS...
+
+
+
+
+
+
+
+
+
+--> E ALGUÉM PRECISA 
+
+'REPLACE THEM' OU 'SHUT THEM DOWN'
+
+
+SE ELES ESTIVEREM FALHANDO OU SE NÃO FOREM MAIS NECESSÁRIOS... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ISSO É FEITO PELO 'MASTER NODE'...
+
+
+
+
+
+
+
+
+
+
+
+--> O 'MASTER NODE' É CHAMADO DE 'CONTROL PLANE',
+
+
+
+no mundo kubernetes..
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+MASTER NODE {
+    
+    { THE CONTROL PLANE }
+}
+
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O MASTER NODE É BASICAMENTE O CONTROL CENTER,
+
+QUE VAI 
+
+INTERAGIR 
+
+
+COM OS 
+
+
+
+
+
+
+
+WORKER NODES, PARA OS CONTROLAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. ISSO QUER DIZER QUE QUANDO TRABALHAMOS COM O KUBERNETES,
+
+NÃO 
+
+
+INTERAGIMOS DIRETAMENTE COM OS CONTAINER/PODS (APESAR DE ISSO SER POSSÍVEL, MAS VC TIPICAMENTE NÃO FAZ ISSO),
+
+
+
+
+
+E SIM 
+
+
+
+
+DEIXA ESSE CONTROL PLANE FAZER O HEAVY  LIFTING -------> NÓS, COMO DEVELOPERS,
+
+APENAS
+
+
+
+DEFINIMOS O 
+
+'END STATE'
+
+QUE 
+
+
+O 
+KUBERNETES 
+
+
+
+
+
+
+DEVE LEVAR EM CONSIDERAÇÃO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PORTANTO, ESSE MASTER NODE É SIMPLESMENTE 
+
+
+
+OUTRA __ REMOTE MACHINE,
+
+
+
+QUE 
+
+
+
+__ VAI _ TER ESSE 'CONTROL PLANE' , 
+
+
+QUE ENTÃO SERÁ RESPONSÁVEL 
+
+
+
+
+
+
+
+
+PELA INTERAÇÃO COM OS WORKER NODES E OS PODS RODANDO NELES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TEORICAMENTE,
+
+
+
+É POSSÍVEL 
+
+TER 1 __ ÚNICA MÁQUINA _ FUNCIONANDO COMO 
+
+
+'MASTER NODE' E 'WORKER NODE' 
+
+
+AO MESMO TEMPO,
+
+
+
+
+
+
+
+mas para DEPLOYMENTS 
+
+MAIORES,
+
+
+
+
+
+
+
+
+VC TERÁ 1 'MASTER NODE' (que, ele mesmo, pode ACTUALLY SER SPLITTADO EM MÚLTIPLAS MÁQUINAS, PARA GARANTIR MAIOR AVAILABILITY)..
+
+
+
+
+E ENTÃO 
+
+VÁRIOS WORKER NODES ... ->   E CADA WORKER NODE É INDEPENDENTE,
+
+
+
+
+CADA MACHINE/INSTANCE/WORKER NODE  É 
+
+
+
+INDEPENDENTE  
+
+
+
+__ DO MASTER NODE... -> ISSO PQ, SE ALGUM WORKER NODE CAIR,
+
+
+
+O MASTER NODE NÃO VAI 'GO DOWN' JUNTO COM ESSE WORKER NODE CAÍDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... NESSE MASTER NODE,
+
+ESSA COISA 'CONTROL PLANE'
+
+É ACTUALLY UMA COLLECTION 
+
+DE DIFERENTES 
+
+ 
+
+
+
+ TOOLS/THINGS/SERVICES 
+
+
+ QUE 
+
+
+ ESTÃO 
+
+
+
+ RODANDO NO MASTER NODE...
+
+
+
+
+
+
+
+
+
+
+--> LOGO EXPLORAREMOS DETALHES SOBRE O WORKER NODE 
+
+E 
+
+
+MASTER NODE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TUDO ISSO,
+
+
+
+
+
+
+
+TODAS ESSAS COISAS,
+
+
+
+
+
+
+
+
+'MASTER NODE + WORKER NODES (que são COMPOSTOS POR 1 OU MAIS PODS, QUE TERÃO 1 OU MAIS CONTAINERS, e por 1 PROXY/CONFIG INTERNO, QUE CONTROLA O TRÁFEGO A ESSE WORKER NODE)''',
+
+
+
+
+
+
+
+
+
+TUDO ISSO FORMA 1 ____ ''''CLUSTER'''' ------>  É 1 CLUSTER DE SEUS MASTER E WORKER NODES...
+
+
+
+
+
+
+
+
+E NESSE CLUSTER TEREMOS 1 'NETWORK',
+
+NETWORK 
+
+EM QUE 
+
+
+
+
+TODAS ESSAS DIFERENTES PARTES VÃO FICAR CONECTADAS...
+
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+CLUSTER {
+
+
+MASTER NODE {
+    
+    { THE CONTROL PLANE }
+}
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... aí, com isso, seu master node 
+
+SERÁ 
+
+CAPAZ 
+
+DE PROVIDENCIAR INSTRUCTIONS A UMA 'CLOUD PROVIDER API',
+
+
+
+
+
+
+
+
+
+tudo para dizer ao cloud provider que ELE DEVE CRIAR 'CLOUD PROVIDER-SPECIFIC RESOURCES' 
+
+
+
+
+PARA __ REPLICAR ESSE 'DESIRED BIG PICTURE',
+
+
+ESSE 
+
+END STATE,
+
+
+NESSE CLOUD PROVIDER....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> SE PENSAMOS EM AWS,
+
+
+
+
+
+O KUBERNETES VAI INTERAGIR E PEDIR PARA O AWS 
+
+
+
+CRIAR:
+
+
+
+
+1) VÁRIAS EC2 INSTANCES, NECESSÁRIAS
+
+
+
+
+2) 1 LOAD BALANCER 
+
+
+
+
+
+
+
+
+
+E TODAS AS OUTRAS COISAS NECESSÁRIAS PARA TER ESSE NETWORK,
+
+
+
+
+E PARA __ TAMBÉM TER O 'KUBERNETES'
+
+E 
+ALGUMAS 
+
+KUBERNETES 
+
+
+
+TOOLS __ RODANDO _ LÁ NA INSTANCE 'MASTER NODE',
+
+
+
+
+QUE, POR SUA VEZ,
+
+
+
+
+
+
+VAI _ CONTROLAR __ TODAS AS OUTRAS EC2 INSTANCES (WORKER NODES),
+
+
+
+
+
+
+QUE PERTENCEM A ESSA NETWORK,
+
+
+PARA ENTAÕ 
+
+
+
+RODAR 
+
+
+CONTAINERS NESSES PODS,
+
+
+DENTRO DELES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TUDO ISSO PARECE MT ABSTRATO,
+
+
+MAS 
+
+AS COISAS FICARÃO MAIS CLARAS NAS PRÓXIMAS COURSE SECTIONS...
+
+
+
+
+
+
+
+
+
+
+
+PRECISAMOS DESSA TEORIA, ANTES...
+
+
+
+
+
+
+
+
+
+--> MAS DEVEMOS ESTUDAR UM POUCO MAIS OS WORKER E MASTER NODES..
