@@ -1,0 +1,921 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> INSTALANDO KUBERNETES, COM O MINIKUBE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS INSTALAR O KUBE CONTROL TOOL  (kubectl) 
+
+
+E O MINIKUBE 
+
+
+NO WINDOWS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> BEM, PARA INSTALAR O MINIKUBE,
+
+
+
+
+
+QUE _ É ESSA FERRAMENTA QUE 
+
+CRIA ESSE CLUSTER-PLAYGROUND NO NOSSO SISTEMA,
+
+
+
+DEVEMOS 
+
+
+
+
+SEGUIR AS 
+
+
+INSTRUÇÕES DE INSTALAÇÃO..
+
+
+
+
+
+
+
+
+
+NESSAS INSTRUÇÕES, PRIMEIRAMENTE 
+
+
+DEVEMOS 
+
+
+INVESTIGAR SE TEMOS 
+
+
+O SETUP CORRETO..
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEVEMOS RODAR 'systeminfo'
+
+
+NO COMMAND PROMPT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... ISSO FEITO,
+
+TEREMOS 1 OUTPUT LONGO...
+
+
+
+
+
+
+
+
+
+--> SE ENXERGARMOS 
+
+'A HYPERVISOR HAS BEEN DETECTED',
+
+
+
+
+
+
+
+JÁ TEREMOS TODAS AS COISAS 
+
+NECESSÁRIAS JÁ INSTALADAS..
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR VAI USAR O 'VIRTUALBOX' COMO HYPERVISOR (em vez do built-in hyper-v do windows)...
+
+
+
+
+
+
+
+
+
+
+-> PQ O VIRTUALBOX VAI FUNCIONAR EM QUALQUER 
+
+
+SISTEMA,
+
+
+
+AO CONTRÁRIO DO HYPER-V DO WINDOWS 10 PRO...
+
+
+
+
+
+--> SE SEU SISTEMA NÃO SATISFAZER OS REQUISITOS,
+
+VC NÃO PODERÁ 
+
+
+INSTALAR O MINIKUBE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... INSTALADO ESSE NEGÓCIO,
+
+
+
+
+
+
+
+
+VAMOS QUERER INSTALAR A 'KUBECTL' ,
+
+
+kube control tool...
+
+
+
+
+
+
+
+
+
+
+
+ESSA TOOL DEVE ESTAR PRESENTE SEMPRE,
+
+
+
+MESMO QUE NÃO INSTALEMOS 
+
+
+O MINIKUBE LOCALMENTE -->  PQ É JUSTAMENTE O KUBE CONTROL TOOL 
+
+QUE 
+
+NOS DEIXA 
+
+
+COMUNICAR COM O CLUSTER,
+
+
+
+
+E É O KUBE CONTROL TOOL QUE 
+
+NOS DEIXA 
+
+ENVIAR 
+
+
+
+INSTRUÇÕES AO CLUSTER...
+
+
+
+
+
+
+
+
+
+
+--> OK... VAMOS INSTALAR ESSE NEGÓCIO..
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PARA INSTALAR ISSO NO WINDOWS,
+
+
+
+TEMOS DIFERENTES 
+
+
+
+OPÇÕES...
+
+
+
+
+
+
+
+
+--> O PROFESSOR PREFERE O MÉTOOD QUE USA O 'CHOCOLATEY'...
+
+
+
+
+
+
+
+
+
+
+
+-> É 1 PACKAGE MANAGER PARA O WINDOWS....
+
+
+
+
+
+
+
+
+RODAMOS 
+
+
+
+ESTE COMANDO, NO POWERSHELL:
+
+
+
+choco install minikube
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ISSO VAI INSTALAR O minikube..
+
+
+
+
+
+
+
+
+
+-> TAMBÉM DEVEMOS INSTALAR O 'KUBE CONTROL TOOL',
+
+
+POR MEIO DO COMANDO 
+
+
+'choco install kubernetes-cli'... (mas isso é instalado junto do minikube, então nem mesmo precisamos desse comando)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... 
+
+
+
+
+
+
+
+AS 2 COISAS FORAM INSTALADAS....
+
+
+
+
+
+
+
+
+
+
+para verificar se isso funcionou,
+
+
+rode 'kubectl version --client'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... essa é a kube control tool,
+
+
+QUE ESTARÁ INSTALADA NA NOSSA MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+SEMPRE USAREMOS A KUBE CONTROL  TOOL,
+
+
+
+
+
+
+
+
+JÁ O MINIKUBE SÓ USAREMOS PARA TESTES NA NOSSA LOCAL MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+
+OK... O PROFESSOR ENTÃO PEDE QUE ENTREMOS NO PERFIL DE NOSSO USUÁRIO,
+
+E ENTÃO QUE 
+
+
+CRIEMOS UM FOLDER DE '.kube'...
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+cd %USERPROFILE% 
+
+mkdir .kube 
+
+
+
+
+
+
+
+
+
+
+
+
+--> ENTRE NESSE FOLDER DO '.kube'
+
+E CRIE 1 NOVO DOCUMENTO DE TEXTO,
+
+
+SEM EXTENSÃO,
+
+
+só com nome 'config'...
+
+
+
+
+
+
+
+
+
+
+
+--> OK... CRIAMOS ESSE ARQUIVO 'config'...
+
+
+
+
+
+
+
+
+
+- PODEMOS DEIXAR ELE EM BRANCO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> o minikube já foi instalado...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... 
+
+
+
+
+
+
+
+
+AGORA VAMOS CONFIRMAR SE O MINIKUBE ESTÁ INSTALADO... --> PARA ISSO,
+
+ 
+ VAMOS 
+
+ CRIAR 1 NOVO CLUSTER.. --> NO CASO DO MINIKUBE,
+
+
+ ISSO QUER DIZER QUE 
+
+ VAMOS CRIAR 
+
+ 1 
+
+ NOVA VIRTUAL MACHINE...
+
+
+
+
+
+
+
+
+ FAREMOS ISSO COM 
+
+ 'minikube start --driver=<driver_de_sua_escolha>'..
+
+
+
+
+
+
+
+
+
+
+
+ VEREMOS O QUE SÃO OS 'DRIVER' depois...
+
+
+
+
+
+
+
+
+ -> O VALUE PARA SEU DRIVER DEVE SER O VISUALIZATION DRIVER QUE 
+ VC 
+
+ESTÁ USANDO...
+
+
+
+
+
+
+
+
+
+--> OK... 
+
+
+
+
+
+
+
+
+
+COMO ESTOU NO WINDOWS,
+
+
+
+NESSE MEU SETUP,
+
+
+DEVO COLOCAR 'hyperv'...
+
+
+
+
+
+
+
+
+-->'''' VC TAMBÉM PODE TENTAR '--driver=docker' --> SE ISSO FUNCIONA,
+
+VC PODE USAR ISSO EM VEZ DE VIRTUALBOX... -> O CLUSTER ENTÃO SERÁ CRIADO 
+
+
+EM 1 DOCKER CONTAINER.... (você pode checar isso com 'docker ps', mais tarde)...
+
+
+
+
+C:\Users\Usuário>minikube start --driver=hyperv
+😄  minikube v1.30.1 on Microsoft Windows 10 Pro 10.0.19044.2486 Build 19044.2486
+✨  Using the hyperv driver based on user configuration
+
+💣  Exiting due to PROVIDER_HYPERV_NOT_RUNNING: Hyper-V requires Administrator privileges
+💡  Suggestion: Right-click the PowerShell icon and select Run as Administrator to open PowerShell in elevated mode.
+
+
+
+
+
+
+
+
+
+OK.. PRECISO TER RODADO NO MODO ADMIN...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO VAI CRIAR 1 NOVA VIRTUAL MACHINE,
+
+ COM A AJUDA DO HYPERV,
+
+
+QUE 
+
+VAI SEGURAR SEU DEVELOPMENT CLUSTER...
+
+
+
+
+
+
+
+
+
+--> E ELE VAI SETTAR AQUELE NODE HÍBRIDO,
+QUE SERÁA 
+
+O MASTER NODE E WORKER NODE 
+
+
+
+EM 
+
+
+1 
+
+NODE SÓ... --> pq, em development,
+
+não existirá problema nisso...
+
+
+
+
+
+
+
+
+
+
+
+
+--. O NEGÓCIO TAMBÉM VAI INSTALAR TODO O SOFTWARE 
+
+NECESSÁRIO AO KUBERNETES,
+
+COMO:
+
+
+
+
+1) API SERVER 
+
+2) KUBELET 
+
+3) TUDO...
+
+
+
+
+
+
+
+
+
+VAI SETTAR TUDO PARA NÓS,
+DENTRO
+
+DESSA ENCAPSULATED 
+
+VIRTUAL MACHINE...
+
+
+
+
+
+
+
+
+
+ESPERAMOS ISSO TERMINAR... ISSO FEITO,
+
+
+VAMOS 
+
+
+
+VER SE ISSO FUNCIONA..
+
+
+
+
+
+
+
+
+
+
+'hyperv' --> ISSO CONFLITA COM O VIRTUAL BOX --> devemos escolher 1 deles...
+
+
+
+
+
+
+
+
+
+
+
+-> certo...
+
+
+
+
+TEREMOS ESSE CLUSTER RODANDO NESSA VIRTUAL MACHINE...
+
+
+
+
+
+
+
+
+
+COM ISSO PRONTO, ESTAMOS PRONTOS 
+
+PARA 
+
+
+COMEÇAR COM O MINIKUBE 
+
+E 
+
+
+O 
+
+'KUBECTL'
+
+
+NO NOSSO LOCAL SYSTEM...
+
+
+
+
+
+
+
+
+
+
+--> SE RODAMOS 'minikube status',
+
+VEREMOS 
+'RUNNING'
+
+
+EM VÁRIAS COISAS,  O QUE QUER DIZER QUE A COISA DEU CERTO...
+
+
+
+
+
+
+
+
+--> PODEMOS TER 1 DASHBOARD DO MINIKUBE,
+COM 
+
+
+
+o comando 
+
+'minikube dashboard'..
+
+
+
+
+
+
+
+
+
+
+
+-> VAI ABRIR 1 ABA NO NAVEGADOR,
+
+CONSTRUÍDA PELO MINIKUBE,
+
+QUE VAI TE DEIXAR 
+
+VER 
+
+
+DENTRO DO SEU CLUSTER...
+
+
+
+
+
+
+
+
+--> PODEREMOS VER OS PODS,
+
+
+REPLICA SETS,
+
+
+VÁRIAS COISAS.. TAMBÉM CRON JOBS...
+
+
+
+
+
+
+
+
+
+
+
+-> ainda não temos nenhum pod,
+
+mas 
+
+isso será útil mais tarde, 
+
+para ver quais resources foram criados pelo kubernetes...
+
+
+
+
+
+OK... ESSE FOI O MINIKUBE E O KUBE CONTROL TOOL...
+
+
+
+
+
+AGORA DEVEMOS COMEÇAR A TRABALHAR COM O KUBERNETES,
+
+COM ESSE 
+
+
+
+
+LOCAL DEVELOPMENT E COM ESSE DUMMY CLUSTER...
