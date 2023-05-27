@@ -1,0 +1,748 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK.. VIMOS QUE A ESTRUTURA DO KUBERNETES É ESTA:
+
+
+
+
+
+CLUSTER {
+
+
+MASTER NODE {
+    
+    { THE CONTROL PLANE }
+}
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS QUANDO 
+
+
+
+
+
+EXAMINAMOS ESSA ARQUITETURA,
+
+
+
+A ARQUITETURA QUE SETTAREMOS, E QUE 
+
+
+
+
+
+
+O KUBERNETES USARÁ PARA NOS AJUDAR,
+
+
+
+
+
+PENSAMOS QUE 'NÃO PRECISAMOS FAZER MAIS NADA'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS TEMOS QUE DIFERENCIAR CERTAS COISAS QUE 
+
+O _ KUBERNETES FAZ,
+E OUTRAS QUE ELE NÃO FAZ (e que vc deve fazer)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O QUE O KUBERNETES FAZ, E O QUE ELE __ NÃO FAZ? 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O QUE VC PRECISA FAZER, 
+
+PARA USAR O KUBERNETES?
+
+
+
+
+
+
+
+
+
+
+--> QUAL ENVIRONMENT VC PRECISA PROVIDENCIAR,
+
+PARA QUE O KUBERNETES CONSIGA RODAR...?  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> 'WHAT YOU NEED TO DO' (como developer):
+
+
+
+
+
+1) VC PRECISA CRIAR O 'CLUSTER' E AS 'NODE INSTANCES'... (WORKER + MASTER NODES)...
+
+
+
+
+
+
+--> OK... ISSO SIGNIFICA QUE PRECISAMOS __ CRIAR O CLUSTER,
+
+E OS MASTER NODES E WORKER NODES,
+
+
+
+EM QUE 
+
+
+O KUBERNETES SERÁ INSTALADO 
+
+
+
+
+E FARÁ 'ITS THING'...
+
+
+
+
+
+
+
+
+
+2) PRECISAMOS INSTALAR TODO O __ SOFTWARE KUBERNETES 
+
+NESSAS MÁQUINAS, NESSE ENVIRONMENT, NESSES NODES...
+
+
+
+
+E VC PRECISA _ CONFIGURAR __ TODAS AS COISAS NECESSÁRIAS AO KUBERNETES 
+
+
+
+(
+
+
+    'SETUP API SERVER', KUBELET AND OTHER KUBERNETES SERVICES/SOFTWARE ON NODES...
+)
+
+
+
+--------> A DEPENDER DO CLOUD PROVIDER QUE VC ESTÁ USANDO,
+
+
+VC TAMBÉM TERÁ DE SETTAR 
+
+
+__ EXTRA RESOURCES, NECESSÁRIOS AO SEU CLUSTER DO KUBERNETES, EVENTUALMENTE...
+
+
+
+--> COISAS COMO 'LOAD BALANCERS',
+
+
+OU _CERTOS _ FILESYSTEM SERVICES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E VEREMOS ESSE PONTO 2 AO LONGO DOS PRÓXIMOS MÓDULOS...
+
+
+
+
+
+
+
+
+
+
+
+
+--> certo... o professor nos mostrará COMO SETTAR 
+
+
+
+1 LOCAL TESTING ENVIRONMENT, NA NOSSA LOCAL MACHINE,
+
+
+COMO 
+
+TAMBÉM
+A 
+
+SETTAR 
+
+
+
+
+os resources NECESSÁRIOS NA AWS,
+
+COMO 1 EXEMPLO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VC SÓ PRECISA TER CIÊNCIA DO FATO DE QUE 
+
+'''É VC QUE DEVE PREPARAR O CLUSTER'''..
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO PODE PARECER MT DESAFIADOR,
+
+
+
+MAS TUDO 
+
+
+ISSO 
+
+É BEM EASY.... --> PQ, TANTO COM O LOCAL DEVELOPMENT 
+
+
+COMO 
+
+
+
+
+COM A AWS COMO EXEMPLO,
+
+
+
+
+
+
+
+
+
+TEMOS CERTAS TOOLS E SERVICES QUE DEIXAM O _ CREATE DO CLUSTER BEM IMPORTANTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+--> MAS É IMPORTANTE ENTENDER QUE O KUBERNETES __ NÃO VAI _ 'SETTAR' ESSES RESOURCES..
+
+
+
+
+
+
+
+
+
+
+
+
+
+EM VEZ DISSO,
+
+
+O KUBERNETES VAI ___ USAR_ ESSES RESOURCES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O QUE O KUBERNETES FAZ:
+
+
+
+
+
+
+1) ELE _ CRIA __ OS 'OBJECTS',
+
+OS 
+
+
+'PODS',
+
+AS UNIDADES QUE CONTERÃO SEUS CONTAINERS...
+
+
+
+
+
+
+
+
+2) ELE VAI AUTOMATICAMENTE DISTRIBUIR 
+ESSES PODS,
+
+
+PARA TIRAR VANTAGEM DOS AVAILABLE RESOURCES...
+
+
+
+
+
+
+
+
+
+3) VAI AUTOMATICAMENTE 
+
+
+
+
+MONITOR E RESTARTAR SEUS PODS, SE ELES FALHAREM...
+
+
+
+
+
+
+
+
+
+
+4) ELE VAI MANAGEAR O RUNNING DEPLOYMENT,
+
+
+E VAI 
+
+ASSEGURAR QUE SEU DEPLOYMENT VAI 
+
+
+CONTINUAR DE FORMA SMOOTH, E QUE VAI FICAR UP AND RUNNING...
+
+
+
+
+
+
+
+
+
+-> E ELE VAI FAZER TUDO ISSO PARA NÓS... TAMBÉM VAI STARTAR NOSSOS CONTAINERS 
+
+PARA NÓS...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ELE STARTA OS CONTAINERS PARA NÓS...
+
+
+
+
+
+
+
+
+
+
+
+-> É COMO O DOCKER-COMPOSE, MAS EM DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+-> O KUBERNETES É FEITO PARA 
+
+
+
+O DEPLOYMENT DE CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS, ASSIM COMO O DOCKER-COMPOSE NÃO 
+
+
+
+
+
+
+
+__ CONFIGURA SEU LOCAL COMPUTER, NÃO INSTALA O DOCKER,
+
+NÃO SETTA SEU LOCAL COMPUTER NEM 1 POUCO,
+
+
+
+E APENAS 
+
+USA SEU COMPUTADOR PARA RODAR OS CONTAINERSS,
+
+
+
+
+
+
+
+
+
+ASSIM COMO O DOCKER-COMPOSE,
+
+
+
+
+O 
+
+
+
+
+KUBERNETES TAMBÉM PRECISA DE 1 CERTO ENVIRONMENT PARA FAZER ISSO, EM REMOTE MACHINES....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ESSA É UMA DIFERENCIAÇÃO IMPORTANTE DE SER ESTABELECIDA..
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... E O PROFESSOR VAI MOSTRAR AS 2 COISAS:
+
+
+
+
+
+1) COMO SETTAR 1 DEPLOYMENT COM O KUBERNETES E COMO O CONFIGURAR, PARA QUE SEUS CONTAINERS 
+
+SEJAM MANAGEADOS POR ELE
+
+
+
+
+
+
+
+
+
+2) COMO SETTAR 1 CLUSTER 
+
+
+KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O PROFESSOR APONTA QUE O KUBERNETES EXIGE CERTO TRABALHO DE SUA PARTE, TAMBÉM... (
+
+    ELE APENAS VAI USAR SEU CLUSTER,
+
+    E NÃO VAI CRIAR ELE PARA VOCÊ...
+)
+
+
+
+
+
+
+
+
+
+MAS AGORA DEVEMOS ESTUDAR OS WORKER E MASTER NODES, PARA VER O QUE O KUBERNETS FARÁ 
+
+LÁ...
