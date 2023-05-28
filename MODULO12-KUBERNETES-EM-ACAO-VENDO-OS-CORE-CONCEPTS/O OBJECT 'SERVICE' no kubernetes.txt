@@ -1,0 +1,395 @@
+
+
+
+
+
+
+
+
+PARA ALCANÇAR 1 POD,
+
+
+E PARA ALCANÇAR O CONTAINER RODANDO NESSE POD,
+
+
+PRECISAMOS DE 1 'SERVICE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PQ 1 'service object'
+
+ 
+ É OUTRO OBJECT CONHECIDO PELO KUBERNETES,
+
+ QUE 
+ É 
+ RESPONSÁVEL PELO 
+
+ 
+
+
+ 'EXPOSING DE PODS'
+
+
+ A _ OUTROS PODS,
+
+ NO CLUSTER... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ TAMBÉM É SUPER IMPORTANTE PQ __ É ELE __ QUE VAI EXPOR O POD 
+
+ A 'VISITORS VINDOS DO LADO DE FORA DO CLUSTER' (
+
+
+OU SEJA,
+
+AO MUNDO INTEIRO...
+
+ )
+
+
+
+
+
+
+
+
+
+
+
+
+ OK... MAS A QUESTÃO É QUE 
+
+ 'PODS'
+
+ JÁ 
+ POSSUEM 
+
+ 1
+  
+  'INTERNAL IP'  POR _ dEFAULT...
+
+
+
+
+
+
+
+
+
+
+
+
+  -> PODEMOS VER ISSO NO DASHBOARD DO minikube (basta rodar 'minikube dashboard')..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. MAS HÁ 2 PROBLEMAS COM ESSE 'INTERNAL IP ADDRESS' --> 
+
+
+
+
+
+
+
+
+1o problema -->  NÃO PODEMOS _ USAR _ ESSE IP ADDRESS INTERNO PARA 
+
+
+O ACESSAR DO LADO DE FORA DO CLUSTER (meio inútil, nesse aspecto)...
+
+
+
+
+
+
+
+ 
+
+2o problema --> O 'INTERNAL IP ADDRESS' VAI SER ALTERADO,
+
+
+SEMPRE QUE 
+1 POD FOR 'REPLACED' ---------> E ISSO ACONTECE COM MAIOR FREQUÊNCIA DO QUE VC 
+
+PENSA,
+
+
+PRINCIPALMENTE 
+SE VC TEM SCALING OU ALGO DO GÊNERO.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE VC N PODE 'RELY' 
+
+
+
+NA POSSIBILIDADE DE 1 POD MANTER SEU IP ADDRESS -->  ISSO, PORTANTO,
+QUER DIZER QUE 
+
+
+
+
+O 
+
+
+
+'INTERNAL IP' 
+
+DOS PODS 
+
+
+
+__ NÃO É UMA _ TOOL MT BOA PARA ESTABELECER A COMUNICAÇÃO ENTRE PODS,
+
+
+
+
+
+MESMO _ EM _ CASOS EM QUE SUA COMUNICAÇÃO FOSSE 'CLUSTER-INTERNAL', PQ 
+
+
+
+SEUS IPS AINDA VÃO MUDAR...
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE 'FINDING PODS IS HARD IF THE IP CHANGES ALL THE TIME'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> CERTO... MAS O PROPÓSITO DE 1 'SERVICE'
+
+
+
+
+É JUSTAMENTE 
+
+
+'AGRUPAR 
+
+
+PODS EM 1 ÚNICO BLOCO',
+
+E ENTÃO 
+
+
+
+
+
+
+
+DAR A CADA 1 DESSES POD 1 'shared address',
+
+
+
+
+
+1 'SHARED IP ADDRESS',
+
+
+
+
+E 
+
+ESSE ADDRESS REALMENTE _ NÃO VAI MUDAR... ------->  ISSO QUER DIZER QUE 
+VC 
+PODE 
+
+
+USAR 1 SERVICE PARA __ COLOCAR MÚLTIPLOS PODS 
+
+
+
+NO SEU INTERIOR,
+
+PARA ENTÃO OS FAZER FICAR 'REACHABLE',
+
+
+POR MEIO DE SEU IP 
+
+
+ADDRESS TOTALMENTE UNCHANGABLE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> AINDA MELHOR DO QUE ISSO,
+
+VC 
+PODE 
+
+
+
+PEDIR A 1 SERVICE 
+
+
+
+
+
+QUE __ DEIXE EXPOSTO ESSE 'UNCHANGABLE ADDRESS' NÃO SÓ PARA 
+
+DENTRO DO CLUSTER, PARA OUTROS CONTAINERS,
+
+
+
+MAS TAMBÉM __ PARA O LADO _  DE FORA DO CLUSTER  (
+
+    isso quer dizer que PODS PODERÃO SER ACESSADOS POR COISAS DO LADO DE FORA DO CLUSTER,
+
+
+    'FROM THE ENTIRE WORLD' ------> NO NOSSO CASO,
+
+    PODEMOS DAR 1 OLHADA NO NOSSO APP,
+
+    E VISUALIZAR NOSSO APP NODEJS...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... ---> O COMPORTAMENTO DEFAULT DE 'IP ADDRESS'
+
+
+É REALMENTE 'CLUSTER-ONLY',
+
+'INTERNAL ONLY',
+
+MAS 
+
+COM 
+SERVICES 
+
+PODEMOS OVERWRITTAR ESSE COMPORTAMENTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK.. ISSO QUER DIZER QUE, SEM SERVICES,
+PODS 
+
+SÃO DE DIFÍCIL CONEXÃO/ACESSO...  (mesmo no contexto interno,
+devido aos ip address mudarem cada vez que 1 pod é restartado) ->  E QUE, SEM SERVICE  OBJECTS,
+
+
+
+
+
+
+
+É IMPOSSÍVEL ESTABELECER 1 CONEXÃO A ESSE APP,
+
+SE A CONEXÃO VEM DE FORA....
+
+
+
+
+
+
+
+
+
+
+
+
+-> AGORA DEVEMOS ENTENDER COMO DEVEMOS __ CRIAR__ 1 DESSES SERVICES...
+
+
+
