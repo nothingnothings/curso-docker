@@ -1,0 +1,1855 @@
+
+
+
+
+
+
+
+
+
+
+
+ANEXADA A ESTA LIÇÃO ENCONTRAMOS 
+
+
+
+
+1 SIMPLES WEB APP,
+
+
+
+
+
+
+1 APP NODEJS
+ 
+
+ QUE TEM 2 SIMPLES ENDPOINTS...
+
+
+
+
+
+
+
+
+
+
+
+ 1 ENDPOINT DE '/',
+
+
+
+ E OUTRO DE 
+
+ '/error'...
+
+
+
+
+
+
+
+
+
+
+
+ --> O DE 'ERROR' CRASHA NOSSA APPLICATION.... VAMOS O UTILIZAR MAIS TARDE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ OK... MAS HÁ UMA COISA DE QUE PODEMOS ACABAR 
+
+ NOS ESQUECENDO,
+
+
+
+
+
+ AGORA QUE 
+
+ TEMOS 
+
+
+
+ TODO ESSE CONHECIMENTO KUBERNETES --> AINDA PRECISAMOS 
+
+
+ USAR O DOCKER PARA CRIAR 1 IMAGE,
+
+ COM BASE NO NOSSO APP...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> PQ O KUBERNETES É 'ALL ABOUT CONTAINERS',
+
+
+ E PARA RODAR CONTAINERS, ELE PRECISA DE 1 IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+ ISSO TUDO NÃO MUDA, 
+
+
+
+ ESSENCIALMENTE...
+
+
+
+
+
+
+
+
+
+
+
+ --> O QUE APRENDEMOS SOBRE IMAGES E CONTAINERS AINDA SE APLICA... A ÚNICA DIFERENÇA,
+
+ COM O KUBERNETES,
+
+ É QUE 
+
+ NÃO VAMOS RODAR OS CONTAINERS POR CONTA PRÓPRIA, MAS ISSO NÁO QUER DIZER QUE 
+
+
+ DEIXAREMOS DE ESCREVER AS IMAGES, QUE RODAREMOS COMO CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> É POR ISSO QUE O PROFESSOR ADICIONOU UMA DOCKERFILE 
+
+ A ESSE PROJETO,
+
+ TIPO ASSIM:
+
+
+
+
+
+
+FROM node:14-alpine
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 8080
+
+CMD [ "node", "app.js" ]
+
+
+
+
+
+
+
+
+
+
+
+JÁ VIMOS ESSA ESTRUTURA VÁRIAS VEZES, AO LONGO DO CURSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> EXPOMOS A PORT '8080',
+
+PQ 
+
+É A PORT QUE VAMOS EXPOR...
+
+
+
+
+
+
+
+
+
+
+-> VAMOS RODAR O EXECUTÁVEL NODE,
+
+com 'node app.js',
+
+dentro 
+
+
+desse container...
+
+
+
+
+
+
+
+
+
+
+PODERÍAMOS RODAR ESSE APP LOCALMENTE,
+
+
+MAS O PROFESSOR VAI QUERER RODÁ-LO NO NOSSO CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... O PROFESSOR CRIA 
+
+1 IMAGE,
+
+DE NOME 
+
+
+
+'kube-first-app'...
+
+
+
+
+
+
+ex:
+
+
+
+
+
+docker build -t kub-first-app .
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO VAI BUILDAR NOSSA IMAGE,
+
+COMO FIZEMOS VÁRIAS VEZES AO LONGO DO CURSO...
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+
+
+
+
+
+TEREMOS A IMAGE CONSTRUÍDA... --> MAS TEMOS QUE MANDAR ESSA IMAGE AO CLUSTER 
+
+KUBERNETES..
+
+
+
+
+
+
+
+
+
+
+
+MAS NÃO VAMOS FAZER ASSIM,
+
+
+
+
+E SIM COMO PARTE DE 1 POD... --------> PARTE DE 1 POD,
+
+OU, ENTÃO,
+
+
+
+COMO 
+
+PARTE DE 
+
+1 DEPLOYMENT,
+
+QUE 
+
+AÍ VAI CRIAR 
+
+
+
+1 POD (e o container rodando nesse pod), 
+
+e então vai fazer 
+
+
+MANAGE DESSE POD,
+
+PARA NÓS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS PARA FAZER ISSO, PARA REALMENTE ENVIAR ESSA INSTRUCTION AO KUBERNETES CLUSTER, 
+
+
+PRIMEIRAMENTE 
+
+PRECISAMOS GARANTIR QUE ESSE CLUSTER ESTÁ 'UP AND RUNNING'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE VC ACOMPANHOU AS ÚLTIMAS LIÇÕES,
+
+ELE JÁ DEVE ESTAR 'UP AND RUNNING'...
+
+
+
+
+
+
+
+OK, MAS EU VI ISTO AQUI:
+
+
+
+
+
+
+E0528 17:25:18.430298   28812 status.go:263] The "minikube" host does not exist!
+minikube
+type: Control Plane
+host: Nonexistent
+kubelet: Nonexistent
+apiserver: Nonexistent
+kubeconfig: Nonexistent
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> rodei 'minikube start --driver=hyperv' novamente...
+
+
+
+
+
+
+
+
+
+
+
+
+OK... QUEREMOS ENVIAR NOSSA IMAGE KUBERNETES COMO PARTE DE 1 __ deployment,
+
+
+
+
+
+
+
+
+pq O DEPLOYMENT VAI CRIAR O 'POD' 
+
+
+
+E O CONTAINER, RODANDO NO POD,
+
+PARA NÓS...
+
+
+
+
+
+
+
+
+
+
+
+-> PRA FAZER ISSO,
+
+PARA ENVIAR ESSA INSTRUCTION AO KUBERNETES CLUSTER,
+
+PRIMEIRAMETNE PRECISAMOS GARANTIR QUE ESSE 'MINIKUBE' ESTÁ RODANDO,
+
+QUE O KUBERNETES CLUSTER ESTÁ UP AND RUNNING,...
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+C:\WINDOWS\system32>minikube status
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> SE USÁSSEMOS O DOCKER PARA CRIAR UM 'VIRTUAL ENVIRONMENT',
+
+
+
+
+SERIA UMA LOUCURA (inception)..
+
+
+
+
+
+
+
+
+
+--> 
+
+AGORA TEMOS ESSE VIRTUAL CLUSTER, CRIADO COM O 'hyper-v'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> COM O CLUSTER UP AND RUNNING,
+
+PODEMOS ENVIAR NOSSA IMAGE, OU AS INSTRUCTIONS PARA CRIAR 1 DEPLOYMENT,
+
+
+A ESSE CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+-----> FAZEMOS ISSO POR MEIO DO COMMAND DE 'kubectl'...
+
+
+
+
+
+
+
+
+
+
+--> É O COMANDO QUE VC SEMPRE EXECUTA NA SUA LOCAL MACHINE (
+
+
+    E ESSE COMANDO NUNCA MUDA,
+
+    NEM MESMO QUANDO NÓS FAZEMOS 'MOVE'
+     
+     PARA A CLOUD,
+
+
+     PQ 
+
+     ESSE É O COMANDO QUE 
+
+     USAMOS 
+
+     PARA 
+     ENVIAR 
+     INSTRUCTIONS AO MASTER NODE E AO 'CONTROL PLANE',
+
+     DENTRO 
+
+
+
+     DO MASTER NODE,
+      
+
+      NO CLUSTER...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... 'kubectl'
+
+
+
+
+
+TEM UM MONTE DE COMANDOS, UM MONTE DE COISAS QUE PODEMOS FAZER...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS SÓ PRECISAMOS DE UMA FRAÇÃO 
+
+DESSES 
+
+COMANDOS...
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR MOSTRARÁ OS COMANDOS MAIS IMPORTANTES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+AQUI, O PROFESSOR VAI USAR 'kubectl'
+
+PARA 
+
+
+CRIAR 1 NOVO DEPLOYMENT OBJECT...
+
+
+
+
+
+
+
+
+
+
+
+--> PQ, NOVAMENTE,
+
+
+NÓS TRABALHAMOS COM _ _OBJECTS,
+QUE 
+
+SÃO ENTÃO 'PICKED UP' PELO KUBERNETES CLUSTER,
+
+PARA AÍ 
+
+FAZER ALGUMA COISA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E FAZEMOS ISSO POR MEIO DO COMANDO DE 
+
+
+'kubectl create'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->  se vc escrever 'kubectl create',
+
+VC GANHA AJUDA PARA ESSE COMANDO:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+VOCÊ PODE CRIAR:
+
+
+
+
+
+
+
+clusterrole 
+clusterrolebinding
+configmap
+cronjob
+deployment
+job
+namespace
+poddisruptionbudget
+priorityclass
+quota
+role
+rolebinding
+secret
+service
+serviceaccount
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... POR ENQUANTO,
+
+TEREMOS DE CRIAR 1 OBJECT DE 'deployment',
+QUE 
+
+É 
+
+1 
+
+DOS OBJECTS MAIS COMUNS QUE VC VAI CRIAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SIDENOTE -------> NO MOMENTO,
+POR MEIO 
+DO COMANDO DE 'create',
+
+ 
+
+ estamos USANDO AQUELE APPROACH 'IMPERATIVE' DE __ CRIAÇÃO __ DE OBJECTS... ----> MAIS TARDE 
+
+
+ NO CURSO,
+
+ O PROFESSOR MOSTRARÁ O APPROACH DECLARATIVE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> O PROFESSOR RODA 
+
+
+ 'kubectl create deployment', 
+ PARA 
+
+ CRIAR 
+
+ 1 
+
+ OBJECT 
+ DE DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> ISSO VAI CRIAR 1 NOVO DEPLOYMENT OBJECT... -> E ESSE OBJECT É, ENTÃO,
+
+ AUTOMATICAMENTE ENVIADOO 
+
+
+ AO KUBERNETES CLUSTER... -----> ISSO QUER DIZER QUE NÃO PRECISAMOS 
+
+
+
+ RODAR 1 COMANDO SEPARADO PARA ISSO..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> PODEMOS COLOCAR QUALQUER NOME 
+
+ NESSE DEPLOYMENT OBJECT, TIPO ASSIM:
+
+
+
+
+
+
+ kubectl create deployment first-kubernetes-app 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> ISSO FEITO,
+ 
+
+
+ DEVEMOS PASSAR 1 OPTION DE '--image',
+
+
+
+ QUE É UMA IMAGE __ QUE É USADA _ PARA ESPECIFICAR 
+
+ 'QUAL IMAGE DEVE SER USADA,
+
+ PARA O CONTAINER 
+
+
+ DO POD __ CRIADO __POR ESSE DEPLOYMENT' --------> NO 
+
+
+
+
+ CASO, ESCREVEMOS 
+
+
+
+ '--image='....
+
+
+
+
+
+
+
+
+
+
+
+ MAS NO VALUE DESSA OPTION ,
+
+
+ NÃO PODEMOS SIMPLESMENTE PASSAR O NOME DA IMAGE DOCKER QUE RECÉM CRIAMOS (kube-first-app)...
+
+
+
+
+
+
+
+
+
+
+ NÃO PODEMOS FAZER ISSO.... --------> GANHAMOS 1 MENSAGEM DE SUCESSO,
+
+
+
+
+
+
+
+
+
+
+ MAS SE RODAMOS O COMANDO DE 
+
+
+ 'kubectl get deployments',
+
+
+ PODEMOS 
+
+
+
+
+ VISUALIZAR __ QUANTOS DEPLOYMENTS TEMOS NO NOSSO CLUSTER, A QUE CONECTAMOS...
+
+
+
+
+
+
+
+
+ EX:
+
+
+
+
+
+
+
+
+ kubectl get deployments ------> VISUALIZAMOS QUANTOS DEPLOYMENTS TEMOS NO CLUSTER A QUE 
+
+
+NOS CONECTAMOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> OBS::::  O 'kubectl'
+
+
+
+É CONFIGURADO, PELO MINIKUBE,
+
+
+PARA AUTOMATICAMENTE SE CONECTAR AO MINIKUBE,
+
+O QUE 
+QUER DIZER QUE 
+
+
+
+NÃO PRECISAMOS DIZER AO COMANDO DE 'kubectl get deployments'
+
+QUE 
+
+QUEREMOS NOS CONECTAR AO MINIKUBE, AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... SE RODARMOS 
+
+'kubectl get deployments',
+
+
+
+
+
+VEREMOS ESSE DEPLOYMENT QUE FIZEMOS 'errado' (errado pq TENTAMOS ESCREVER O NOME DA NOSSA IMAGE DOCKER, mas o kubernetes não terá encontrado essa image)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> COM ISSO, VEREMOS ALGO COMO:
+
+
+
+
+
+'NAME        READY      UP-TO-DATE      AVAILABLE   AGE
+
+first-app     0/1         1                0        27s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO SIGNIFICA QUE '1 DE 1 DEPLOYMENT FALHOU'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... 
+
+
+
+
+
+
+
+
+PARA TER MAIS DETALHES SOBRE NOSSOS PODS,
+
+
+
+
+
+ESCREVEMOS 
+
+'kubectl get pods' ->   ISSO VAI NOS MOSTRAR TODOS OS PODS CRIADOS POR NOSSOS DEPLOYMENTS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... vemos 
+
+1 pod para o primeiro APP DEPLOYMENT,
+
+
+MAS ENXERGAMOS ISTO:
+
+
+
+'NAME                       READY      STATUS             RESTARTS       AGE
+
+first-app-dasjikasdjk1212     0/1      ErrImagePull         0           60s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ou SEJA,
+
+
+
+
+
+
+
+NÃO TEMOS 1 POD CRIADO...
+
+
+
+
+
+
+(
+
+    pq o 'READY' mostra 
+
+
+
+    'current STATE/TARGET STATE'..
+)
+
+
+
+
+
+
+
+
+E A RAZÃO PARA NÃO TERMOS 1 POD CRIADO É SIMPLES,
+
+
+
+
+TIVEMOS 
+
+1 ERRO DE 
+
+
+'ErrImagePull' ----------> ISSO É BEM SIMPLES ----> QUANDO CRIAMOS 1 DEPLOYMENT,
+
+
+
+
+COM O COMANDO DE 'create deployment deploy-name --image=''',
+
+
+
+
+
+
+
+A IMAGE ESPECIFICADA ALI NÃO SERÁ 
+
+'TAKEN FROM THE LOCAL MACHINE'  E AÍ __ ENVIADA à VIRTUAL MACHINE.... ----> EM VEZ DISSO,
+
+
+
+
+
+ESSE COMANDO DE 'create deployment'
+
+É ENVIADO __ AO CLUSTER DO KUBERNETES,
+
+
+E AÍ 
+
+O PRÓPRIO CLUSTER VAI FAZER 'LOOK FOR'
+
+POR ESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+E COMO O CLUSTER RODA EM 1 'VIRTUAL MACHINE' (tecnicamnete, roda na nossa local machine,
+mas age como 1 MÁQUINA TOTALMENTE SEPARADA),
+
+
+
+
+
+
+
+
+ESSA IMAGE, QUE SÓ EXISTE NA NOSSA LOCAL MACHINE,
+
+
+
+MAS NÃO NO KUBERNETES CLUSTER/VM,
+
+
+
+NÃO É ENCONTRADA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE, EM VEZ DE  ESPECIFICAR/ENVIAR 1 IMAGE __ LOCAL, AQUI,
+
+
+
+DEVEMOS 
+
+
+
+ESPECIFICAR 1 IMAGE QUE FAZ PARTE DE 
+
+
+1 
+
+'IMAGE REGISTRY',
+
+
+
+COMO 
+
+O 
+DOCKERHUB,
+
+POR EXEMPLO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE PRECISAMOS, POR ENQUANTO,
+
+DELETAR ESSE PRIMEIRO APP DEPLOYMENT,
+
+
+com 
+
+
+
+'kubectl delete deployment first-kube-app',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FAZEMOS ISSO PARA REMOVER NOSSO DEPLOYMENT OBJECT,
+
+E PARA REMOVER NOSSOS PODS...
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+VAMOS 
+
+
+__ FAZER __ PUSH _ DE NOSSA IMAGE DO DOCKER,
+
+DE NOSSA LOCAL MACHINE,
+
+
+AO DOCKER HUB...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> DEVEMOS CRIAR 1 NOVO REPOSITORY,
+
+
+
+ como 'kub-first-app'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> CRIAMOS ESSE REPO LÁ NO DOCKERHUB,
+
+ E AÍ, LOCALMENTE,
+
+ RODAMOS ISTO:
+
+
+
+
+
+
+
+
+ PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> docker build -t nothingnothings/kub-first-app .
+
+
+
+
+
+
+
+
+
+
+
+ AÍ FAZEMOS PUSH DESSA IMAGE, COM ISTO:
+
+
+
+
+
+
+ PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> docker push nothingnothings/kub-first-app
+Using default tag: latest
+The push refers to repository [docker.io/nothingnothings/kub-first-app]
+0a977bf5620b: Pushing  4.608kB
+e45f7f4e41fe: Pushing   5.49MB
+af376935fb6a: Pushing   2.56kB
+bae192224198: Mounted from nothingnothings/node-app-aws
+31f710dc178f: Mounted from nothingnothings/node-app-aws
+a599bf3e59b8: Waiting
+e67e8085abae: Waiting
+f1417ff83b31: Preparing
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+
+
+
+
+
+
+
+VAMOS RODAR O 'kubectl' com essa nova image,
+
+
+tipo assim:
+
+
+
+
+
+
+
+kubectl create deployment my-first-deployment --image=nothingnothings/kub-first-app
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO,
+
+
+
+SE DEPOIS 
+
+
+
+
+PEGARMOS NOSSOS DEPLOYMENTS DE NOVO,
+COM 
+
+
+
+kubectl get deployments,
+
+
+teremos isto:
+
+
+
+
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl get deployments
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+my-first-deployment   1/1     1            1           17s
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> 
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+
+
+
+SE DEPOIS RODArmos 
+
+
+
+'kubectl get pods',
+
+
+TEREMOS ESTE OUTPUT (mostrando que está 'running')...
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl get pods
+NAME                                   READY   STATUS    RESTARTS   AGE
+my-first-deployment-84564cc996-ppntn   1/1     Running   0          53s
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OKK... NOSSO APP ESTÁ UP AND RUNNING....
+
+
+
+
+
+
+
+
+
+
+ENTRETANTO,
+
+NOSSO APP AINDA NÃO PODE SER ALCANÇADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS SE QUEREMOS VISUALIZAR 
+
+
+
+
+
+O NEGÓCIO RODANDO,
+
+
+PODEMOS USAR O 
+
+
+'minikube dashboard',
+
+QUE 
+
+VAI 
+
+
+
+
+NOS MOSTRAR 
+
+O FUNCIONAMENTO 
+
+
+DE NOSSO CLUSTER, EM TEMPO REAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... TAMBÉM 
+
+
+
+
+
+
+
+
+
+
+
+ISSO VAI MOSTRAR NOSSO CLUSTER,
+
+
+E AÍ TODOS OS PODS QUE ESTÃO 'UP AND RUNNING'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSA TELA TAMBÉM NOS DÁ 1 POUCO DE METADATA,
+
+
+METADATA QUE IDENTIFICA O APP  E O DEPLOYMENT A QUE ELA PERTENCE:
+
+
+
+
+
+
+
+
+
+
+app: my-first-deployment
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TAMBÉM PODEMOS VER ESSAS COISAS... ---> TEMOS MAIS INFO SOBRE O DEPLOYMNET,
+
+
+
+O STATUS DELE E ETC.
+
+
+
+
+
+
+
+
+
+
+SE VISUALIZAMOS NOSSO POD,
+
+PODEMOS 
+
+
+VER OUTRAS COISAS,
+
+COMO O 
+
+'IP ADDRESS' DO POD -->  MAS ISSO SERÁ APENAS O 'INTERNAL IP ADDRESS',
+
+DENTRO DO CLUSTER .. ---> SE TENTARMOS USAR ISSO 
+
+
+NO BROWSER, PARA FAZER REACH A ESSE POD,
+
+ISSO NÃO VAI FUNCIONAR... (mesmo se vc tentar se conectar a port exposta pelo container)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... TUDO ISSO ESTÁ FUNCIONANDO...
+
+
+
+
+
+
+
+
+
+
+MAS O PROFESSOR PRIMEIRAMENTE QUER QUE ANALISEMOS 'O QUE ACONTECEU POR TRÁS DAS CENAS',
+
+PARA QUE 
+
+ACTUALLY  CONSIGAMOS __ VER E VISITAR A WEBPAGE,
+
+
+QUE FOI CRIADA PELO CONTAIENR,
+
+
+
+
+E QUE FAZ PARTE DESSE POD QUE DEPLOYAMOS...
