@@ -1,0 +1,342 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+DEVEMOS PENSAR SOBRE COMO TUDO FUNCIONA, AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> RECÉM EXECUTAMOS ESTE COMANDO:
+
+
+
+
+
+
+
+
+
+
+
+
+kubectl create deployment --image ....
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE COMANDO CRIA 1 'DEPLOYMENT OBJECT',
+
+
+
+
+E AÍ 
+
+
+
+__ ELE _ AUTOMATICAMENTE ENVIA ESSE OBJECT 
+
+AO KUBERNETES 
+
+CLUSTER,
+
+
+
+
+
+
+
+AO 'MASTER NODE'
+
+
+
+
+
+NO KUBERNETES,
+
+
+E AO CONTROL PLANE DENTRO DO MASTER NODE ... ------> APRENDEMOS, NO ÚLTIMO COURSE MODULE,
+
+
+
+QUE 
+
+
+
+
+É _ ESSE MASTER NODE QUE É RESPONSÁVEL PELO ACTUAL
+
+
+
+CREATE DAS COISAS DE QUE PRECISAMOS, NO NOSSO CLUSTER,
+
+
+E PARA TAMBÉM 
+
+'DISTRIBUTE THE PODS'
+
+
+
+AO LONGO DOS WORKER NODES..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DE FATO, NOS MASTER NODES,
+
+
+TEMOS O 'SCHEDULER',
+
+
+
+QUE 
+
+
+ANALISA OS 'CURRENTLY RUNNING PODS',
+
+
+E QUE 
+
+
+ENTÃO 
+
+ENCONTRA O MELHOR NODE PARA __ O 'NEWLY CREATED POD',
+
+PARA 
+
+
+O 
+
+
+
+
+__ POD __ QUE __ TEM DE SER CRIADO, COM BASE NESSE DEPLOYMENT..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> AÍ, ESSE NEWLY CREATED POD 
+
+
+SERÁ 
+
+MOVIDO __ PARA __ ALGUM DE NOSSOS WORKER NODES,
+
+
+
+
+PQ PROVAVELMENTE ESSE WORKER NODE ESTÁ, NO MOMENTO,
+
+REALIZANDO A MENOR QUANTIDADE DE TRABALHO,
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            worker node 
+
+
+MASTER NODE ---------      worker node
+                    I 
+                    I 
+                    I-->  worker node 
+
+
+
+
+
+
+
+
+
+
+
+--> E TODO ESSE PROCESSO É FEITO AUTOMATICAMENTE PELO KUBERNETES,
+
+NÃO É ALGO QUE DEVEMOS FAZER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... AÍ, NAQUELE WORKER NODE,
+
+TEMOS AQUELE SERVICE DE 'KUBELET',
+
+
+
+QUE 
+
+
+
+BASICAMENTE 
+
+
+FAZ 'MANAGE DO POD E DOS CONTAINERS':
+
+
+
+
+
+
+
+ELE VAI MANAGEAR O POD,
+
+
+VAI STARTAR O CONTAINER NO POD,
+
+
+E TAMBÉM VAI 'MONITOR'
+
+ESSE POD,
+
+VAI CHECAR SUA HEALTH... -> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> OK.. MAS É CLARO QUE ESSE POD CONTÉM O CONTAINER,
+
+
+
+CONTAINER CRIADO COM BASE NA IMAGE 
+
+QUE 
+
+ESPECIFICAMOS QUANDO CRIAMOS ESSE 'DEPLOYMENT OBJECT'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TALVEZ SEJA TUDO SUPER ÓBVIO,
+
+MAS É IMPORTANTE ENTENDER TUDO QUE ESTÁ ACONTECENDO,
+
+
+QUANDO RODAMOS ESSE COMANDO DE 'create deployment deployment-image --image=xxx/xxx' 
+
+
+
+
+
+
+
+
+
+
+
+
+-> É POR ISSO QUE TEMOS, AGORA, 1 POD E 1 CONTAINER,
+
+RODANDO NO NOSSO 
+
+
+DEVELOPMENT CLUSTER 'MINIKUBE'...
+
+
+
+
+
+
+
+
+
+
+
+AGORA DEVEMOS GARANTIR QUE CONSIGAMOS NOS CONECTAR A ESSE APP,
+
+E QUE CONSIGAMOS 
+
+O VISITAR __ DO LADO _ dE FORA DO CLUSTER...
