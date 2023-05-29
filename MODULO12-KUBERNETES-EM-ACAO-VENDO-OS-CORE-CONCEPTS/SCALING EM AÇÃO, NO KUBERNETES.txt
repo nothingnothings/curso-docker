@@ -1,0 +1,587 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... RELACIONADO ÀQUELA FEATURE 
+
+
+
+
+DE 'RESTART',
+
+
+
+
+
+
+
+TEMOS TAMBÉM OUTRO COMANDO, NO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DIGAMOS QUE __ NÃO TEMOS AUTO-SCALING ATIVADO... --> ISSO QUER DIZER QUE 
+
+
+O 
+
+
+
+KUBERNETES NÃO VAI CRIAR MAIS OU MENOS PODS... 
+
+
+
+
+
+
+
+
+
+
+-> MAS DIGAMOS QUE _ TEMOS CERTEZA DE QUE 
+
+'TEREMOS MAIS TRAFFIC INCOMING' --> POR ISSO DIGAMOS QUE 
+
+QUEREMOS 
+
+QUE 
+
+
+
+
+
+
+NOSSO POD, E O CONTAINER DENTRO DESSE POD,
+
+
+
+
+RODANDO MAIS DO QUE 1 VEZ,
+
+E SIM 
+
+
+
+
+
+3 VEZES... -------> PODEMOS OBTER ESSE RESULTADO COM O COMANDO 
+
+
+'kubectl scale ....'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARA ISSO,
+
+ESCREVEREMOS:
+
+
+
+
+
+
+
+
+
+kubectl scale deployment/my-first-deployment 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É ASSIM QUE IDENTIFICAMOS 
+
+
+OS NOSSOS DEPLOYMENTS (com 'deployment/nome-do-deployment')...
+
+
+
+
+
+
+
+
+
+
+
+OK... ISSO FEITO,
+
+ADICIONAMOS 
+
+
+
+
+
+
+A FLAG DE '--replicas'
+
+
+
+PARA SIMPLESMENTE 
+
+
+ESPECIFICAR  
+
+
+
+
+
+
+__ QUANTAS__ INSTANCES,
+
+
+QUANTOS PODS,
+
+
+QUEREMOS TER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> por exemplo, podemos querer settar o número de pods como '3'...
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+kubectl scale deployment/my-first-deployment --replicas=3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... SE FAZEMOS ISSO E RODAMOS 
+
+
+
+
+'kubectl get pods',
+
+
+
+VEREMOS _ REALMENTE 
+
+
+3 
+PODS 
+
+
+
+PARA ESSE NOSSO DEPLOYMENT,
+
+TIPO ASSIM:
+
+
+
+
+C:\WINDOWS\system32>kubectl get pods
+NAME                                   READY   STATUS    RESTARTS      AGE
+my-first-deployment-84564cc996-7nptb   1/1     Running   6 (24m ago)   37m
+
+C:\WINDOWS\system32>kubectl scale deployment/my-first-deployment --replicas=3
+deployment.apps/my-first-deployment scaled
+
+C:\WINDOWS\system32>kubectl pods
+error: unknown command "pods" for "kubectl"
+
+Did you mean this?
+        logs
+
+C:\WINDOWS\system32>kubectl get pods
+NAME                                   READY   STATUS    RESTARTS      AGE
+my-first-deployment-84564cc996-7nptb   1/1     Running   6 (24m ago)   38m
+my-first-deployment-84564cc996-nzmg8   1/1     Running   0             7s
+my-first-deployment-84564cc996-plbpr   1/1     Running   0             7s
+
+C:\WINDOWS\system32>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... 
+
+
+
+
+
+
+isso quer dizer que agora ficamos com o POD DE ANTES,
+
+
+E AÍ 
+
+MAIS 2 PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... AGORA TEMOS NOSSOS 2 PODS EXTRAS RODANDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> CERTO... E ELES ESTÃO RODANDO O MESMO CONTAINER DO PRIMEIRO POD...
+
+
+
+
+
+
+
+
+
+
+
+
+E, COMO ESTAMOS RODANDO 1 'LOAD BALANCER', 
+
+
+
+
+
+O TRAFFIC DE NOSSO APP _ TAMBÉM SERÁ DISTRIBUÍDO 'EVENLY' 
+
+
+
+
+
+
+AO __ LONGO DESSES DIFERENTES PODS E OS CONTAINERS RODANDO NELES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> podemos testar isso 
+
+
+
+com a route de '/error'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS ENTRAR NA PAGE DE '/error' 1 vez,
+
+
+
+
+e aí 
+
+
+
+
+SAIR DESSA  PAGE...
+
+
+
+
+
+
+
+
+
+-> SE FIZERMOS ISSO E CHECARMOS A DASHBOARD DO MINIKUBE,
+
+VEREMOS QUE 
+
+
+
+
+
+__ APENAS 1 DAS INSTANCES/PODS ESTARÁ 'DOWN',
+
+AO PASSO QUE 
+
+
+OUTROS 2 PODS AINDA ESTARÃO RODANDO....
+
+
+
+
+
+
+
+
+
+-_> COMO OS 2 OUTROS PODS AINDA ESTÃO RODANDO ,
+
+
+AINDA SOMOS CAPAZES DE VISITAR A NOSSA PAGE,
+
+COMO SE NADA TIVESSE ACONTECIDO (impressionante)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> o pod que foi 'TERMINATED' eventualmente vai restartar,
+
+
+
+MAS O QUE INTERESSA É QUE O INCOMING TRAFFIC VAI SER REDIRECIONADO 
+
+
+A OUTRO POD...
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE O TRAFFIC 
+
+NÃO VAI SER DIRECIONADO A 1 MESMO POD O TEMPO INTEIRO,
+
+
+
+PQ 
+
+ELE _ VAI __ SER DISTRIBUÍDO AO LONGO DE NOSSOS DIFERENTES PODS...
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE O SCALING,
+
+MESMO QUANDO NÃO ACONTECE AUTOMATICAMENTE,
+
+
+É OUTRA FEATURE MT ÚTIL QUE GANHAMOS, COM O KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE PODEMOS SCALE-DOWN 
+
+NOSSAS REPLICAS PARA APENAS 1  NOVAMENTE,
+
+
+BASTA RODAR ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+kubectl scale deployments/my-first-deployment --replicas=1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... OS 2 PODS EXTRAS SERÃO 'TERMINATED',
+
+
+E SERÃO REMOVIDOS, DEPOIS DE CERTO TEMPO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO SIGNIFICA QUE O SCALING É OUTRA FEATURE SUPER 
+
+
+ÚTIL....
