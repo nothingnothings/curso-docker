@@ -1,0 +1,727 @@
+
+
+
+
+
+
+
+
+
+
+
+-> OK.... AGORA COMEÇAMOS COM OS BASICS DO KUBERNETES E COM A INTERACTION 
+
+COM NOSSO CLUSTER KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+--> CRIAMOS 1 DEPLOYMENT,
+
+COM O COMANDO DE 'kubectl create deployment deployment-name'...
+
+
+
+
+
+
+
+
+
+
+--> nós também 
+
+
+APRENDEMOS __ A UPDATAR__ A IMAGE 
+
+DE 
+
+1 
+
+DEPLOYMENT,
+
+com 
+
+o comando de 
+
+
+'kubectl set image deployment/xxxx'...
+
+
+
+
+
+
+
+
+
+
+
+--> NÓS TAMBÉM VIMOS OUTROS COMANDOS, COMO 
+
+'kubectl expose'...
+
+
+
+
+
+
+
+
+
+
+
+
+-->  MAS HÁ PROBLEMAS, COM TODOS ESSES 
+COMANDOS:
+
+
+
+
+
+
+
+
+
+1) VOCÊ TEM QUE MEMORIZAR TODOS ESSES COMMANDS...
+
+(mas não é tão difícil)...
+
+
+
+
+
+
+
+
+
+2) MAS VC TEM QUE REPETIR ESSES COMANDOS O TEMPO TODO...
+
+
+
+
+
+
+
+
+
+É 1 POUCO COMO MAIS CEDO NO CURSO,
+
+
+EM QUE TÍNHAMOS QUE EXECUTAR 'docker run' 
+
+
+1 MILHÃO DE VEZES...
+
+
+
+
+
+
+
+
+
+
+
+
+E, SE TIVÉSSEMOS 1 PROJECT COM 1 MONTE DE CONTAINERS NELE,
+
+
+TÍNHAMOS QUE RODAR 
+
+'docker run '
+
+1 MILHÃO DE VEZES...
+
+
+
+
+
+
+
+
+
+
+-> É NESSE MOMENTO QUE APRENDEMOS SOBRE O 'docker-compose',
+
+
+QUE,
+
+ DO NADA,
+
+
+ NOS DEIXOU 'WRITE DOWN'
+
+
+
+ COMO CONTAINERS DEVEM SER BUILDADOS E STARTADOS...
+
+
+
+
+
+
+
+--> arquivos 'docker-compose.yaml'...
+
+
+
+
+
+
+
+
+--> O DOCKER-COMPOSE up 
+
+ENTÃO 
+
+
+PEGA 
+
+
+ESSES FILES E __ APLICA ESSAS INSTRUCTIONS,
+
+
+
+BUILDANDO E STARTANDO MÚLTIPLOS CONTAINERS 
+
+AO MESMO TEMPO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> E O DOCKER-COMPOSE ERA ÚTIL ATÉ MESMO COM 1 ÚNICO CONTAINER,
+
+
+PQ PODÍAMOS COLOCAR TODA A 'RUN CONFIGURATION' EM 1 ÚNICO ARQUIVO,
+
+
+EVITANDO 
+
+
+
+TER DE ESCREVER 'docker run ...', comandos longos,
+
+o tempo todo...
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO FOI MAIS CEDO NO CURSO... MAS AGORA TEREMOS  1 PROBLEMA SIMILAR,
+
+COM 
+
+
+O 
+
+
+'kubetcl'...
+
+
+
+
+
+
+
+
+
+
+--> EM VEZ __ DE ESCREVER TODOS ESSES COMMANDS MANUALMENTE,
+
+SERIA 
+
+MT NICE 
+
+SE PUDÉSSEMOS 
+
+
+
+ESCREVER 
+
+
+TODO O NOSSO DEPLOYMENT E SERVICE CONFIGURATION EM 1 FILE ÚNICA,
+
+
+E SE PUDÉSSEMOS 
+
+
+ENTÃO 
+SIMPLESMENTE 
+
+APLICAR 
+
+ESSA FILE AO NOSSO CLUSTER,
+
+ 
+
+
+ PARA AÍ CRIAR 
+
+
+ 1 NOVO 
+
+ DEPLOYMENT, 
+
+
+
+
+
+ COM BASE NA CONFIGURATION ESCRITA NA FILE...
+
+
+
+
+
+
+
+
+
+--> E O KUBERNETES SUPORTA ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O KUBERNETES 
+
+NOS PERMITE ESCREVER 
+
+
+AS CHAMADAS 
+
+
+'resource definition files',
+
+
+
+
+QUE 
+
+
+SE PARECEM ASSIM:
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: second-app 
+spec:
+  selector:
+    matchLabels:
+      app: second-dummy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: second-dummy
+    spec:
+      containers:
+      - name: second-node
+        image: "academind/kub-first-app"
+
+
+
+
+
+
+
+É CLARO QUE 
+
+ESSE É APENAS 1 EXAMPLE INICIAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+PODEMOS __ ESCREVER CONFIGURATION OPTIONS EM UM ARQUIVO 'yaml',
+
+
+
+
+
+E __ AÍ FAZER ISSO PARA __ OS DIFERENTES OBJECTS QUE 
+
+O 
+
+
+KUBERNETES ENTENDE...
+
+
+
+
+
+
+
+
+
+-> por exempo, nesse slide temos o 'deployment object' --> ISSO É MT BOM 
+
+PQ 
+
+PODEMOS 
+
+ESPECIFICAR:
+
+
+
+
+
+
+1) COMO 1 DEPLOYMENT DEVE SER REALIZADO 
+
+
+
+
+2) QUAIS CONTAINERS DEVEM SER LAUNCHED, NESSE DEPLOYMENT 
+
+
+
+3) QUANTAS INSTANCES DE NOSSOS PODS QUEREMOS, ETC...
+
+
+
+
+
+
+
+
+
+
+
+
+E ESSA É UMA ALTERNATIVA AO APPROACH 'IMPERATIVE'
+
+
+
+
+QUE VIMOS ANTES... --> 
+
+
+
+
+
+
+
+
+
+COM O APPROACH 'IMPERATIVE',
+
+
+
+SEMPRE 
+
+
+EXECUTAMOS 
+
+AQUELES 
+
+
+COMANDOS 
+DE 
+
+
+'kubectl',
+
+
+
+
+
+
+
+
+
+
+
+
+como 
+
+'kubectl create deployment',
+
+
+
+
+
+
+
+
+
+
+
+e tínhamos que executar esses comandos individuais 
+
+
+PARA __ TRIGGAR _ DIFERENTES ACTIONS NO NOSSO CLUSTER KUBERNETES....
+
+
+
+
+
+
+
+
+O USO DE 'kubectl'
+
+
+
+É COMPARÁVEL COM O USO DE 'docker run' (rodamos e rodamos e rodamos esse comando, sem o docker-compose)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS COM O DECLARATIVE APPROACH,
+
+
+
+TUDO FICA DIFERENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O DECLARATIVE APPROACH DEPENDE DO COMANDO DE 
+
+
+'kubectl apply',
+
+
+
+
+
+
+
+__ QUE __ SIMPLESMENTE 
+
+
+
+APONTA __ A 1 YAML FILE,
+
+
+
+
+FILE QUE VAI CONTER A CONFIGURATION QUE VAMOS QUERER APLICAR AO CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+--> E ESSA CONFIGURATION PODERÁ 
+
+CONTER _ INFORMATION _ SOBRE 1 DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+-----> E ESSA CONFIG FILE É USADA PARA DEFINIR NOSSO 
+
+'DESIRED TARGET STATE',
+
+
+E SEMPRE QUE 
+
+A
+ APLICARMOS,
+
+
+ O
+  KUBERNETES VAI USAR 
+
+  ESSE TARGET STATE
+
+
+
+__ E FAZER __ 'WHATEVER IT TAKES'  
+
+
+
+
+PARA FAZER ESSE TARGET STATE VIRAR O CURRENT STATE...
+
+
+
+
+
+
+
+
+E SE NÓS, POR EXEMPLO,
+
+ 
+
+ MUDARMOS __ 1 CONFIG FILE E A REAPLICARMOS,
+
+
+
+
+
+
+
+ O KUBERNETES  VAI ANALISAR ' O QUE MUDOU',
+
+
+
+ E AÍ 
+
+
+ VAI 
+
+
+ FAZER AS APPROPRIATE CHANGES NO NOSSO RUNNING CLUSTER 
+
+
+ E NA 
+ RUNNING APPLICATION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> ISSO QUER DIZER QUE O 'kubectl apply'
+  
+
+
+  
+
+  É COMPARÁVEL AO 'docker compose',
+
+  DE CERTA FORMA,
+
+
+  PQ AGORA 
+
+  PODEMOS 
+
+  USAR NOSSAS PRÓPRIAS 
+
+
+  CONFIGURATION FILES,
+
+
+  SEM TER DE RODAR 1 MONTE DE COMANDOS INDIVIDUAIS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> é por isso que o comando mais utilizado será 
+
+
+'''''''''
+
+
+kubectl apply -f config.yaml
+
+
+
+
+
+'''''''''

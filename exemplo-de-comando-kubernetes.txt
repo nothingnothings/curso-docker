@@ -2078,3 +2078,160 @@ DEPLOYMENT DE 'my-first-deployment'...
 
 
 CERTO.... NOSSOS PODS E DEPLOYMENT DESAPARECERAM...
+
+
+
+
+
+
+
+
+
+
+---------------------------------------------------
+
+
+
+
+
+
+TUDO ESCRITO ACIMA __ SE APLICA AO 'IMPERATIVE APPROACH'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS QUANTO AO 'DECLARATIVE APPROACH',
+
+
+TEMOS APENAS 1 COMANDO ESSENCIAL, QUE É EST 'KUBECTL APPLY'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+A CONFIG FILE É USADA PARA DEFINIR NOSSO 
+
+'DESIRED TARGET STATE',
+
+
+E SEMPRE QUE 
+
+A
+ APLICARMOS,
+
+
+ O
+  KUBERNETES VAI USAR 
+
+  ESSE TARGET STATE
+
+
+
+__ E FAZER __ 'WHATEVER IT TAKES'  
+
+
+
+
+PARA FAZER ESSE TARGET STATE VIRAR O CURRENT STATE...
+
+
+
+
+
+
+
+
+E SE NÓS, POR EXEMPLO,
+
+ 
+
+ MUDARMOS __ 1 CONFIG FILE E A REAPLICARMOS,
+
+
+
+
+
+
+
+ O KUBERNETES  VAI ANALISAR ' O QUE MUDOU',
+
+
+
+ E AÍ 
+
+
+ VAI 
+
+
+ FAZER AS APPROPRIATE CHANGES NO NOSSO RUNNING CLUSTER 
+
+
+ E NA 
+ RUNNING APPLICATION...
+
+
+
+
+
+ --> ISSO QUER DIZER QUE O 'kubectl apply'
+  
+
+
+  
+
+  É COMPARÁVEL AO 'docker compose',
+
+  DE CERTA FORMA,
+
+
+  PQ AGORA 
+
+  PODEMOS 
+
+  USAR NOSSAS PRÓPRIAS 
+
+
+  CONFIGURATION FILES,
+
+
+  SEM TER DE RODAR 1 MONTE DE COMANDOS INDIVIDUAIS...
+
+
+
+
+
+--> é por isso que o comando mais utilizado será 
+
+
+'''''''''
+
+
+kubectl apply -f config.yaml
+
+
+
+
+
+'''''''''
