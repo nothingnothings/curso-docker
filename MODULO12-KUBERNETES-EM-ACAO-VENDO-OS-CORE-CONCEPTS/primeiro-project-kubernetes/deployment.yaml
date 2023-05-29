@@ -1,0 +1,6 @@
+apiVersion: apps/v1 
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment  # será o NAME de nosso deployment
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...

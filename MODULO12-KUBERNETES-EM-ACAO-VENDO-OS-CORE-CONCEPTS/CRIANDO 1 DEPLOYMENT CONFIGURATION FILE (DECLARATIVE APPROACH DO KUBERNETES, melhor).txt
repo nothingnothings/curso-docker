@@ -1,0 +1,890 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+ 
+
+
+
+
+
+ PARA OBSERVARMOS O 'DECLARATIVE APPROACH' EM AÇÃO,
+
+
+
+
+O PROFESSOR VAI CONTINUAR COM O APP ANTERIOR,
+
+
+COM A IMAGE 
+
+
+ANTERIOR DE NOSSO PROJETO...
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR LIMPA TODOS OS 'SERVICES' E 'DEPLOYMENTS'
+
+
+
+
+DE NOSSO MINIKUBE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> FICAMOS APENAS COM O 'DEFAULT KUBERNETES SERVICE'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O MINIKUBE ESTÁ RODANDO....
+
+
+
+
+
+
+
+
+-> AGORA DEVEMOS CRIAR 1 CONFIG FILE 
+
+PARA O DEPLOYMENT 
+
+
+
+NO KUBERNETES,
+
+
+QUE SERÁ ESCRITA 
+
+
+
+NO ROOT DE NOSSO PROJETO...
+
+
+
+
+
+
+
+
+
+--> ADICIONAMOS O NOVO ARQUIVO,
+
+
+SE CHAMARÁ 
+
+DE 
+
+'deployment.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> o professor nos explica que o FILENAME PODE SER QUALQUER COISA QUE 
+
+DESEJARMOS,
+
+
+
+A ÚNICA COISA NECESSÁRIA É QUE ESSE ARQUIVO SEJA DE TIPO '.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> DENTRO DESSA FILE,
+
+ESPECIFICAREMOS 'COMO NOSSO DEPLOYMENT DEVERÁ SE PARECER'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO O DEPLOYMENT DEVE FUNCIONAR, COMO DEVE SER CONFIGURADO...
+
+
+
+
+
+
+ 
+
+
+ E HÁ UMA CERTA SINTAXE A SER SEGUIDA,
+
+
+ NESSAS FILES KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+--> ANTES DE TUDO,
+
+NÃO INTERESSA 
+
+
+
+
+
+O TIPO DE RESOURCE QUE VC ESTÁ CONFIGURANDO (
+
+     SE É 1 DEPLOYMENT,
+
+     SE É 1 SERVICE,
+
+     QUALQUER COISA...
+),
+
+
+
+
+
+
+
+
+VC PRECISA COMEÇAR COM 1 'apiVersion'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+tipo 
+
+
+
+
+
+
+
+apiVersion:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+HÁ DIFERENTES API VERSIONS DISPONÍVEIS.... E, COMO TUDO NO MUNDO,
+
+O 
+
+KUBERNETES 
+
+ESTÁ EM ACTIVE DEVELOPMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR 
+
+
+
+GOSTSA DE PROCURAR 'kubernetes deployment.yaml',
+
+
+E AÍ 
+
+
+
+
+ENCONTRAR, NOS DOCS,
+
+
+
+
+exemplos como 'apps/v1'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> CERTO...
+
+
+
+
+
+
+
+
+
+
+
+MAS VC DEVE TER EM MENTE:
+
+
+
+'SE VC SEMPRE USAR A VERSÃO MAIS LATEST,
+
+ALGUMAS FEATURES PODEM MUDAR, AO LONGO DO TEMPO'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> certo, o professor escreve assim:
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> USAREMOS ESSA VERSION PARA O NOSSO DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+-> E ESSA É JUSTAMENTE A PRÓXIMA PIECE OF INFORMATION NECESSÁRIA:
+
+
+
+
+'''SÓ PQ NOMEAMOS NOSSA FILE DE DEPLOYMENT,
+
+O KUBERNETES NÃO VAI SABER QUE 
+
+NOSSA FILE 
+
+VAI CRIAR 1 DEPLOYMENT''' ----> PQ É CLARO QUE PODERÍAMOS TER ESCOLHIDO QUALQUER FILENAME...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> é por isso que vc PRECISA 
+
+
+
+
+__ COMUNICAR AO KUBERNETES A COISA QUE VC 
+
+
+VAI QUERER CONFIGURAR,
+
+
+por meio da key de 'kind'...
+
+
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1 
+kind: Deployment
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... É CLARO QUE EXISTEM POUCOS VALUES PARA 'kind',
+
+
+
+COMO 
+
+
+'Service',
+
+'Job' 
+
+e 
+
+'Deployment'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> NOS DOCS,
+
+
+TEMOS A PARTE DE 'REFERENCE',
+
+E AÍ A 'API  OVERVIEW'...
+
+
+
+
+
+
+
+
+
+
+
+https://kubernetes.io/docs/reference/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> vemos a configuration de 'kind'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO, ESTAMOS DIZENDO AO KUBERNTES QUE QUEREMOS CRIAR 1 NOVO OBJECT
+DE 
+
+'DEPLOYMENT'...
+
+
+
+
+
+
+-> DEPOIS DISSO, TEMOS A KEY DE 'metadata'..
+
+
+
+
+A
+ metadata 
+
+
+ NÃO É 
+
+ ALGO 'RANDOM'
+
+ que vc vai inserir,
+
+
+ e sim 
+
+
+
+
+INFORMAÇÕES-CHAVE,
+
+COMO 
+
+
+O 
+
+
+__ NOME __ DO OBJECT QUE VC ESTARÁ CRIANDO...
+
+
+
+
+
+
+
+NO IMPERATIVE APPROACH,
+
+
+ESCOLHÍAMOS 1 NOME ASSIM:
+
+
+
+
+
+
+
+
+
+
+kubectl create deployment my-kub-app 
+
+
+
+
+
+
+
+
+
+
+
+
+
+->_ MAS AQUI FAREMOS A MESMA COISA 
+
+
+
+NO ARQUIVO 'deployment.yaml',
+
+
+ESCREVEREMOS 
+
+
+
+ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> DENTRO DE 'metadata',
+
+COLOCAREMOS O NOME DE NOSSO DEPLOYMENT..
+
+
+
+o professor coloca 'second-app-deployment'...:
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: second-app-deployment
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> HÁ MAIS METADATA QUE PODEMOS SETTAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+TEMOS AS OPTIONS NESTE LINK:
+
+
+
+
+https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#deployment-v1-apps
+
+
+
+E NESTE:
+
+
+
+
+https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#objectmeta-v1-meta
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DENTRO DESSE NEGÓCIO, PODEMOS VER TUDO UQE PODEMOS ADICIONAR...
+
+
+
+
+
+
+temos 'name',
+
+MAS TAMBÉM 
+
+
+OUTRAS COISAS,
+
+
+
+
+COM 'finalizers' -------> MAS A MAIOR PARTE 
+
+
+
+DESSAS COISAS NÃO PRECISA SER ADICIONADA (para a grande maioria dos casos)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AGORA ESTAMOS DIZENDO AO KUBERNETES QUE 
+
+QUEREMOS GERAR 1 DEPLOYMENT,
+
+E QUE ELE DEVERÁ TER 
+
+
+1 NAME DE 'second-app-deployment'....
+
+
+
+
+
+
+ISSO FEITO,
+
+
+
+
+
+VAMOS QUERER ADICIONAR O 'SPEC',
+
+
+OU  A __ SPECIFICATION DESSE DEPLOYMENT... --> 
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1 
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment  # será o NAME de nosso deployment
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O 'spec'
+
+É O _ ___ MEAT__ 
+
+DESSE OBJECT/CONFIG,
+
+
+
+
+PQ DENTRO DELE VAMOS DEFINIR 
+
+
+__ COMO _ ESSE DEPLOYMENT DEVERÁ SER CONFIGURADO...
