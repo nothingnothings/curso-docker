@@ -1,0 +1,471 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... ANTES DE ESTUDARMOS O 'DECLARATIVE APPROACH',
+
+VOLUMES E NETWORKING, E O KUBERNETES EM GERAL,
+
+
+DEVEMOS 
+
+
+
+_ BRINCAR 1 POUCO MAIS COM O DEPLOYMENT QUE TEMOS AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> LEMBRE-SE QUE TEMOS AQUELA ROUTE DE '/error', de tipo GET,
+
+
+LÁ NO NOSSO APP:
+
+
+
+
+
+app.get('/error', (req, res) => {
+  process.exit(1);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSA É UMA ROUTE QUE VAI ACTUALLY 'CRASH' O NOSSO APP,
+
+
+
+O NODE APP,
+
+
+E, PORTANTO,
+
+
+O 
+
+
+CONTAINER RODANDO O APP ---------> PQ ESSE 'process.exit()'
+
+
+
+É UM 
+
+
+
+
+COMANDO NODEJS 
+
+QUE 
+
+VAI 
+
+IMEDIATAMENTE 
+
+'STOP'
+
+
+
+O 
+
+
+
+NODE SERVER.... --> E COMO NOSSO CONTAINER 
+
+
+
+
+_STARTOU ESSE NODE SERVER,
+
+ELE __ VAI CRASHAR _ TAMBÉM,
+
+SE ESSE COMANDO DAR 'FAIL',
+
+QUE 
+
+É O QUE ELE FARÁ....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA VISITAMOS '/error.'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+NOSSO APP VAI CRASHAR... --> CERTO, MAS SE TENTARMOS 
+
+
+A ROUTE ORIGINAL,
+
+DE 
+
+
+'/' (slash nothing),
+
+
+
+
+
+
+
+
+
+
+
+
+O NOSSO NEGÓCIO VAI CONTINUAR FUNCIONANDO..
+
+
+
+
+(ué, no meu app, na minha versão, ele __ NÃO CONTINUOU FUNCIONANDO... que estranho)...
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+ --> é, realmente, ele não continuou funcionando...
+
+
+
+
+
+
+ -> ficou assim:
+
+
+
+ C:\WINDOWS\system32>kubectl get deployments
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+my-first-deployment   0/1     1            0           10m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+VOU TENTAR REPETIR OS COMANDOS DO PROFESSOR....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> BEM, EU ESCREVI 'kubectl get pods',
+
+E AÍ RECEBI ISTO:
+
+
+
+
+
+
+
+C:\WINDOWS\system32>kubectl get pods
+NAME                                   READY   STATUS   RESTARTS      AGE
+my-first-deployment-84564cc996-7nptb   0/1     Error    3 (37s ago)   10m
+
+C:\WINDOWS\system32>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE O NEGÓCIO __ TENTOU RESTARTAR 3x,
+
+mas não conseguiu, em nenhuma das 3....
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+C:\WINDOWS\system32>kubectl get pods
+NAME                                   READY   STATUS             RESTARTS      AGE
+my-first-deployment-84564cc996-7nptb   0/1     CrashLoopBackOff   3 (44s ago)   11m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> parece que ele PAROU DE TENTAR RESTARTAR, DEPOIS DA TERCEIRA VEZ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSE É UM BEHAVIOR QUE GANHAMOS JUSTAMENTE PQ CRIAMOS 1 DEPLOYMENT --> ISSO QUER DIZER QUE 
+
+
+
+
+ESSE 'POD'
+
+
+E O __ CONTAINER_ DENTRO _ DESSE POD 
+
+
+_ESTÃO SENDO MONITORADOS... -> E, SE ELES FALHAM,
+
+
+ELES SÃO 'RESTARTED'...
+
+
+
+
+
+--> podemos ver isso no 'minikube dashboard'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ué... agora voltou a funcionar... acho que agora está funcionando..
+
+
+
+
+
+vou testar de novo...
+
+
+
+
+
+
+
+
+
+
+
+
+ok... agora estão como 'failed'...
+
+
+
+
+
+continuam como 'failed'...
+
+
+
+
+Back-off restarting failed container kub-first-app in pod my-first-deployment-84564cc996-7nptb_default(27eeadc8-fd02-4ee4-912d-cf48c6d805b6)
+
+
+
+
+
+
+
+
+
+
+
+ué... agora voltou a funcionar... demorou um pouco mais, mas voltou a funcionar...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... NOSSO 'POD' FOI SIMPLESMENTE RESTARTED... O CONTAINER TAMBÉM FOI RESTARTED...
+
+
+
+
+
+
+
+
+
+--> EM 'pods',
+
+PODEMOS VISUALIZAR OS DIFERENTES 'EVENTS' QUE ACONTECERAM,
+
+ATÉ ESSE POD SER RESTARTADO COM SUCESSO..
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO QUER DIZER QUE O CONTAINER FOI _ RECRIADO _ QUANDO 
+
+O 
+
+POD FALHOU, OU QUANDO 
+
+
+
+O APP NO CONTAINER FALHOU,
+
+
+E O _ POD __ ENTÃO DECIDIU 'QUE O CONTAINER PRECISAVA SER RESTARTADO'...
+
+
+
+
+
+
+
+
+
+--> ESSE É UM BEHAVIOR ___ BEM ÚTIL_____....
