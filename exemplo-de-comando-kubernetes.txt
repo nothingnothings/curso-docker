@@ -200,3 +200,663 @@ kubectl create deployment my-first-deployment --image=nothingnothings/kub-first-
 
 
 minikube dashboard ---------> ABRE A DASHBOARD do minikube..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+ TEMOS 
+
+  1 COMANDO 
+
+  AINDA MAIS CONVENIENTE 
+
+  PARA __ EXPOR__ OS PODS _ CRIADOS POR 1 DEPLOYMENT __ AO MUNDO EXTERIOR__ ----->
+
+
+
+
+
+
+
+
+É O COMMAND DE  'kubectl expose'
+
+
+
+
+
+
+
+
+
+
+
+
+--> esse comando faz o que diz o nome,
+
+ele 
+
+EXPÕE 1 POD, CRIADO POR 1 DEPLOYMENT,
+
+
+
+
+POR MEIO DO CREATE DE 1 SERVICE....
+
+
+
+
+
+
+
+
+
+
+kubectl expose deployment <deployment-object-name> --port=xxxx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+kubectl expose deployment first-app --port=8080
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+também precisamos da option de '--type' (--type e --port são options obrigatórias)..
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+
+kubectl expose deployment first-app  --type=ClusterIP --port=8080
+
+
+
+
+
+
+
+
+('ClusterIP' é o type DEFAULT de coisa que vc vai querer expor)... ----> O 'ClusterIP'
+
+
+
+faz com que 
+
+
+SEU DEPLOYMENT FIQUE 'REACHABLE' APENAS __ NO LADO DE DENTRO DO SEU CLUSTER (E não do lado de fora)..
+
+
+
+
+
+A UTILIDADE DE 'ClusterIP' é que ele te dá um 'UNCHANGABLE ADDRESS',
+
+
+que não vai mudar, e que pode ser usado no contexto interno do kubernetes cluster... 
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ALÉM DE 'ClusterIP',
+
+
+
+
+
+
+temos 
+
+
+
+
+
+'NodePort',
+
+
+
+QUE 
+
+
+
+ACTUALLY SIGNIFICA 
+
+
+
+
+
+
+''''ESSE DEPLOYMENT DEVERÁ SER ___ EXPOSTO COM A AJUDA DO IP ADDRESS 
+
+DO __ WORKER__ NODE __ __ EM QUE ELE ESTÁ SENDO RODANDO''''' 
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE O 'NodePort' VAI DEIXAR ESSE __ DEPLOYMENT SER ACESSÍVEL 
+
+DO LADO DE FORA 
+
+
+
+DO CLUSTER...
+
+
+
+
+
+
+
+
+MAS MELHOR DO QUE ISSO,
+ 
+
+ TEMOS 
+
+ O 
+
+ TYPE DE 'LOAD BALANCER' ('LoadBalancer') --> ESSE TYPE USA UM 'LOAD BALANCER',
+
+
+
+
+QUE __ DEVERÁ EXISTIR (Vc precisa settar) NA SUA INFRAESTRUTURA,
+
+NA INFRAESTRUTURA  EM QUE VC RODARÁ SEU CLUSTEr (aws, por exemplo)...
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+SE ESCOLHEMOS 'LoadBalancer' como type,  é esse load balancer que vai gerar 
+
+1 
+
+'unique address' para esse service... mas mais do que isso,
+
+ele vai 
+
+também 
+
+'DISTRIBUTE INCOMING TRAFFIC EVENLY ACROSS ALL PODS WHICH ARE PART OF THIS 
+SERVICE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO TEMOS APENAS 1 POD,
+
+NÃO TEMOS MÚLTIPLAS INSTANCES DESSE POD,
+
+
+
+
+TER  O TYPE DE 'LOADBALANCER' AQUI NÃO FAZ TANTA DIFERENÇA... MAS EM PRODUCTION,
+
+
+COM MÚLTIPLAS INSTANCES DESSE POD,
+
+
+
+
+ISSO IMPORTARIA....
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO.... MAS O LOAD BALANCER,
+
+
+
+ESSE TYPE DE 'LoadBalancer',
+
+
+
+SÓ PODE SER USADO  __ SE 
+
+
+O SEU CLUSTER E A INFRAESTRUTURA EM QUE O CLUSTER RODA 
+
+
+SUPORTAM ESSA TECNOLOGIA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+kubectl expose deployment <deployment-name> --type/LoadBalancer --port=8080
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO TUDO COM O APPROACH IMPERATIVE, É CLARO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+kubectl get services --> mostra os SERVICES ATUALMENTE CRIADOS/SETTADOS...
+
+
+
+
+
+
+
+
+
+
+
+VEREMOS ISTO:
+
+
+
+
+
+
+
+
+
+
+
+
+C:\WINDOWS\system32>kubectl get deployments
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+my-first-deployment   1/1     1            1           5h4m
+
+C:\WINDOWS\system32>kubectl expose deployment --type=LoadBalancer --port=8080
+error: resource(s) were provided, but no name was specified
+
+C:\WINDOWS\system32>kubectl expose deployment my-first-deployment --type=LoadBalancer --port=8080
+service/my-first-deployment exposed
+
+C:\WINDOWS\system32>kubectl get services
+NAME                  TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+kubernetes            ClusterIP      10.96.0.1       <none>        443/TCP          5h48m
+my-first-deployment   LoadBalancer   10.101.118.96   <pending>     8080:30107/TCP   9s
+
+C:\WINDOWS\system32>
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+O de baixo,
+
+
+
+'kubernetes',
+
+
+
+
+
+TEM O TYPE DE 'CLUSTERIP',
+
+
+
+E É 
+
+
+1 SERVICE QUE É CRIADO AUTOMATICAMENTE, PELO PRÓPRIO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+-> CERTO...
+
+
+
+
+
+
+
+
+MAS EM 'my-first-deployment' 
+
+
+
+
+
+ENXERGAMOOS O SERVICE PARA O _ PRIMEIRO DEPLOYMENT... --> TEMOS O TYPE DE 
+
+'LOADBALANCER',
+
+
+
+e 
+
+
+
+o 'CLUSTERIP',
+
+que não nos ajudará...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+TEMOS TAMBÉM O 'EXTERNAL IP' ---------> SE ISSO FOSSE DEPLOYADO EM 1 'CLOUD PROVIDER',
+
+
+VERÍAMOS 1 VALOR ALI NO 'EXTERNAL-IP'... MAS COMO 
+
+
+ESTAMOS NO MINIKUBE,
+
+
+ESSE NEGÓCIO SEMPRE FICARÁ COMO 'PENDING'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+minikube service --> esse comando existe  SÓ NO MINIKUBE... serve para MAPPEARMOS 
+
+nosso service do deployment a alguma PORT no nosso computador local/local machine ....
+
+
+
+
+
+
+
+('minikube service' NÃO EXISTE EM CLOUD PROVIDERS, pq lá vc já vai ter 1 'external ip' 
+
+válido, a essa altura)
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+-> ok... rodamos 'minikube service my-first-deployment'...
+
+
+
+--> ESSE COMANDO VAI NOS DAR 1 TABLE COM 1 ADDRESS, QUE ENTÃO PODEREMOS USAR PARA 'VIEW'
+
+A NOSSA APPLICATION...
+
+
+
+
+
+EX:
+
+
+
+
+
+
+C:\WINDOWS\system32>kubectl get services
+NAME                  TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+kubernetes            ClusterIP      10.96.0.1       <none>        443/TCP          5h48m
+my-first-deployment   LoadBalancer   10.101.118.96   <pending>     8080:30107/TCP   9s
+
+C:\WINDOWS\system32>minikube service my-first-deployment
+|-----------|---------------------|-------------|----------------------------|
+| NAMESPACE |        NAME         | TARGET PORT |            URL             |
+|-----------|---------------------|-------------|----------------------------|
+| default   | my-first-deployment |        8080 | http://172.22.142.92:30107 |
+|-----------|---------------------|-------------|----------------------------|
+* Opening service default/my-first-deployment in default browser...
