@@ -1,0 +1,680 @@
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ESSE FOI O 'livenessProbe'...
+
+
+
+
+
+
+
+
+
+
+--> SE EXAMINARMOS OS DOCS OFICIAIS 
+
+
+PARA O OBJECT DE 'CONTAINER',
+
+
+
+VEREMOS QUE 
+
+
+EXISTE MT COISA A SER CONFIGURADA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS CONFIGURAR O 'DEFAULT COMMAND'
+ 
+
+ QUE 
+
+ DEVE 
+
+ SER EXECUTADO,
+
+ SE 
+
+ O 
+ CONTAINER FOR EXECUTADO --------> COM ISSO,
+
+
+ DEVEMOS 
+
+ NOS LEMBRAR 
+
+ QUE 
+
+
+ A CONFIGURAÇÃO DO 'COMMAND' (CMD[])
+
+ TAMBÉM 
+
+
+
+
+ ERA POSSÍVEL COM O DOCKER-COMPOSE,
+
+
+
+
+
+
+
+ E, ATÉ CERTA MEDIDA,
+
+
+
+
+
+O MESMO SE APLICA 
+
+
+
+
+NOS ARQUIVOS yaml 
+
+
+
+
+DO 
+
+
+
+
+KUBERNETES... -------> apenas 
+
+
+
+
+AQUI 
+
+AS COISAS ACONTECEM EM 1 CONTEXTO MAIOR,
+
+
+
+NO CONTEXTO DE 1 CLUSTER... ---------> EM 1 CLUSTER,
+
+
+
+
+ALÉM DE DEFINIRMOS 
+
+''COMO NOSSOS CONTAINERS DEVEM SER EXECUTADOS''',
+
+
+
+DEFINIMOS OUTRAS COISAS,
+
+
+COMO 
+
+
+
+
+NOSSOS SERVICES....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... MAS NÃO É SURPRESA QUE 
+
+
+'''1 MONTE DE COISAS PODEM SER CONFIGURADAS NO CONTAINER-LEVEL'...
+
+
+
+
+
+
+
+
+MAS É CLARO QUE MTAS COISAS PODEM SER  CONFIGURADAS QUANDO RODAMOS 
+
+'docker run',
+
+
+OU 
+
+EM 
+
+1
+
+ ARQUIVO 
+
+ 'docker-compose'... -->  COISAS COMO ENVIRONMENT VARIABLES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+TAMBÉM A 'IMAGE' -->
+
+
+
+
+
+
+
+
+
+
+
+
+MAS TEMOS 1 OPTION/CONFIG ESPECÍFICA DO KUBERNETES,
+
+QUE É 
+
+'COMO 
+
+
+AS IMAGES DEVEM SER PULLED'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VC TALVEZ SE LEMBRE QUE, MAIS CEDO,
+
+QUANDO 
+
+
+
+UPDATAMOS 
+
+A NOSSA IMAGE,
+
+
+
+
+
+
+O _ KUBERNETES NÃO FEZ 'PICK UP' 
+
+
+
+DA 
+
+NOSSA IMAGE CHANGE,
+
+
+A NÃO SER QUE 
+
+TIVÉSSEMOS 
+
+MUDADO 
+
+A 
+NOSSA 
+
+TAG__ DAQUELA __ IMAGE (
+
+
+    que ficou como 
+
+    'kub-first-app:2', em vez do 'kub-first-app' que estava settado antes...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> BEM.... SE QUISERMOS
+QUE __ ELE _ PEGUE A 'IMAGE MAIS RECENTE'
+
+SEM PRECISARMOS ESPECIFICAR COISA ALGUMA,
+
+
+
+
+
+
+
+
+DEVEMOS ESCREVER ASSIM,
+
+LÁ NA IMAGE:
+
+
+
+
+
+'academind/kub-first-app:latest'..
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          # image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+          image: nothingnothings/kub-first-app:latest # com 'LATEST' no final de nossa image, VAMOS REALMENTE PEGAR A IMAGE MAIS LATEST, de todas as tags dessa image...
+          livenessProbe: # AQUI, O QUE PODEMOS FAZER É ESPECIFICAR QUE  ''' 1 GET HTTP  REQUEST DEVE SER ENVIADO, PELO POD/KUBERNETES, A RUNNING APPLICATION'.... #? O KUBERNETES/POD FAZ ISSO, ESSE SEND DO HTTP REQUEST DE TIPO GET ao path de '/', PARA SABER SE O CONTAINER ESTÁ HEALTHY OU NÃO...
+            httpGet:
+              path: /
+              port: 8080 # port que vamos targettar, no container...
+              # httpHeaders: #? headers opcionais.
+            periodSeconds: 5  ## DEFINE 'COM QUAL FREQUÊNCIA ESSES HEALTH CHECKS DEVEM SER REALIZADOS'...
+            initialDelaySeconds: 10 # DEFINE 'QUANTO TEMPO O KUBERNETES  DEVE ESPERAR ANTES DE CHECAR PELA PRIMEIRA VEZ'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PQ É ASSIM QUE CONSEGUIMOS 
+
+
+
+
+
+REALMENTE PEGAR A IMAGE MAIS LATEST, AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS SE NÃO ESPECIFICAMOS ':latest'
+
+ao final do nome de nossa image,
+
+
+
+__ O 
+KUBERNETES NÃO VAI FAZER 'RE-PULL' DESSA IMAGE,
+
+
+
+
+
+
+
+quando vc re-rodar 'kubectl apply'...
+
+
+
+
+
+
+
+-> PARA FAZER OVERWRITE DESSE COMPORTAMENTO,
+
+
+VC PODE DEFINIR 
+
+
+a key 
+
+de 
+
+'imagePullPolicy'... ----> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+OS VALUES POSSÍVEIS SÃO:
+
+
+
+
+
+
+
+
+'imagePullPolicy: Always' -------> COM 'Always',
+
+
+
+O KUBERNETES VAI SEMPRE __ FAZER __ PULL _ 
+DA LATEST IMAGE,
+
+
+
+MESMO 
+
+
+SE VC 
+
+NÃO 
+
+ESPECIFICAR 
+NENHUMA TAG... (sem ':latest' ao final)...
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          # image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+          image: nothingnothings/kub-first-app:latest # com 'LATEST' no final de nossa image, VAMOS REALMENTE PEGAR A IMAGE MAIS LATEST, de todas as tags dessa image...
+          # imagePullPolicy: Always # ? É A MESMA COISA QUE COLOCAR 'latest' no final de nossa image... pq aí vamos forçar o kubernetes a sempre 're-pull' a nossa latest image disponível no dockerhub...
+          livenessProbe: # AQUI, O QUE PODEMOS FAZER É ESPECIFICAR QUE  ''' 1 GET HTTP  REQUEST DEVE SER ENVIADO, PELO POD/KUBERNETES, A RUNNING APPLICATION'.... #? O KUBERNETES/POD FAZ ISSO, ESSE SEND DO HTTP REQUEST DE TIPO GET ao path de '/', PARA SABER SE O CONTAINER ESTÁ HEALTHY OU NÃO...
+            httpGet:
+              path: /
+              port: 8080 # port que vamos targettar, no container...
+              # httpHeaders: #? headers opcionais.
+            periodSeconds: 5  ## DEFINE 'COM QUAL FREQUÊNCIA ESSES HEALTH CHECKS DEVEM SER REALIZADOS'...
+            initialDelaySeconds: 10 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AS OUTRAS OPTIONS SÃO 
+
+
+'Never',
+
+
+
+OU 
+
+
+'IfNotPresent'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          # image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+          image: nothingnothings/kub-first-app:latest # com 'LATEST' no final de nossa image, VAMOS REALMENTE PEGAR A IMAGE MAIS LATEST, de todas as tags dessa image...
+          # imagePullPolicy: Always # ? É A MESMA COISA QUE COLOCAR 'latest' no final de nossa image... pq aí vamos forçar o kubernetes a sempre 're-pull' a nossa latest image disponível no dockerhub...
+          # imagePullPolicy: Never # ?com isso, nunca tentamos pullar images 
+          # imagePullPolicy: IfNotPresent #? COM ISSO, tentamos pullar apenas se nossaa image não estiver presente..
+          livenessProbe: # AQUI, O QUE PODEMOS FAZER É ESPECIFICAR QUE  ''' 1 GET HTTP  REQUEST DEVE SER ENVIADO, PELO POD/KUBERNETES, A RUNNING APPLICATION'.... #? O KUBERNETES/POD FAZ ISSO, ESSE SEND DO HTTP REQUEST DE TIPO GET ao path de '/', PARA SABER SE O CONTAINER ESTÁ HEALTHY OU NÃO...
+            httpGet:
+              path: /
+              port: 8080 # port que vamos targettar, no container...
+              # httpHeaders: #? headers opcionais.
+            periodSeconds: 5  ## DEFINE 'COM QUAL FREQUÊNCIA ESSES HEALTH CHECKS DEVEM SER REALIZADOS'...
+            initialDelaySeconds: 10 
+
+
+
+
+
+
+-----------------------
+
+
+
+
+
+
+
+
+
+OK... essas são as coisas que podemos descobrir nos docs...
+
+opções raramente usadas...
+
+
+
+
+
+
+
+
+--> HÁ CERTAS OPÇÕES, comoo as 'volume options',
+
+que veremos mais tarde 
+
+no curso...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK....
+
+
+
+
+
+
+
+
+PODEMOS CHECAR AS SPECS DOS PODS,
+
+apesar da maior parte 
+
+das options não serem usadas...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... temos tudo de que precisamos, por enquanto...
+
+
+
+
+
+
+
+--> por isso o professor deleta o deployment e o service...
+
+
+
+
+
+
+
+
+
+
+kubectl delete -f deployment.yaml -f service.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+NO PRÓXIMO MÓDULO VEREMOS MAIS SOBRE O KUBERNETES, FILE SYSTEMS....
