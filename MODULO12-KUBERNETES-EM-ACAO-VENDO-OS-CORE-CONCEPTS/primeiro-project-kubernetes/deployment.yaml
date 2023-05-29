@@ -2,12 +2,17 @@ apiVersion: apps/v1
 kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
 metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
   name: second-app-deployment # será o NAME de nosso deployment, deployment object
+  labels:    # podemos DELETAR NOSSO DEPLOYMENT POR LABEL, COM 'delete deployment -l label-name', por exemplo
+    exemplo25: exemplo25
 
 spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
   replicas: 2 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
 
   selector: # é outra key _OBRIGATÓRIA, no seu 'deployment' object...
     # matchExpressions: ### mais complexo do que 'matchLabels'
+      # matchExpressions: #? COM ISSO, dizemos '''' QUEREMOS _ SELECIONAR __ TODOS OS PODS, EM QUE  A LABEL DE 'exemplo' TEM 1 VALUE QUE SEJA  OU _ 'second-app' ou 'first-app'... ''''
+      # outros operators possíveis: 'NotIn', 'Exists' e 'DoesNotExist'
+      # - { values: [second-app, first-app], operators: In, key: exemplo} 
     matchLabels: ### colocamos as labels dos PODS QUE QUEREMOS QUE SEJAM CONTROLADOS POR NOSSO DEPLOYMENT...
       app: second-app # pod que é criado/configurado logo abaixo... (dizemos que todos os pods que tenham as labels de 'app: second-app' e 'tier: backend' DEVEM SER CONTROLADOS POR NOSSO DEPLOYMENT)
       tier: backend

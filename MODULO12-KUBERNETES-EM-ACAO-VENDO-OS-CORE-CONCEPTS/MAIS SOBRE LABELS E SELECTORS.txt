@@ -1,0 +1,1319 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... COM ISSO, ATÉ AGORA,
+
+
+
+
+OLHAMOS COM PROFUNDIDADE 
+
+A 
+
+QUESTÃO 
+
+DOS 
+
+'RESOURCES SENDO CRIADOS DE MANEIRA DECLARATIVE'...
+
+
+
+
+
+
+
+AGORA O PROFESSOR QUER VOLTAR NA QUESTÃO DOS SELECTORS,
+
+PQ É UMA FEATURE REALMENTE CRUCIAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> o professor já explicou que usamos 
+
+
+'selectors'
+
+
+
+PARA CONECTAR 
+
+
+RESOURCES A OUTROS RESOURCES... 
+
+
+
+
+
+
+
+
+
+
+
+
+--> VIMOS ISSO com o pod de label 'app: second-app',
+
+
+QUE 
+
+CONECTAMOS AO NOSSO DEPLOYMENT DE 'second-app-deployment'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> TAMBÉM VIMOS ISSO COM O connect do pod de label 'app: second-app' 
+
+
+
+AO SERVICE de nome 
+
+
+
+
+'backend'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TAMBÉM VIMOS QUE EXISTEM DIFERENTES TYPES DE SELECTORS..
+
+
+
+
+
+
+
+
+
+
+
+--> O SELECTOR MAIS BÁSICO É O 'matchLabels',
+
+
+
+
+o __ LABEL__ SELECTOR...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O LABEL SELECTOR EXISTE EM VÁRIOS OBJECTS, COMO 
+
+
+
+__ SERVICES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TEMOS TAMBÉM O 'selector:' option mais moderno,
+
+
+
+que tem tanto a opçaõ de 'matchLabels'
+
+
+como a opção 
+
+
+'matchExpressions'...
+
+
+
+
+
+
+
+
+
+
+
+--> ok....
+
+
+
+
+
+
+
+
+
+mas quando temos 1 OBJECT QUE SUPORTA 
+
+
+ESSA SINTAXE 
+
+
+
+DE 
+
+'selector:'
+
+mais 
+
+moderna,
+
+
+
+
+VC 
+
+
+
+
+TEM 
+
+
+A ALTERNATIVA 
+
+
+
+
+DE 
+
+
+'matchExpressions'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+QUAL É A VANTAGEM DE 'matchExpressions'???
+
+
+
+
+
+
+
+
+
+
+
+
+----> TEMOS MAIS SOBRE ISSO NOS OFFICIAL DOCS...
+
+
+
+
+
+
+
+
+
+O QUE É O 'MATCH DE EXPRESSIONS'?
+
+
+
+
+
+
+
+
+
+
+--> É UMA MANEIRA MAIS __ POWERFUL _ DE SELECIONAR COISAS --> COM ELA,
+
+
+
+
+VC SIMPLESMENTE TEM MAIS CONFIGURATION OPTIONS,
+
+
+PODE FAZER MAIS COISAS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM O 'matchLabels',
+
+
+TÍNHAMOS ALGO ASSIm:
+
+
+
+
+  selector: 
+    matchLabels:
+      app: second-app 
+      tier: backend
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+COM MATCHLABELS,
+
+
+
+tínhamos vários key-value pairs nesteados,
+
+
+
+
+
+E QUE DEPENDIAM DAS 'LABELS' QUE VC DEFINIA/DEFINE 
+
+
+EM OUTROS PODS.. (em outros TEMPLATES)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS COM 'MATCHEXPRESSIONS',
+
+
+VC 
+
+
+
+TEM 1 LISTA DE EXPRESSIONS...
+
+
+
+
+
+
+
+
+
+E TODAS ESSAS EXPRESSIONS PRECISAM SER _ SATISFEITAS,
+
+
+PARA 
+
+TERMOS 1 'MATCHING OBJECT'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E 1 EXPRESSION É __ DEFINIDA __ EM CURLY BRACES( {})...
+
+
+
+
+
+
+
+
+
+
+
+escrevemos assim:
+
+
+
+
+
+
+
+  selector: 
+    matchExpression:
+      - { }
+
+
+
+
+
+
+
+
+
+
+
+
+E, DENTRO DELA,
+
+VC DEFINE 1 'key',
+
+
+
+
+
+E AÍ 1 VALUE PARA ESSA KEY...
+
+
+
+
+tipo assim:
+
+
+
+
+  selector: 
+    matchExpression:
+      - { key: exemplo}
+
+
+
+
+
+
+
+
+
+
+
+
+
+(AQUI, COLOQUEI 1 VALUE DE 'exemplo')
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO,
+
+ESTAREMOS NOS REFERENDO A 1 'LABEL KEY', o que quer dizer que 
+
+ESTAREMOS PROCURANDO POR 1 LABEL, AINDA (a label de nome 'exemplo')...
+
+
+
+
+
+
+
+
+
+
+
+-> ok... --> vamos nos referir a key de 'exemplo'...
+
+
+
+
+
+
+
+
+
+
+-> A ÚNICA DIFERENÇA DE 'matchExpressions',
+
+
+EM RELAÇÃO 
+
+
+
+
+
+
+ao 'matchLabels',
+
+
+
+É QUE 
+
+PODEMOS 
+
+
+
+
+
+SELECIONAR 
+
+
+PODS __ DE MANEIRA __ MAIS ESPECÍFICA..
+
+
+
+
+
+
+
+
+
+
+--> OK... definida essa 'key',
+
+
+
+em que vc coloca o nome do seu label,
+
+
+
+
+
+
+
+
+VC DEVE COLOCAR 1 key de nome 'values' -->  isso feito,
+
+
+
+vc vai 
+
+
+colocar coisas como 
+
+
+
+
+
+{
+
+    key: app,
+    values: [second-app, first-app]
+}
+
+
+
+
+
+
+
+
+--> EX:
+
+
+
+
+
+  selector: 
+    matchExpression:
+      - { key: exemplo,
+            values: [second-app, first-app]
+      
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok...
+
+
+MAS O GRANDE DIFERENCIAL É QUE VC PODE ADICIONAR A KEY DE 'operators'...
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+  selector: 
+    matchExpression:
+      - { key: exemplo,
+            values: [second-app, first-app],
+            operators: 
+      
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS APENAS CERTOS OPERATORS SÃO SUPORTADOS...
+
+
+
+
+
+
+
+
+OS OPERATORS SUPORTADOS SÃO:
+
+
+
+
+
+1) 'In',
+
+
+2) NotIn
+
+
+3) Exists 
+
+
+
+4) DoesNotExists...
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR MOSTRA 1 CONFIGURAÇAÕ COM 'IN':
+
+
+
+
+  selector: 
+    matchExpressions:
+      - { values: [second-app, first-app], operators: In, key: exemplo}
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO SIGNIFICA QUE 
+
+
+'''' QUEREMOS _ SELECIONAR __ TODOS OS PODS, EM QUE 
+
+A LABEL DE 'exemplo' TEM 1 VALUE QUE SEJA 
+OU _ 'second-app' ou 'first-app'... ''''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ou seja,
+
+seriam selecionados todos os pods 
+
+com 
+
+
+
+a label 
+
+assim:
+
+
+
+
+
+
+exemplo: first-app 
+
+exemplo: second-app...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+ISSO FAZ SENTIDO... SÓ É MEIO 
+
+SITUACIONAL/NICHO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> mas a maneira 'matchLabels'
+
+
+É TOTALLY FINE,
+
+
+
+E É A MANEIRA QUE VC MAIS USARÁ, TIPICAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VC TAMBÉM PODE 
+
+
+COLOCAR OUTROS operators, como o 
+
+
+'NotIn',
+
+'Exists' e o 'DoesNotExist'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+O PROFESSOR SÓ QUERIA NOS MOSTRAR ESSA SINTAXE DE SELECT...
+
+
+
+
+
+
+
+
+
+
+
+--> MAS É BOM CONHECER ESSA SINTAXE,
+
+
+E ENTENDER O QUE 
+
+OS SELECTORS SÃO 'ALL ABOUT'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK... MAS PODEMOS USAR 
+
+
+SELECTORS __ EM OUTROS LUGARES,
+
+
+
+EM LUGARES DISTINTOS __ DE NOSSAS CONFIG FILES, nesse declarative approach...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VC __ TAMBÉM PODE USAR __ SELECTORS_ QUANDO 
+
+
+VC __ 
+
+
+
+RODA COMANDOS, no imperative approach..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> APRENDEMOS QUE PODEMOS DELETAR ALGO 
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+kubectl delete -f deployment.yaml  (APONTANDO A FILE EM QUE AQUELE DEPLOYMENT FOI DEFINIDO)...
+
+
+
+
+
+OU ASSIM:
+
+
+
+
+
+kubectl delete deployment deployment-name (APONTAMOS AO NOME DO DEPLOYMENT)
+
+
+
+kubectl delete service service-name (APONTAMOS AO NOME DO DEPLOYMENT)
+
+
+
+
+
+
+--------------------------------------
+
+
+
+
+
+
+
+MAS TAMBÉM PODEMOS DELETAR 1 DEPLOYMENT POR MEIO __ DE 1 SELECTOR...
+
+
+
+
+
+
+
+
+
+--> BASTA COLOCAR A OPTION DE '-l' (quer dizer 'label'),
+
+
+
+
+QUE TE DEIXA 
+SELECIONAR 
+
+OBJECTS POR LABEL....
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA MOSTRAR ISSO,
+
+
+O PROFESSOR 
+
+
+
+
+
+PEGA 1 DEPLOYMENT QUE JÁ ESTÁ RODANDO,
+E AÍ O APAGA POR LABEL....
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA FAZER ISSO, O PROFESSOR ADICIONA LABELS 
+
+
+
+
+NO DEPLOYMENT DE 'second-app-deployment',
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+  labels:    # podemos DELETAR NOSSO DEPLOYMENT POR LABEL, COM 'delete deployment -l label-name', por exemplo
+    exemplo25: exemplo25
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+e ele também coloca essa label lá no nosso 
+
+
+
+SERVICE,
+
+TIPO ASSIM:
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+kind: Service
+metadata:  # necessário
+  labels:
+      exemplo25: exemplo25
+  name: backend  # podemos escolher qualquer nome
+
+
+
+
+
+
+
+
+-> ok...
+
+
+
+
+
+
+
+ADICIONADA ESSA MESMA LABEL NO 'SERVICE'
+
+
+E 'DEPLOYMENT'
+
+
+
+
+
+
+
+
+
+
+-->  COM ISSO FEITO, E RODADO O COMANDO DE 'kubectl apply -f service.yaml -f deployment.yaml',
+
+
+
+
+
+
+
+
+PODEMOS 
+
+DELETAR 
+
+
+
+
+AMBOS,
+
+O SERVIÇO E O DEPLOYMENT,
+
+
+
+
+com o comando 
+
+
+
+
+
+
+
+DE:
+
+
+
+
+
+
+
+
+kubectl delete -l exemplo25=exemplo25
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS VC AINDA PRECISA ESPECIFICAR 'QUAL TIPO DE RESOURCE VC QUER APAGAR'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEVEMOS COLOCAR 
+
+'deployments, services',
+
+PARA APAGAR TANTO OS DEPLOYMENTS COMO OS SERVICES 
+
+com essas labels com esses values aí...
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl delete deployments,services -l exemplo25=exemplo25
+deployment.apps "second-app-deployment" deleted
+service "backend" deleted
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... COM ISSO FICAMOS SEM NENHUM DEPLOYMENT,
+
+E SEM NENHUM SERVICE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ENTENDEMOS MAIS UM POUCO SOBRE LABELS E SELECTORS,
+
+
+
+E AGORA SABEMOS A RAZÃO DE TERMOS ISSO..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS É IMPORTANTE ENTENDER QUE, COM 
+
+'SELECTORS',
+
+
+VC APENAS É CAPAZ DE SELECIONAR PELOS 'labels' QUE VC DEFINE LÁ DENTRO DE 'metadata',
+
+
+E NÃO POR 
+
+
+
+MEIO DO PRÓPRIO NAME de seus deployments...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O NOME PODE SER USADO PARA COISAS COMO O COMANDO DE 'DELETE',
+
+
+
+MAS SE QUEREMOS USAR 
+
+
+A FLAG DE 
+
+'-l',
+
+
+
+
+OU SE USARMOS 
+
+
+
+O SELECTOR NA 'DECLARATIVE DEFINITION' 
+
+DE ALGUM OUTRO RESOURCE,
+
+
+
+SEMPRE VAMOS 
+
+
+ESTAR FALANDO 
+
+
+DAS 'LABELS' definidas na metadata...

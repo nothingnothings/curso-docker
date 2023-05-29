@@ -1,6 +1,8 @@
 apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
 kind: Service
 metadata:  # necessário
+  labels:
+      exemplo25: exemplo25
   name: backend  # podemos escolher qualquer nome
 spec:    # é o mais importante
 ## vc vai SELECIONAR OS __ PODS, E NÃO OS DEPLOYMENTS EM SI...
