@@ -1,0 +1,2050 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA TEMOS 1 DEPLOYMENT, COM O ARQUIVO CONFIG DE 'deployment.yaml':
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment 
+metadata: 
+  name: second-app-deployment 
+
+spec: 
+  replicas: 3 
+
+  selector: 
+    
+    matchLabels: 
+      app: second-app 
+      tier: backend
+
+
+  template: 
+    
+    metadata: 
+      labels: 
+        app: second-app 
+        tier: backend
+    spec: 
+      containers: 
+        - name: second-nodejs-app 
+          image: nothingnothings/kub-first-app:2 
+        
+        
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ISSO É NICE,
+
+CLARO,
+
+MAS NÃO 
+
+É 
+
+O 
+
+SUFICIENTE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NÃO É O SUFICIENTE PQ __ AINDA NÃO CONSEGUIMOS ACESSAR O NOSSO APP...
+
+
+
+
+
+
+
+
+
+ISSO PQ __ A PORT DE '8080',
+
+
+
+NECESSÁRIA AO NOSSO APP NODEJS CONTAINERIZADO (que expõe essa port),
+
+
+
+
+
+
+
+NÃO 
+
+ESTÁ ABERTA por meio de 1 service kubernetes...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, O PROFESSOR ADICIONA 1 SEGUNDO ARQUIVO,
+
+DE NOME 
+
+'service.yaml'...
+
+
+
+
+
+
+
+
+
+
+-> NESSE ARQUIVO, O PROFESSOR DEFINIRÁ 
+
+1 SERVICE,
+
+
+PARA O NOSSO DEPLOYMENT,
+
+
+
+
+PARA 
+
+
+ESSE APP....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> e o arquivo 'service.yaml''
+
+
+
+É MT SIMILAR AO ARQUIVO 'deployment.yaml',
+
+
+
+PELO MENOS ATÉ CERTA MEDIDA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+COMO ISSO AINDA É UM ARQUIVO CONFIG DO KUBERNETES,
+
+
+
+
+AINDA PRECISAMOS DEFINIR 1 'APIVERSION'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ENTRETANTO, AQUI A APIVERSION É UM POUCO DIFERENTE DA 
+
+
+
+DE 'deployment.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+A DIFERENÇA É QUE 
+
+ELA É SÓ 'v1'...
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... NA VERDADE, O CORRETO SERIA 'core/v1'',
+
+
+
+
+MAS COMO 'core' É IMPLÍCITO,
+
+PODEMOS 
+
+DEIXAR 
+SÓ 
+
+
+'v1'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... --> MAS SÓ ISSO, SÓ ESSA INFO,
+
+
+
+
+não vai _ DIZER AO KUBERNETES O QUE VC VAI QUERER CRIAR...
+
+
+
+
+
+
+
+
+
+
+
+
+--> EM VEZ DISSO,
+
+
+VC DEVE ESPECIFICAR 1 'kind: ',
+
+
+
+QUE 
+
+
+
+
+SERÁ 
+
+
+
+
+
+
+1 'Service', realmente...
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+kind: Service
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... NOS DOCS DO KUBERNETES, É POSSÍVEL VER ALGUMAS OPTIONS QUE PODEMOS 
+
+DEFINIR,
+
+
+
+QUE CLARO,
+
+SÃO:
+
+
+
+
+
+
+
+
+1) metadata (importante)...
+
+
+
+2) spec (super importante)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+em 'name',
+
+
+
+COLOCAMOS 1 NAME NESSE SERVICE... COLOCAMOS 'backend'...
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+kind: Service
+metadata:  # necessário
+  name: backend  # podemos escolher qualquer nome
+spec:    # é o mais importante
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+
+SE EXAMINARMOS OS DOCS DE REFERÊNCIA,
+
+
+
+TEMOS 
+
+
+
+
+
+1 MONTE DE COISAS A CONFIGURAR --> PQ O KUBERNETES É SUPER FORTE,
+
+
+E NOS 
+
+DÁ 
+
+
+1 
+MONTE DE OPTIONS... NEM TODA SÃO NECESSÁRIAS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O QUE PRECISAMOS, AQUI, É DE UM 'SELECTOR'...
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+kind: Service
+metadata:  # necessário
+  name: backend  # podemos escolher qualquer nome
+spec:    # é o mais importante
+  selector:   # É ESSENCIAL.
+
+
+
+
+
+
+
+
+
+
+
+
+NO CASO,
+
+
+
+CONFORME O PROFESSOR EXPLICOU ANTERIORMENTE,
+
+
+O selector 
+
+IDENTIFICA 
+
+
+
+
+QUAIS OUTROS RESOURCES 
+
+
+
+__DEVERÃO SER CONTROLADOS/CONECTADOS  A ESSE RESOURCE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- NESSE CASO,
+
+QUEREMOS DEFINIR 'QUAIS PODS DEVERÃO SER PARTE DESSE SERVICE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PQ, COMO APRENDEMOS ANTERIORMENTE,
+
+
+1 
+
+
+OBJECT DE 'SERVICE' 
+
+SERVE PARA _ EXPOR __ 
+
+
+PODS _ AO 'CLUSTER' OU AO MUNDO EXTERNO... -->  ISSO SIGNIFICA QUE 
+
+
+VC 
+
+NÃO CONTROLA 'DEPLOYMENTS'
+
+EM SI 
+
+
+COM 
+
+1 
+
+SERVICE,
+
+
+E 
+
+SIM 
+
+
+'PODS'... -->  MAS É CLARO QUE 
+
+
+PODS 
+
+
+SÃO TIPICAMENTE 
+
+
+
+GERADOS __ POR 1 DEPLOYMENT... AINDA ASSIM, 
+
+COM 
+
+
+ESSE 'SELECTOR' do SERVICE VAMOS QUERER TARGETTAR 
+
+
+'INDIVIDUAL PODS'...
+
+
+
+
+
+
+
+
+
+
+--> OK... --> MAS O __ SELECTOR __ 
+
+
+
+
+DO OBJECT DE 'SERVICE'
+
+
+
+FUNCIONA DE FORMA 1 POUCO DIFERENTE DA DO 
+
+
+
+
+SELECTOR DO 
+
+
+
+OBJECT DE 'deployment' (visto em 'deployment.yaml')...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PQ, LÁ COM 'Deployment',
+
+o 
+object de deployment,
+
+
+
+
+
+
+
+
+
+
+TÍNHAMOS ISTO:
+
+
+
+
+
+
+spec:
+  selector:
+    matchLabels:
+      app: second-app 
+
+
+
+
+
+
+
+
+
+OU:
+
+
+spec:
+  selector:
+    matchExpressions: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU SEJA,
+
+
+
+
+LÁ TÍNHAMOS 'matchLabels'
+
+E ENTÃO 
+
+
+
+NOSSOS LABEL 'key-value pairs'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... NAQUELE CASO, NO DE 'DEPLOYMENT',
+
+
+
+TÍNHAMOS AQUELA SINTAXE 
+
+
+JUSTAMENTE PQ 
+
+
+
+
+O RESOURCE TYPE    'DEPLOYMENT'
+
+
+
+É __ 1 POUCO MAIS __ NOVO __ DO QUE __ O 
+
+
+
+RESOURCE DE TIPO 
+
+'service'....
+
+
+
+
+
+
+
+
+(
+
+    ELE É MAIS NOVO DO QUE O RESOURCE DE TIPO 'SERVICE',
+
+    MAS AINDA É VELHO...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... MAS O SELECTOR DE 'service' É MAIS SIMPLES...
+
+
+
+
+
+
+
+--> COMO ELE É __ MAIS SIMPLES,
+
+
+NÃO TEMOS A OPÇÃO ENTRE 'matchLabels' e 'matchExpressions',
+
+
+por isso 
+
+
+APENAS ESCREVEMOS 
+
+
+
+
+AS LABELS ALI,
+
+
+
+SEM PENSAR EM 'matchExpressions'..
+
+
+
+
+
+
+
+
+tipo assim:
+
+
+
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+kind: Service
+metadata:  # necessário
+  name: backend  # podemos escolher qualquer nome
+spec:    # é o mais importante
+  selector:   # É ESSENCIAL
+    app: second-app
+    tier: backend
+
+
+
+
+
+
+
+--> OU SEJA,
+
+PODEMOS 
+
+SIMPLESMENTE 
+
+COPIAR 
+
+AS LABELS QUE TÍNHAMOS 
+
+LÁ 
+
+EM 
+
+'deployment.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... 
+
+
+
+
+
+
+
+
+
+
+
+MAS AQUI O PROFESSOR NOS EXPLICA QUE 'NEM SEMPRE VC VAI QUERER __SELECT__ 
+
+BY ALL THE LABELS' (
+
+    o match não precisa 
+
+    ser 
+
+    de TODAS SUAS LABELS...
+)
+
+
+
+
+
+
+
+
+
+
+
+-> DIGAMOS QUE VC TEM NO SEU PROJECT 1 OUTRO __ DEPLOYMENT,
+
+
+
+QUE CRIA PODS COM LABEL DE 'second-app' também,
+
+
+MAS QUE 
+
+
+NÃO 
+
+
+
+TEM __ 1 label de 'tier: backend'...
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO, APESAR DE ESSES 2 'PODS'
+
+FAZEREM PARTE DE 2 DIFERENTES DEPLOYMENTS,
+
+
+
+
+ELES PODERÃO FAZER PARTE 
+
+
+
+DE 1 MESMO SERVICE (agrupar os 2 PODS em 1 mesmo service, mesmo que eles façam parte de 2 DEPLOYMENTS DISTINTOS...)
+
+
+
+
+
+(
+
+    OU SEJA,
+    no service,
+
+
+    PODEMOS QUERER SELECIONAR POR MEIO DE APENAS A LABEL DE 
+    'app: second-app',
+
+
+    me vez 
+
+
+    de 
+
+    'app: second-app + tier:backend'
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... E ESSA É DEFINITVAMENTE A IDEIA POR TRÁS DOS SELECTORS:
+
+
+
+
+
+O KUBERNETES NOS DÁ GRANDE FLEXIBILIDADE ACERCA DE 
+
+'QUAL OUTRO RESOURCE DEVE SER CONECTADO/CONTROLADO 
+
+
+POR OUTRO RESOURCE'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... COM ISSO,
+
+
+FICAMOS COM ESTE CÓDIGO:
+
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+kind: Service
+metadata:  # necessário
+  name: backend  # podemos escolher qualquer nome
+spec:    # é o mais importante
+  selector:   # É ESSENCIAL.... E O SELECTOR DE 'Service's _FUNCIONA DE FORMA 1 POUCO DISTINTA DAQUELA VISTA NO SELECTOR DOS OBJECTS 'Deployment'... (pq aqui não há a decisão entre 'matchLabels' e 'matchExpressions', pq SEMPRE SERÁ A OPÇÃO 'matchLabels'...)
+    app: second-app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO QUER DIZER QUE ESSE SERVICE __ 'SELECTS',
+
+
+
+OU SEJA,
+
+
+EXPÕE,
+
+
+TODOS 
+
+
+OS PODS COM uma LABEL DE 'app: second-app' ------> ISSO QUER DIZER QUE 
+
+
+
+
+
+
+__ OS PODS GERADOS PELO DEPLOYMENT DE 
+
+
+'deployment.yaml'
+
+
+
+FICARÃO EXPOSTOS 
+
+
+POR 
+
+
+
+
+ESSE SERVICE descrito em 'service.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... COM ISSO, DEFINIMOS:
+
+
+
+
+
+1) QUAIS ___PODS___ DEVEM SER EXPOSED...
+
+
+
+
+
+
+
+
+
+
+
+--> MAS AINDA NÃO DISSEMOS '''COMO __ ESSES __ PODS DEVERÃO SER EXPOSED'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TENHA EM MENTE QUE QUANDO USAMOS O APPROACH 'IMPERATIVE',
+
+
+
+
+ESCREVEMOS ASSIM:
+
+
+
+
+
+kubectl expose deployment my-first-deployment --port=8080 --type=LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU SEJA,
+
+PRECISÁVAMOS/PRECISAMOS COLOCAR A 'PORT',
+
+
+
+E TAMBÉM O 'type'
+
+DESSE 
+
+SERVICE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> PRECISAMOS FAZER ISSO PARA DECIDIR COMO O SERVICE DEVERÁ 
+
+SER EXPOSTO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS COMEÇAR PELAS PORTS..
+
+
+
+
+
+
+
+
+
+
+COMO PODEMOS ESPECIFICAR MAIS DE 1 PORT,
+
+a opção 
+
+
+é 
+
+
+
+ports (LISTA):
+
+
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+kind: Service
+metadata:  # necessário
+  name: backend  # podemos escolher qualquer nome
+spec:    # é o mais importante
+  selector:   # É ESSENCIAL.... E O SELECTOR DE 'Service's _FUNCIONA DE FORMA 1 POUCO DISTINTA DAQUELA VISTA NO SELECTOR DOS OBJECTS 'Deployment'... (pq aqui não há a decisão entre 'matchLabels' e 'matchExpressions', pq SEMPRE SERÁ A OPÇÃO 'matchLabels'...)
+    app: second-app
+  ports: 
+    - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... mas antes de especificarmos a PORT EM SI,
+
+DEVEMOS ESPECIFICAR O 'PROTOCOL A SER USADO'... ->  POR DEFAULT,
+
+
+
+
+O PROTOCOLO SERÁ 'TCP'...
+
+
+
+
+
+
+
+
+
+
+CERTO... AÍ, NO MESMO LIST ITEM,
+
+
+VC DEVE ESPECIFICAR A PORT... (a port a que esse POD ficará exposto, no mundo externo)
+
+
+
+
+
+--> depois disso, temos o 'targetPort', que 
+
+É SIMPLESMENTE A __ PORT INTERNA__ DO SEU CONTAINER (colocaremos '8080', pq essa 
+
+é a port INTERNA, usada pelo container de nosso projeto)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+kind: Service
+metadata:  # necessário
+  name: backend  # podemos escolher qualquer nome
+spec:    # é o mais importante
+  selector:   # É ESSENCIAL.... E O SELECTOR DE 'Service's _FUNCIONA DE FORMA 1 POUCO DISTINTA DAQUELA VISTA NO SELECTOR DOS OBJECTS 'Deployment'... (pq aqui não há a decisão entre 'matchLabels' e 'matchExpressions', pq SEMPRE SERÁ A OPÇÃO 'matchLabels'...)
+    app: second-app
+  ports: 
+    - protocol: 'TCP'
+      port: 80
+      targetPort: 8080
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+kind: Service
+metadata:  # necessário
+  name: backend  # podemos escolher qualquer nome
+spec:    # é o mais importante
+## vc vai SELECIONAR OS __ PODS, E NÃO OS DEPLOYMENTS EM SI...
+  selector:   # É ESSENCIAL.... E O SELECTOR DE 'Service's _FUNCIONA DE FORMA 1 POUCO DISTINTA DAQUELA VISTA NO SELECTOR DOS OBJECTS 'Deployment'... (pq aqui não há a decisão entre 'matchLabels' e 'matchExpressions', pq SEMPRE SERÁ A OPÇÃO 'matchLabels'...)
+    app: second-app ##? OBS: podemos selecionar PODS QUE PERTENÇAM A 2 DEPLOYMENTS DISTINTOS _ NESSE MESMO SERVICE__ ...
+  ports: # é uma lista, pq podemos expor vários ports...
+    - protocol: 'TCP' ### é o default... 'conexão direta', maior confiabilidade, menor velocidade
+      port: 80  ## port externa, alcançável pelo 'external world'...
+      targetPort: 8080 ## port interna, dos nossos pods/containers...
+  
+
+
+
+
+
+
+  ---------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+kind: Service
+metadata:  # necessário
+  name: backend  # podemos escolher qualquer nome
+spec:    # é o mais importante
+## vc vai SELECIONAR OS __ PODS, E NÃO OS DEPLOYMENTS EM SI...
+  selector:   # É ESSENCIAL.... E O SELECTOR DE 'Service's _FUNCIONA DE FORMA 1 POUCO DISTINTA DAQUELA VISTA NO SELECTOR DOS OBJECTS 'Deployment'... (pq aqui não há a decisão entre 'matchLabels' e 'matchExpressions', pq SEMPRE SERÁ A OPÇÃO 'matchLabels'...)
+    app: second-app ##? OBS: podemos selecionar PODS QUE PERTENÇAM A 2 DEPLOYMENTS DISTINTOS _ NESSE MESMO SERVICE__ ...
+  ports: # é uma lista, pq podemos expor vários ports...
+    - protocol: 'TCP' ### é o default... 'conexão direta', maior confiabilidade, menor velocidade
+      port: 80  ## port externa, alcançável pelo 'external world'...
+      targetPort: 8080 ## port interna, dos nossos pods/containers...
+    # - protocol: 'UDP'   ### como adicionar mais ports...
+    #   port: 443
+    #   targetPort: 443
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+
+PRECISAMOS DEFINIR O 'TYPE'
+
+
+
+DE NOSSO 
+
+SERVICE...
+
+
+
+
+
+
+
+
+
+
+
+ELE É ADICIONADO 
+
+
+NO MESMO LEVEL DE 'ports',
+
+
+
+
+
+
+
+
+E PODE 
+
+SER 
+
+
+
+    'ClusterIP' ( é o default, INTERNALLY EXPOSED IP) --> acessível apenas dentro do cluster 
+
+
+
+
+
+    'NodePort' ---> É USADO PARA BASICAMENTE EXPOR O 'POD' NO IP E PORT __ DO WORKER NODE EM QUE RODA...
+
+
+
+
+    'LoadBalancer' -> É O MAIS USADO ------> MAIS USADO SE VC QUISER EXTERNAL WORLD ACCESS...
+
+
+
+
+
+
+
+
+
+--> O TYPE DE 'LoadBalancer' USA O LOADBALANCER 
+
+
+
+DE 
+
+SUA 
+
+CLOUD INFRASTRUCTURE... ------> O MINIKUBE TEM UMA, MEIO FALSA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM O USO DO TYPE DE 'LoadBalancer',
+
+
+
+vamos conseguir 1 'ADDRESS',
+
+
+
+1 
+
+'outside world-reachable 
+
+
+address',
+
+
+
+
+QUE AÍ 
+
+VAI 
+
+
+TE DEIXAR ALCANÇAR ESSE SERVICE 
+
+
+E 
+
+
+
+
+OS PODS 
+
+
+EXPOSTOS 
+
+POR ESSE SERVICE... ----------> E O INCOMING TRAFFIC
+
+
+TAMBÉM 
+
+É DISTRIBUÍDO,
+
+EQUALLY...
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1 # diferente de 'apps/v1', usada no 'deployment.yaml' 
+kind: Service
+metadata:  # necessário
+  name: backend  # podemos escolher qualquer nome
+spec:    # é o mais importante
+## vc vai SELECIONAR OS __ PODS, E NÃO OS DEPLOYMENTS EM SI...
+  selector:   # É ESSENCIAL.... E O SELECTOR DE 'Service's _FUNCIONA DE FORMA 1 POUCO DISTINTA DAQUELA VISTA NO SELECTOR DOS OBJECTS 'Deployment'... (pq aqui não há a decisão entre 'matchLabels' e 'matchExpressions', pq SEMPRE SERÁ A OPÇÃO 'matchLabels'...)
+    app: second-app ##? OBS: podemos selecionar PODS QUE PERTENÇAM A 2 DEPLOYMENTS DISTINTOS _ NESSE MESMO SERVICE__ ...
+  ports: # é uma lista, pq podemos expor vários ports...
+    - protocol: 'TCP' ### é o default... 'conexão direta', maior confiabilidade, menor velocidade
+      port: 80  ## port externa, alcançável pelo 'external world'...
+      targetPort: 8080 ## port interna, dos nossos pods/containers...
+    # - protocol: 'UDP'   ### como adicionar mais ports...
+    #   port: 443
+    #   targetPort: 443
+  type: LoadBalancer ## pode ser também 'ClusterIP' (é o default) e 'NodePort'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... COM ISSO, CRIAMOS NOSSO SERVICE...
+
+
+
+
+
+
+
+
+
+
+
+-_> MAS COMO PODEMOS APLICÁ-LO?
+
+
+
+
+
+
+
+
+
+
+
+COM 
+
+
+
+'kubectl apply -f service.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+O COMANDO SERÁ SEMPRE 'kubectl apply ...'
+
+
+
+
+
+PQ 
+
+
+
+
+
+
+A MORAL É JUSTAMENTE O KUBERNETES 
+
+
+
+
+INVESTIGAR O CONTEÚDO DA FILE,
+PARA SABER O QUE CRIAR (com 'kind')...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... rodamos isso... o service será criado...
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+PODEMOS 
+
+EXPOR ESSE SERVICE, NO MINIKUBE (algo que só precsiamos fazer no minikube)..
+
+
+
+
+
+
+
+
+
+
+
+
+rodamos 
+
+'minikube service backend'  
+
+
+
+
+
+(backend é o nome de nosso service, que colocamos em 'metadata')...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl apply -f service.yaml
+service/backend created
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl get services
+NAME         TYPE           CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
+backend      LoadBalancer   10.98.12.82   <pending>     80:30864/TCP   6s
+kubernetes   ClusterIP      10.96.0.1     <none>        443/TCP        4h51m
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> 
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+agora basta rodar o comando do minikube...
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+C:\WINDOWS\system32>minikube service backend
+|-----------|---------|-------------|-----------------------------|
+| NAMESPACE |  NAME   | TARGET PORT |             URL             |
+|-----------|---------|-------------|-----------------------------|
+| default   | backend |          80 | http://172.23.146.212:30864 |
+|-----------|---------|-------------|-----------------------------|
+* Opening service default/backend in default browser...
+
+C:\WINDOWS\system32>
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... AGORA ISSO ESTÁ FUNCIONANDO... 
+
+
+
+
+
+
+
+
+
+
+E É ASSIM QUE AGORA PODEMOS CREATE E 
+
+DEPLOY 
+
+
+NOSSO DEPLOYMENT 
+
+
+E SERVICE
+
+
+
+
+DE FORMA 'DECLARATIVE' ---------> É ESSE O APPROACH QUE 
+
+
+USAREMOS, TIPICAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+USAREMO-NO PQ:
+
+
+
+
+
+
+1) É EASY TO MAINTAIN
+
+
+
+2) NÃO TEMOS QUE REDIGITAR COMANDOS O TEMPO TODO...
+
+
+
+
+
+3) NOSSO APPROACH É BEM MENOS ERROR-PRONE...
+
+
+
+
+
+
+É FÁCIL DE ESQUECER 
+
+
+
+coisas no meio do comando de 'kubectl expose'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TUDO FICA BEM MAIS FÁCIL... -> E É BEM MAIS FÁCIL DE COMPARTILHAR...
+
+
+
+
+
+
+
+
+
+
+
+
+SE 1 COLEGA CONFIGUROU 
+
+
+SEU 'service.yaml',
+
+
+VC NÃO PRECISA SEMPRE ASK SEU COLLEAGUE 
+
+
+SOBRE COMO ELE 
+RODOU O COMANDO,
+
+PQ 
+TUDO 
+
+
+JÁ ESTARÁ NA CONFIG FILE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O DECLARATIVE APPROACH É MELHOR,
+E É POR ISSO QUE 
+
+O 
+
+UTILIZAREMOS NESSE CURSO...
