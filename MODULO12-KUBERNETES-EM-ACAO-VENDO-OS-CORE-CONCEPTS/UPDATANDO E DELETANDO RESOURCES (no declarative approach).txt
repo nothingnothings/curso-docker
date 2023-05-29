@@ -1,0 +1,815 @@
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA JÁ VIMOS COMO USAR O DECLARATIVE APPROACH...
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS A PERGUNTA AGORA É:
+
+
+
+
+
+
+
+
+
+
+
+'''COMO PODEMOS FAZER CHANGES NO NOSSO DEPLOYMENT,
+
+OU NOS NOSSOS SERVICES'''?
+
+
+
+
+
+
+
+
+
+BEM, A COISA LEGAL É QUE 
+
+
+
+PODEMOS 
+
+SIMPLESMENTE 
+
+MUDAR 
+
+
+ALGO 
+
+
+
+
+NOS NOSSOS ARQUIVOS YAML,
+
+
+
+
+REAPLICAR AS MUDANÇAS,
+
+COM 
+
+
+
+
+'kubectl apply -f file-name.yaml',
+
+
+
+
+E AÍ 
+
+
+
+AS NECESSARY 
+
+CHANGES 
+
+
+SERÃO FEITAS NO SEU CLUSTER,
+
+AUTOMATICAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> POR EXEMPLO,
+
+SE VC QUER 
+
+
+
+
+
+
+AUMENTAR O NÚMERO DE REPLICAS PARA 1  DEPLOYMENT,
+
+
+VC PODE SIMPLESMENTE 
+
+
+ALTERAR O NÚMERO,
+
+DPS 
+SALVAR O ARQUIVO 
+
+E 
+rodar 
+
+'
+kubectl apply -f deployment.yaml'...
+
+
+
+
+
+
+ALTEREI O NÚMERO DE REPLICAS/INSTANCES DE MEU POD:
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 5 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+
+  selector: # é outra key _OBRIGATÓRIA, no seu 'deployment' object...
+    # matchExpressions: ### mais complexo do que 'matchLabels'
+    matchLabels: ### colocamos as labels dos PODS QUE QUEREMOS QUE SEJAM CONTROLADOS POR NOSSO DEPLOYMENT...
+      app: second-app # pod que é criado/configurado logo abaixo... (dizemos que todos os pods que tenham as labels de 'app: second-app' e 'tier: backend' DEVEM SER CONTROLADOS POR NOSSO DEPLOYMENT)
+      tier: backend
+
+
+  template: # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE) --> E O TEMPLATE DE 1 DEPLOYMENT _ SEMPRE __ VAI DESCREVER 1 'POD' object...
+    #kind: pod --> NÃO É NECESSÁRIO, PQ O 'kind' de algo nesteado/criado dentro de 1 object deployment é SEMPRE 1 POD..
+    metadata: # cada object (1 pod é um object) sempre tem essa key de 'metadata'
+      labels: # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+        app: second-app ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+        tier: backend
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+        # - name: third-nodejs-app   #### é assim que adicionamos MAIS CONTAINERS AO NOSSO POD, tudo dentro do mesmo pod...
+        #   image: nothingnothings/kub-second-app
+        # - name: fourth-nodejs-app
+        #   image: nothingnothings/kub-third-app ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> OK... SALVAMOS ESSA MUDANÇA E APLICAMOS:
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl apply -f deployment.yaml
+deployment.apps/second-app-deployment configured
+
+
+
+
+
+
+
+
+
+
+
+VEREMOS QUE ESSAS CHANGES TERÃO SIDO FEITAS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> portanto, se agora 
+
+
+
+
+RODARMOS 'kubectl get pods',
+
+
+
+
+VEREMOS QUE 
+
+
+FICAMOS COM 5 REPLICAS...
+
+
+
+
+
+
+
+
+
+
+
+
+E SIM, É SIMPLES ASSIM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+E SE VC QUER 'SCALE DOWN',
+
+
+BASTA 
+
+TROCAR O NÚMERO DE NOVO,
+
+COLOCAR '3' 
+
+
+replicas,
+
+e aí 
+
+
+
+
+
+re-rodar o comando:
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 2 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+
+  selector: # é outra key _OBRIGATÓRIA, no seu 'deployment' object...
+    # matchExpressions: ### mais complexo do que 'matchLabels'
+    matchLabels: ### colocamos as labels dos PODS QUE QUEREMOS QUE SEJAM CONTROLADOS POR NOSSO DEPLOYMENT...
+      app: second-app # pod que é criado/configurado logo abaixo... (dizemos que todos os pods que tenham as labels de 'app: second-app' e 'tier: backend' DEVEM SER CONTROLADOS POR NOSSO DEPLOYMENT)
+      tier: backend
+
+
+  template: # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE) --> E O TEMPLATE DE 1 DEPLOYMENT _ SEMPRE __ VAI DESCREVER 1 'POD' object...
+    #kind: pod --> NÃO É NECESSÁRIO, PQ O 'kind' de algo nesteado/criado dentro de 1 object deployment é SEMPRE 1 POD..
+    metadata: # cada object (1 pod é um object) sempre tem essa key de 'metadata'
+      labels: # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+        app: second-app ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+        tier: backend
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+        # - name: third-nodejs-app   #### é assim que adicionamos MAIS CONTAINERS AO NOSSO POD, tudo dentro do mesmo pod...
+        #   image: nothingnothings/kub-second-app
+        # - name: fourth-nodejs-app
+        #   image: nothingnothings/kub-third-app ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ISTO:
+
+
+
+
+
+
+
+
+
+kubectl apply -f deployment.yaml
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl apply -f deployment.yaml
+deployment.apps/second-app-deployment configured
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl get pods
+NAME                                     READY   STATUS        RESTARTS   AGE
+second-app-deployment-7f76d78f44-krl87   1/1     Terminating   0          118s
+second-app-deployment-7f76d78f44-nmlpn   1/1     Running       0          98m
+second-app-deployment-7f76d78f44-t75vq   1/1     Terminating   0          98m
+second-app-deployment-7f76d78f44-x6g65   1/1     Terminating   0          118s
+second-app-deployment-7f76d78f44-xx6fr   1/1     Running       0          98m
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS DIGAMOS QUE 
+
+
+
+
+QUEREMOS 'TROCAR A IMAGE',
+
+
+
+
+VOLTAR 
+
+
+
+
+À IMAGE DE 
+
+'first-kub'
+
+
+
+SEM 
+
+
+A 
+TAG 
+DE 
+
+':2'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA FAZER ISSO,
+
+BASTA IR ATÉ 
+
+
+
+A
+ CONFIG FILE E TROCAR 
+
+ A IMAGE,
+ TIPO ASSIM:
+
+
+
+
+
+
+     spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+
+
+
+
+
+
+
+
+
+
+DEIXAMOS ASSIM:
+
+
+
+
+
+
+     spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app # a image que será usada, em 1 de nossos containers, dentro desse pod
+
+
+
+
+
+
+
+
+
+
+
+
+E AÍ RODAMOS 
+
+
+
+
+kubectl apply -f deployment.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AÍ A IMAGE JÁ TERÁ SIDO APLICADA,
+
+
+SEM NENHUM PROBLEMA..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, COM ISSO,
+
+
+
+PODEMOS PERCEBER A FACILIDADE DESSE DECLARATIVE APPROACH ---> PODEMOOS 
+
+SIMPLESMENTE 
+
+
+MUDAR ESSAS CONFIG FILES,
+
+
+RODAR 
+
+'kubectl apply',
+
+
+E AÍ 
+
+
+
+SUAS CHANGES JÁ SERÃO 
+
+
+
+APLICADAS... -> NÃO PRECISAMOS RODAR COMANDOS ENORMES...
+
+
+
+
+
+
+
+
+
+BASTA TROCAR COISAS SIMPLES,
+
+
+
+E AÍ 
+
+
+
+SUAS CHANGES JÁ SERÃO APLICADAS...
+
+
+
+
+
+
+
+
+
+------> COM A DECLARATIVE APPROACH, TUDO ISSO NÃO É NECESSÁRIO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ALÉM DISSO,
+
+
+PODEMOS 
+
+
+
+
+USAR FERRAMENTAS COMO O 'GIT'
+PARA 
+
+
+
+
+ANALISAR DIFERENTES VERSÕES DE SUAS YAML FILES...
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+faz total sentido...
+
+
+
+
+
+
+
+
+
+É FÁCIL FAZER CHANGES, PORTANTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA DELETAR RESOURCES,
+NO KUBERNETES,
+
+TEMOS O COMANDO 
+
+
+
+'kubectl delete',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS __ TAMBÉM TEMOS OUTRA COISA, ALÉM DISSO...
+
+
+
+
+
+
+
+
+
+
+(O COMANDO DE 'kubectl delete deployment' é usado, sim, MAS ESSE OUTRO COMANDO É MELHOR)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->  1 comando mais útil 
+
+
+é 
+
+
+
+
+'kubectl delete -f deployment.yaml' --------> ISSO VAI __ FAZER COM QUE 
+
+O DEPLOYMENT/RESOURCES CRIADOS 
+
+COM 
+
+BASE 
+
+
+
+NA FILE SEJAM DELETADOS....
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl delete -f deployment.yaml
+deployment.apps "second-app-deployment" deleted
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> É ASSIM QUE PODEMOS DELETAR RESOURCES...
+
+
+
+
+
+
+
+
+
+
+APPROACH DECLARATIVE: 'kubectl delete -f deployment.yaml' 
+
+
+
+
+
+
+APPROACH IMPERATIVE: 'kubectl delete deployment/my-first-deployment...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
