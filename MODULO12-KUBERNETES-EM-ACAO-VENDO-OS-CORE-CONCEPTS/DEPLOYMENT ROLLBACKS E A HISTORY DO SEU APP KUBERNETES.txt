@@ -1,0 +1,1002 @@
+
+
+
+RODEI ISTO, ANTES:
+
+
+
+C:\WINDOWS\system32>kubectl set image deployment/my-first-deployment kub-first-app=nothingnothings/kub-first-app:3
+deployment.apps/my-first-deployment image updated
+
+
+
+
+
+
+
+
+OK.... O UPDATE DAS IMAGES DE SEUS RUNNING CONTAINERS/PODS,
+
+NO KUBERNETES,
+
+NÃO É TÃO DIFÍCIL...
+
+
+
+
+
+
+
+
+
+MAS AGORA DEVEMOS TENTAR ALGO QUE VAI __ FALHAR___...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR TENTA USAR ESSE COMANDO 
+
+
+
+
+
+
+
+
+de 
+
+
+
+
+'''''
+ kubectl set image deployment/my-first-deployment kub-first-app=nothingnothings/kub-first-app:2
+''''
+
+
+MAIS UMA VEZ,
+
+
+
+
+
+
+
+MAS DESSA VEZ COM UMA IMAGE QUE NÃO EXISTE, TIPO ASSIM:
+
+
+
+
+ kubectl set image deployment/my-first-deployment kub-first-app=nothingnothings/dummy:dummy 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ COMO ESSA IMAGE COM TAG DE 'dummy'
+
+ NÃO EXISTE,
+
+
+
+
+ O KUBERNETES VAI FAZER DEPLOY DE 1 IMAGE QUE NÃO EXISTE,
+
+
+
+ ACARRETANDO EM UM _ERRO_...
+
+
+
+
+
+
+
+
+
+
+basta escrever assim:
+
+
+
+
+
+kubectl set image deployment/my-first-deployment kub-first-app=nothingnothings/dummy:dummy 
+
+
+'image updated' (no terminal)
+
+
+
+
+
+
+
+-> depois:
+
+
+
+
+'kubectl status deployment'
+
+
+'waiting for deployment rollout to finish: 1 old replicas are pending termination'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... PARECE QUE ESSA MENSAGEM DE 
+
+
+'waiting for deployment rollout to finish: 1 old replicas are pending termination'...
+
+
+
+
+
+
+
+
+
+SIGNIFICA QUE 
+
+
+
+
+__ SEU DEPLOYMENT NÃO ESTÁ FUNCIONANDO... ESTAMOS 
+
+'WAITING FOR DEPLOYMENT ROLLOUT TO FINISH'...
+
+
+
+
+
+
+
+
+
+
+
+-> e as 'old replicas are shutting down'...
+
+
+
+
+
+
+
+
+
+
+--> e isso está  em loop infinito...
+
+
+
+
+
+
+
+
+
+OK... MAS SE VISUALIZAMOS 
+
+NOSSO DASHBOARD, NO BROWSER,
+
+VEREMOS QUE 
+
+
+A REPLICA ANTIGA NÃO ESTÁ 'TERMINATING'
+
+
+
+
+JUSTAMENT PQ 
+
+
+
+O 'NEW POD' 
+
+
+NÃO ESTÁ STARTING UP SUCCESSFULLY... --> ISSO PQ __ eLE ESTÁ 
+
+
+
+COM PROBLEMAS QUANTO AO 'PULL' DA IMAGE...
+
+
+
+
+
+
+
+
+-> EX:
+
+
+Failed to pull image "nothingnothings/dummy:dummy": rpc
+ error: code = Unknown desc = failed to pull and unpack image
+  "docker.io/nothingnothings/dummy:dummy": failed to resolve reference
+   "docker.io/nothingnothings/dummy:dummy": pull access denied, 
+   repository does not exist or may require authorization: server message:
+    insufficient_scope: authorization failed
+
+
+
+
+
+
+
+
+
+
+
+
+--------> ok... é bem bom esse comportamento do kubernetes,
+
+
+esse 
+'ROLLING UPDATE',
+
+
+
+QUE 
+
+
+
+FAZ COM QUE O ÚLTIMO POD NÃO SEJA 'SHUT DOWN'
+
+
+ANTES DO NOVO POD FICAR 'UP AND RUNNING'...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS É CLARO QUE AQUI 
+
+
+NOSSO UPDATE NUNCA VAI TERMINAR,
+
+PQ 
+
+NOSSO POD NUNCA 
+
+VAI 
+
+'START',
+
+
+
+PQ, NESSE CASO,
+
+
+FICAMOS COM 1 TYPO NA NOSSA IMAGE TAG...
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS O QUE ISSO SIGNIFICA?
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> SIGNIFICA QUE VAMOS QUERER 
+
+
+'ROLL BACK' esse nosso update do deployment,
+para que 
+
+
+O _ KUBERNETES NÃO CONTINUE COM ELE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, PRIMEIRAMENTE 
+
+
+ESCREVEREMOS 
+
+'kubectl get pods',
+
+
+
+
+
+
+e aí veremos este output:
+
+
+
+
+C:\WINDOWS\system32>kubectl get pods
+NAME                                   READY   STATUS             RESTARTS   AGE
+my-first-deployment-678ffbf459-b77zn   0/1     ImagePullBackOff   0          7m28s
+my-first-deployment-9f5f4b58f-kc7zj    1/1     Running            0          19m 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... TEMOS ESSA MENSAGEM DE 'ImagePullBackOff'.. --> SIGNIFICA QUE 
+
+
+
+
+
+NOSSO POD ESTÁ 'STUCK',
+
+PQ 
+
+ELE 
+
+TENTOU 
+
+FAZER PULL DE 1 IMAGE QUE NÃO CONSEGUIU ENCONTRAR,
+
+ATÉ QUE 'PAROU DE TENTAR'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS COMO PODEMOS __ 'STOP' ,
+
+
+FAZER ROLLBACK DESSE 
+
+
+DEPLOYMENT PROBLEMÁTICO,
+
+QUE CLARAMENTE NÃO FUNCIONARÁ?
+
+
+
+
+
+
+
+
+
+
+PARA ISSO,
+
+PARA FAZER ROLLBACK,
+
+DEVEMOS 
+
+RODAR 
+
+
+
+
+'kubectl rollout undo deployment/my-first-deployment'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... SE AGORA CHECARMOS NOSSOS PODS PROBLEMÁTICOS MAIS UMA VEZ,
+
+
+
+VEREMOS QUE 
+
+
+O POD PROBLEMÁTICO TERÁ SUMIDO...
+
+
+
+
+
+
+
+
+
+
+
+-> E SE VISUALIZARMOS NOSSO 'STATUS',
+
+
+
+VEREMOS QUE ELE ESTARÁ DE VOLTA COMO 'SUCCESSFUL'
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+C:\WINDOWS\system32>kubectl rollout undo deployment/my-first-deployment
+deployment.apps/my-first-deployment rolled back
+
+C:\WINDOWS\system32>kubectl get pods
+NAME                                  READY   STATUS    RESTARTS   AGE
+my-first-deployment-9f5f4b58f-kc7zj   1/1     Running   0          22m
+
+C:\WINDOWS\system32>
+
+
+
+
+
+
+
+--------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+E NOSSO APP, É CLARO,
+
+
+CONTINUA 'UP AND RUNNING'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... É ASSIM QUE PODEMOS FAZER ROLLBACK DE 1 DEPLOYMENT, PORTANTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> MAS SE DESEJAMOS IR 'BACK'
+
+
+___A UM DEPLOYMENT AINDA MAIS ANTIGO,
+
+
+
+
+
+NÃO SÓ AO 'PREVIOUS ONE',
+
+
+
+MAS AINDA ALÉM,
+
+
+
+
+_PODEMOS __ DAR 1 OLHADA NA NOSSA 'DEPLOYMENT HISTORY',
+
+
+COM O COMANDO 
+DE 
+
+
+
+'kubectl rollout history deployment/my-first-deployment' 
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+C:\WINDOWS\system32>kubectl rollout history deployment/my-first-deployment
+deployment.apps/my-first-deployment
+REVISION  CHANGE-CAUSE
+1         <none>
+3         <none>
+4         <none>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ISSO 
+
+
+NOS MOSTRA OS DIFERENTES DEPLOYMENTS QUE FIZEMOS...
+
+
+
+
+
+
+
+
+
+
+
+PODEMOS TAMBÉM 
+
+COLOCAR A FLAG DE 
+
+
+
+'--revision=<revision-number>'
+
+
+
+
+NESSE COMANDO,
+
+PARA TER MAIS DETALHES:
+
+
+
+
+kubectl rollout history --revision=3 deployment/my-first-deployment 
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+C:\WINDOWS\system32>kubectl rollout history --revision=3 deployment/my-first-deployment
+deployment.apps/my-first-deployment with revision #3
+Pod Template:
+  Labels:       app=my-first-deployment
+        pod-template-hash=678ffbf459
+  Containers:
+   kub-first-app:
+    Image:      nothingnothings/dummy:dummy
+    Port:       <none>
+    Host Port:  <none>
+    Environment:        <none>
+    Mounts:     <none>
+  Volumes:      <none>
+
+
+
+
+------------------------------------
+
+
+
+
+
+OK... ISSO NOS MOSTRA:
+
+
+
+
+
+
+1) QUAL IMAGE FOI USADA ('nothingnothings/dummy:dummy') -----> COM ISSO, É POSSÍVEL VER QUAL IMAGE 'BROKE'...
+
+
+
+
+
+
+2) OUTRAS COISAS, não tão úteis...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS SE VISUALIZAMOS A REVISION 1,
+
+veremos que ela usou a image original...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... MAS COMO PODEMOS FAZER 'rollout undo' (ROLLBACK)
+
+
+
+
+A 
+
+
+1 DEPLOYMENT ESPECÍFICO DE NOSSO APP?
+
+
+
+
+
+
+
+
+fazemos isso com o comando de 
+
+
+
+
+'''''''
+
+kubectl rollout undo deployment/my-first-deployment --to-revision=
+''''''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OU SEJA, PRECISAMOS DESSA OPTION DE '--to-revision'...
+
+
+
+
+
+-> NO NOSSO CASO, COLOCAREMOS '1'...
+
+
+
+
+
+ex:
+
+
+'''''''
+kubectl rollout undo deployment/my-first-deployment --to-revision=1
+''''''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, VAMOS 'ROLL BACK'
+
+
+
+
+
+à PRIMEIRA VERSÃO DE NOSSOS DEPLOYMENT... (com base na image original)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO, JÁ NOS APROFUNDAMOS 1 POUCO MAIS COM O KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+--> o professor acha super importante que 
+
+
+visualizemos o que o kubernetes faz por nós...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> e esse POD MANAGEMENT,
+
+AUTOMATIC CREATION E REMOVAL, RESTART DE PODS E CONTAINERS,
+
+
+E 
+
+
+O 
+'ROLLBACK DE DEPLOYMENTS',
+
+
+
+
+
+e etc,
+
+
+TODAS ESSAS SÃO FEATURES SUPER 
+
+
+ÚTEIS,
+
+
+
+E QUE DEIXAM SUA VIDA MT MAIS FÁCIL SE VC ESTÁ 
+
+
+FAZENDO DEPLOY DE GRANDES APPS A GRANDES CLUSTERS....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... MAS JÁ BRINCAMOS BASTANTE COM ESSE IMPERATIVE APPROACH...
+
+
+
+
+
+
+AGORA TROCAREMOS DESSE 'IMPERATIVE  APPROACH'
+
+PARA 
+
+
+
+1 
+
+DECLARATIVE APPROACH.. --> ISSO VAI DEIXAR O TRABALHO COM O KUBERNETES BEM MAIS SIMPLES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... PRIMEIRAMENTE,
+
+O PROFESSOR VAI DELETAR O NOSSO SERVICE E 
+
+DEPLOYMENT DE 'my-first-deployment'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... NOSSOS PODS E DEPLOYMENT DESAPARECERAM...

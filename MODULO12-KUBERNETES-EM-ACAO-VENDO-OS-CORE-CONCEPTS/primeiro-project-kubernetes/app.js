@@ -8,6 +8,7 @@ app.get('/', (req, res) => {
     <p>Try sending a request to /error and see what happens</p>
     <h1>This is a second hello!</h1>
     <p>My deployment got updated.</p>
+    <p>My deployment got updated again.</p>
   `);
 });
 

@@ -1453,3 +1453,628 @@ minikube delete
 
 
 minikube start --container-runtime=containerd
+
+
+
+
+
+
+
+
+
+
+---------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+ COMO ESSA IMAGE COM TAG DE 'dummy'
+
+ NÃO EXISTE,
+
+
+
+
+ O KUBERNETES VAI FAZER DEPLOY DE 1 IMAGE QUE NÃO EXISTE,
+
+
+
+ ACARRETANDO EM UM _ERRO_...
+
+
+
+
+
+
+
+
+
+
+basta escrever assim:
+
+
+
+
+
+kubectl set image deployment/my-first-deployment kub-first-app=nothingnothings/dummy:dummy 
+
+
+'image updated' (no terminal)
+
+
+
+
+
+
+
+-> depois:
+
+
+
+
+'kubectl status deployment'
+
+
+'waiting for deployment rollout to finish: 1 old replicas are pending termination'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... PARECE QUE ESSA MENSAGEM DE 
+
+
+'waiting for deployment rollout to finish: 1 old replicas are pending termination'...
+
+
+
+
+
+
+
+
+
+SIGNIFICA QUE 
+
+
+
+
+__ SEU DEPLOYMENT NÃO ESTÁ FUNCIONANDO... ESTAMOS 
+
+'WAITING FOR DEPLOYMENT ROLLOUT TO FINISH'...
+
+
+
+
+
+
+
+
+
+
+
+-> e as 'old replicas are shutting down'...
+
+
+
+
+
+
+
+
+
+
+--> e isso está  em loop infinito...
+
+
+
+
+
+
+
+
+
+OK... MAS SE VISUALIZAMOS 
+
+NOSSO DASHBOARD, NO BROWSER,
+
+VEREMOS QUE 
+
+
+A REPLICA ANTIGA NÃO ESTÁ 'TERMINATING'
+
+
+
+
+JUSTAMENT PQ 
+
+
+
+O 'NEW POD' 
+
+
+NÃO ESTÁ STARTING UP SUCCESSFULLY... --> ISSO PQ __ eLE ESTÁ 
+
+
+
+COM PROBLEMAS QUANTO AO 'PULL' DA IMAGE...
+
+
+
+
+
+
+
+
+-> EX:
+
+
+Failed to pull image "nothingnothings/dummy:dummy": rpc
+ error: code = Unknown desc = failed to pull and unpack image
+  "docker.io/nothingnothings/dummy:dummy": failed to resolve reference
+   "docker.io/nothingnothings/dummy:dummy": pull access denied, 
+   repository does not exist or may require authorization: server message:
+    insufficient_scope: authorization failed
+
+
+
+
+
+
+
+
+
+
+
+
+--------> ok... é bem bom esse comportamento do kubernetes,
+
+
+esse 
+'ROLLING UPDATE',
+
+
+
+QUE 
+
+
+
+FAZ COM QUE O ÚLTIMO POD NÃO SEJA 'SHUT DOWN'
+
+
+ANTES DO NOVO POD FICAR 'UP AND RUNNING'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK, E COMO PODEMOS FAZER 'ROLLBACK' DE 1 DEPLOYMENT QUE NÃO DEU CERTO?
+
+
+
+
+
+
+
+
+com este comando:
+
+
+
+kubectl rollout undo deployment/my-first-deployment
+
+
+
+
+
+
+
+
+
+'kubectl rollout undo deployment/xxxxxx' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> MAS SE DESEJAMOS IR 'BACK'
+
+
+___A UM DEPLOYMENT AINDA MAIS ANTIGO,
+
+
+
+
+
+NÃO SÓ AO 'PREVIOUS ONE',
+
+
+
+MAS AINDA ALÉM,
+
+
+
+
+_PODEMOS __ DAR 1 OLHADA NA NOSSA 'DEPLOYMENT HISTORY',
+
+
+COM O COMANDO 
+DE 
+
+
+
+'kubectl rollout history deployment/my-first-deployment' 
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+C:\WINDOWS\system32>kubectl rollout history deployment/my-first-deployment
+deployment.apps/my-first-deployment
+REVISION  CHANGE-CAUSE
+1         <none>
+3         <none>
+4         <none>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PODEMOS TAMBÉM  USAR A OPTION DE '--revision=xxx',
+
+para 
+
+TER MAIS INFORMAÇÕES SOBRE 1 GIVEN REVISION (como o label da revision, a image que foi utilizada e quebrou o app, etc)
+
+
+
+
+
+C:\WINDOWS\system32>kubectl rollout history --revision=3 deployment/my-first-deployment
+deployment.apps/my-first-deployment with revision #3
+Pod Template:
+  Labels:       app=my-first-deployment
+        pod-template-hash=678ffbf459
+  Containers:
+   kub-first-app:
+    Image:      nothingnothings/dummy:dummy
+    Port:       <none>
+    Host Port:  <none>
+    Environment:        <none>
+    Mounts:     <none>
+  Volumes:      <none>
+
+
+
+
+------------------------------------
+
+
+
+
+
+OK... ISSO NOS MOSTRA:
+
+
+
+
+
+
+1) QUAL IMAGE FOI USADA ('nothingnothings/dummy:dummy') -----> COM ISSO, É POSSÍVEL VER QUAL IMAGE 'BROKE'...
+
+
+
+
+
+
+2) OUTRAS COISAS, não tão úteis...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS SE VISUALIZAMOS A REVISION 1,
+
+veremos que ela usou a image original...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... MAS COMO PODEMOS FAZER 'rollout undo' (ROLLBACK)
+
+
+
+
+A 
+
+
+1 DEPLOYMENT ESPECÍFICO DE NOSSO APP?
+
+
+
+
+
+
+
+
+fazemos isso com o comando de 
+
+
+
+
+'''''''
+
+kubectl rollout undo deployment/my-first-deployment --to-revision=
+''''''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OU SEJA, PRECISAMOS DESSA OPTION DE '--to-revision'...
+
+
+
+
+
+-> NO NOSSO CASO, COLOCAREMOS '1'...
+
+
+
+
+
+ex:
+
+
+'''''''
+kubectl rollout undo deployment/my-first-deployment --to-revision=1
+''''''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM ISSO, JÁ NOS APROFUNDAMOS 1 POUCO MAIS COM O KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+--> o professor acha super importante que 
+
+
+visualizemos o que o kubernetes faz por nós...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> e esse POD MANAGEMENT,
+
+AUTOMATIC CREATION E REMOVAL, RESTART DE PODS E CONTAINERS,
+
+
+E 
+
+
+O 
+'ROLLBACK DE DEPLOYMENTS',
+
+
+
+
+
+e etc,
+
+
+TODAS ESSAS SÃO FEATURES SUPER 
+
+
+ÚTEIS,
+
+
+
+E QUE DEIXAM SUA VIDA MT MAIS FÁCIL SE VC ESTÁ 
+
+
+FAZENDO DEPLOY DE GRANDES APPS A GRANDES CLUSTERS....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... MAS JÁ BRINCAMOS BASTANTE COM ESSE IMPERATIVE APPROACH...
+
+
+
+
+
+
+AGORA TROCAREMOS DESSE 'IMPERATIVE  APPROACH'
+
+PARA 
+
+
+
+1 
+
+DECLARATIVE APPROACH.. --> ISSO VAI DEIXAR O TRABALHO COM O KUBERNETES BEM MAIS SIMPLES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... PRIMEIRAMENTE,
+
+O PROFESSOR VAI DELETAR O NOSSO SERVICE E 
+
+DEPLOYMENT DE 'my-first-deployment'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... NOSSOS PODS E DEPLOYMENT DESAPARECERAM...
