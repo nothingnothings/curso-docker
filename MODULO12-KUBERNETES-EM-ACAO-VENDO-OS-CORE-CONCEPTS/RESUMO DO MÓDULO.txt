@@ -1,0 +1,578 @@
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... ESSE FOI 1 MÓDULO IMPORTANTE...
+
+
+
+
+
+
+
+SUJAMOS AS MÃOS COM O KUBERNETES..
+
+
+
+
+
+
+
+
+
+APRENDEMOS O QUE DEVEMOS SETTAR, QUE É:
+
+
+
+
+
+
+1) O CLUSTER E A INFRASTRUCTURE PARA O CLUSTER 
+
+
+
+
+2) O SOFTWARE PARA O CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+VIMOS TAMBÉM O QUE O KUBERNETES VAI FAZER PARA NÓS...
+
+
+
+
+
+
+
+
+
+
+
+
+--> VIMOS QUE EXISTEM TOOLS QUE VÃO NOS AJUDAR COM 
+
+
+O SETUP DO CLUSTER...
+
+
+
+
+
+
+
+
+LOCALMENTE,
+
+TEREMOS O 'MINIKUBE',
+
+
+QUE VAI NOS AJUDAR 
+
+
+
+
+
+
+COM A GARANTIA DESSE 'DEVELOPMENT ENVIRONMENT'...
+
+
+
+
+
+
+
+
+
+
+OS CLOUD PROVIDERS TAMBÉM NOS DARÃO TOOLS, PARA NOS AJUDAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMEÇAMOS COM O CREATE 
+
+DE 
+
+1 LOCAL 
+
+
+
+DEVELOPMENT ENVIRONMENT,
+
+
+PARA TER 1 LOCAL CLUSTER,
+
+EM 1 VIRTUAL MACHINE,
+
+RODANDO NA NOSSA LOCAL MACHINE...
+
+
+
+
+
+
+
+
+
+
+
+--> TAMBÉM INSTALAMOS A 'KUBE CONTROL TOOL' (kubectl),
+
+
+
+QUE 
+
+
+É O NOSSO COMMUNICATION DEVICE,
+
+
+PARA 
+
+ENVIAR ORDENS AO 
+
+
+KUBERNETES CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+--> APRENDEMOS QUE O KUBERNETES 
+
+FUNCIONA COM 
+
+'OBJECTS'..
+
+
+
+
+
+
+
+
+
+
+
+--> OS DIFERENTES RESOURCES QUE TEMOS RODANDO EM CLUSTERS 
+
+KUBERNETES 
+
+
+SÃO 
+
+
+
+ESSES OBJECTS AÍ....
+
+
+
+
+
+
+
+
+
+
+--> E PODEMOS CRIAR OBJECTS POR MEIO DE 1 APPROACH 
+
+IMPERATIVE 
+
+OU DECLARATIVE...
+
+
+
+
+
+
+
+
+
+
+
+--> COM O IMPERATIVE,
+
+
+EXECUTAMOS COMANDOS COMO 
+
+
+
+'kubectl create deployment first-app --image=nothingnothings/kub-first-app '
+
+
+
+
+
+
+
+
+E ISSO FUNCIONAVA JUST FINE, 
+
+
+MAS 
+
+
+
+
+
+ERA MT TYPING...
+
+
+
+
+
+
+
+
+--> TAMBÉM FAZÍAMOS A MESMA COISA PARA CRIAR SERVICES,
+
+COM 'kubectl expose,'
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+kubectl expose deployment first-app --port=8080 --type=LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VIMOS TAMBÉM COMANDOS PARA __ DELETAR COISAS... -->
+
+
+
+
+
+
+
+
+
+kubectl delete 
+
+
+
+
+
+
+
+
+
+
+
+--> TAMBÉM PARA UPDATAR CURRENT DEPLOYMENTS,
+
+COM 
+
+'kubectl set image'...
+
+
+
+
+
+
+
+
+
+
+--> MAS TAMBÉM VIMOS O DECLARATIVE APPROACH, QUE 
+É 
+MAIS MODERNO 
+
+E USA 
+YAML FILES...
+
+
+
+
+
+
+
+
+
+
+--> kubectl apply --> ESSE É O COMANDO PRINCIPAL DO DECLARATIVE APPROACH...
+
+
+
+
+
+
+
+-> fazemos isso com 
+
+
+
+kubectl apply -f deployment.yaml -f service.yaml 
+
+
+
+
+
+
+
+
+
+
+E A PARTE LEGAL É QUE SEMPRE QUE VC 
+
+FIZER CHANGES 
+
+NESSAS FILES,
+
+
+BASTARÁ VC AS REAPLICAR,
+
+
+
+COM O MESMO COMANNDO,
+
+
+PARA QUE 
+
+O KUBERNETES APLIQUE ESSAS MUDANÇAS,
+
+AUTOMATICAMENTE,
+
+
+
+
+NA SUA RUNNING APPLICATION, NO SEU CLUSTER..
+
+
+
+
+
+
+
+
+--> VC TAMBÉM PODE DELETAR DEPLOYMENTS/SERVICES,
+
+POR MEIO 
+
+DOS FILES 
+
+
+DE 
+
+DEPLOYMENT/SERVICES,
+
+
+
+tipo assim:
+
+
+
+
+
+
+
+kubectl delete -f deployment.yaml -f service.yaml
+
+
+
+
+
+
+
+
+
+
+TAMBÉM VIMOS COMO PODEMOS MERGEAR MÚLTIPLAS DEFINITIONS EM 1 ÚNICA FILE,
+
+
+
+com '---' separandos os diferente resources/objects..
+
+
+
+
+
+
+
+
+
+
+
+vimos como cada object é estruturado,
+
+
+
+VIMOS QUAIS SÃO AS DIFERNTES OPTIONS, E O QUE ELAS FAZEM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+VIMOS __ COMO 'LABELS' E 'SELECTORS'
+
+FUNCIONAM EM CONJUNTO,
+
+PARA CONECTAR DIFERENTES RESORUCES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VIMOS COMO PODEMOS 
+
+
+
+
+DEFINIR PODS E CONTAINERS,
+
+
+
+E COMO 
+
+PODEMOS 
+
+CONTROLAR OS HEALTH CHECKS QUE SÃO REALIZADOS,
+
+
+E COMO 
+
+
+PODEMOS CONTROLAR 'COMO AS IMAGES SÃO PULLADAS'...
+
+
+
+
+
+
+
+
+
+
+OS DOCS PODEM SER ÚTEIS,
+
+
+PARA VER QUAIS OPTIONS TEMOS... --> MAS MTAS DESSAS OPTIONS RARAMENTE 
+
+SERÃO USADAS...
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+
+
+
+COM ISSO,
+
+
+
+TEMOS TODOS OS BASICS DO KUBERNETES...
+
+
+
+
+
+
+SABEMOS A BIG PICTURE E A FILOSOFIA POR TRÁS DO KUBERNETES...
+
+
+
+
+
+
+
+MAS AGORA SABEMOS COMO TRABALHAR COM ESSA ARCHITECTURE,
+
+
+
+
+
+
+
+
+E POR ISSO DEVEMOS VER 1 POUCO DE KEY PROBLEMS QUE 
+
+
+ENFRENTAREMOS EM QUALQUER APP....
+
