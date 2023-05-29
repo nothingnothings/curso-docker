@@ -1,0 +1,740 @@
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, ESTAMOS QUASE ACABADOS COM OS VERY BASICS DO KUBERNETES 
+
+E 
+
+
+DOS RESOURCES DO KUBERNETES...
+
+
+
+
+
+
+
+
+
+HÁ 1 CONCEITO 1 POUCO MAIS AVANÇADO QUE O PROFESSOR QUER EXPLORAR AGORA..
+
+
+
+
+
+
+
+
+É A MANEIRA PELA QUAL O __KUBERNETES_ CHECA __ SE SEUS PODS E OS CONTAINERS 
+
+
+NOS PODS 
+
+ESTÃO 
+'HEALTHY'
+
+OU NÃO.... -->  PQ __ ISSO __ PODE IMPORTAR,
+
+
+EM CERTOS APPS...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ATÉ AGORA,
+
+
+
+ISSO SEMPRE FUNCIONA,
+
+
+
+
+POR DEFAULT... --> MAS É CLARO QUE PODEMOS CONFIGURAR A MANEIRA PELA QUAL 
+
+ISSO É FEITO...
+
+
+
+
+
+
+
+
+
+--> NO ARQUIVO 'deployment.yaml',
+
+
+
+
+PODEMOS MUDAR __ A DEFINITION DOS NOSSOS CONTAINERS,
+
+PARA MUDAR 
+
+
+
+A MANEIRA PELA QUAL 
+
+
+ESSE CONTAINER É CHECADO PELO POD (
+
+    QUE CHECA SE ELE ESTÁ UP AND RUNNING...
+)
+
+
+
+
+
+
+
+
+
+
+INICIALMENTE, NOSSO CÓDIGO ESTÁ ASSIM:
+
+
+
+
+
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, DEVEMOS COLOCAR 
+
+
+
+1 KEY DE NOME 'livenessProbe' ---> 
+
+
+
+
+
+
+ex:
+
+
+
+
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+          livenessProbe: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> LÁ NOS DOCS DO CONTAINER, NO KUBERNETES,
+
+TEMOS VÁRIAS OPTIONS... 
+
+
+
+
+
+
+COMO 'env' (environment variables),
+
+
+
+
+E TAMBÉM 
+
+
+
+
+'COMO A IMAGE DEVERÁ SER PULLED' ('imagePullPolicy' )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DENTRO DAÍ,
+
+
+
+
+
+
+ENCONTRAMOS A 'livenessProbe'...
+
+
+
+
+
+
+
+
+
+
+--> OK, MAS O QUE É ISSO?
+
+
+
+
+
+
+COMO PODEMOS CONFIGURAR A 'livenessProbe'?
+
+
+
+
+
+
+bem, primeiramnete,
+
+
+teremos 1 key de 'httpGet'
+
+
+DENTRO 
+
+
+DESSA KEY...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TEMOS ALGUMAS OPTIONS DISPONÍVEIS,
+
+PARA 
+
+
+ESSA KEY DE 'httpGet'...
+
+
+
+
+
+
+
+
+
+---> MAS AQUI, O QUE PODEMOS FAZER É ESPECIFICAR QUE 
+
+
+
+''' 1 GET HTTP  REQUEST DEVE SER ENVIADO, PELO POD/KUBERNETES,
+
+A RUNNING APPLICATION'....
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS DEFINIR QUE O PATH A QUE SERÁ ENVIADO ESSE REQUEST SERÁ '/' (slash nothing)..
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+          livenessProbe: # AQUI, O QUE PODEMOS FAZER É ESPECIFICAR QUE  ''' 1 GET HTTP  REQUEST DEVE SER ENVIADO, PELO POD/KUBERNETES, A RUNNING APPLICATION'.... #? O KUBERNETES/POD FAZ ISSO, ESSE SEND DO HTTP REQUEST DE TIPO GET ao path de '/', PARA SABER SE O CONTAINER ESTÁ HEALTHY OU NÃO...
+            httpGet:
+              path: /
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS É CLARO QUE TAMBÉM PRECISAMOS ESPECIFICAR O _ PORT_ _  A QUE VAMOS NOS CONECTAR..
+
+
+
+
+
+
+
+
+--> o professor coloca 'port: 8080'...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+          livenessProbe: # AQUI, O QUE PODEMOS FAZER É ESPECIFICAR QUE  ''' 1 GET HTTP  REQUEST DEVE SER ENVIADO, PELO POD/KUBERNETES, A RUNNING APPLICATION'.... #? O KUBERNETES/POD FAZ ISSO, ESSE SEND DO HTTP REQUEST DE TIPO GET ao path de '/', PARA SABER SE O CONTAINER ESTÁ HEALTHY OU NÃO...
+            httpGet:
+              path: /
+              port: 8080
+
+
+
+
+
+
+
+
+
+
+
+
+
+também temos a option de 'httpHeaders',
+
+
+
+QUE É USADA PARA ESPECIFICAR POSSÍVEIS HEADERS NESSE REQUEST...
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+          livenessProbe: # AQUI, O QUE PODEMOS FAZER É ESPECIFICAR QUE  ''' 1 GET HTTP  REQUEST DEVE SER ENVIADO, PELO POD/KUBERNETES, A RUNNING APPLICATION'.... #? O KUBERNETES/POD FAZ ISSO, ESSE SEND DO HTTP REQUEST DE TIPO GET ao path de '/', PARA SABER SE O CONTAINER ESTÁ HEALTHY OU NÃO...
+            httpGet:
+              path: /
+              port: 8080
+              httpHeaders: ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... E, NO MESMO NÍVEL DE 'httpGet',
+
+PODEMOS 
+
+
+ESPECIFICAR 
+
+
+'periodSeconds',
+
+
+
+
+
+
+QUE É USADO 
+
+
+PARA DEFINIR 'COM QUAL FREQUÊNCIA ESSES CHECKS DEVEM SER REALIZADOS'...
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+          livenessProbe: # AQUI, O QUE PODEMOS FAZER É ESPECIFICAR QUE  ''' 1 GET HTTP  REQUEST DEVE SER ENVIADO, PELO POD/KUBERNETES, A RUNNING APPLICATION'.... #? O KUBERNETES/POD FAZ ISSO, ESSE SEND DO HTTP REQUEST DE TIPO GET ao path de '/', PARA SABER SE O CONTAINER ESTÁ HEALTHY OU NÃO...
+            httpGet:
+              path: /
+              port: 8080 # port que vamos targettar, no container...
+              # httpHeaders: #? headers opcionais.
+            periodSeconds:  ## DEFINE 'COM QUAL FREQUÊNCIA ESSES HEALTH CHECKS DEVEM SER REALIZADOS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALÉM DISSO,
+
+
+VC PODE DEFINIR A KEY DE 
+
+'initialDelaySeconds',
+
+
+
+
+que vc pode usar para 
+
+DEFINIR 'QUANTO TEMPO O KUBERNETES  DEVE ESPERAR ANTES DE CHECAR PELA PRIMEIRA VEZ'...
+
+
+
+
+
+
+
+
+
+
+CÓDIGO COMPLETO:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+  labels:    # podemos DELETAR NOSSO DEPLOYMENT POR LABEL, COM 'delete deployment -l label-name', por exemplo
+    exemplo25: exemplo25
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 2 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+
+  selector: # é outra key _OBRIGATÓRIA, no seu 'deployment' object...
+    # matchExpressions: ### mais complexo do que 'matchLabels'
+      # matchExpressions: #? COM ISSO, dizemos '''' QUEREMOS _ SELECIONAR __ TODOS OS PODS, EM QUE  A LABEL DE 'exemplo' TEM 1 VALUE QUE SEJA  OU _ 'second-app' ou 'first-app'... ''''
+      # outros operators possíveis: 'NotIn', 'Exists' e 'DoesNotExist'
+      # - { values: [second-app, first-app], operators: In, key: exemplo} 
+    matchLabels: ### colocamos as labels dos PODS QUE QUEREMOS QUE SEJAM CONTROLADOS POR NOSSO DEPLOYMENT...
+      app: second-app # pod que é criado/configurado logo abaixo... (dizemos que todos os pods que tenham as labels de 'app: second-app' e 'tier: backend' DEVEM SER CONTROLADOS POR NOSSO DEPLOYMENT)
+      tier: backend
+
+
+  template: # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE) --> E O TEMPLATE DE 1 DEPLOYMENT _ SEMPRE __ VAI DESCREVER 1 'POD' object...
+    #kind: pod --> NÃO É NECESSÁRIO, PQ O 'kind' de algo nesteado/criado dentro de 1 object deployment é SEMPRE 1 POD..
+    metadata: # cada object (1 pod é um object) sempre tem essa key de 'metadata'
+      labels: # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+        app: second-app ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+        tier: backend
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+          livenessProbe: # AQUI, O QUE PODEMOS FAZER É ESPECIFICAR QUE  ''' 1 GET HTTP  REQUEST DEVE SER ENVIADO, PELO POD/KUBERNETES, A RUNNING APPLICATION'.... #? O KUBERNETES/POD FAZ ISSO, ESSE SEND DO HTTP REQUEST DE TIPO GET ao path de '/', PARA SABER SE O CONTAINER ESTÁ HEALTHY OU NÃO...
+            httpGet:
+              path: /
+              port: 8080 # port que vamos targettar, no container...
+              # httpHeaders: #? headers opcionais.
+            periodSeconds: 5  ## DEFINE 'COM QUAL FREQUÊNCIA ESSES HEALTH CHECKS DEVEM SER REALIZADOS'...
+            initialDelaySeconds: 10 # DEFINE 'QUANTO TEMPO O KUBERNETES  DEVE ESPERAR ANTES DE CHECAR PELA PRIMEIRA VEZ'...
+        # - name: third-nodejs-app   #### é assim que adicionamos MAIS CONTAINERS AO NOSSO POD, tudo dentro do mesmo pod...
+        #   image: nothingnothings/kub-second-app
+        # - name: fourth-nodejs-app
+        #   image: nothingnothings/kub-third-app ...
+
+
+
+
+
+
+
+
+
+
+-------------------------
+
+
+
+
+
+
+
+OK... SALVAMOS ISSO...
+
+
+
+
+
+
+
+
+
+
+
+AGORA PODEMOS APLICAR ESSE deployment.yaml,
+
+e o 
+
+
+
+'service.yaml' 
+
+
+
+
+
+
+
+
+com 
+
+
+kubectl apply deployment.yaml service.yaml 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+--> COM ISSO,
+
+
+
+
+
+SE ENTRAMOS NO NOSSO APP COM '/',
+
+as coisas dão certo... e se entramos 
+
+em 
+
+'/error',
+
+
+
+
+
+
+NOSSO APP VAI CRASHAR,
+
+SIM,
+
+
+
+
+MAS _ _LOGO _ _ELE VAI RESTARTAR,
+
+
+POR CAUSA 
+
+DESSE HEALTH CHECK PERIÓDICO...
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE ISSO FUNCIONAVA ANTES,
+
+PQ 
+
+
+
+EXISTE 1 'livenessProbe'
+
+
+DEFAULT ------->  MAS DEFINIR 1 livenessProbe CUSTOMIZADO 
+
+PODE SER ÚTIL SE VC TIVER 1 
+
+APP QUE 
+
+NÃO 
+
+
+__REAGE__ AO DEFAULT... --> OU SE VC
+
+
+
+QUER 
+
+
+CHECAR O HEALTH POR MEIO DO SEND DE 1 REQUEST A 
+
+'/something',
+
+em vez de 
+
+'/'...
+
+
+
+
+
+
+
+
+
+
+OK.. FUNCIONOU...
+
+
+
+
+
+
+
+
+
+
+
+saber como o 'livenessProbe' 
+
+é 
+
+definido 
+
+
+
+É MT ÚTIL PARA GARANTIR QUE SEUS APPS SEMPRE FUNCIONARÃO,
+
+
+NÃO IMPORTANDO A MANEIRA PELA QUAL SÃO 'STRUCTURED'
+ 
+ OU CONFIGURED...
