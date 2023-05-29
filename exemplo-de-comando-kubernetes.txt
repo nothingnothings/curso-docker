@@ -1261,3 +1261,195 @@ MESMO QUANDO NÃO ACONTECE AUTOMATICAMENTE,
 
 
 É OUTRA FEATURE MT ÚTIL QUE GANHAMOS, COM O KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+PODEMOS 
+
+
+RODAR 
+
+
+'kubectl set',
+
+
+PARA _ UPDATAr_ _ NOSSO 
+
+
+
+
+
+DEPLOYMENT...
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+kubectl set ----------> PODEMOS COLOCAR 
+
+
+
+'kubectl set image',
+
+
+
+
+
+
+
+
+
+PARA __ SETTAR 1 NOVA IMAGE PARA __ 1 DEPLOYMENT ESPECÍFICO...
+
+
+
+
+
+
+
+
+
+
+
+
+-> BASTA ESCREVER 
+
+
+
+
+kubectl set image/nome-do-seu-deployment...
+
+
+
+
+
+
+EX:
+
+
+
+kubectl set image deployment/my-first-deployment
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS É CLARO QUE AGORA PRECISAMOS 
+
+
+COMUNICAR AO KUBERNETES ''''QUAL SERÁ ESSA NOVA IMAGE'''....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARA ISSO, TEMOS QUE ESPECIFICAR BEM:
+
+
+
+kubectl set image deployment/my-first-deployment kub-first-app=nothingnothings/kub-first-app:2
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARA VERIFICAR SE SEU UPDATE FOI APLICADO,
+
+
+
+
+
+O 'CURRENT UPDATING STATUS',
+
+
+VC DEVE EXECUTAR 
+
+'kubectl rollout status deployment/my-first-deployment'
+
+
+
+
+
+
+
+--> se seu update deu certo, você verá 'sucessfully rolled out!'
+
+
+
+
+
+
+
+
+
+MINIKUBE RESTART (em caso de problemas):
+
+
+
+
+
+
+
+
+
+minikube delete 
+
+
+
+
+minikube start --container-runtime=containerd

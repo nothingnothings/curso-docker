@@ -1,0 +1,1198 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ATÉ AGORA, VC JÁ VIU ALGUNS EXEMPLOS DO KUBERNETES,
+
+
+E JÁ VIU COMO O MANAGEMENT DE DEPLOYMENTS,
+
+
+FEITO PELO KUBERNETES, 
+
+PODE SER ÚTIL...
+
+
+
+
+
+
+
+
+
+
+--> AGORA O PROFESSOR QUER MOSTRAR COMO PODEMOS 
+
+__ MUDAR__ NOSSO CÓDIGO....
+
+
+
+
+
+
+
+
+
+
+
+ELE VAI NOS MOSTRAR:
+
+
+
+
+
+
+
+
+1) COMO UPDATAR NOSSO DEPLOYMENT 
+
+
+
+
+
+
+
+
+2) COMO FAZER 'ROLLBACK' A 1 DEPLOYMENT ANTERIOR, SE QUISERMOS....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR DIZ QUE É SUPER FÁCIL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DIGAMOS QUE MUDAMOS NOSSO SOURCE CODE,
+
+DUPLICAMOS 
+
+
+
+O CÓDIGO HTML,
+TIPO ASSIM:
+
+
+
+
+
+const express = require('express');
+
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>Hello from this NodeJS app!</h1>
+    <p>Try sending a request to /error and see what happens</p>
+    <h1>This is a second hello!</h1>
+    <p>My deployment got updated.</p>
+  `);
+});
+
+app.get('/error', (req, res) => {
+  process.exit(1);
+});
+
+app.listen(8080);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+salvamos nosso source code alterado...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS É CLARO QUE PRECISAMOS 'REBUILD' NOSSA IMAGE...
+
+
+
+
+
+--> ISSO NUNCA MUDA,
+
+
+PQ __ NOSSO CODE SEMPRE ESTARÁ NA IMAGE.... -> E SE 1 CONTAINER 
+
+QUE 
+
+FOI CRIADO COM BASE NESSA IMAGE PRECISA SER UPDATADO,
+
+
+
+NÃO INTERESSA EM QUE LUGAR ELE ESTÁ,
+
+
+
+
+
+--_ A IMAGE PRECISA SER UPDATADA ANTES...
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE VAMOS REBUILDAR ESSA IMAGE, COLOCAR O NOME 
+
+
+DA 
+IMAGE QUE TEMOS LÁ NO DOCKERHUB,
+
+
+E AÍ VAMOS FAZER PUSH 
+
+
+
+
+DESSA IMAGE LÁ NO DOCKERHUB...
+
+
+
+
+
+
+
+--> certo... fiz isso:
+
+
+
+
+
+
+
+project-kubernetes> docker images
+REPOSITORY                         TAG       IMAGE ID       CREATED       SIZE     
+nothingnothings/kub-first-app      latest    d6fb359cd6d8   7 hours ago   124MB    
+nothingnothings/node-app-aws       default   348c2b435bbd   4 days ago    124MB    
+php-laravel-docker-setup-php       latest    191fc80050bd   5 days ago    178MB    
+php-laravel-docker-setup-server    latest    d02bac05971b   5 days ago    91MB     
+php-laravel-docker-setup-artisan   latest    bb26690a0e25   6 days ago    77.8MB   
+nginx                              latest    448a08f1d2f9   3 weeks ago   142MB    
+mysql                              5.7       dd6675b5cfea   5 weeks ago   569MB    
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> docker rmi nothingnothings/kub-first-app
+Untagged: nothingnothings/kub-first-app:latest
+Untagged: nothingnothings/kub-first-app@sha256:1ed8e47286ddc8a9f323c72e4f5b0938743365bbc1febef9045b3f72d0a7c47b
+Deleted: sha256:d6fb359cd6d88bad768689ca7a8d080e952369c5ced93c12209d1e7eb8a5feb6   
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> docker build -t nothingnothings/kub-first-app .
+[+] Building 1.9s (11/11) FINISHED
+ => [internal] load build definition from Dockerfile                          0.0s 
+ => => transferring dockerfile: 31B                                           0.0s 
+ => [internal] load .dockerignore                                             0.0s 
+ => => transferring context: 34B                                              0.0s 
+ => [auth] library/node:pull token for registry-1.docker.io                   0.0s 
+ => [1/5] FROM docker.io/library/node:14-alpine@sha256:434215b487a329c9e8672  0.0s 
+ => [internal] load build context                                             0.0s 
+ => => transferring context: 473B                                             0.0s 
+ => CACHED [2/5] WORKDIR /app                                                 0.0s 
+ => CACHED [3/5] COPY package.json .                                          0.0s 
+ => CACHED [4/5] RUN npm install                                              0.0s 
+ => [5/5] COPY . .                                                            0.0s 
+ => exporting to image                                                        0.1s 
+ => => exporting layers                                                       0.0s 
+ => => writing image sha256:cd6b5b7e094bbfaee3ab5e88956a6be773ae83ebbeae5dac  0.0s 
+ => => naming to docker.io/nothingnothings/kub-first-app                      0.0s 
+
+Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> docker push nothingnothings/kub-first-app      
+Using default tag: latest
+The push refers to repository [docker.io/nothingnothings/kub-first-app]
+957bfdf705c2: Pushed
+e45f7f4e41fe: Layer already exists
+af376935fb6a: Layer already exists
+bae192224198: Layer already exists
+31f710dc178f: Layer already exists
+a599bf3e59b8: Layer already exists
+e67e8085abae: Layer already exists
+f1417ff83b31: Layer already exists
+latest: digest: sha256:c3bce59b2839a8f76e85783d8b6c0f5032ace60d01a43eb0830b3a38dcde6d14 size: 1990
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> ok...
+
+
+
+
+
+
+
+
+AGORA QUEREMOS UPDATAR NOSSO DEPLOYMENT,
+PARA QUE ELE LEVE ESSA NOVA IMAGE EM CONSIDERAÇÃO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PRIMEIRAMENTE,
+
+
+RODAMOS 
+
+'kubectl get deployments'
+
+PARA CHECAR SE 
+
+NOSSO 
+
+
+
+
+DEPLOYMENT AINDA ESTÁ NO AR....
+
+
+
+
+
+
+
+
+
+
+
+TIPO ALGO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+C:\WINDOWS\system32>kubectl get deployments
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+my-first-deployment   3/3     3            3           51m
+
+C:\WINDOWS\system32>kubectl scale deployments/my-first-deployment --replicas=1
+deployment.apps/my-first-deployment scaled
+
+C:\WINDOWS\system32>kubectl get deployments
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+my-first-deployment   1/1     1            1           52m
+
+C:\WINDOWS\system32>
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+
+PODEMOS 
+
+
+RODAR 
+
+
+'kubectl set',
+
+
+PARA _ UPDATAr_ _ NOSSO 
+
+
+
+
+
+DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+kubectl set ----------> PODEMOS COLOCAR 
+
+
+
+'kubectl set image',
+
+
+
+
+
+
+
+
+
+PARA __ SETTAR 1 NOVA IMAGE PARA __ 1 DEPLOYMENT ESPECÍFICO...
+
+
+
+
+
+
+
+
+
+
+
+
+-> BASTA ESCREVER 
+
+
+
+
+kubectl set image/nome-do-seu-deployment...
+
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+kubectl set image deployment/my-first-deployment
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... COM ISSO,
+
+
+ESTAMOS DIZENDO AO KUBERNETES QUE QUEREMOS SETTAR 1 NOVA IMAGE PARA ESSE 
+
+
+DEPLOYMENT..
+
+
+
+
+
+
+
+
+
+
+--> MAS É CLARO QUE AGORA PRECISAMOS 
+
+
+COMUNICAR AO KUBERNETES ''''QUAL SERÁ ESSA NOVA IMAGE'''....
+
+
+
+
+
+
+
+
+
+kubectl set image deployment/my-first-deployment 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... queremos updatar nosso deployment, para levar essa nova imagem em consideração..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> rode 
+
+
+
+
+kubectl get deployments 
+
+
+
+
+
+
+kubectl set image deployment/my-first-deployment 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+isso feito,
+
+
+
+
+
+
+
+
+precisamos 'TELL' qual image queremos usar para esse deployment...
+
+
+
+
+
+
+
+qual image querems especificar, para esse deployment....
+
+
+
+
+
+
+
+
+
+--> você poderia dizer: 
+
+
+
+
+''''BEM, NÓS __ JÁ ESPECIFICAMOS A NOSSA IMAGE QUANDO 
+
+CRIAMOS O DEPLOYMENT,
+
+É CLARO QUE ELE DEVERIA USAR A MESMA IMAGE'''' -->  essa seria uma lógica 
+
+válida,
+
+
+mas imagine 
+
+
+que 
+
+
+''''NÓS QUEREMOS USAR UMA IMAGE DIFERENTE, OU A MESMA IMAGE,
+
+MAS COM UMA TAG/VERSION DIFERENTE''''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É EXATAMENTE POR CONTA DISSO QUE AGORA PRECISAMOS 
+
+
+
+
+DIZER AO KUBERNETES 
+
+
+''''QUE/QUAL CONTAINER CURRENT, E QUAL IMAGE,
+
+
+QUEREMOS 
+
+
+UPDATAR __ COM _ UMA OUTRA IMAGE''''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, 
+
+PRECISAMOS COLOCAR:
+
+
+
+
+
+1) O CURRENT 'CONTAINER-NAME' --> podemos encontrar isso NO WEB CONSOLE DO KUBERNETES-MINIKUBE...
+
+
+
+
+
+(no caso, será 'kub-first-app' )
+
+
+
+
+
+
+2) ISSO FEITO, VAMOS DEFINIR ESSE 'container-name' COMO SENDO 
+IGUAL à NOVA IMAGE QUE QUEREMOS USAR (
+
+no caso, 
+
+'nothingnothings/kub-first-app'
+
+)
+
+
+
+
+
+
+
+o comando inteiro fica assim:
+
+
+
+
+
+
+
+kubectl set image deployment/my-first-deployment kub-first-app=nothingnothings/kub-first-app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+agora, é claro,
+
+isso 
+
+vai PULLAR a image lá do dockerhub.... ------> 
+
+
+
+
+
+
+
+por isso precisamos updatar a nossa image do dockerhub, antes disso....
+
+
+
+
+
+
+
+
+
+
+
+--> ok... 
+
+
+
+
+
+
+
+
+
+assim que o push terminou, podemos rodar aquele comando de 
+
+
+
+kubectl set image deployment/my-first-deployment kub-first-app=nothingnothings/kub-first-app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ok... 
+
+
+
+
+
+agora se executamos esse comando,
+
+
+
+
+
+
+isso vai updatar o deployment...
+
+
+
+
+
+
+
+
+
+
+
+-> ASSIM QUE VC EXECUTAR ESSE COMANDO,
+
+
+
+
+
+
+
+se vc rodar 'get deployments',
+
+
+vc não verá diferença alguma...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> e se vc visitar seu app,
+
+
+
+vc não verá 
+
+
+
+nenhuma diferença 
+
+
+
+
+
+no site... -------> A RAZÃO PARA ISSO, NO CASO, 
+É QUE 
+
+
+
+
+NOVAS IMAGES SÓ SERÃO BAIXADAS__ SE POSSUÍREM 1 TAG DIFERENTE...
+
+
+
+
+
+
+
+
+
+
+--> HÁ MANEIRAS DE MUDAR ISSO, MAS É UMA BOA IDEIA 
+
+
+
+
+
+
+UPDATAR SUAS TAGS,
+
+E 'VERSIONAR' SUAS IMAGES DE QUALQUER FORMA,
+
+ASSIM QUE 
+
+VC 
+
+
+
+ESTIVER TRABALHANDO COM 1 PRODUCTION SETUP...
+
+
+
+
+
+
+
+
+
+
+
+-_> É POR ISSO QUE 
+
+
+QUANDO 
+
+CRIARMOS NOSSA IMAGE, COM 'docker build -t   . ',
+
+
+
+
+
+devemos
+
+
+
+
+DAR 1 TAG A NOSSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... é isso que fiz....
+
+
+
+
+
+
+
+
+
+
+rodei isto:
+
+
+
+
+docker build -t nothingnothings/kub-first-app:2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo... isso fez push dessa 'latest image version' 
+
+
+ao meu repository...
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO FEITO, PODEMOS REPETIR O COMANDO DE 'kubectl set image',
+
+
+
+MAS AGORA 
+
+
+COM 
+
+1 
+TAG DIFERENTE DA TAG QUE TÍNHAMOS ANTES,
+
+TIPO ASSIM:
+
+
+
+
+
+kubectl set image deployment/my-first-deployment kub-first-app=nothingnothings/kub-first-app:2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... SE ISSO DEU CERTO,
+
+TEREMOS A CONFIRMAÇÃO NO TERMINAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+PARA VERIFICAR SE SEU UPDATE FOI APLICADO,
+
+
+
+
+
+O 'CURRENT UPDATING STATUS',
+
+
+VC DEVE EXECUTAR 
+
+'kubectl rollout status deployment/my-first-deployment'
+
+
+
+
+
+
+
+
+
+
+
+-> se isso já foi 'rolled out',
+
+vc verá 
+
+ 
+ 'xxxx successfully rolled out!'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> quando isso acontecer, vc poderá ver o seu updated output,
+
+lá no chrome..
+
+
+
+
+
+
+
+
+NOS EVENTS DO SEU POD, VC PODERÁ VER QUE SUA IMAGE FOI 'PULLED',
+
+e que 1 novo container foi criado, com base nessa image...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... é assim que podemos updatar 1 image, e o source-code de 1 container, rodando 
+
+como parte de 1 pod, manageado pelo kubernetes...
+
+
+
+
+
+
+
+
+
+
+
+
+
+tudo isso com esse comando de 
+
+'kubectl set image ......'
+
+
+
+
+
+
+
+
+
+
+
+-> SÓ TEMOS QUE TER EM MENTE QUE NOSSAS TAGS TEM DE SER DIFERENTES,
+
+PARA TRIGGAR O REDOWNLOAD DA NOVA IMAGE, POR PARTE DO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- meu minikube deu problema... --> tive de deletar o minikube e o restartar,
+
+
+
+por meio destes comandos:
+
+
+
+
+minikube delete 
+
+
+
+
+minikube start --container-runtime=containerd
