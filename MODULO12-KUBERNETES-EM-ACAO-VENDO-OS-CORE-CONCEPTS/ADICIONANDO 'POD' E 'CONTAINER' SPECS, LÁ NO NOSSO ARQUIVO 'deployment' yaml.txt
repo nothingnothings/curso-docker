@@ -1,0 +1,1838 @@
+
+
+
+
+
+
+
+NOSSO ARQUIVO 'deployment.yaml'
+
+
+
+ESTÁ ATUALMENTE ASSIM:
+
+
+
+
+
+
+apiVersion: apps/v1 
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment  # será o NAME de nosso deployment
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment
+      ## (como o nosso deployment deve ser configurado)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA O 'SPEC',
+
+A SPECIFICATION DESSE OBJECT,
+
+NOVAMENTE TEMOS 1 KEY DE 'spec',
+
+
+
+e aí colocamos algumas pieces of info
+
+
+
+sobre esse deployment...
+
+
+
+
+
+
+
+
+
+
+
+1A COISA ----> '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''...
+
+
+
+
+
+--> o value default dessa info é '1'... -------> MAS PODEMOS DEFINIR 
+
+
+
+
+MAIS POD INSTANCES,
+
+POR MEIO 
+
+
+
+DA KEY DE 'replicas'...
+
+
+
+
+
+tipo assim:
+
+
+
+
+
+apiVersion: apps/v1 
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment  # será o NAME de nosso deployment
+
+spec:
+  replicas: 3
+
+
+
+
+
+
+
+
+
+--------------------------------
+
+
+
+
+
+
+
+
+
+
+
+VOCÊ PODE COLOCAR QUALQUER VALUE NESSE 'replicas',
+
+
+
+ATÉ MESMO '0' ( se vc __ INICIALMENTE NÃO QUER NENHUM POD SENDO LANÇADO...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR COLOCA '1',
+
+
+mas eu coloco '3'...
+
+
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1 
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment  # será o NAME de nosso deployment
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 3  # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, COMEÇAMOS COM '3 RUNNING PODS',
+
+
+
+3 EQUAL PODS,
+
+
+CONTENDO O MESMO CONTAINER,
+
+
+
+
+
+RODANDO 'RIGHT FROM THE START' --> ISSO PODE FAZER SENTIDO,
+
+
+PARA CERTOS APPS... -------------> SE VC TEM CERTEZA QUE,
+
+
+PARA __ O TRÁFEGO QUE VAI CHEGAR,
+
+
+
+VC 
+
+
+VAI PRECISAR DE 3 'PODS'
+
+
+DE QUALQUER FORMA,
+
+
+
+
+VC PODE SIMPLESMENTE DEIXAR SETTADO COMO '3' 
+
+
+
+
+OS PODS AQUI,
+
+AS REPLICAS,
+
+
+
+
+
+
+PQ _ ISSO AÍ __ VAI FAZER COM QUE MAIS TARDE VC N PRECISE FAZER 'SCALE UP',
+
+
+PQ 
+
+
+AQUI VC JÁ VAI COMEÇAR COM 3...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> ok.. como próxima etapa,
+
+
+DEVEMOS SETTAR O 'TEMPLATE'...
+
+
+
+
+
+
+
+
+
+
+
+--> template --------> NESSA KEY,
+
+
+VAMOS _ _DEFINIR _ OS 'PODS' __ 
+
+
+
+QUE 
+
+
+
+DEVERÃO SER CRIADOS,
+COMO PARTE 
+
+
+
+
+DESSE DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+--> ANTERIORMENTE,
+
+COM O APPROACH 'IMPERATIVE',
+
+
+
+
+
+
+
+ERAMOS OBRIGADOS A USAR 
+
+
+'--image="
+
+
+
+PARA 
+
+DEFINIR QUAL 
+
+
+IMAGE 
+
+DEVERIA SER USADA PARA 
+
+O 
+
+POD 
+
+
+
+ATTACHEADO àQUELE DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+kubectl create deployment my-first-deployment --image=nothingnothings/example-image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AGORA FAREMOS + OU - A MESMA COISA, AQUI..
+
+
+
+
+
+
+
+
+
+
+
+--> COM 'template',
+
+
+
+DEFINIMOS O POD __ QUE __ DEVERÁ SER CRIADO... -----> 
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1 
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment  # será o NAME de nosso deployment
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 3  # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+  template:    # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE, NESTEADO DEBAIXO DE 'template',
+
+
+
+
+VAMOS ADICIONAR TAMBÉM 'metadata',
+
+
+
+
+
+
+
+isso pq __ 1 'POD' 
+
+É UM __ NOVO OBJECT NO MUNDO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.......
+
+
+
+
+
+
+
+
+DEPLOYMENT === É UM OBJECT 
+
+
+
+
+
+POD === É OUTRO OBJECT
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO __ POD É OUTRO OBJECT,
+
+PRECISAMOS DE OUTRO CONJUNTO 'metadata'
+
+
+DENTRO 
+
+DESSE OBJECT 'POD' (pq o 'deployment' TAMBÉM TINHA SEU PRÓPRIO CONJUNTO METADATA)...
+
+
+
+
+
+
+
+
+
+
+
+
+isso pode ser visto na própria estrutura de nosso arquivo, veja:
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1 
+kind: Deployment
+metadata: #### aqui
+  name: second-app-deployment
+spec:
+  replicas: 1 
+  template:
+    metadata: ### aqui
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> OK.... PODERÍAMOS DAR 1 NOME A ESSE POD... MAS O QUE FAREMOS,
+
+
+NO CASO,
+
+É 
+
+DAR 
+
+1 
+
+'label'
+
+
+A ESSE 
+
+OBJECT...
+
+
+
+
+
+
+
+
+FAREMOS ISSO COM A KEY DE 'labels',
+tipo assim:
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: second-app-deployment
+spec:
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> DEBAIXO DE LABELS,
+PODEMOS DAR QUALQUER LABEL QUE QUISERMOS... --> E, AQUI,
+
+
+TANTO 
+
+A 
+
+
+'key'
+
+COMO 
+
+o 
+
+'VALUE'
+
+
+são 'up to you'...
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O PROFESSOR COLOCA 
+
+
+
+'app: second-app'...
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1 
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment  # será o NAME de nosso deployment, deployment object
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 3  # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+  template:    # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE)
+    labels:     # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+      app: second-app   ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+O PROFESSOR DEPOIS VOLTARÁ AO TÓPICO 
+
+
+
+DA 'IMPORTÂNCIA DE LABELS, COMO METADATA,
+PARA ALGUNS OBJECTS'....
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... E, DEBAIXO de 'template',
+
+no contexto desse POD,
+
+
+NÃO PRECISAMOS 
+
+ESPECIFICAR 
+
+'kind: pod' ,
+
+
+
+
+
+
+
+
+
+PQ _ _O CONTEÚDO DE 1 DEPLOYMENT___ SEMPRE SERÁ 1 POD...
+
+
+
+
+
+
+
+
+
+
+--> ISSO QEUR DIZER QUE O 'TEMPLATE' DE 1 DEPLOYMENT SEMPRE VAI DESCREVER 1 POD...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ISSO QUER DIZER QUE 
+
+
+
+isso sempre será 1 
+
+
+
+
+'POD OBJECT'..
+
+
+
+
+
+
+
+
+
+
+
+se lemos os docs,
+
+
+
+
+docs do DEPLOYMENT no kubernetes,
+
+
+
+
+
+
+
+é possível 
+
+
+encontrar a info de 
+
+'template -> template describes the pods that will be created'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TEMPLATE ---> SEMPRE TE PERMITE ADICIONAR 
+
+
+APENAS 2 PIECES OF DATA, 
+
+
+
+
+A 'metadata' e o 'spec'.. (o 'kind' nem mesmo é permitido, no caso)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ADICIONAMOS A METADATA...
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 3 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+  template: # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE) --> E O TEMPLATE DE 1 DEPLOYMENT _ SEMPRE __ VAI DESCREVER 1 'POD' object...
+    #kind: pod --> NÃO É NECESSÁRIO, PQ O 'kind' de algo nesteado/criado dentro de 1 object deployment é SEMPRE 1 POD..
+    metadata: # cada object (1 pod é um object) sempre tem essa key de 'metadata'
+      labels: # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+        app: second-app ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+
+
+
+
+
+
+-------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+OK...  MAS ALÉM DA 'metadata',
+
+
+
+A OUTRA COISA QUE PRECISAMOS ADICIONAR A ESSE TEMPLATE DE 'pod'
+
+
+
+É 
+
+
+A 
+
+'spec', a specification acerca de COMO ESSE POD DEVERÁ SE PARECER....
+
+
+
+
+
+
+
+
+
+
+--> o 'spec' que havíamos escrito anteriormente SE REFERIA 
+
+À 'SPEC DO DEPLOYMENT INTEIRO'...
+
+
+
+
+
+
+
+
+
+
+-> AGORA DEVEMOS ESCREVER 1 'spec' NO MESMO NÍVEL da metadata (pq será a SPEC do/dos pods, no caso)..
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 3 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+  template: # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE) --> E O TEMPLATE DE 1 DEPLOYMENT _ SEMPRE __ VAI DESCREVER 1 'POD' object...
+    #kind: pod --> NÃO É NECESSÁRIO, PQ O 'kind' de algo nesteado/criado dentro de 1 object deployment é SEMPRE 1 POD..
+    metadata: # cada object (1 pod é um object) sempre tem essa key de 'metadata'
+      labels: # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+        app: second-app ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+    spec:  #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, DETALHAREMOS 'COMO ESSE POD DEVERÁ SER CONFIGURADO'...
+
+
+
+
+
+
+
+
+
+
+--> QUER DIZER QUE aquele 'spec' é a configuration do deployment inteiro,
+
+ao passo que 
+
+este é o spec DOS INVIDIUAL PODS, QUE SÃO CRIADOS PARA AQUELE DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... E, PARA _ cADA__ DEPLOYMENT,
+
+
+
+TEREMOS APENAS 1 'TYPE' DE POD...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE PODEMOS TER MÚLTIPLOS PODS SE AUMENTARMOS 
+
+O NÚMERO Em 'replicas:',
+
+sim,
+
+
+
+mas __ isso, ESSES PODS,
+
+SEMPRE 
+
+
+SERÃO 
+
+
+OS MESMOS PODS... (
+
+    com os mesmos containers no interior...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE VC _DESEJA __ DIFERENTES PODS 
+
+
+NO SEU APP KUBERNETES,
+
+
+
+
+COM DIFERENTES CONTAINERS,
+
+
+VC 
+
+PRECISA 
+
+
+DE DEPLOYMENTS 
+
+DIFERENTES... (múltiplos deployments)...
+
+
+
+
+
+
+
+
+--> VEREMOS ISSO MAIS TARDE, TAMBÉM...  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... E, DENTRO DO 'spec'
+
+DOS PODS,
+
+
+
+VAMOS PRECISAR DE 1 KEY IMPORTANTE/ESSENCIAL,
+
+QUE 
+
+
+será a key 
+
+de 
+
+'containers'...
+
+
+
+
+
+
+
+
+
+
+
+
+containers --> NOS DEIXA DEFINIR O CONTAINER/CONTAINERS 
+
+QUE DEVERÃO FAZER PARTE 
+
+DESSE POD..
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 3 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+  template: # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE) --> E O TEMPLATE DE 1 DEPLOYMENT _ SEMPRE __ VAI DESCREVER 1 'POD' object...
+    #kind: pod --> NÃO É NECESSÁRIO, PQ O 'kind' de algo nesteado/criado dentro de 1 object deployment é SEMPRE 1 POD..
+    metadata: # cada object (1 pod é um object) sempre tem essa key de 'metadata'
+      labels: # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+        app: second-app ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+    spec:  #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers:  # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... DENTRO DESSE SPEC,
+
+
+TEREMOS 1 LIST DE CONTAINERS... -> PARA ESCREVERMOS LISTS,
+
+PRECISAMOS DE '-'... --->  COMO PODEMOS TER MÚLTIPLOS 
+
+CONTAINERS 
+
+
+EM 
+
+1 
+
+MESMO POD,
+
+
+
+
+PODEMOS 
+
+DEFINIR 
+
+MÚLTIPLOS DELES,
+
+COM 
+
+'-'...
+
+
+
+
+
+
+
+
+
+
+
+
+E CADA CONTAINER PODE TER 1 'NAME',
+
+que podemos escolher...
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment 
+metadata: 
+  name: second-app-deployment 
+
+spec:
+  replicas: 3
+  template: 
+    metadata: 
+      labels:
+        app: second-app
+    spec: 
+      containers:
+        - name: second-nodejs-app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA, AS COISAS QUE ESCREVEREMOS DEBAIXO DE ' - name' 
+
+NÃO 
+
+
+
+SERÃO COISAS COM '-',
+
+
+PQ 
+NÃO SERÃO NOVAS ENTRIES NESSA LIST....
+
+
+
+
+
+
+
+
+-> É POR ISSO QUE ESCREVEMOS ASSIM:
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment 
+metadata: 
+  name: second-app-deployment 
+
+spec:
+  replicas: 3
+  template: 
+    metadata: 
+      labels:
+        app: second-app
+    spec: 
+      containers:
+        - name: second-nodejs-app
+          image: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E É CLARO QUE 
+
+ESSA 
+
+É A IMAGE QUE, NO APPROACH IMPERATIVE,
+
+
+ESPECIFICÁVAMOS 
+
+
+COM '--image=nothingnothings/kub-first-app'....
+
+
+
+
+
+
+
+
+
+É POR ISSO  QUE O NEGÓCIO FICARÁ ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 3 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+  template: # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE) --> E O TEMPLATE DE 1 DEPLOYMENT _ SEMPRE __ VAI DESCREVER 1 'POD' object...
+    #kind: pod --> NÃO É NECESSÁRIO, PQ O 'kind' de algo nesteado/criado dentro de 1 object deployment é SEMPRE 1 POD..
+    metadata: # cada object (1 pod é um object) sempre tem essa key de 'metadata'
+      labels: # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+        app: second-app ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+    spec:  #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers:  # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO....
+
+
+
+
+
+
+
+
+
+
+
+E, SE VC QUISER ADICIONAR MÚLTIPLOS CONTAINERS A ESSE POD,
+
+
+
+
+VC DEVE ESCREVER ASSIM:
+
+
+
+
+
+
+   containers:  
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app
+        - name: third-nodejs-app
+          image: nothingnothings/kub-second-app
+        - name: fourth-nodejs-app
+          image: nothingnothings/kub-third-app
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 3 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+  template: # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE) --> E O TEMPLATE DE 1 DEPLOYMENT _ SEMPRE __ VAI DESCREVER 1 'POD' object...
+    #kind: pod --> NÃO É NECESSÁRIO, PQ O 'kind' de algo nesteado/criado dentro de 1 object deployment é SEMPRE 1 POD..
+    metadata: # cada object (1 pod é um object) sempre tem essa key de 'metadata'
+      labels: # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+        app: second-app ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+    spec:  #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers:  # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app # a image que será usada, em 1 de nossos containers, dentro desse pod
+        # - name: third-nodejs-app   #### é assim que adicionamos MAIS CONTAINERS AO NOSSO POD, tudo dentro do mesmo pod...
+        #   image: nothingnothings/kub-second-app
+        # - name: fourth-nodejs-app
+        #   image: nothingnothings/kub-third-app ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------
+
+
+
+
+
+
+
+
+CERTO... USAMOS A MESMA IMAGE DE ANTES,
+
+
+
+
+
+
+
+O 'nothingnothings/kub-first-app',
+
+
+
+
+
+
+
+
+
+PRECISA SER O REPOSITORY NAME DE NOSSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+
+---> podemos também especificar 1 tag name tbm,
+tipo assim:
+
+
+
+
+
+
+
+
+
+
+nothingnothings/kub-first-app:2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... MAS ISSO NOS DEIXA COM 1 PERGUNTA:
+
+
+
+
+
+
+
+
+
+
+
+COMO _ PODEMOS __ APLICAR_ ESSE DEPLOYMENT?
+
+
+
+
+
+
+
+
+
+
+
+
+COMO PODEMOS DEIXAR O CLUSTER 'AWARE' 
+
+DESSE DEPLOYMENT,
+
+
+E 
+
+
+COMO PODEMOS 
+
+ENTÃO 
+
+
+
+FORÇAR ELE A CRIAR ESSE DEPLOYMENT E POD,
+
+E ENTÃO A LANÇAR OS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+BEM, VAMOS COMEÇAR COM 
+
+'kubectl',
+
+
+
+
+PQ 
+
+ESSE É NOSSO COMMUNICATION 
+
+
+DEVICE COM O KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS AGORA NÃO VAMOS CHAMAR 'kubectl create ...',
+
+
+E SIM 
+
+
+
+CHAMAREMOS 
+
+'kubectl apply' ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO VAI SIMPLESMENTE '''APLICAR 1 CONFIGURATION FILE __ AO __ CONNECTED CLUSTER'''...
+
+
+
+
+
+
+
+
+
+-----> PARA IDENTIFICAR A FILE A SER USADA,
+
+
+VC DEVE 
+
+ESCREVER 
+
+
+
+
+
+'kubectl apply -f nome-do-arquivo'...
+
+
+
+
+
+
+
+
+
+
+
+
+CABE APONTAR QUE É POSSÍVEL RODAR MÚLTIPLOS DEPLOYMENTS AQUI, APLICAR MÚLTIPLOS DEPLOYMENTS,
+
+
+BASTA CHAMAR '-f'
+
+VÁRIAS VEZES, TIPO ASSIM:
+
+
+
+
+'kubectl apply -f=nome-do-arquivo-1  -f=nome-do-arquivo-2  -f= nome-do-arquivo-3'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+E AÍ, ISSO FEITO,
+
+VC SIMPLESMENTE 
+
+
+
+
+DIGITA um '='
+
+
+E AÍ O FILENAME... (ou o path AO ARQUIVO QUE DEVE SER APLICADO... )
+
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE ESCREVEMOS 
+
+
+
+'kubectl apply -f deployment.yaml'...
+
+
+
+SE APERTARMOS 
+ENTER,
+
+
+
+O KUBERNETES VAI TENTAR APLICAR ESSA CONFIG...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... mas ganhei 1 error:
+
+
+
+
+
+es> kubectl apply -f deployment.yaml
+The Deployment "second-app-deployment" is invalid: 
+* spec.selector: Required value
+* spec.template.metadata.labels: Invalid value: map[string]string{"app":"second-app"}: `selector` does not match template `labels`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OU SEJA, FALTARAM 'selectors'...
+
+
+
+
+
+
+
+
+----> O PROFESSOR DEIXOU OS SELECTORS DE LADO PROPOSITALMENTE,
+
+
+PQ 
+
+
+
+'SELECTORS' SÃO 1 KEY CONCEPT,
+
+NO MUNDO KUBERNETES... ESPECIALMENTE QUANDO USAMOS O APPROACH DECLARATIVE...
