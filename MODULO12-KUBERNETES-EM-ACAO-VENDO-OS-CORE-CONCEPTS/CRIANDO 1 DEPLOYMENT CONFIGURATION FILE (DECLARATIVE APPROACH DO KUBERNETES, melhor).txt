@@ -888,3 +888,104 @@ PQ DENTRO DELE VAMOS DEFINIR
 
 
 __ COMO _ ESSE DEPLOYMENT DEVERÁ SER CONFIGURADO...
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 3 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+
+  selector: # é outra key _OBRIGATÓRIA, no seu 'deployment' object...
+    # matchExpressions: ### mais complexo do que 'matchLabels'
+    matchLabels: ### colocamos as labels dos PODS QUE QUEREMOS QUE SEJAM CONTROLADOS POR NOSSO DEPLOYMENT...
+      app: second-app # pod que é criado/configurado logo abaixo...
+
+
+  template: # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE) --> E O TEMPLATE DE 1 DEPLOYMENT _ SEMPRE __ VAI DESCREVER 1 'POD' object...
+    #kind: pod --> NÃO É NECESSÁRIO, PQ O 'kind' de algo nesteado/criado dentro de 1 object deployment é SEMPRE 1 POD..
+    metadata: # cada object (1 pod é um object) sempre tem essa key de 'metadata'
+      labels: # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+        app: second-app ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+        # - name: third-nodejs-app   #### é assim que adicionamos MAIS CONTAINERS AO NOSSO POD, tudo dentro do mesmo pod...
+        #   image: nothingnothings/kub-second-app
+        # - name: fourth-nodejs-app
+        #   image: nothingnothings/kub-third-app ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ASSIM:
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 3 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+
+  selector: # é outra key _OBRIGATÓRIA, no seu 'deployment' object...
+    # matchExpressions: ### mais complexo do que 'matchLabels'
+    matchLabels: ### colocamos as labels dos PODS QUE QUEREMOS QUE SEJAM CONTROLADOS POR NOSSO DEPLOYMENT...
+      app: second-app # pod que é criado/configurado logo abaixo...
+
+
+  template: # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE) --> E O TEMPLATE DE 1 DEPLOYMENT _ SEMPRE __ VAI DESCREVER 1 'POD' object...
+    #kind: pod --> NÃO É NECESSÁRIO, PQ O 'kind' de algo nesteado/criado dentro de 1 object deployment é SEMPRE 1 POD..
+    metadata: # cada object (1 pod é um object) sempre tem essa key de 'metadata'
+      labels: # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+        app: second-app ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+
+

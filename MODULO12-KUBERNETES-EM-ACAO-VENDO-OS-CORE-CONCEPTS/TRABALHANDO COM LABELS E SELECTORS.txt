@@ -1,0 +1,1222 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... mas de onde está vindo esse error...?
+
+
+
+
+
+
+O QUE É ESSE NEGÓCIO DE 'MISSING SELECTOR'?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NÓS PODEMOS CONSERTAR ESSE ERROR SE 
+
+
+
+ENTRARMOS NO 'spec'
+
+
+
+DE nosso 
+
+DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... DO DEPLOYMENT EM SI.. --> ALÉM DE DEFINIR 
+
+
+
+'o número de replicas' E O 
+
+
+
+
+'template' dos pods 
+
+
+nesse deployment,
+
+
+
+SOMOS 
+
+OBRIGADOS A ADICIONAR 1 KEY DE 'selector'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment 
+metadata: 
+  name: second-app-deployment 
+
+spec: 
+  replicas: 3 
+
+  selector:  ### EIS O CÓDIGO EM QUESTÃO... 
+
+  template: 
+    
+    metadata: 
+      labels: 
+        app: second-app 
+    spec: 
+      containers: 
+        - name: second-nodejs-app 
+          image: nothingnothings/kub-first-app:2 
+        
+        
+        
+        
+
+
+
+
+COLOCAMOS ESSA KEY AÍ... 
+
+
+
+
+
+
+
+
+
+
+
+OK... NESSA KEY, DEBAIXO DELA,
+DE FORMA
+NESTEADA,
+
+
+
+DEVEMOS COLOCAR 
+
+
+
+1 
+
+KEY 
+
+DE 
+
+'matchLabels'..
+
+
+
+
+
+
+--> NESSA KEY,
+
+VAMOS COLOCAR 1 KEY-VALUE PAIR 
+
+
+DOS 
+
+'POD-LABELS'
+
+
+
+QUE QUEREMOS  
+
+
+
+___ MATCHEAR _ COM ESSE DEPLOYMENT....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO É BEM CRYPTIC... O QUE ISSO SIGNIFICA?
+
+
+
+
+
+
+
+
+
+
+BEM, ALI EMBAIXO TEMOS 1 TEMPLATE 
+
+PARA O DEPLOYMENT INTEIRO:
+
+
+
+
+
+  template: 
+    
+    metadata: 
+      labels: 
+        app: second-app 
+    spec: 
+      containers: 
+        - name: second-nodejs-app 
+          image: nothingnothings/kub-first-app:2 
+    
+
+
+
+
+
+
+
+
+COM ISSO, ''''DEVE SER BEM ÓBVIO QUAIS PODS DEVERÃO SER CRIADOS POR ESSE DEPLOYMENT'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> E É MEIO ÓBVIO... ------> O POD DEFINIDO NAQUELE 'TEMPLATE' 
+
+SERÁ _ CRIADO_ QUANDO O DEPLOYMENT 
+
+DE 'second-app-deployment'
+
+
+FOR APLICADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS O PROBLEMA, AQUI,
+É 
+
+QUE 
+
+'DEPLOYMENT OBJECTS'
+
+
+SÃO OBJETOS/COISAS DINÂMICAS,
+
+
+
+
+
+
+
+
+NO MUNDO KUBERNETES....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> POR EXEMPLO,
+
+
+SE 
+
+VC 
+
+
+FIZER 'SCALE UP' 
+
+
+
+
+
+
+DO NÚMERO DE PODS, DEPOIS DE 1 DEPLOYMENT SER CRIADO,
+
+
+
+ESSES 
+
+
+
+
+__NOVOS PODS,
+
+
+QUE SÃO CRIADOS,
+
+
+
+
+_ AINDA VÃO SER 
+
+
+AUTOMATICAMENTE 
+
+'MANAGED' 
+
+
+PELO 
+
+DEPLOYMENT QUE JÁ EXISTE ---------> ISSO QUER DIZER QUE 
+
+
+
+1 DEPLOYMENT 
+
+FAZ 'WATCH' CONTÍNUO 
+
+
+
+DE TODOS OS PODS 
+
+QUE 
+
+
+
+EXISTEM LÁ FORA... E AÍ 
+
+
+ELE __ DECIDE/VÊ 
+
+
+
+
+SE 
+
+
+EXISTEM QUAISQUER 
+
+PODS QUE 
+
+ELE 
+
+DEVE __ CONTROLAR ----------> AÍ ELE SELECIONA   ESSES 'TO-BE-CONTROLLED' PODS
+
+
+
+
+POR MEIO DE 1 'SELECTOR'... -----> E VC VERÁ 
+
+
+'SELECTORS'
+
+ 
+
+ EM PRATICAMENTE __ TODOS OS RESOURCES 
+
+
+ UTILIZADOS 
+
+ PELO KUBERNETES (
+
+
+    inclusive SERVICES...
+ )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> OK.. MAS É CLARO QUE EXISTEM DIFERNTES TIPOS DE SELECTORS...
+
+
+
+
+
+
+
+
+
+
+ --> NO CASO DE 'deployment',
+
+
+ podemos 
+
+
+
+ TER 2 DIFERENTES TIPOS 
+ DE 
+
+ 'SELECTING'...
+
+
+
+
+
+
+
+
+
+
+
+
+ --> podemos FAZER SELECT POR MEIO DE 'labels',
+
+
+
+ OU SELECT POR MEIO DE 'expressions'...
+
+
+
+
+
+
+
+
+
+PODEMOS OPTAR POR QUALQUER 1 DOS DOIS,
+
+
+ASSIM:
+
+
+
+
+
+
+
+spec:
+  replicas: 1
+  template: xxxx
+  
+  selector:
+    matchExpressions: 
+
+
+
+
+
+
+
+
+
+
+
+
+OU ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+spec:
+  replicas: 1
+  template: xxxx
+  
+  selector:
+    matchLabels:
+    
+
+
+
+
+
+
+
+
+
+
+
+
+---> o uso de 'matchExpressions'
+
+
+É MAIS COMPLEXO,
+
+POR ISSO 
+
+ANALISAREMOS 
+
+'labels',
+por enquanto....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment # VALUES POSSÍVEIS: 'Deployment', 'Job', 'Service'
+metadata: # key SUPER IMPORTANTE, nesses arquivos yaml do kubernetes
+  name: second-app-deployment # será o NAME de nosso deployment, deployment object
+
+spec: # É O 'MEAT' de nosso deployment ----> é a SPECIFICATION de nosso deployment (como o nosso deployment deve ser configurado)...
+  replicas: 3 # '''O NÚMERO DE POD INSTANCES QUE QUEREMOS TER, COMO DEFAULT'''... --> o default DE VERDADE é '1', por sinal...
+
+  selector: # é outra key _OBRIGATÓRIA, no seu 'deployment' object...
+    # matchExpressions: ### mais complexo do que 'matchLabels'
+    matchLabels:
+
+  template: # COM ESSA OPTION, DEFINIMOS 'O POD QUE DEVE SER CRIADO' (é tipo a parte de '--image=nothingnothings/first-kub-app' lá da APPROACH IMPERATIVE) --> E O TEMPLATE DE 1 DEPLOYMENT _ SEMPRE __ VAI DESCREVER 1 'POD' object...
+    #kind: pod --> NÃO É NECESSÁRIO, PQ O 'kind' de algo nesteado/criado dentro de 1 object deployment é SEMPRE 1 POD..
+    metadata: # cada object (1 pod é um object) sempre tem essa key de 'metadata'
+      labels: # é basicamente a option de 'name', como em 'deployment'... entretanto, aqui é usada para 1 POD OBJECT...
+        app: second-app ### PODERÍAMS COLOCAR QUAISQUER NOMES PARA ESSES 'key-value' pairs...
+    spec: #### esse será o SPEC DE NOSSO/NOSSOS POD/PODS (e não do deployment inteiro)... --> OBS:: PARA CADA 'DEPLOYMENT' PODEMOS TER APENAS 1 'TYPE' DE POD..
+      containers: # é a key mais IMPORTANTE DO SPEC DE NOSSO/NOSSOS POD/PODS... (pode ser 1 container ou vários)....
+        - name: second-nodejs-app # o nome de 1 de nossos containers...
+          image: nothingnothings/kub-first-app:2 # a image que será usada, em 1 de nossos containers, dentro desse pod
+        # - name: third-nodejs-app   #### é assim que adicionamos MAIS CONTAINERS AO NOSSO POD, tudo dentro do mesmo pod...
+        #   image: nothingnothings/kub-second-app
+        # - name: fourth-nodejs-app
+        #   image: nothingnothings/kub-third-app ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NESTEADO DEBAIXO DE 'matchLabels',
+
+
+VC SIMPLESMENTE 
+
+TERÁ 
+
+'key-value pairs' 
+
+
+
+__ DE __ LABELS __ ,
+ 
+NOS PODS 
+QUE 
+
+
+DEVERÃO SER CONTROLADOS POR ESSE DEPLOYMENT....
+
+
+
+
+
+
+
+
+
+
+
+
+
+NO NOSSO EXEMPLO, COMO ESTAMOS CRIANDO PODS 
+
+QUE POSSUEM 
+
+
+
+LABELS 
+
+
+
+de 
+
+'app: second-app',
+
+
+
+
+
+DEVEMOS UTILIZAR ISSO...
+
+
+
+
+
+
+
+
+
+
+
+NOSSOS PODS PODERIAM USAR MÚLTIPLAS LABELS,
+
+como 
+
+isto:
+
+
+
+
+
+
+
+
+template:
+  metadata:
+    labels:
+      app: second-app
+      tier: backend
+      street: avenue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> TANTO A KEY, COMO O VALUE,
+
+
+
+
+PODEM SER QUALQUER COISA (podemos escolher qualquer coisa mesmo)...
+
+
+
+
+
+
+
+
+
+
+
+mas a questão é que vc pode TER 1 OU MAIS LABELS EM 1 GIVEN POD...
+
+
+
+
+
+
+
+
+
+
+
+
+-> AÍ, O QUE VC FARÁ,
+
+É CONECTAR O SEU POD __ A ALGUM OUTRO OBJECT... NO NOSSO CASO,
+
+
+CONECTAREMOS 
+
+
+ESSE POD 
+
+COM __ O NOSSO DEPLOYMENT....   E ESSA CONEXÃO É ESTABELECIDA 
+
+
+__ JUSTAMENTE ATRAVÉS DO USO DE 1 'SELECTOR'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> FAZEMOS ISSO PARA QUE O DEPLOYMENT ''SAIBA''
+
+QUAIS PODS,
+
+QUE ESTÃO 'OUT THERE',
+
+RODANDO NO CLUSTER,
+
+
+
+
+
+
+DEVERÃO _ SER CONTROLADOS POR ELE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> NO CASO,
+
+SIMPLESMENTE ADICIONAMOS OS KEY-VALUE 
+
+PAIRS 
+
+DOS 
+
+
+
+__ PODS QUE DEVERÃO SER CONTROLADOS,
+
+
+
+LOGO ABAIXO DE 'matchLabels'...
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: second-app-deployment
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: second-app
+
+  template:
+    metadata:
+      labels:
+        app: second-app
+    spec:
+      containers:
+        - name: second-nodejs-app
+          image: nothingnothings/kub-first-app:2
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ISSO DIZ 
+
+ AO DEPLOYMENT QUE 
+
+
+
+ '''TODOS OS PODS QUE TENHAM 1 LABEL DE "app",
+
+
+ com 1 value de "second-app",
+
+
+
+ e que tenham 1 label de 'tier' com value de 'backend''''',
+
+
+
+
+
+ deverão SER CONTROLADAS POR ESSE DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> OUTROS PODS,
+
+
+
+ PODS QUE TENHAM TALVEZ APENAS 1 DAS LABELS (
+
+
+    como 
+
+    'app: second-app',
+
+    mas 
+
+    NENHUM 'tier: backend'
+ ),
+
+
+
+
+
+
+
+
+
+
+ ou que tenham 'app: outraCoisa',
+
+
+
+
+ ELES 
+
+
+ NÃO SERÃO CONTROLADOS POR NOSSO DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> ISSO BASICAMENTE 
+
+
+
+
+ 'DIZ AO DEPLOYMENT QUAIS PODS DEVEM PERTENCER A ELE',
+
+
+
+ por assim dizer...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> VEREMOS ISSO MAIS TARDE, QUANDO TRABALHARMOS EM 1 'SERVICE'...
+
+
+
+
+
+
+
+
+
+
+ SALVAMOS ESSE ARQUIVO, E AÍ O APLICAMOS...
+
+
+
+
+
+
+
+
+
+
+
+
+ O OUTPUT FICA ASSIM:
+
+
+
+
+
+
+ PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl apply -f deployment.yaml
+deployment.apps/second-app-deployment created
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ISSO DEU CERTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA VIMOS QUE ESSE DEPLOYMENT FOI CRIADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE RODAMOS 'kubectl get deployments',
+
+
+
+VISUALIZAMOS NOSSO ACTIVE DEPLOYMENT...
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl get deployments
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+second-app-deployment   3/3     3            3           54s
+
+
+
+
+
+
+ELE ESTÁ UP AND RUNNING...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> se escrevemos 'kubectl get pods',
+
+
+TAMBÉM ENXERGAMOS NOSSOS PODS UP AND RUNNING...
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes> kubectl get pods
+NAME                                     READY   STATUS    RESTARTS   AGE  
+second-app-deployment-7f76d78f44-nmlpn   1/1     Running   0          8m18s
+second-app-deployment-7f76d78f44-t75vq   1/1     Running   0          8m18s
+second-app-deployment-7f76d78f44-xx6fr   1/1     Running   0          8m18s
+PS A:\projeto15-DOCKER\MODULO12-KUBERNETES-EM-ACAO-VENDO-OS-CORE-CONCEPTS\primeiro-project-kubernetes>
+
+
+
+
+
+
+
+
+
+
+
+
+
+A VANTAGEM É QUE AGORA NÃO PRECISAMOS 
+
+ESCREVER NADA NA COMMAND LINE,
+
+
+EXCETO ESSE COMANDO DE 'kubectl apply -f nome-do-arquivo'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS A VANTAGEM É QUE 
+
+AGORA 
+
+
+TODA NOSSA 
+
+CONFIGURATION ESTÁ ENCODADA NESSA CONFIG FILE DE 'deployment.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+--> NO MOMENTO, NÃO CONSEGUIMOS VISITAR O APP,
+
+PQ NOSSOS SERVICES ESTÃO MISSING... -> MAS AGORA 
+
+
+
+DEMOS 1 GRANDE PASSO PARA FRENTE,
+
+POR CAUSA 
+
+DESSE DECLARATIVE APPROACH...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PRÓXIMO PASSO 
+
+É VER 
+
+COMO PODEMOS TAMBÉM DECLARAR 1 RESOURCE DE TIPO 'SERVICE',
+
+
+
+
+
+NOS NOSSOS ARQUIVOS KUBERNETES...
