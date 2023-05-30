@@ -1,0 +1,1789 @@
+
+
+
+
+
+
+
+
+
+
+
+
+--> O volume de tipo 'emptyDir', QUE USAMOS AGORA,
+ 
+ COM ESTE CÓDIGO:
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        story: story
+    spec: ###### SPECIFICATION DE 1 POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          volumeMounts: ## precisamos dessa option/key para DEFINIR QUAIS VOLUMES DEVERÃO SER MONTADOS EM ALGUM DE NOSSOS CONTAINERS, NESSE POD...
+            - mountPath: /app/story  ## QUEREMOS QUE NOSSA DATA/DATA DO USUÁRIO SEJA 'BINDADA' A ESSE INTERNAL PATH, DENTRO DE NOSSO CONTAINER (é exatamente como 1 named volume)....
+              name: story-volume
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume...
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'...
+          emptyDir: {} ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSE É UM ÓTIMO 'BASIC VOLUME'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ELE É UM ÓTIMO VOLUME BÁSICO, SIM,
+
+MAS 
+
+ELE TEM 1 DOWNSIDE...
+
+
+
+
+
+
+
+
+E SE TIVÉSSEMOS 2 REPLICAS,
+
+
+
+
+
+
+
+2 INSTANCES _ DIFERENTES DE ESSE POD 
+
+
+
+
+de 'story',
+
+
+que 
+
+queremos rodar...?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, O PROFESSOR MUDA O NÚMERO DE REPLICAS PARA 2..
+
+
+
+
+
+
+
+
+
+
+
+-> aí ele aplica esse arquivo de deployment,
+
+
+
+
+
+
+para que tenhamos 2 pods up and running...
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO13-FAZENDO-MAANGE-DE-DATA-E-VOLUMES-COM-O-KUBERNETES\volume-project> kubectl apply -f deployment.yaml
+deployment.apps/story configured
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AÍ ELE RODA O REQUEST DE 'get',
+
+
+
+
+
+para a url de '/story',
+
+
+
+
+CONSEGUIMOS NOSSAS STORIES DE NOVO...
+
+
+
+
+
+
+
+
+
+MAS SE O PROFESSOR RODA A ROUTE DE '/error',
+
+
+
+NOSSO APP VAI CRASHAR,
+
+E ENTÃO 
+
+
+
+
+VAMOS __ '''PERDER ___ O NOSSO ARQUIVO'''' (
+
+)
+
+
+
+
+
+
+
+
+
+
+
+--> PQ ISSO ACONTECEU?
+
+
+
+
+ACONTECEU PQ ___ O TRAFFIC DO PRIMEIRO POD__ ACABOU _ REDIRECIONADO 
+
+
+
+PARA __ O TRAFFIC DO SEGUNDO POD.... (pq o primeiro pod caiu/crashou, por conta do error)...
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ISSO É UM PROBLEMÃO... --> 
+
+
+
+
+
+
+
+
+
+
+o pod do container 1 depois volta ao ar... -----> E SE TENTAMOS ACESSAR A DATA DO POD 1 NOVAMENTE,
+
+
+CONSEGUIMOS ACESSÁ-LA... -> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS A MENSAGEM DE TUDO ISSO É 
+
+
+
+'''COMO VOLUMES SÃO CLOSELY ATTACHED TO PODS,
+
+
+ISSO SIGNIFICA QUE __ SE 1 POD __ NÃO É REACHED 
+
+
+E O REQUEST 
+
+
+
+ACABA SENDO ENVIADO A 1 POD DISTINTO,
+
+
+
+
+__________NOSSA _ daTA SERÁ PERDIDA__________'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. E HÁ DIFERENTES MANEIRAS DE 'WORK AROUND' ESSE PROBLEMA...
+
+
+
+
+
+
+
+
+
+E VEREMOS UMA MANEIRA AINDA MELHOR, MAIS TARDE...
+
+
+
+
+
+
+
+
+
+
+
+
+------> MAS 1 MANEIRA DE TER 1 WORKAROUND SIMPLES/MAIS OU MENOS 
+
+
+
+SERIA 
+
+
+TROCAR O TYPE,
+
+TIRAR 
+
+AQUELE 
+
+
+'emptyDir' (que cria 1 NOVO DIRECTORY ___ POR ___ POD)
+
+
+
+
+
+
+
+
+
+
+
+
+por 
+
+
+1 OUTRO DRIVER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O DRIVER QUE USAREMOS AGORA É 
+
+
+
+o 'hostPath'... ---------> ISSO NOS DEIXA SETTAR '''1 PATH LÁ 
+NA HOST MACHINE ( ou seja, no NODE em si, worker node)''',
+
+
+
+
+E, COM ISSO,
+
+
+A  __ DATA __ DAQUELE __ PATH___ SERÁ EXPOSTA A MÚLTIPLOS PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO SIGNIFICA QUE MÚLTIPLOS PODS PODERÃO AGORA 
+
+
+
+'SHARE ONE AND THE SAME PATH' LÁ NA HOST MACHINE,
+
+
+
+
+EM VEZ 
+
+
+
+DE TEREM 'POD-SPECIFIC PATHS' ( 
+
+
+
+    que é o emptyDir, que é APENAS ÚTIL QUANDO 
+
+    TEMOS 1 ÚNICO POD, 'ONE AND THE SAME POD'...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume...
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'... 
+          ### 'emptyDir' só é útil se você:
+          ### 1) TIVER 1 ÚNICO POD em que quer armazenar coisas 
+          ### 2) SE VC QUISER QUE A DATA SEJA PERDIDA A CADA RESTART DO POD...
+          emptyDir: {} ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
+
+
+
+---------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... isso quer dizer que o 'emptyDir' É SUPER SITUACIONAL,
+
+PQ 
+
+
+ELE 
+
+
+
+SÓ É BOM PARA CASOS EM QUE TEMOS 1 ÚNICO POD HANDLANDO TODOS OS REQUESTS...
+
+
+
+
+--> e ele também tem o problema de 'toda a data é perdida, quando resettamos nossos pods'...
+
+
+
+
+
+
+
+
+
+já com 'hostPath',
+
+
+
+
+
+
+
+
+NÓS __ NÃO VAMOS RESOLVER O PROBLEMA DE 
+
+
+
+
+''''NÓS TEMOS MÚLTIPLAS HOST MACHINES'''' (
+
+
+PQ AÍ __ O HOSTPATH SERIA ESPECÍFICO APENAS 1 ÚNICA 
+
+HOST MACHINE...
+
+)
+
+
+
+
+
+
+
+--> AINDA ASSIM,
+
+
+O approach de 'hostPath'
+
+
+É MELHOR DO QUE O de 'emptyDir',
+
+
+QUE VIMOS ANTES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS O PROFESSOR APONTA QUE 
+
+
+
+'''SE VC ESTÁ PLAYING COM APENAS 1 REPLICA,
+
+
+E SE VC ESTÁ 
+
+
+APENAS _ TESTING AROUND THINGS'''',
+
+
+o emptyDir
+
+
+é um ótimo volume simples,
+
+
+que 
+'does the job'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+AINDA ASSIM,
+
+VAMOS TROCAR PARA 
+
+'hostPath'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... VAMOS COLOCAR O 'hostPath'... 
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O HOSTPATH É CONFIGURADO DE FORMA DISTINTA...
+
+
+
+
+
+
+
+
+
+
+
+EM VEZ DE PASSARMOS APENAS 1 'CONFIG OBJECT',
+
+
+NÓS 
+
+
+DEVEMOS 
+
+PASSAR NESTED CONFIGURATION KEYS,
+
+DENTRO DESSA OPTION...
+
+
+
+
+
+
+
+
+começamos assim:
+
+
+
+
+
+
+
+      volumes:
+        - name: story-volume
+          hostPath:
+            path:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PRECISAMOS DE 2 KEYS...
+
+
+
+
+
+
+
+
+
+
+O PRIMEIRO SETTING É 'path',
+
+QUE 
+
+É O PATH NA HOST MACHINE EM QUE 
+
+
+
+___ A DATA_ DEVERÁ SER ARMAZENADA..
+
+
+
+
+
+
+
+
+
+
+
+
+--> ou seja,
+
+
+NÃO SERÁ O PATH ____ NO CONTAINER,
+
+
+E SIM ___ SERÁ 
+
+
+O __ PATH 
+
+
+NA HOST MACHINE, NO WORKER NODE EM SI....
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume...
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'... 
+          ### ? 'emptyDir' só é útil se você:
+          ### 1) TIVER 1 ÚNICO POD em que quer armazenar coisas 
+          ### 2) SE VC QUISER QUE A DATA SEJA PERDIDA A CADA RESTART DO POD...
+          ### 3) SE VC QUER TESTAR ALGUMA COISA, ESTÁ APENAS 'DEVELOPING AND TRYING OUT THINGS'
+        # ? emptyDir: {} ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
+          
+          hostPath: ### 'hostPath' é o outro VOLUME TYPE. ELE FUNCIONA 1 POUCO COMO UMA BIND MOUNT
+          ## hostPath --> requer a key de 'path', que é usada para especificar o PATH NA 'HOST MACHINE' (no nosso worker node, essencialmente)...
+            path: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS COM BIND MOUNTS,
+
+SE NOS LEMBRARMOS,
+
+
+
+
+NÓS 
+
+
+TAMBÉM ERAMOS CAPAZES DE 'BINDAR 1 LOCAL PATH, NA NOSSA LOCAL HOST MACHINE',
+
+
+A 
+
+1 'CONTAINER INTERNAL PATH'...
+
+
+
+
+
+
+
+
+
+--> AQUI FAREMOS A MESMA COISA, BASICAMENTE,
+
+
+SÓ A nossa MOTIVAÇÃO AQUI SERÁ 1 POUCO DIFERENTE....
+
+
+
+
+
+
+
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume...
+        - name: story-volume
+          hostPath: 
+            path: 
+
+
+
+
+
+
+
+
+
+
+
+
+nossa motivação é diferente... mas ainda poderíamos fazer algo como 
+
+'BIND A PATH THAT __ CONTAINS SOME DATA THAT WE WANT 
+TO SHARE, WITH THE CONTAINER'... --> essa não é a motivation que 
+
+o professor tem aqui,
+
+
+
+
+MAS VC PODERIA FAZER ISSO COM O HOSTPATH, TAMBÉM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+pq, ao contrário de 'emptyDir',
+
+
+
+
+
+
+O HOSTPATH _ NÃO VAI SEMPRE CRIAR 1 NOVO 'empty path',
+
+
+
+
+
+e sim 
+
+
+
+__ VAI _ COMPARTILHAR 1 PATH,
+
+E TUDO __ QUE EXISTE DENTRO DESSE FOLDER, NESSE PATH,
+
+
+
+
+__ COM __ O PATH QUE TEMOS NO NOSSO CONTAINER/NOSSOS CONTAINERS... (containers nos nossos pods)...
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+ --> quer dizer que podemos usar O __ 'hostPath'
+
+
+ PARA _ FAZER SHARE DE 1 DATA JÁ EXISTENTE... OU, ENTÃO, 
+
+ PARA FAZER 
+
+
+ SHARE DE 1 FOLDER QUE SERÁ GRADUALMENTE PREENCHIDO,
+
+ NO FUTURO...
+
+
+
+
+
+
+
+
+ --> é por isso que o professor 
+
+
+ coloca 
+
+
+ 
+
+ hostPath:
+   path: /data,
+
+
+
+
+
+
+
+
+
+PQ 
+
+
+
+
+
+__ ELE VAI QUERER COMPARTILHAR 
+
+
+ESSE 
+
+
+
+FOLDER DE '/data',
+
+
+
+
+DENTRO DESSE POD
+
+
+
+
+
+
+
+
+
+
+--> tudo DENTRO DESSE DIRECTORY DO 'POD'
+
+SERÁ COMPARTILHADO __ 
+
+
+COM 
+
+
+O PATH DE '/app/story',
+
+
+DENTRO DO CONTAINER DE 'story'...
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume...
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'... 
+          ### ? 'emptyDir' só é útil se você:
+          ### 1) TIVER 1 ÚNICO POD em que quer armazenar coisas 
+          ### 2) SE VC QUISER QUE A DATA SEJA PERDIDA A CADA RESTART DO POD...
+          ### 3) SE VC QUER TESTAR ALGUMA COISA, ESTÁ APENAS 'DEVELOPING AND TRYING OUT THINGS'
+        # ? emptyDir: {} ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
+          
+          hostPath: ### 'hostPath' é o outro VOLUME TYPE. ELE FUNCIONA 1 POUCO COMO UMA BIND MOUNT
+          ## hostPath --> requer a key de 'path', que é usada para especificar o PATH NA 'HOST MACHINE' (no nosso worker node, essencialmente)...
+            path: /data ### ? --> com isso, TUDO QUE ESTÁ DENTRO DO PATH DE '/data', no folder de 'data', NO NOSSO POD, será compartilhado com NOSSOS CONTAINERS NESSE POD (no caso, com o container de 'my-story-app') --> e todos os containers que tiverem MONTADO esse volume vão poder se aproveitar/usar dessa data...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> com isso, todos os containers dentro do pod 
+
+
+CONSEGUIRÃO ACESSAR/fazer write nessa data,
+
+que ficará compartilhada....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... MAS PRECISAMOS DE 1 SEGUNDA KEY... -----> é 1 key 
+
+
+
+
+que basicamente diz ao kubernetes 
+
+
+
+
+
+''''É ASSIM QUE ESSE PATH DEVE SER HANDLADO'''' -->  ou seja,
+
+
+
+
+
+'''SE O PATH DEVE SER CRIADO SE ELE AINDA NÃO EXISTE''', etc etc...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E É ISSO QUE VAMOS QUERER FAZER, AQUI,
+
+
+
+
+POR MEIO DA OPTION DE 'DirectoryOrCreate'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume...
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'... 
+          ### ? 'emptyDir' só é útil se você:
+          ### 1) TIVER 1 ÚNICO POD em que quer armazenar coisas 
+          ### 2) SE VC QUISER QUE A DATA SEJA PERDIDA A CADA RESTART DO POD...
+          ### 3) SE VC QUER TESTAR ALGUMA COISA, ESTÁ APENAS 'DEVELOPING AND TRYING OUT THINGS'
+        # ? emptyDir: {} ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
+          
+          hostPath: ### 'hostPath' é o outro VOLUME TYPE. ELE FUNCIONA 1 POUCO COMO UMA BIND MOUNT
+          ## hostPath --> requer a key de 'path', que é usada para especificar o PATH NA 'HOST MACHINE' (no nosso worker node, essencialmente)...
+            path: /data ### ? --> com isso, TUDO QUE ESTÁ DENTRO DO PATH DE '/data', no folder de 'data', NO NOSSO POD, será compartilhado com NOSSOS CONTAINERS NESSE POD (no caso, com o container de 'my-story-app') --> e todos os containers que tiverem MONTADO esse volume vão poder se aproveitar/usar dessa data...
+            type: DirectoryOrCreate ### ? COM ESSA KEY, especificamos 'COMO DEVE SER HANDLADO O PATH/FOLDER desse volume' --> com 'DirectoryOrCreate',  dizemos que 'ESSE PATH DEVERÁ SER 1 EXISTING DIRECTORY'... se não existir no momento, CRIE 1 NOVO DIRECTORY COM ESSE NOME..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ele coloca o value de 'DirectoryOrCreate'
+
+
+PQ 
+
+ELE QUER 
+
+QUE 
+
+
+
+
+
+O COMPORTAMENTO SEJA DE 
+
+
+
+'''SE ESSE FOLDER AINDA NÃO EXISTIR, CRIE-O... CASO CONTRÁRIO,
+
+USE O FOLDER JÁ EXISTENTE'''....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> COMO NOSSO FOLDER AINDA NÃO EXISTE,
+
+se colocássemos 
+
+
+apenas 
+
+
+'Directory', o volume falharia...  (pq esse folder não existe)...
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  # replicas: 1
+  replicas: 2 ### o volume type de 'emptyDir' NÃO FUNCIONA MT BEM COM MÚLTIPLAS INSTANCES DE 1 GIVEN POD...
+  template:
+    metadata:
+      labels:
+        story: story
+    spec: ###### SPECIFICATION DE 1 POD/NOSSO POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          volumeMounts: ## precisamos dessa option/key para DEFINIR QUAIS VOLUMES DEVERÃO SER MONTADOS EM ALGUM DE NOSSOS CONTAINERS, NESSE POD...
+            - mountPath: /app/story ## QUEREMOS QUE NOSSA DATA/DATA DO USUÁRIO SEJA 'BINDADA' A ESSE INTERNAL PATH, DENTRO DE NOSSO CONTAINER (é exatamente como 1 named volume)....
+              name: story-volume
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume...
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'...
+          ### ? 'emptyDir' só é útil se você:
+          ### 1) TIVER 1 ÚNICO POD em que quer armazenar coisas
+          ### 2) SE VC QUISER QUE A DATA SEJA PERDIDA A CADA RESTART DO POD...
+          ### 3) SE VC QUER TESTAR ALGUMA COISA, ESTÁ APENAS 'DEVELOPING AND TRYING OUT THINGS'
+          # ? emptyDir: {} ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
+
+          hostPath: ### 'hostPath' é o outro VOLUME TYPE. ELE FUNCIONA 1 POUCO COMO UMA BIND MOUNT
+            ## hostPath --> requer a key de 'path', que é usada para especificar o PATH NA 'HOST MACHINE' (no nosso worker node, essencialmente)...
+            path: /data ### ? --> com isso, TUDO QUE ESTÁ DENTRO DO PATH DE '/data', no folder de 'data', NO NOSSO POD, será compartilhado com NOSSOS CONTAINERS NESSE POD (no caso, com o container de 'my-story-app') --> e todos os containers que tiverem MONTADO esse volume vão poder se aproveitar/usar dessa data...
+            #### outros values possíveis para type são 'Directory', 'File', 'FileOrCreate', Socket
+            type: DirectoryOrCreate ### ? COM ESSA KEY, especificamos 'COMO DEVE SER HANDLADO O PATH/FOLDER desse volume' --> com 'DirectoryOrCreate',  dizemos que 'ESSE PATH DEVERÁ SER 1 EXISTING DIRECTORY'... se não existir no momento, CRIE 1 NOVO DIRECTORY COM ESSE NOME..
+
+# o type 'emptyDir'
+# VAI SIMPLESMENTE CRIAR 1 'NEW EMPTY DIRECTORY'
+# __ SEMPRE QUE O POD STARTAR.. --> E AÍ ELE VAI __ MANTER
+# ESSE DIRECTORY __ VIVO,
+# E CHEIO DE DATA,
+# DESDE QUE O POD FIQUE VIVO... ------> CERTO... -----> OS CONTAINERS
+# PODEM ENTÃO
+# FAZER
+# '''WRITE''' A ESSE DIRECTORY.... -------> E, SE, ENTÃO,
+# OS CONTAINERS SÃO __ RESTARTADOS OU REMOVIDOS,
+# ___ A DATA VAI SOBREVIVER... -->  MAS __ SE O POD __ FOR REMOVIDO,
+# O __ DIRECTORY INTEIRO SERÁ REMOVIDO....
+
+#E, QUANDO 1 NOVO POD FOR CRIADO, ESSE EMPTY DIRECTORY SERÁ RECRIADO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... COM ISSO, RODAMOS 'kubectl apply -f deployment.yaml'
+
+
+
+PARA APLICAR O CURRENT DEPLOYMENT...
+
+
+
+
+
+
+
+
+VEREMOS QUE OS 2 PODS ANTIGOS SERÃO TERMINATED...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... 
+
+
+
+
+
+
+APLICAMOS ISSO AÍ..
+
+
+
+
+
+
+AGORA SE FAZEMOS WRITE DE DATA,
+
+POR MEIO DE MÚLTIPLOS POST REQUESTS... FICAMOS COM DATA 
+
+
+
+
+NO VOLUME..
+
+
+
+
+
+
+
+
+SE, DEPOIS DISSO, CRASHAMOS 1 DOS 'PODS'
+
+
+por meio 
+
+
+
+DE 1 GET REQUEST NA ROUTE DE ERROR,
+
+
+
+
+
+
+
+o outro pod AINDA VAI CONSEGUIR ACESSAR A DATA ANTIGA,
+
+
+gravada no volume, tudo graças a 'hostPath', que vai COMPARTILHAR 
+
+
+O VOLUME com esse pod...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... funcionou....
+
+
+
+
+
+
+
+
+
+
+podemos fetchear a data mesmo quando 1 dos pods crashar...
+
+
+
+
+
+
+
+
+
+
+
+--> AINDA PODEMOS FETCHEAR ESSA DATA PQ __ aGORA _ MÚLTIPLOS 
+
+PODS 
+
+'COMPARTILHAM 1 MESMO PATH NA HOST MACHINE/WORKER NODE'
+
+
+
+
+
+
+
+
+
+
+
+
+----> OK... QUER DIZER QUE ESSE FOLDER EXISTE NO NOSSO WORKER NODE,
+
+
+NA NOSSA HOST MACHINE.... os pods apenas usam essa data compartilhada... tudo 
+
+
+por conta desse driver de 'hostPath'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+a diferença, portanto,
+
+
+
+entre 'emptyDir'
+
+
+
+e 
+
+
+
+
+'hostPath'
+
+
+
+é que 
+
+
+
+
+
+EMPTYDIR 
+
+ATRIBUÍ O VOLUME APENAS A 1 ÚNICO POD (é bom se vc tiver apenas 1 replica, só tiver 1 pod)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> QUER DIZER QUE AGORA TEMOS 1 TYPE QUE NÃO É 'POD-SPECIFIC'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO É ÚTIL, SIM,
+
+MAS AINDA TEM ALGUMAS DESVANTAGENS...
+
+
+
+
+
+
+
+
+
+
+
+
+AQUI, NA NOSSA LOCAL MACHINE, MINIKUBE,
+
+
+
+
+TEMOS APENAS _ 1 ÚNICO NODE... (o worker e master node, em 1 só)..
+
+
+
+
+
+
+
+
+
+
+
+MAS SE VC TIVESSE/TIVER 1 CLUSTER MAIOR,
+
+
+
+COM MÚLTIPLOS NODES (
+
+    que vc tipicamente tem
+),
+
+
+
+
+
+
+
+
+O HOSTPATH 
+
+
+
+AINDA SERIA 
+
+
+
+
+
+'NODE SPECIFIC' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+isso quer dizer que MÚLTIPLOS PODS/REPLICAS,
+
+
+RODANDO EM DIFERENTES NODES (worker/master),
+
+
+
+NÃO 
+
+
+CONSEGUIRIAM 
+
+
+ACESSO A ESSA MESMA DATA... ------> TUDO PQ _ APENAS OS PODS __ EXISTENTES 
+
+
+
+NO MESMO CONTEXTO DESSE 'hostPath',
+
+
+NO MESMO 'WORKER NODE',
+
+
+TERÃO ACESSO 
+
+
+A ESSA DATA/volume...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AINDA ASSIM,
+
+
+
+MELHORAMOS UM POUCO... ----> E o 'hostPath'
+
+
+PODE SER ÚTIL,
+
+SIM,
+
+
+SE 
+
+VC 
+
+
+QUISER 
+DEIXAR 
+
+SUA 
+
+DATA 
+
+'KINDA'
+
+
+
+
+INDEPENDENTE DOS __ DIFERENTES PODS... (em outros worker nodes)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> o 'hostPath'
+
+É USADO 
+
+EM CASOS EM QUE VC QUER TER '''UM POUCO MAIS DE POD INDEPENDENCE'',
+
+
+por assim dizer....
+
+
+
+
+
+
+
+
+
+
+
+
+
+DESCOBRIREMOS UMA SOLUÇÃO AINDA MELHOR MAIS TARDE....
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR TAMBÉM QUER ENFATIZAR QUE 
+
+'hostPath'
+
+
+
+PODERIA/PODE 
+
+
+SER ÚTIL 
+
+
+
+SE VC 
+
+QUER 
+
+
+'SHARE'
+
+DATA JÁ 
+
+EXISTENTE NA SUA MÁQUINA/WORKER NODE 
+
+
+
+
+
+__ COM SEUS PODS/CONTAINERS.... ------->  ISSO QUER DIZER QUE 
+
+
+
+SE AQUELE FOLDER DE 'data'
+
+JÁ EXISTISSE 
+
+
+
+E JÁ 
+
+SEGURASSE 1 BOCADO DE DATA,
+
+
+
+ESSA DATA JÁ FICARIA DISPONÍVEL 
+
+
+
+
+no path '/app/story',
+
+NO CONTAINER,
+
+
+
+
+
+JÁ DE INÍCIO...
+
+
+(
+    E ESSA É OUTRA 
+
+    DIFERENÇA 
+    EM RELAÇÃO 
+
+
+    AO EMPTYDIR,
+
+    QUE SEMPRE VAI CRIAR 1 DIRECTORY VAZIO.... como sugere seu nome...
+)
