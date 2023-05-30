@@ -1,0 +1,594 @@
+
+
+
+
+
+
+
+
+
+
+OK... NA ÚLTIMA AULA,
+
+
+CONSEGUIMOS RODAR O DEPLOYMENT E O SERVICE DE 'VOLUMES'...
+
+
+
+
+
+
+
+
+
+
+
+MAS O PROFESSOR HAVIA COMENTADO, NAS AULAS ANTERIORES,
+
+OS PROBLEMAS QUE TEREMOS, COM O STORAGE DE DATA,
+
+NO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OS PROBLEMAS COMEÇAM __ QUANDO 
+
+
+NOSSOS CONTAINERS SÃO RESTARTADOS.... ------> AQUI, NO NOSSO APP,
+
+
+
+NÃO TEMOS NENHUMA MANEIRA ÓBVIA DE RESTARTAR 1 CONTAINER,
+
+
+
+ISSO 
+
+
+PQ 
+
+NÃO TEMOS 
+
+NENHUM 
+
+
+
+
+ENDPOINT DE 'error' COMO TÍNHAMOS NO PASSADO.. -----> MAS 
+
+
+
+
+
+PODEMOS TER ALGUMAS CIRCUNSTÂNCIAS EM QUE 
+
+ESSE CONTAINER 
+
+
+PODE RESTARTAR... -------> TALVEZ ELE 
+
+
+
+FIQUE COM TANTO TRÁFEGO 
+
+
+
+
+QUE O CONTAINER CRASHA,
+
+
+E TEM DE RESTARTAR --> DEFINITIVAMENTE 
+
+
+EXISTEM CENÁRIOS 
+
+
+EM QUE 
+
+
+ISSO 
+
+PODE ACONTECER --> SEU APP SEMPRE PODE CRASHAR --> E, QUANDO SEU 
+
+CONTAINER RESTARTAR,
+
+
+
+
+
+COMO __ NÃO ESTAMOS USANDO NENHUM VOLUME COM O KUBERNETES (
+
+    apenas ESTÁVAMOS usando lá no 'docker-compose',
+
+    MAS ELE NÃO ESTÁ SENDO UTILIZADO, AQUI...
+),
+
+
+
+
+
+
+NESSE KUBERNETES CLUSTER,
+
+
+
+TODA A DATA SERÁ __ PERDIDA --> E ISSO É ALGO QUE QUEREMOS RESOLVER,
+
+
+USANDO 
+
+VOLUMES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> LÁ NOS DOCS DO KUBERNETES,
+
+
+TEMOS 1 ARTIGO SOBRE ELES...
+
+
+
+
+
+
+
+
+
+
+
+MAS A COISA MAIS IMPORTANTE É SABER 'QUAIS TIPOS DE VOLUMES SÃO SUPORTADOS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O KUBERNETES SUPORTA 1 AMPLA VARIEDADE DE VOLUME TYPES E DRIVERS...
+
+
+
+
+
+
+
+
+
+
+
+A RAZÃO PARA ESSA AMPLA VARIEDADE É QUE 
+VC 
+
+
+__ NÃO VAI RODAR O KUBERNETES APENAS NA SUA LOCAL MACHINE... --> (estamos usando 
+
+o minikube, sim, mas o minikube é BASICAMENTE UMA 'VIRTUAL MACHINE' DENTRO DE UMA MACHINE LOCAL,
+
+O QUE QUER DIZER QUE É QUASE COMO UMA MACHINE DIFERENTE, NO FIM DAS CONTAS...)
+
+
+
+
+
+
+
+
+
+
+
+-> mas, na realidade,
+
+vc 
+sempre vai usar o kubernetes 
+
+PARA 
+
+
+DEPLOYAR SEU APP EM ALGUM CLOUD PROVIDER,
+
+
+OU A ALGUM DATA CENTER...
+
+
+
+
+
+
+
+ISSO SIGNIFICA QUE 
+
+
+
+
+VC TEM UMA __ AMPLA VARIEDADE DE MANEIRAS DE ARMAZENAR SUA DATA...
+
+
+
+
+
+ALGUNS DOS VOLUMES POSSÍVEIS SÃO:
+
+
+
+
+
+1) awsElasticBlockStore 
+
+
+
+2) azureDisk 
+
+
+
+
+3) azureFile 
+
+
+
+4) cephfs
+
+
+
+5) cinder 
+
+
+6) configMap 
+
+
+
+
+7) csi 
+
+
+
+
+8) downwardAPI 
+
+
+
+9) emptyDir 
+
+
+
+
+10) fc (fibre channel)
+
+
+11) flexVolume 
+
+
+12) flocker 
+
+13) gcePersistentDIsk 
+
+
+14) gitRepo (deprecated)
+
+
+15) glusterfs 
+
+
+
+16) hostPath 
+
+
+17) iscsi 
+
+
+
+18) local 
+
+
+
+
+19) nfs 
+
+
+
+20) persistentVolumeClaim
+
+
+
+
+21) PROJECTED 
+
+
+
+22) PORTWORXvOLUME
+
+
+
+23) quobyte 
+
+
+24) rbd 
+
+
+
+
+25) scaleIO
+
+
+
+26) secret
+
+
+27) storageos
+
+
+
+
+
+
+
+----> E MAIS...
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO PQ _ VC NÃO TERÁ APENAS SEU 'LOCAL HARD DRIVE' (como é o caso de DOCKER VOLUMES),
+
+
+
+
+
+PQ 
+VC 
+
+
+PODE 
+
+ESTAR 
+USANDO 
+O AWS,
+
+POR EXEMPLO,
+
+
+
+
+
+
+
+
+
+QUE USA 
+
+
+'awsElasticBlockStore'.... ->  ESSE  SERVICE 
+
+É 
+
+1 
+
+SERVICE QUE 
+
+AINDA NAÕ 
+
+USAMOS 
+
+
+
+AO LONGO DESTE CURSO....
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU PODEMOS ESTAR USANDO O MICROSOFT AZURE,
+
+aí teríamos os services de 
+
+'azureDisk'
+
+
+e 
+
+'azureFile'...
+
+
+
+
+
+
+
+-> OK... ESSA LISTA PODE PARECER OVERWHELMING... --> MAS VC SÓ VAI USAR ALGUMAS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... PARA ESSA COURSE SECTION,
+
+
+VAMOS FOCAR NAQUELE TYPE DE 'csi'...
+
+
+
+
+
+
+
+
+
+
+
+--> também veremos o 'emptyDir'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> TAMBÉM VEREMOS O 'hostPath'...
+
+
+
+
+
+
+
+
+
+
+--> VAMOS COMEÇAR COM O TYPE DE 'emptyDir'...
+
+
+
+
+
+
+
+
+
+
+--> VEREMOS OS OUTROS TYPES MAIS TARDE....
+
+
+
+
+
+
+
+
+
+
+
+
+--> A QUESTÃO, AQUI, É QUE 
+
+TODOS ESSES TYPES NÃO INFLUENCIAM 
+
+A 
+
+MANEIRA PELA QUAL OS VOLUMES 
+
+FUNCIONAM __ DENTRO___ DIS CONTAINERS ---->  PQ O FUNCIONAMENTO 
+
+
+
+
+
+
+DISSO É EXATAMENTE COMO NO DOCKER,
+
+
+''' 1 PATH, DENTRO DO CONTAINER,
+
+QUE 
+
+É __ ENTÃO ARMAZENADO TAMBÉM FORA DO CONTAINER''' ...
+
+
+
+
+
+
+
+
+
+
+-> MAS A DIFERENÇA, AQUI,
+
+
+É 
+
+
+
+'''''COMO A DATA É ARMAZENADA, NO LADO DE FORA DO CONTAINER''' -->  e isso 
+
+
+DEPENDE 
+
+DE QUAL 
+
+
+TYPE OU DRIVER VC USA, NAS SUAS OPTIONS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK.. VAMOS COMEÇAR COM O TYPE DE 'emptyDir',
+
+
+
+
+E AÍ 
+
+
+
+VAMOS VER COMO PODEMOS CONFIGURAR 1 VOLUME, USANDO O KUBERNETES...
