@@ -1,0 +1,584 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... PARA ESSA COURSE SECTION, TEMOS OUTRO PEQUENO EXEMPLO, ANEXADO A ESTA AULA....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É UM SIMPLES APP 'NODEJS',
+
+
+
+
+
+
+EM QUE TEMOS 
+
+
+
+
+
+1 ARQUIVO 'app.js' nodejs,
+
+
+em que CRIAMOS 
+
+
+1 
+
+NODE SERVER 
+
+E 
+
+FAZEMOS 
+
+
+LISTEN 
+
+
+NA PORT 3000...
+
+
+
+
+
+
+
+
+
+
+
+
+--> NESSE APP, NÓS TEMOS 2 ENDPOINTS ----->  FAZEMOS 
+
+'GET' REQUESTS 
+
+
+
+AO '/story',
+
+
+
+
+E 
+
+
+POST REQUESTS 
+em 
+
+'/story'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NO HANDLER DE POST REQUEST,
+
+
+
+
+
+VAMOS EXTRAIR 
+
+TEXTO DO BODY DO REQUEST... --> SE O BODY NÃO ESTIVER EMPTY,
+
+
+
+VAMOS __ FAZER 'APPEND' DESSE TEXT 
+
+
+
+
+A UMA FILE __ QUE _ TEMOS LÁ NO FILE PATH... (
+
+
+
+    com 
+
+
+
+
+''''''
+
+  fs.appendFile(filePath, newText + '\n', (err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Storing the text failed.' });
+    }
+    res.status(201).json({ message: 'Text was stored!' });
+  });
+
+'''''
+
+
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AÍ NESSA FILE ADICIONAMOS O TEXTO, ESCRITO PELO USER, NO ARQUIVO,
+
+
+E AÍ RETORNAMOS UMA RESPONSE AO USER...
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E, PARA A ROUTE DE 'get',
+
+QUE ESTAMOS HANDLANDO,
+
+
+VAMOS FAZER __ READ__ DESSA FILE,
+
+com 
+
+'fs.readFile()',
+
+
+
+E AÍ 
+
+
+
+
+RETORNAMOS A DATA QUE LEMOS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É 1 APP BEM SIMPLES,
+
+
+
+
+QUE NO FINAL VAI FAZER 'WRITE'
+
+DE 
+
+
+TEXT 
+
+
+NESSE ARQUIVO 'text.txt'
+
+
+lá no folder de 
+
+
+'story'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> é claro que isso acontecerá dentro de nosso container...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA VISUALIZARMOS TUDO ISSO EM AÇÃO,
+
+
+O PROFESSOR PREPAROU 1 DOCKERFILE E 1 DOCKER-COMPOSE FILE,
+
+PARA RODAR ESSA IMAGE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ELA VAI BUILDAR E RODAR ESSA IMAGE... -----> TEMOS 1 ARQUIVO DOCKER-COMPOSE 
+
+
+
+PQ __ ESTAMOS USANDO VOLUMES COM NOSSO CONTAINER (mais fácil de escrever comandos)...
+
+
+
+
+
+
+
+
+
+
+ISSO PQ AQUI TEMOS 1 VOLUME, 'stories',
+
+QUE DEVERÁ 
+
+
+
+
+SOBREVIVER AO 'CONTAINER REMOVAL AND RESTARTS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> COM ISSO, removemos a necessidade de escrever aqueles comandos com '-v' (volume) com 'docker run'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... O PROFESSOR 
+
+
+
+
+
+
+RODA 
+
+
+'docker-compose up -d --build'  (--build assegura que essa image vai ser reevaluated)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker-compose up -d --build  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> UMA VEZ QUE ISSO TENHA RODADO,
+
+PODEMOS 
+
+
+USAR O POSTMAN PARA ENVIAR REQUESTS A NOSSA RUNNING APPLICATION....
+
+
+
+
+
+
+
+
+
+---------> INICIALMENTE, NOSSA RESPONSE VAI SER DE 
+
+
+
+'{
+    story: ""
+}
+'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO PQ NOSSA TEXT FILE NÃO TERÁ NADA, INICIALMENTE...
+
+
+
+
+
+
+
+
+
+
+--> mas podemos enviar raw json data, com o postman,
+
+
+
+
+para adicionar 
+
+
+
+
+nova data àquele arquivo de texto....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ISSO FUNCIONA.... --> PODEMOS 
+
+RODAR 
+
+'docker-compose down'
+
+
+
+
+PARA 
+
+
+
+
+__REMOVER __ NOSSO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS SE RE-RODAMOS O CONTAINER,
+
+
+com 
+
+
+
+
+'docker-compose up',
+
+
+
+
+
+
+
+
+É CLARO QUE AINDA VEREMOS O ARQUIVO DE TEXTO COM A DATA INSERIDA NELE,
+
+
+
+
+
+
+
+JUSTAMENTE PQ USAMOS 'NAMED VOLUMES' --> pq OS VOLUMES NOS PERMITEM 
+
+PERSISTIR DATA AO LONGO DE CONTAINER RESTARTS E REMOVALS...
+
+
+
+
+
+
+
+
+
+(
+
+    se quiséssemos remover esse volume,
+
+    teríamos de escrever 
+
+
+    docker-compose down -v
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... AGORA O PROFESSOR DERRUBA O DOCKER-COMPOSE,
+
+
+
+E AGORA 
+
+
+
+VAI NOS MOSTRAR COMO TUDO ISSO É TRADUZIDO PARA O KUBERNETES,
+
+
+
+
+
+
+PARA ENTENDERMOS COMO É O TRABALHO COM VOLUMES,
+COM O KUBERNETES...
