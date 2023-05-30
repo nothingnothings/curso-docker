@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+## os 'PERSISTENT VOLUMES' requerem maiores configurações/mais informações na key de 'spec' para serem settados...
+spec:
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+  capacity:
+    ## É A 'OVERALL CAPACITY' de nosso persistent volume (os pods, mais tarde, farão CLAIMS a esse volume, e aí deverão especificar QUANTO DESSA COTA 'overall' VÃO QUERER 'claim')
+    storage: 512mb
+  volumeMode: Filesystem ## pode ser 'Block' ou 'FileSystem'
+  accessModes:
+    # - ReadWriteOnce   # podem ser: 'ReadWriteOnce', 'ReadOnlyMany', 'ReadWriteMany'... e os 3 podem ser especificados, ao mesmo tempo... (pq é APENAS QUANDO VC FAZ 'CLAIM' DE 1 VOLUME, LÁ EM UM DE SEUS PODS, QUE VC DEVE ESPECIFICAR QUAL TIPO VC VAI QUERER USAR)....
+    - ReadWriteOnce # ? significa que 'ESSE VOLUME PODE SER MONTADO COMO READ E WRITE _POR APENAS 1 ÚNICO NODE' (PODE SER ACESSADOS POR MÚLTIPLOS PODS, MAS ESSES PODS DEVEM FAZER PARTE DE 1 MESMO NODE)...
+    # - ReadOnlyMany ### SIGNIFICA QUE ESSE VOLUME PODE SER READ POR MÚLTIPLOS PODS, EM DIFERENTES NODES, MAS NÃO PODEM FAZER WRITE... --> e essa option NÃO EXISTE no type de 'hostPath', pq O 'hostPath', POR DEFINIÇÃO, SEMPRE TEM APENAS 1 ÚNICO NODE... por isso não funciona, pq precisamos de 'many nodes'...
+    # - ReadWriteMany ### SIGNIFICA QUE ESSE VOLUME PODE SER READ E written POR MÚLTIPLOS PODS, EM DIFERENTES NODES --> e essa option, como o 'ReadOnlyMany' NÃO EXISTE no type de 'hostPath', pq O 'hostPath', POR DEFINIÇÃO, SEMPRE TEM APENAS 1 ÚNICO NODE... por isso não funciona, pq precisamos de 'many nodes'...
+  # persistentVolumeReclaimPolicy: Recycle
+  # storageClassName: slow
+  # mountOptions:
+  #   - hard
+  #   - nfsvers=4.1
+  # nfs:
+  #   path: /tmp
+  #   server: 172.17.0.2

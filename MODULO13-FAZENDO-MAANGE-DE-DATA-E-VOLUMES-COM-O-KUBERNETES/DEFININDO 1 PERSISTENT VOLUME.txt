@@ -1,0 +1,1688 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... PERSISTENT VOLUMES PODEM NOS DAR MAIOR INDEPENDÊNCIA,
+ QUANDO OS COMPARAMOS A 'REGULAR VOLUMES'...
+
+
+
+
+
+
+
+
+
+
+-> OS PERSISTENT VOLUMES FICAM BEM MAIS INDEPENDENTES EM RELAÇÃO AOS PODS E 
+
+NODES INVIDUAIS, EM QUE 
+
+SÃO CONECTADOS...
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA VAMOS CRIAR 1 PERSISTENT VOLUME 
+
+
+E 
+
+VER COMO DIFEREM DE 
+
+
+REGULAR VOLUMES...
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+
+O PROFESSOR CRIA 
+
+1 NOVO ARQUIVO,
+
+
+DE NOME 
+
+
+'persistent-volume.yaml'... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> CERTO... NESSE VOLUME PERSISTENT,
+
+VAMOS USAR 
+
+O 
+
+DRIVER 
+
+DE 
+
+'hostPath'...
+
+
+
+
+
+
+
+--> RESSALTANDO: O DRIVER DE 'hostPath'
+
+
+SERÁ 
+
+USADO 
+
+APENAS 
+
+
+COM 
+
+
+
+o minikube,
+
+ou seja,
+
+
+
+COM SINGLE NODE TESTING ENVIRONMENTS...
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK... MAS ESSE É O ENVIRONMENT QUE TEMOS AGORA, DE TESTES,
+
+
+
+
+___ E, MESMO  ASSIM,
+
+
+AS COISAS QUE 
+
+O PROFESSOR 
+
+
+VAI 
+
+ENSINAR, COM 
+
+'hostPath',
+
+
+
+
+
+
+SERÃO APLICADAS MAIS TARDE,
+
+
+
+
+COM QUALQUER OUTRO TYPE (types usados em deployment msm)...
+
+
+
+
+
+
+
+
+
+CERTO... vamos escrever esse arquivo yaml...
+
+
+
+
+
+
+
+
+
+começamos com 'apiVersion: v1',
+
+
+
+
+exatamente a mesma coisa que colocamos no service.yaml...
+
+
+
+
+
+
+
+
+COLOCAMOS O KIND DE 'persistentVolume':
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+
+
+
+
+
+
+
+
+
+
+DEPOIS DISSO,
+
+PODEMOS 
+
+
+
+
+COLOCAR 'metadata',
+
+
+E AÍ 
+
+DEFINIR 1 NAME PARA O PERSISTENTVOLUME, PARA ESSE RESOURCE...
+
+
+
+
+EX:
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ASSIM COMO OS 'deployment'
+
+e 'service',
+
+
+
+PRECISAMOS COLOCAR 1 'spec',
+
+QUE SERÁ O LOCAL EM QUE 
+
+VAMOS CONFIGURAR 
+
+
+
+
+ESSE PERSISTENT VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+--> A PRIMEIRA COISA QUE VAMOS DEFINIR, EM 'spec',
+
+SERÁ _ O __ TYPE__ 
+
+
+
+de persistent volume que desejamos criar...
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+spec:
+  hostPath:
+    path: 
+
+
+
+
+-----------------------------------
+
+
+
+
+
+
+
+
+COLOCAMOS 'hostPath'
+
+
+
+PQ REALMENTE VAMOS USAR ESSA CONFIGURATION...
+
+
+
+
+
+O QUE FALTOU FOI O 'path'
+
+e o 
+
+
+TYPE
+
+desse 
+
+hostPath,
+
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+spec:
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO VAI SETTAR 
+
+
+
+1 
+
+PERSISTENTVOLUME
+
+
+de tipo 
+
+
+
+
+'hostPath',
+
+
+
+
+COMO 1 STANDALONE VOLUME,
+
+
+DETACHEADO DE QUALQUER POD DE NOSSO ENVIRONMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**** PROFESSOR COMPLEMENTA:
+
+
+
+''''COMO O TYPE DESSE NEGÓCIO ESTÁ COMO "hostPath",
+
+ele NÃO SERÁ INDEPENDENTE DOS NODES,
+
+E SÓ VAI FUNCIONAR SE TIVERMOS 1 ÚNICO NODE,
+
+
+MAS __ COMO AQUI, NO MINIKUBE,
+
+TEMOS APENAS 1 ÚNICO NODE, NÃO HÁ PROBLEMA NISSO'''... -->  CERTO... MAS 
+
+
+
+
+
+
+O RESTO DA EXPLICAÇÃO,
+
+
+
+
+
+O RESTO DOS DETALHES,
+
+
+SERÃO APLICADOS AOS OUTROS TYPES TAMBÉM...
+
+
+
+
+
+
+
+
+
+
+
+
+PQ O 'type'
+
+
+NÃO É TUDO... -------> COM O 'PERSISTENT VOLUME',
+
+
+
+AO CONTRÁRIO DO QUE 
+
+
+
+VIMOS 
+
+COM OS REGULAR VOLUMES,
+
+
+
+É NECESSÁRIO 
+
+ADICIONAR 
+
+
+
+MAIS INFO NESSE OBJECT DE 'spec'...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+## os 'PERSISTENT VOLUMES' requerem maiores configurações/mais informações na key de 'spec' para serem settados...
+spec:
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    UMA INFORMAÇÃO OBRIGATÓRIA,
+
+    NO CASO,
+
+
+    É 
+
+
+
+
+a key de 'capacity: '...
+
+
+
+
+
+
+
+
+
+
+
+A CAPACITY IMPORTA PQ NÓS,
+
+COMO ADMINISTRADORES,
+
+
+PODEMOS QUERER 
+
+
+CONTROLAR 
+
+
+
+'''QUANTA CAPACIDADE PODE SER USADA PELOS DIFERENTES PODS,
+
+
+PODS 
+
+QUE 
+
+DEPOIS SERÃO EXECUTADOS NO NOSSO CLUSTER''.... -----> PORTANTO,
+
+
+PODEMOS 
+
+SETTAR 
+
+
+1 
+CAPACIDADE,
+
+AQUI...
+
+
+
+
+
+
+
+
+
+-> DEFINIMOS 1 CAPACIDADE PARA ESSE VOLUME... -> E OS PODS,
+
+
+QUANDO ELES FIZEREM 
+
+'CLAIM' DESSE VOLUME,
+
+MAIS TARDE,
+
+
+
+
+
+ELES PODERÃO 
+
+
+DEFINIR ''QUANTO DESSA CAPACIDADE ELES VÃO PRECISAR'''....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> quer dizer que 
+
+aqui definimos a 'OVERALL CAPACITY' DESSE VOLUME...
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+## os 'PERSISTENT VOLUMES' requerem maiores configurações/mais informações na key de 'spec' para serem settados...
+spec:
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+  capacity:
+    storage: 512mb
+
+
+
+
+
+
+
+
+
+--> OK... COLOQUEI COMO 512MB...
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR COLOCOU 4GB,
+
+com 
+
+
+'4Gi'...
+
+
+
+
+
+
+
+
+
+
+
+
+------> NOS DOCS,
+
+
+
+
+há 
+
+
+A KEY DE 'capacity' -> TEMOS 
+
+O NEGÓCIO DE 
+
+
+'resource model'...
+
+
+
+
+
+
+--> PODEMOS 
+
+
+LER MAIS SOBRE COMO O KUBERNETES DEFINE RESOURCES,
+
+
+E QUAIS UNIDADES ELE RECONHECE...
+
+
+
+
+
+
+
+
+
+
+
+'Gi' --> GIGABYTE..
+
+
+
+
+
+
+
+
+
+--> PODEMOS LER ESSE DOCUMENTO PARA SABER MAIS SOBRE AS UNITS DISPONÍVEIS,
+
+E SOBRE COMO DEFINIR RESOURCES...
+
+
+
+
+
+
+
+
+
+
+-> ok... temos 
+
+o 'storage' resource... ---> coloquei 512mb 
+
+
+como limite..
+
+
+
+
+
+
+
+
+PODEMOS DEFINIR MAIS, É CLARO...
+
+
+
+
+
+
+
+
+
+
+
+MAS SE VC ESTÁ USANDO 1 'THIRD-PARTY SERVICE',
+
+VC 
+
+DEVE 
+
+GARANTIR QUE 
+
+
+O 
+
+VALUE QUE VC ESCREVE AQUI 
+
+NÃO É 
+SUPERIOR 
+
+
+AO 
+
+VALUE 
+
+
+FORNECIDO PELO ACTUAL THIRD-PARTY SERVICE (pela amazon EFS, por exemplo)...
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+## os 'PERSISTENT VOLUMES' requerem maiores configurações/mais informações na key de 'spec' para serem settados...
+spec:
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+  capacity:
+    ## É A 'OVERALL CAPACITY' de nosso persistent volume (os pods, mais tarde, farão CLAIMS a esse volume, e aí deverão especificar QUANTO DESSA COTA 'overall' VÃO QUERER 'claim')
+    storage: 512mb
+
+
+
+
+
+
+------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo....
+
+
+
+
+
+
+
+512mb 
+
+disponíveis dentro 
+
+Dessa minikube machine...
+
+
+
+
+
+
+
+
+
+
+
+
+DEPOIS DISSO,
+
+TEMOS 
+
+A KEY DE 
+
+'volumeMode'... -------> PODEMOS ESCOLHER ENTRE 2 MODES...
+
+
+
+
+
+
+
+
+
+
+--> TEMOS O VOLUMEMODE 
+
+
+
+
+
+de 
+
+
+
+'Block' 
+
+
+
+e 
+
+
+
+'FileSystem'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... E ESSES SÃO DIFERENTES STORAGE TYPES--> 
+
+
+
+
+
+
+
+
+
+
+SÃO DIFERENTES STORAGE TYPES __ EM GERAL...
+
+
+
+
+
+
+
+
+
+
+--> QUANDO FALAMOS SOBRE STORAGE E DEVELOPMENT,
+
+
+
+TEMOS 
+
+'BLOCK STORAGE'
+
+
+
+E 
+
+'FILE SYSTEM STORAGE',
+
+
+
+TIPICAMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS QUAL A DIFERENÇA ENTRE OS 2?
+
+
+
+
+
+
+
+--> BEM, COMO TEMOS 1 FOLDER DENTRO DO NOSSO FILESYSTEM,
+
+NA NOSSA VIRTUAL MACHINE,
+
+
+
+É 
+O 
+
+'FILESYSTEM' 
+
+que devemos escolher...
+
+
+
+
+
+
+
+In block storage, data is stored in blocks, 
+whereas, in file storage, data is stored as files in a single piece.
+ A block is not a complete file, so integration is not a property of the block,
+  but in file storage, you can integrate data in different folders.
+Many blocks join together to form a file.
+
+
+
+
+
+
+
+
+
+
+
+OK... ESSA É A DIFERENÇA...
+
+
+
+
+
+
+------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...  
+
+VAI FICANDO ASSIM:
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+## os 'PERSISTENT VOLUMES' requerem maiores configurações/mais informações na key de 'spec' para serem settados...
+spec:
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+  capacity:
+    ## É A 'OVERALL CAPACITY' de nosso persistent volume (os pods, mais tarde, farão CLAIMS a esse volume, e aí deverão especificar QUANTO DESSA COTA 'overall' VÃO QUERER 'claim')
+    storage: 512mb
+  volumeMode: Filesystem
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DEPOIS DISSO, TEMOS 
+
+A KEY DE 'accessModes',
+
+
+que ACEITA __ MÚLTIPLOS ACCESS MODES... ----> É UMA LIST... --> 
+
+
+
+DEVEMOS ESPECIFICAR 
+
+TODOS 
+OS ACCESS MODES QUE QUEREMOS SUPORTAR... -------> E HÁ 
+
+
+
+
+
+__TRÊS POSSÍVEIS 
+
+ACCESS MODES QUE PODEMOS ADICIONAR, AQUI...
+
+
+
+
+
+
+
+
+SÃO ELES:
+
+
+
+
+1) ReadWriteOnce 
+
+
+
+
+
+
+2) ReadOnlyMany 
+
+
+
+3) ReadWriteMany
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+## os 'PERSISTENT VOLUMES' requerem maiores configurações/mais informações na key de 'spec' para serem settados...
+spec:
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+  capacity:
+    ## É A 'OVERALL CAPACITY' de nosso persistent volume (os pods, mais tarde, farão CLAIMS a esse volume, e aí deverão especificar QUANTO DESSA COTA 'overall' VÃO QUERER 'claim')
+    storage: 512mb
+  volumeMode: Filesystem ## pode ser 'Block' ou 'FileSystem'
+  accessModes:
+    - ReadWriteOnce   # podem ser: 'ReadWriteOnce', 'ReadOnlyMany', 'ReadWriteMany'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    OK... MAS QUAL É A DIFERENÇA ENTRE OS 3?
+
+
+
+
+
+
+
+
+
+
+-> PODEMOS ESPECIFICAR OS 3...
+
+
+
+
+
+
+
+
+
+
+no próprio 'PersistentVolume',
+
+
+
+PODEMOS 
+
+ESPECIFICAR 
+
+OS 
+
+3.... podemos especificar os 3 de uma vez justamente 
+
+
+
+PQ 
+
+
+SERÁ 
+
+
+
+
+NO __ PRÓPRIO __ POD,
+
+
+AO ESCREVER/RODAR O 'persistentVolumeClaim',
+
+
+
+QUE 
+
+VAMOS DEFINIR/ESCOLHER 
+
+
+
+
+QUAL TIPO DE ACESSO/CLAIM VAMOS QUERER FAZER A ESSE PERSISTENTVOLUME (se será readonly, readwrite, etc)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... --> QUER DIZER QUE AQUI APENAS ESPECIFICAMOS,
+
+
+EM LINHAS GERAIS,
+
+
+
+
+'''O QUE DEVE SER PERMITIDO''' --> OU SEJA,
+
+
+COMO 
+
+ESSE VOLUME DEVERÁ SER CLAIMED...
+
+
+
+
+
+
+
+
+
+
+
+ReadWriteOnce -->  ISSO SIGNIFICA QUE ESSE VOLUME PODE SER 'Mounted' como 1 volume READ E WRITE _POR APENAS 1 ÚNICO NODE...
+
+
+
+
+
+
+
+
+
+
+- ReadWriteOnce # ? significa que 'ESSE VOLUME PODE SER MONTADO COMO READ E WRITE _POR APENAS 1 ÚNICO NODE'
+
+
+
+
+
+
+
+
+
+
+
+
+-> O 'ReadWriteOnce'
+
+
+
+significa que 
+
+
+ELE VAI SER MONTADO COMO 'READ E WRITE'
+
+
+
+POR APENAS 1 NODE... -> E NADA IMPEDE __ MÚLTIPLOS PODS, DENTRO DESSE NODE,
+
+
+_ DE FAZEREM ACESSO 'READ E WRITE'
+
+
+
+A ESSE PERSISTENT VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+
+--> MÚLTIPLOS PODS, NO MESMO NODE .... com 'ReadWriteOnce', é permitido seu acesso a esse persistentVolume...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'ReadOnlyMany' ------> SIGNIFCA QUE 
+
+
+
+QUE 
+
+
+ELE É 'READ ONLY',
+
+
+
+MAS PODE SER 'CLAIMED' POR MÚLTIPLOS NODES (
+
+    SIGNIFICA QUE MÚLTIPLOS PODS, EM DIFERENTES NODES,
+    PODEM 
+
+    'CLAIM' 
+
+    ESSE MESMO PERSISTENT VOLUME..
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+    # - ReadOnlyMany ### SIGNIFICA 
+    QUE ESSE VOLUME PODE SER READ POR MÚLTIPLOS PODS,
+     EM DIFERENTES NODES, MAS NÃO PODEM FAZER WRITE... 
+     --> e essa option NÃO EXISTE no type de 'hostPath', pq
+      O 'hostPath', POR DEFINIÇÃO, SEMPRE TEM APENAS 1 ÚNICO NODE... 
+      por isso não funciona, pq precisamos de 'many nodes'...
+
+
+
+
+
+--------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+'ReadWriteMany'
+
+
+
+
+TAMBÉM NÃO FICA DISPONÍVEL NO 
+
+'hostPath',
+
+
+JUSTAMENTE PELO MESMO MOTIVO,
+PQ NÃO TEMOS MÚLTIPLOS NODES NO MINIKUBE..
+
+
+
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+## os 'PERSISTENT VOLUMES' requerem maiores configurações/mais informações na key de 'spec' para serem settados...
+spec:
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+  capacity:
+    ## É A 'OVERALL CAPACITY' de nosso persistent volume (os pods, mais tarde, farão CLAIMS a esse volume, e aí deverão especificar QUANTO DESSA COTA 'overall' VÃO QUERER 'claim')
+    storage: 512mb
+  volumeMode: Filesystem ## pode ser 'Block' ou 'FileSystem'
+  accessModes:
+    # - ReadWriteOnce   # podem ser: 'ReadWriteOnce', 'ReadOnlyMany', 'ReadWriteMany'... e os 3 podem ser especificados, ao mesmo tempo... (pq é APENAS QUANDO VC FAZ 'CLAIM' DE 1 VOLUME, LÁ EM UM DE SEUS PODS, QUE VC DEVE ESPECIFICAR QUAL TIPO VC VAI QUERER USAR)....
+    - ReadWriteOnce # ? significa que 'ESSE VOLUME PODE SER MONTADO COMO READ E WRITE _POR APENAS 1 ÚNICO NODE' (PODE SER ACESSADOS POR MÚLTIPLOS PODS, MAS ESSES PODS DEVEM FAZER PARTE DE 1 MESMO NODE)...
+    # - ReadOnlyMany ### SIGNIFICA QUE ESSE VOLUME PODE SER READ POR MÚLTIPLOS PODS, EM DIFERENTES NODES, MAS NÃO PODEM FAZER WRITE... --> e essa option NÃO EXISTE no type de 'hostPath', pq O 'hostPath', POR DEFINIÇÃO, SEMPRE TEM APENAS 1 ÚNICO NODE... por isso não funciona, pq precisamos de 'many nodes'...
+    # - ReadWriteMany ### SIGNIFICA QUE ESSE VOLUME PODE SER READ E written POR MÚLTIPLOS PODS, EM DIFERENTES NODES --> e essa option, como o 'ReadOnlyMany' NÃO EXISTE no type de 'hostPath', pq O 'hostPath', POR DEFINIÇÃO, SEMPRE TEM APENAS 1 ÚNICO NODE... por isso não funciona, pq precisamos de 'many nodes'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+ISSO QUER DIZER QUE, PARA O 'hostPath',
+
+
+
+
+
+
+O ÚNICO TIPO DE VOLUME QUE FICA DISPONÍVEL É O 
+
+
+'ReadWriteOnce'.. -->  E ISSO SIGNIFICA QUE 
+
+
+
+
+
+QUANDO ESSE VOLUME FOR CLAIMED,
+
+ELE __ VAI PODER SER 'CLAIMED' 
+
+POR MÚLTIPLOS PODS,
+
+
+
+
+E 
+
+ESSES PODS TERÃO 'READ-WRITE ACCESS' (os containers terão),
+
+
+
+MAS TODOS ESSES PODS TERÃO DE SEMPRE RODAR NO MESMO NODE (
+
+
+    o que, para esse dummy local environment do minikube,
+
+    será SEMPRE GARANTIDO...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... o professor definiu o 'ReadWriteOnce'...
+
+
+
+
+
+--> PQ ESSE É O ÚNICO MODO QUE FAZ SENTIDO, PARA ESSE TYPE...
+
+
+
+
+
+
+
+
+
+
+
+NOS OFFICIAL DOCS,
+
+ENCONTRAMOS 
+
+UMA TABLE 
+
+DE 'QUAIS ACCESS MODES FICAM DISPONÍVEIS PARA CADA TYPE'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO O 'csi' é flexível,
+
+
+OS ACCESS MODES DEPENDEM DO DRIVER QUE ESTAMOS USANDO....
+
+
+
+
+
+
+
+
+
+
+--> OK... ACABAMOS COM AS KEYS CORE QUE O PROFESSOR QUERIA DEFINIR...
+
+
+
+
+
+
+
+
+FICAMOS COM ESSE PERSISTENT VOLUME STANDALONE DEFAULT,
+
+QUE PODE SER USADO POR QUALQUER 
+
+
+
+POD NO NOSSO APP...  SIGNIFICA 
+
+QUE 
+
+SE 
+TIVÉSSEMOS MÚLTIPLOS DEPLOYMENTS,
+
+COM DIFERENTES TIPOS DE PODS,
+
+
+
+TODOS ESSES DIFERENTES TIPOS DE PODS 
+
+CONSEGUIRIAM 
+
+USAR 
+
+
+
+ESSE MESMO PERSISTENT VOLUME..
+
+
+
+
+
+
+(
+AND STILL, THIS PERSISTENT VOLUME ONLY NEEDS TO BE DEFINED ONCE (and possibly by someone else!)!
+Because its independent from a specific pod
+)
+
+
+
+
+
+
+
+
+
+--> OK... MAS PARA CONSEGUIRMOS USAR ESSE PERSISTENT VOLUME,
+
+
+
+
+
+ESSES 
+
+
+
+PODS PRECISAM 
+
+
+USAR 'PERSISTENT VOLUME CLAIMS'...
