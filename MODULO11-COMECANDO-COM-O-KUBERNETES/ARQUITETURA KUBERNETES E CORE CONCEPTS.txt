@@ -1538,6 +1538,7 @@ MASTER NODE {
     }
 
             POD {
+                VOLUMES
         CONTAINER
     }
 }
@@ -1562,6 +1563,7 @@ MASTER NODE {
 
 
         POD {
+        VOLUMES
         CONTAINER
         CONTAINER 
         CONTAINER

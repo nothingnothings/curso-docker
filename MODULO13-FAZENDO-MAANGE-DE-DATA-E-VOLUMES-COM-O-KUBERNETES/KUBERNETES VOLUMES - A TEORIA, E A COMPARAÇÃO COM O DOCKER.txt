@@ -1,0 +1,998 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... A BOA NOTÍCIA É QUE 
+
+
+'''O KUBERNETES É CAPAZ DE "MOUNT" VOLUMES EM CONTAINERS''' -> PODEMOS 
+
+
+ADICIONAR 
+
+INSTRUCTIONS AOS TEMPLATES DE NOSSOS PODS,
+
+
+
+DIZER A ELES QUE ''1 VOLUME DEVE SER MOUNTED NO CONTAINER QUE 
+DEVERÁ SER RODADO COMO PARTE DE 1 POD'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E O KUBERNETES NA VERDADE TEM 
+
+1 SUPORTE A VOLUMES BEM PODEROSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O KUBERNETES SUPORTA UMA VARIEDADE BEM GRANDE DE 'VOLUME TYPES' E 'DRIVERS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU SEJA,
+
+
+ELE SUPORTA COISAS A MAIS DO QUE 
+
+
+
+O 
+
+DOCKER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS COMO RODAMOS  NOSSO APP, NO KUBERNETES,
+POSSIVELMENTE 
+
+AO LONGO DE MÚLTIPLOS NODES,
+
+
+
+
+E POSSIVELMENTE EM DIFERENTES CLOUD E HOSTING PROVIDERS,
+
+
+
+
+
+
+
+
+
+
+
+ELE _ PROVIDENCIA 
+DIFERENTES TIPOS DE VOLUMES ------> ISSO QUER DIZER QUE ELE É BEM FLEXÍVEL 
+
+QUANTO 
+
+
+
+A 'ONDE A DATA SERÁ ACTUALLY STORED' 
+
+
+
+
+
+
+
+
+
+
+
+--> ELE SUPORTA:
+
+
+
+
+
+
+1) LOCAL VOLUMES ->  (OU SEJA, NOS PRÓPRIOS NODES) --> É BASICAMENTE 1 FOLDER NO PRÓPRIO WORKER NODE EM QUE O POD ESTÁ RODANDO...
+
+
+
+
+
+
+
+
+
+
+2) CLOUD-PROVIDER SPECIFIC VOLUMES --> E VAMOS DAR UMA OLHADA NOS DIFERENTES TIPOS SUPORTADOS 
+PELO KUBERNETES,
+
+AO LONGO DESSA COURSE SECTION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS 1 COISA QUE DEVEMOS SABER E ENTENDER SOBRE O KUBERNETES, NO CASO,
+É QUE 
+
+
+
+O 
+
+
+
+
+
+''''VOLUME LIFETIME''', POR DEFAULT, VAI DEPENDER DO 'POD LIFETIME'... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+UÉ, MAS PQ ISSO? 
+
+
+
+
+
+
+
+
+
+É PQ __ NÃO DEVEMOS NOS ESQUECER QUE 
+
+
+
+___ OS VOLUMES __ FAZEM PARTE __ 
+
+DOS PODS QUE 
+
+SÃO 
+
+'STARTED'
+
+
+E 
+
+'MANAGED'
+
+
+PELO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VIMOS ISSO NO PRIMEIRO OVERVIEW DO PROFESSOR, 
+
+EM
+QUE TÍNHAMOS ALGO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CLUSTER {
+
+
+MASTER NODE {
+    
+    { THE CONTROL PLANE }
+}
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+                VOLUMES
+        CONTAINER
+    }
+}
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        VOLUMES
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+
+
+
+ WORKER NODE {
+
+
+    { PROXY/CONFIG }
+
+    POD {
+        CONTAINER
+    }
+
+        POD {
+        CONTAINER 
+        CONTAINER
+    }
+
+
+
+        POD {
+        CONTAINER
+        CONTAINER 
+        CONTAINER
+    }
+
+            POD {
+        CONTAINER
+    }
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+----------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OU SEJA, ISSO QUER DIZER QUE 'VOLUMES'
+
+SÃO 
+
+'POD-SPECIFIC'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FREQUENTEMENTE ISSO É 'TOTALLY FINE',
+
+
+
+
+
+
+
+
+
+MAS EXISTIRÃO CASOS EM QUE ISSO SE TORNARÁ 1 PROBLEMA...
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O PROFESSOR VAI NOS APRESENTAR 1 
+
+
+SOLUTION A PROBLEMAS EM POTENCIAL (acerca disso) NESSA SECTION...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS ANTES DE ANALISARMOS PROBLEMS E SOLUTIONS, DEVEMOS 
+
+ENTENDER OS BASICS...
+
+
+
+
+
+
+
+
+
+----> OK... O VOLUME LIFETIME,
+
+
+COMO
+O 
+
+VOLUME __ fAZ PARTE DO _ POD,
+
+
+
+DEPENDE 
+
+DO 
+
+
+__ POD LIFETIME__...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO SIGNIFICA QUE 'VOLUMES'
+
+
+SOBREVIVEM 
+
+
+A CONTAINER RESTARTS E REMOVALS,
+
+
+
+
+POIS O CONTAINER ESTÁ DENTRO DO POD... E OS VOLUMES FICAM DENTRO 
+
+DOS PODS,
+SIM,
+
+
+
+MAS _ FORA __ DOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS COMO O VOLUME FICA DENTRO DO POD,
+
+
+
+OS __ VOLUMES__ SÃO REMOVIDOS __ SEMPRE QUE 
+
+
+
+
+OS PODS QUE OS ABRIGAM SÃO DESTRUÍDOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> RESUMO:
+
+
+
+
+
+1) PODS SOBREVIVEM A 'CONTAINER RESTARTS AND REMOVALS'... o que é ótimo,
+
+pq é o que precisamos, aqui...
+
+
+
+
+
+
+
+
+2) MAS SE VC __ REMOVER O POD EM QUE ESSE VOLUME VIVE,
+
+
+ELE _ VAI SER REMOVIDO TAMBÉM...
+
+
+
+
+
+
+
+
+
+
+
+-----> E SE VC QUER QUE 1 VOLUME __ SOBREVIVA __ 
+
+
+AO REMOVAL DE 1 POD,
+
+
+
+EXISTIRÁ UMA MANEIRA DE FAZÊ-LO,
+
+
+
+
+MAS É UM 
+
+CONCEITO 
+
+AVANÇADO QUE 
+
+EXPLORAREMOS COMO PRÓXIMO PASSO...
+
+
+
+
+
+
+
+
+
+
+-----> POR ENQUANTO,
+
+
+ESTUDAREMOS 
+
+ESSES 'POD INTERNAL, POD SPECIFIC' volumes...
+
+
+
+
+
+
+
+
+
+
+
+-> OK.. MAS É IMPORTANTE ENTENDER QUE 
+
+
+
+O __ KUBERNETES TEM ESSE SUPORTE DE VOLUMES,
+
+
+
+MAS OS VOLUMES MANAGEADOS PELO KUBERNETES NÃO SÃO EXATAMENTE OS 
+
+MESMOS 
+
+
+
+
+TIPOS DE VOLUMES MANAGEADOS PELO DOCKER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OU SEJA.... A IDEIA É A MESMA DA DO DOCKER,
+
+
+
+MAS OS VOLUMES KUBERNETES SÃO MAIS FORTES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM OS VOLUMES KUBERNETES, TEMOS:
+
+
+
+
+
+
+
+
+1) DIFERENTES DRIVERS E TYPES --> ISSO TE FORNECE GRANDE CONTROLE 
+
+SOBRE '''EM QUE LUGAR A DATA SERÁ ARMAZENADA'''' 
+
+
+
+
+-> quando trabalhamos 
+
+com DOCKER E DOCKER-COMPOSE,
+
+
+ESSE NÃO É O CASO,
+
+PQ 
+
+
+__ ISSO É ALGO QUE NÃO É REALMENTE NECESSÁRIO, PQ 
+
+
+
+VC SEMPRE VAI RODAR AS COISAS ''''NA PRÓPRIA MÁQUINA''', NA LOCAL MACHINE EM SI....
+
+
+
+
+--> NO DOCKER/DOCKER-COMPOSE, é transparente que vc vai querer ARMAZENAR AS COISAS 
+
+EM 1 VOLUME LOCAL, NA PRÓPRIA MÁQUINA... --------> É POR ISSO QUE NÃO PRECISAMOS,
+ NO DOCKER/D-COMPOSE, 
+
+ de tanto STORAGE SUPPORT,
+
+ PARA DIFERENTES STORAGE SYSTEMS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> MAS COM O KUBERNETES,
+
+ QUE RODA SEU 
+
+ APP EM 1 CLUSTER COM MÚLITPLOS NODES,
+
+ EM DIFERENTES HOSTING ENVIRONMENTS (aws, azure, gcp, seu próprio data center, etc),
+
+
+
+
+
+ É CLARO QUE ELE PRECISA SER __ FLEXÍVEL__ ACERCA DE 'COMO SUA DATA DEVE SER STORED',
+
+
+
+ QUAL SERVICE, POR QUAL CLOUD PROVIDER,
+
+ DEVE SER USADO,
+
+ POR EXEMPLO.... OU SE SUA DATA DEVE SER ARMAZENADA NO HARD DRIVE DE ALGUMA MACHINE... 
+
+
+
+
+
+
+
+
+
+ --> E TUDO ISSO É A FLEXIBILIDADE QUE O KUBERNETES TE DÁ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OUTRA DIFERENÇA:
+
+
+
+
+
+
+NO KUBERNETES,
+
+'''VOLUMES NÃO SÃO NECESSARIAMENTE PERSISTENT'''' --> POR DEFAULT,
+
+ELES SOBREVIVEM A ''CONTAINER RESTARTS''',
+
+
+
+MAS 
+
+
+NÃO SOBREVIVEM A '''POD RESTARTS''' (pelo menos n por default)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> JÁ NO DOCKER, COMO NÃO TEMOS O CONCEITO DE 'PODS',
+
+DIFERENTES MACHINES/NODES,
+
+
+
+
+A DATA SEMPRE PERSISTE, OS VOLUMES SEMPRE PERSISTEM,
+
+ATÉ SEREM 'MANUALLY CLEARED'...
+
+
+
+
+
+
+
+-> PQ ISSO? --> É PQ RODAMOS DOCKER EM 1 ÚNICA MÁQUINA... (
+
+    como, por exemplo,
+
+    nossa local development machine
+) -------> E SE VC DESTRUÍSSE TOTALMENTE ESSA MÁQUINA,
+
+REINSTALASSE 1 SISTEMA OPERACIONAL NELA,
+
+
+
+A DATA SERIA PERDIDA, É CLARO, MAS 
+
+ISSO NÃO É ALGO QUE VC TIPICAMENTE FAZ...
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS É ESSA A COMPARAÇÃO QUE FAZEMOS COM O KUBERNETES,
+
+PQ,
+
+
+COM O KUBERNETES,
+
+
+
+NÓS TRABALHAMOS EM 1 CLUSTER,
+
+
+COM DIFERENTES 
+
+
+
+
+NODES (WORKER E MASTER) E  PODS NESSES NODES... ->  E, É CLARO, SE 1 
+
+
+
+
+POD É REMOVIDO, EM ALGUM NODE,
+
+
+
+
+ISSO É MAIS OU MENOS EQUIVALENTE A VOCê _ RESETTAR_ SEU 'LOCAL LAPTOP'---> E SE VC 
+
+
+
+RESETTASSE SEU LOCAL LAPTOP, É CLARO QUE A DATA SERIA PERDIDA...
+
+
+
+
+
+
+
+
+
+
+--> SE APENAS 1 CONTAINER PAROU E RESTARTOU, E SE ELE FOI REMOVIDO NO MEIO DISSO,
+
+
+OS VOLUMES AINDA VÃO PERSIST (
+    pq essa é a core idea por trás dos 
+
+    volumes...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE 
+
+
+O KUBERNETES FAZ 'LEVERAGE' 
+
+
+DO 
+
+SISTEMA DE DOCKER VOLUMES,
+
+MAS ADICIONA MAIS PODER E 
+
+
+
+CONFIG OPTIONS A ESSE SISTEMA,
+
+
+
+JUSTAMENTE 
+
+PQ 
+
+ELE PRECISA 
+
+
+DESSAS CONFIG OPTIONS..
+
+
+
+
+
+
+
+
+
+
+--> aGORA DEVEMOS ESTUDAR COMO PODEMOS USAR KUBERNETES VOLUMES...
