@@ -1,0 +1,2080 @@
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AGORA APRENDEMOS SOBRE KUBERNETES VOLUMES E SOBRE COMO PODEMOS OS UTILIZAR...
+
+
+
+
+
+
+
+
+
+
+
+--> APRENDEMOS SOBRE OS DIFERENTES TIPOS DE VOLUMES KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+aprendemos sobre os types:
+
+
+
+
+
+
+1) emptyDir --> bem situacional 
+
+
+
+
+2) hostPath --> situacional, mas bom...
+
+
+
+
+3) csi --> USADO PARA 'CUSTOM TYPES', para types que não sejam 'BUILT-IN'
+
+do kubernetes (que não estejam incluídos naquela longa lista, de 25 volume types)...
+
+
+
+
+
+
+
+
+
+
+--> certo...
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR TAMBÉM FALOU BREVEMENTE SOBRE O TYPE DE 'csi'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS TODOS ESSES VOLUMES POSSUEM 1 GRANDE DESVANTAGEM:
+
+
+
+__ ELES__ SÃO _ ___  DESTROYED__ SEMPRE QUE 
+
+1 
+POD 
+É 
+
+REMOVED/TERMINATED,
+
+
+
+
+
+TERMINATED E SUBSTITUÍDO POR 1 NOVO POD (por exemplo)...
+
+
+
+
+
+
+
+
+
+-> outra hipótese em que são destruídos 
+
+é 
+
+o 'SCALING' --> SE VC ESCALAR SEUS PODS,
+
+IR DE 
+'1 POD' 
+
+PARA 
+'2 PODS',
+
+
+
+
+DEPENDENDO 
+
+DO TIPO 
+
+DE VOLUME QUE VC ESTÁ USANDO (
+
+como 'emptyDir', por exemplo
+
+
+),
+
+
+O SEGUNDO POD NÃO TERÁ ACESSO à DATA QUE 
+
+
+
+
+FOI ESCRITA PELO PRIMEIRO POD,
+
+EM 
+
+
+
+1 VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+ESSE SEGUNDO PROBLEMA, O DE 'NÃO CONSIGO ACESSAR A DATA DE UM VOLUME NOS MEUS OUTROS 
+PODS,
+
+SE EU COMEÇAR COM 1 POD E DEPOIS FIZER SCALE',
+
+
+
+
+É 
+SOLUCIONADO,
+EM PARTE,
+
+COM 
+
+O 
+TYPE DE 'hostPath'... (que 
+
+
+basicamente vincula 1  path, dentro de cada 1 dos pods,
+a 
+
+1 
+
+PATH FIXO, DEFINIDO LÁ __ NO WORKER NODE/MACHINE, QUE VAI COMPARTILHAR 
+
+A DATA 
+DESSE FOLDER COM TODOS ELES (TIPO 1 BIND MOUNT INVERSO)... -------> COM ISSO, O 'hostPath'
+
+
+BASICAMENTE 
+
+RESOLVE 1 POUCO ESSE PROBLEMA, ISSO SE SEU AMBIENTE REALMENTE TIVER 'APENAS 1 NODE' (master node e worker node em 1 só node, funções acumuladas)
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+--> MAS É IMPORTANTE TER EM MENTE QUE A SOLUÇÃO DE 'hostPath'
+
+
+
+_ FUNCIONA ____ APENAS __ NO 
+
+
+minikube,
+
+
+
+
+
+JUSTAMENTE PQ O MINIKUBE É UM 'ONE-NODE ENVIRONMENT'... -------> TODOS OS PODS, NO MINKUBE,
+
+
+
+RODAM 
+
+NO MESMO WORKER NODE,
+
+
+
+JUSTAMENTE PQ 
+
+
+
+NO MINIKUBE TEMOS APENAS 1 ÚNICO WORKER NODE (que é o master também)...
+
+
+
+
+
+
+
+
+
+
+
+CERTO... MAS UMA VEZ QUE 
+
+VC 
+
+
+
+SE DESLOCAR, DO SEU 'LOCAL ENVIRONMENT' E DO MINIKUBE,
+
+PARA 
+
+
+
+1 REAL ENVIRONMENT,
+
+COM 
+1 CLUSTER 
+
+DE VERDADE,
+
+
+
+
+como a AWS,
+
+
+
+VC __ TERÁ MÚLTIPLOS NODES... ------> AÍ, NESSA HIPÓTESE,
+
+
+O 'hostPath' 
+
+
+NÃO VAI MAIS TE AJUDAR....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... --> nesses casos, de real deployment,
+
+VC 
+
+REALMENTE TERÁ O PROBLEMA DE QUE 
+
+
+
+'''VOLUMES SÃO ATTACHEADOS A PODS''',
+
+
+
+
+
+
+
+E, PORTANTO,
+
+MÚLTIPLOS PODS 
+
+
+
+
+
+NÃO COMPARTILHAM A MESMA DATA... (não vão pegar a mesma data, de 1 mesmo local...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO SIGNIFICA QUE QUANDO 1 POD É DESTRUÍDO/REPLACED,
+
+
+
+A DATA __ ARMAZENADA NO VOLUME __ sERÁ __ LOST...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS É CLARO QUE  Às vezes vamos precisar 
+
+de 
+
+'VOLUMES INDEPENDENTES, INDEPENDENTES DE POD E NODES''... 
+
+
+
+
+
+
+
+
+---> por exemplo,
+
+
+
+SE VC TIVER 1 CONTAINER COM UMA __DATABASE NO INTERIOR,
+
+
+
+OU 
+
+ENTÃO 
+
+
+
+1 
+
+
+CONTAINER QUE FAZ WRITE INTERNO DE FILES,
+
+FILES QUE DEVEM SOBREVIVER 
+
+
+A 'POD REPLACEMENT/REMOVAL' -------------> OU SEJA,
+
+
+
+NÃO É BOM SEMPRE 'PERDERMOS DATA'
+
+
+
+SEMPRE QUE 
+
+1 
+
+POD 
+É 
+
+REMOVED...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PARA ALGUMA DATA,
+
+
+
+ESPECIALMENTE 'INTERMEDIATE RESULTS'
+
+E 
+
+'TEMPORARY DATA',
+
+
+
+
+
+ISSO PODE SER FINE... MAS PARA 'LONG-TERM DATA',
+
+
+
+
+
+
+
+COMO ___ A 'KEY DATA'
+
+
+GERADA POR SEU APP,
+
+
+
+
+
+
+
+VC DEFINITIVAMENTE NÃO VAI QUERER PERDER ESSA DATA 
+
+SE 
+
+
+ALGUM POD FOR 'SCALED-UP'
+
+
+
+OU 
+
+REPLACED...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE 
+
+O 
+
+
+KUBERNETES 
+
+TEM UMA ___ SOLUÇÃO PARA ISSO...
+
+
+
+
+
+
+
+
+ALÉM DOS VOLUMES QUE VIMOS ATÉ AGORA, OS 'REGULAR VOLUMES',
+
+
+
+O KUBERNETES 
+
+
+
+TEM 
+
+
+1 CONCEITO CHAMADO
+ 
+
+
+ DE 
+
+ 'PERSISTENT VOLUMES'...
+
+
+
+
+
+
+
+
+
+
+
+
+COMO O NOME SUGERE,
+
+A DIFERENÇA AQUI É QUE 
+
+
+
+'persistent volumes'
+
+SEMPRE 
+
+VÃO PERSISTIR....  VÃO _ PERSISTIR __ PQ __ ELES SERÃO 
+
+
+
+'POD-' E 'NODE-' INDEPENDENT...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+
+MAS É CLARO QUE PODERÍAMOS/PODEMOS ARGUMENTAR QUE 
+
+
+
+1 MONTE 
+
+
+DOS 
+
+VOLUME  TYPES QUE USAMOS,
+
+
+
+COMO 
+
+'awsElasticBlockStore',
+
+
+
+
+'azureDisk',
+
+
+
+
+'azureFile',
+
+
+
+
+'NFS',
+
+
+
+e mtos outros,
+
+
+
+ESSAS OPTIONS 
+
+TODAS 
+
+
+
+NOS DÃO 
+
+
+
+
+'POD- E NODE- INDEPENDENT STORAGE'.. --->  isso pq,
+
+
+
+
+APESAR DE SER SETTADO 1 VOLUME QUANDO SETTAMOS 1 POD (pq nossa volume definition realmente 
+é adicionada no arquivo .yaml, no final das contas),
+
+
+
+
+
+POR NATUREZA MTAS DAS SOLUTIONS ALI 
+
+
+JÁ 
+
+FAZEM 
+
+
+
+STORE __ DA DATA__  __ NO LADO __ DE FORA DO POD/CONTAINER/NODE 
+
+
+
+
+EM QUE 
+
+
+
+NOSSO APP ESTÁ RODANDO ----------> SE USAMOS 
+
+
+
+
+'awsElasticBlockStore',
+
+
+
+
+NOSSA DATA VAI FICAR ARMAZENADA 
+
+
+
+NOS SERVERS 
+
+
+DA 
+
+
+
+AWS,
+
+
+
+E ESSA DATA NÃO VAI SER 'REMOVED' DE LÁ APENAS 
+
+
+PQ 
+1 POD 
+
+FOI 'SHUT DOWN'... ---------->  e encontramos isso nos próprios 
+docs 
+
+da option de ''awsElasticBlockStore',
+
+
+
+lá no kubernetes --> 'AO CONTRÁRIO 
+
+
+
+DE 
+
+'emptyDir',
+
+
+
+
+
+
+EM QUE __ A DATA _ É REMOVIDA __ SEMPRE QUE _ 1 POD É REMOVED,
+
+
+
+
+A DATA 
+
+
+
+
+NO 'awsElasticBlockStore'
+
+
+
+
+VAI PERSISTIR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK, MAS PQ DIABOS TEMOS ESSE OUTRO TIPO DE VOLUME,
+
+
+
+O 
+'PERSISTENT VOLUME',
+
+
+
+SE 
+
+
+PARA 'REGULAR VOLUMES'
+
+
+
+ PODEMOS USAR 'VOLUME TYPES'
+
+
+
+
+QUE JÁ NOS DÃO 
+
+ESSA  
+
+
+
+
+'NODE- E POD INDEPENDENCE'... -----------> BEM, COMO VEREMOS 
+
+
+
+
+NAS PRÓXIMAS LIÇÕES,
+
+
+
+
+O 
+CONCEITO 
+
+DE 
+
+
+
+'persistent volume'
+
+É MAIS DO QUE 
+
+
+
+UMA 'INDEPENDENT STORAGE'...
+
+
+
+
+
+
+
+
+
+
+
+--> A IDEIA CHAVE,
+
+NO ENTANTO,
+
+
+É 
+
+
+QUE 
+
+__ O VOLUME __ VAI __ SER DETACHED__  DO POD......_____ --------> E ISSO QUER DIZER 
+
+
+'''UM TOTAL DETACHMENT 
+
+
+EM RELAÇÃO AO POD LIFECYCLE'''''... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EM VEZ DISSO,
+
+
+COM 
+`PERSISTENT VOLUMES`,
+
+
+
+
+
+
+
+TEREMOS __ ESSA 'POD- E NODE INDEPENDENCE',
+
+
+
+
+E, COMO CLUSTER ADMINISTRATOR,
+
+
+
+
+
+TEREMOS 
+
+
+
+CONTROLE COMPLETO 
+
+
+
+
+SOBRE 
+
+
+
+COMO 
+
+ESSE VOLUME SERÁ CONFIGURADO.... -> NÃO PRECISAREMOS 
+
+
+
+CONFIGURAR 
+
+
+
+
+ESSE VOLUME MÚLTIPLAS VEZES,
+
+
+N PRECISAREMOS 
+
+CONFIGURAR ESSE VOLUME PARA DIFERENTES PODS E EM DIFERENTES ARQUIVOS '.yaml',
+
+
+
+
+
+
+
+
+
+PQ _ _BASTARÁ DEFINIR 
+
+
+
+ESSE VOLUME 1 ÚNICA VEZ,
+E AÍ 
+
+
+USAR 
+
+ESSE VOLUME EM MÚLTIPLOS PODS,
+
+SE QUISERMOS....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> ISSO QUER DIZER QUE 
+
+
+'PERSISTENT VOLUMES'
+
+
+
+INTRODUZEM ESSA IDEIA DE 'POD E NODE- INDEPENDENCE',
+
+
+
+
+
+E __ ISSO -_ NOS AJUDA 
+
+A RESPEITO DE:
+
+
+
+
+
+
+
+
+1) COMO  A DATA __ É ARMAZENADA (para que não seja LOST se 1 pod for destruído e recriado)...
+
+
+
+
+
+
+2) TAMBÉM NOS AJUDA COM A DEFINIÇÃO DE VOLUMES ___ INDEPENDENTES EM RELAÇÃO A PODS,
+
+
+PARA QUE SEJA POSSÍVEL DEFINIR ESSES VOLUMES 
+
+
+
+
+EM 1 LUGAR CENTRAL,
+
+
+
+E AÍ 
+
+
+
+
+PARA QUE SEJA POSSÍVEL USAR 
+
+ESSE/ESSES VOLUME/VOLUMES 
+
+
+EM MÚLTIPLOS LUGARES/PODS/NODES,
+
+
+
+
+
+
+SEM _ TER _ DE EDITAR MÚLTIPLOS ARQUIVOS YAML de pods...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO pq, em projetos maiores,
+
+
+
+definir 
+
+
+
+vários 'pod yaml files'
+
+
+
+PODE SER BEM CUMBERSOME,
+
+
+
+
+E PODE NEM MESMO DAR TANTO CONTROLE ASSIM,
+
+
+
+
+
+
+NEM DÁ TANTO CONTROLE ASSIM AOS CLUSTER ADMINISTRATORS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E É POR ISSO QUE PERSISTENT VOLUMES PODEM NOS AJUDAR...
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... MAS COMO PERSISTENT VOLUMES FUNCIONAM...?
+
+
+
+
+
+
+
+
+
+E QUAIS SÃO AS SUAS DIFERENÇAS, EM RELAÇAÕ A 'REGULAR VOLUMES'?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> BEM...
+
+
+
+
+
+
+
+SE TIVERMOS 1 CLUSTER COM MÚLTIPLOS NODES E DIFERENTES PODS... (
+
+
+    ou DIFERENTES INSTANCES DE 1 MESMO POD,
+
+    OU 
+
+
+    DIFERENTES PODS, COM DIFERENTES CONTAINERS...
+),
+ 
+
+ FICAMOS COM ALGO TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ CLUSTER {
+
+
+
+    NODE {
+        POD
+        POD
+    }
+
+
+    NODE {
+        POD 
+        POD
+    }
+
+ }
+
+
+
+
+
+
+
+
+
+ FICAMOS COM DIFERENTES PODS RODANDO DENTRO DESSES NODES... --> APRENDEMOS 
+
+ QUE 
+
+ VOLUMES 
+ FICARÃO DENTRO 
+ DESSES PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> ENTRETANTO, A IDEIA, COM PERSISTENT VOLUMES,
+
+
+ É 
+
+
+ 
+ QUE 
+
+ VC 
+
+
+ TERÁ 
+
+
+ ___NOVOS _ RESOURCES,
+
+
+ NOVAS__ ENTITIES__ NO SEU CLUSTER.... ------> ENTITIES QUE SERÃO__ DETACHED__  
+
+ DOS SEUS NODES E DETACHED DE SEUS PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> O NOME DESSAS ENTITIES É 'PERSISTENT VOLUMES'... 
+
+
+
+
+
+
+
+
+ COM ISSO,
+
+
+ NOSSO 
+
+
+
+ CLUSTER APP FICARIA ASSIM:
+
+
+
+
+
+ 
+
+
+
+
+
+
+ CLUSTER {
+
+
+
+    NODE {
+        POD
+        POD
+    }
+
+
+    NODE {
+        POD 
+        POD
+    }
+
+
+    { PERSISTENT VOLUME }
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+VC PODE CRIAR ESSES 'PERSISTENT VOLUMES'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O QUE VOCÊ CRIA/CRIARIA,
+
+
+DENTRO 
+
+
+DOS SEUS  
+
+
+NODES,
+
+
+NÃO 
+
+
+
+
+SERIAM VOLUMES EM SI,
+
+
+E SIM 
+
+
+
+'PERSISTENT VOLUME CLAIMS' (PV CLAIMS),
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+ CLUSTER {
+
+
+
+    NODE {
+        POD
+        POD
+        PERSISTENT VOLUME CLAIM
+    }
+
+
+    NODE {
+        POD 
+        POD
+        PERSISTENT VOLUME CLAIM
+    }
+
+
+    { PERSISTENT VOLUME }
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, COM A AJUDA DOS 'PERSISTENT VOLUME CLAIMS',
+
+
+
+CONSEGUIMOS 
+
+
+
+UTILIZAR AQUELES 'PERSISTENT VOLUMES',
+
+
+QUE 
+
+REALMENTE 
+
+VÃO 
+
+PERSISTIR 
+
+NOSSA DATA AO LONGO DE CONTAINER/POD/NODE RESTARTS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... cada PERSISTENT VOLUME CLAIM PERTENCE A 1 'PERSISTENT VOLUME'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... E ESSAS CLAIMS PODEM 'REACH OUT' A ESSES 'STANDALONE, NODE AND POD-INDEPENDENT ENTITIES',
+
+
+
+OS PERSISTENT VOLUMES,
+
+PARA 
+
+
+REQUISITAR 
+
+ACESSO A ELES...
+
+
+
+
+
+
+
+
+
+--> ISSO PARA QUE O CONTAINER, RODANDO NO POD,
+
+CONSIGA FAZER 'WRITE'
+
+
+
+
+NAQUELE PERSISTENT VOLUME...
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+ CLUSTER {
+
+
+
+    NODE {
+        POD
+        POD
+        PERSISTENT VOLUME CLAIM ------
+    }                                I
+                                     I 
+                                     I
+                                     I
+    { PERSISTENT VOLUME } <-----------
+
+    NODE {
+        POD 
+        POD
+        PERSISTENT VOLUME CLAIM
+    }
+
+
+
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... OUTRA QUESTÃO, EXPLICA O PROFESSOR, É QUE 
+
+
+CADA UMA DESSAS 'persistent volume claims'
+
+
+
+
+PODE SE CONECTAR A MÚLTIPLOS PERSISTENT VOLUMES...
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+ CLUSTER {
+
+
+
+    NODE {
+        POD
+        POD
+        PERSISTENT VOLUME CLAIM ------
+    }                                I
+                                     I 
+                                     I
+                                     I
+    { PERSISTENT VOLUME } <-----------
+                                     I 
+                                     I
+                                     I
+    { PERSISTENT VOLUME } <-----------
+
+
+
+    NODE {
+        POD 
+        POD
+        PERSISTENT VOLUME CLAIM
+    }
+
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ALÉM DISSO,
+
+
+
+ VC PODE 
+
+ TER 
+
+ MÚLTIPLAS CLAIMS A __ 1 MESMO VOLUME, TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+ 
+ CLUSTER {
+
+
+
+    NODE {
+        POD
+        POD
+        PERSISTENT VOLUME CLAIM ------
+    }                                I
+                                     I 
+                                     I
+                                     I
+    { PERSISTENT VOLUME } <-----------
+                                     I 
+                                     I
+                                     I
+    { PERSISTENT VOLUME } <-----------
+                                     I 
+                                     I
+    NODE {                           I
+        POD                          I
+        POD                          I
+        PERSISTENT VOLUME CLAIM  -----
+    }
+
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... 
+
+
+
+
+
+
+
+
+ISSO QUER DIZER QUE 
+
+
+'''POEDMOS TER DIFERENTES CLAIMS,
+
+A DIFERENTES PERSISTENT VOLUMES, 
+
+EM DIFERENTES PODS,
+
+EM DIFERENTES NODES''...
+
+
+
+
+
+
+
+
+
+
+->  QUER DIZER QUE FICAMOS COM FLEXIBILIDADE COMPLETA, AQUI...
+
+
+
+
+
+
+
+--> E A IDEIA É QUE ESSES PERSISTENT VOLUMES,
+
+
+É CLARO,
+
+
+
+
+NÃO ARMAZENAM DATA EM ALGUM DESSES NODES... --> E SIM ___ 
+
+
+
+SÃO REALMENTE INDEPENDENTES_ __ DOS NODES EM SI....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> SE OLHARMOS OS DOCS DOS PERSISTENT VOLUME, NO KUBERNETES,
+
+
+
+
+PODEMOS VER QUE A COISA 
+
+
+
+MAIS IMPORTANTE 
+
+É 
+
+
+
+
+OS 
+
+'TYPES DE PERSISTENT VOLUMES'... -------> LÁ, VC Vê QUE OS 
+
+TYPES 
+
+
+SÃO _ _ + OU - SIMILARES ÀQUELES QUE VIMOS ANTES,
+
+
+LÁ COM OS REGULAR VOLUMES:
+
+
+
+
+
+
+
+
+1) GCEPersistentDisk 
+
+
+2) awsElasticBlockStore
+
+3) azureFile
+
+
+
+4) aZUREdISK 
+
+
+5) CSI 
+
+
+
+6) FC 
+
+
+
+7) flexVolume 
+
+
+
+8) Flocker 
+
+
+9) NFS 
+
+
+10) iSCSI 
+
+
+11) RBD (Ceph Block Device)
+
+
+12) CephFS 
+
+
+13) Cinder 
+
+
+14) Glusterfs 
+
+
+15) VsphereVolume 
+
+
+16) Quobyte volumes 
+
+
+17) HostPath (single node testing only - local storage is not supported in any way and WILL NOT WORK in a multi-node cluster)
+
+
+18) PortWorx volume 
+
+
+19) ScaleIO volumes 
+
+
+
+20) StorageOS 
+
+
+
+
+
+
+
+
+
+
+
+
+------> OK... MAS PERCEBEMOS QUE ALGUNS TYPES ESTÃO FALTANDO...
+
+
+
+
+
+
+
+
+
+
+-> O 'emptyDir'
+
+
+ESTÁ FALTANDO....
+
+
+
+
+
+
+
+
+
+
+-> O 'hostPath'
+
+
+ESTÁ LÁ,
+
+SIM,
+
+
+
+MAS __ HÁ UMA RESTRIÇÃO IMPORTANTE:
+
+
+'''ESSE NEGÓCIO SÓ FUNCIONA SE FOR 1 SINGLE NODE''' -> como nosso local setup, com o minikube...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE, DE VERDADE,
+
+
+EM 1 REAL DEPLOYMENT,
+
+
+EM 1 
+
+
+CLUSTER DE VERDADE,
+
+O hostPath
+
+
+também
+
+
+
+
+NÃO ESTARÁ AVAILABLE --> ISSO PQ TODA A IDEIA 
+
+
+
+DE PERSISTENT VOLUMES É QUE 
+
+
+
+__ELES __
+
+
+SERÃO 'DETACHED' 
+
+
+DOS SEUS NODES E PODS... -------> portanto,
+
+
+
+vc pode usar, por exemplo,
+
+
+
+
+
+'awsElasticBlockStore',
+
+
+
+ou 
+
+'azureFile',
+
+
+
+
+ou 
+
+'azureDisk',
+
+
+
+
+
+OU ESSE TYPE FLEXÍVEL DE 'CSI',
+
+
+
+PARA __ ANEXAR __ QUALQUER TIPO DE STORAGE 
+
+
+
+NO SEU CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O DETALHE-CHAVE, AQUI,
+
+
+
+É QUE 
+
+
+
+
+__ A STORAGE NÃO VAI FICAR NOS SEUS NODES DO CLUSTER,
+
+
+
+E SIM 
+VAI 
+
+FICAR EM ALGUM OUTRO LUGAR,
+
+
+
+
+COMO ALGUM 'CLOUD STORAGE SERVICE' --------> E VEREMOS ESSE TYPE DE 
+
+'CSI' mais tarde,
+
+
+
+QUANDO REALMENTE FIZERMOS DEPLOY DE NOSSO APP....
+
+
+
+
+
+
+
+
+
+
+
+--> MAS JÁ PODEMOS COMEÇAR COM OS PERSISTENT 
+
+VOLUMES,
+
+
+
+
+PARA __ ENTENDER __ COMO ELES FUNCIONAM,
+
+
+
+E PARA ENTENDER COMO OS 
+
+'CLAIM'
+
+
+
+
+E 'PERSISTENT VOLUMES'
+
+funcionam em conjunto...
+
+
+
+
+
+
+
+--> NOVAMENTE,
+
+TESTAREMOS TUDO ISSO 
+
+
+COM O 'hostPath'----> novaemnte,
+
+
+
+essa opção existe para TESTING e para esse LOCAL DUMMY ENVIRONMENT,
+
+ 
+
+
+ESSE ENVIRONMENT QUE USA APENAS 1 NODE (minikube)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mas a ideia do 'hostPath'
+
+
+É EXATAMENTE A MESMA DE QUALQUER OUTRO TYPE,
+
+SÓ QUE 
+
+É USADA 
+
+
+
+PARA TESTS LOCAIS, COM O MINIKUBE... É PERFEITA PARA 'GET STARTED'
+
+
+COM 
+PERSISTENT VOLUMES...
