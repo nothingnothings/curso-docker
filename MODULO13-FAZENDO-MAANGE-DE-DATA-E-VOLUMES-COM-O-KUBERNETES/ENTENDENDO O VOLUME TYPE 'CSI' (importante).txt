@@ -1,0 +1,645 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+HÁ MAIS 1 TIPO DE VOLUME QUE O PROFESSOR QUER ESCLARECER...
+
+
+
+
+
+
+
+
+
+
+É O TYPE DE 'CSI'...
+
+
+
+
+
+
+
+
+
+
+--> É 1 TYPE MEIO DIFERENTES DOS OUTROS TIPOS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ELE SIGNIFICA 
+
+'CONTAINER STORAGE INTERFACE'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O CSI É BEM FLEXÍVEL.. --> AO CONTRÁRIO DOS OUTRO TYPES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> A MAIOR PARTE DOS TYPES É BEM 'ESPECÍFICA',
+
+
+COMO 
+
+
+O 
+
+TYPE DE 
+
+
+
+'awsElasticBlockStore'... -------> ISSO TE DEIXA USAR 
+
+O 'awsElasticBlockStore'
+
+service __ COMO 1 DATA STORAGE SOLUTION.... 
+
+
+
+
+
+
+
+
+
+--> E A MESMA COISA EXISTE PARA ALGUNS SERVICES AZURE,
+
+AQUI....
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OUTROS TIPOS, COMO O 'nfs' --> PERMITE QUE VC SE CONECTE A QUALQUER 
+'NFS SERVER' 
+
+(NETWORK FILE SYSTEM server)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+VC PODE VER OS EXEMPLOS...
+
+
+
+
+
+
+
+
+
+
+MAS O TYPE DE 'CSI' 
+
+
+É 
+
+
+1 
+
+VOLUME TYPE __ ESPECIAL...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ELE É BEM RECENTE... --> ELE  FOI CRIADO _ PARA _ GARANTIR QUE 
+
+
+
+OS DEVS DO KUBERNETES NÃO TENHAM QUE 
+
+
+SEGUIR ADICIONANDO MAIS E MAIS 'BUILT-IN TYPES'
+
+PARA 
+
+DIFERENTES 
+
+CLOUD-PROVIDERS E USE-CASES...
+
+
+
+
+
+
+
+
+
+
+COM ESSE TYPE,
+ 
+
+ É EXPOSTA 1 __ 'CLEARLY-DEFINED INTERFACE',
+
+ E AÍ 
+
+
+ QUALQUER 
+
+
+
+
+
+
+ PESSOA PODE ESCREVER 'DRIVER SOLUTIONS' 
+
+ QUE __ UTILIZEM ESSA INTERFACE.... --------> MAS O QUE O PROFESSOR QUER DIZER,
+ POR ISSO?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> BEM, DIGAMOS QUE QUEREMOS USAR A STORAGE SOLUTION DO 
+
+ 'AMAZON ELASTIC FILE SYSTEM'... 
+
+
+
+
+
+
+
+
+
+
+--> ESSE É O STORAGE QUE USAMOS ANTERIORMENTE,
+
+
+
+STORAGE SOLUTION QUE USAMOS NA COURSE SECTION DE 'DEPLOYMENT'....
+
+
+
+
+
+
+
+
+
+
+
+---> PODEMOS USAR ISSO SE VAMOS __ DEPLOYAR NOSSO KUBERNETES 
+
+CLUSTER 
+
+
+NA AWS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE VC FOSSE USAR ESSE 'FILE SYSTEM SERVICE'
+
+PARA ARMAZENAR 
+
+
+SUA DATA,
+
+
+
+
+
+PROVAVELMENTE VC CONSEGUIRIA FAZER ELE FUNCIONAR 
+
+
+COM O TYPE DE 'NFS'... --------> ISSO PQ 
+
+
+
+O 
+
+
+
+'ELASTIC FILE SYSTEM'
+
+É PRECISAMENTE 
+
+
+
+
+1 _ 'NETWORK FILE SYSTEM' --------> MAS ISSO 
+
+
+TVZ 
+
+
+
+LEVE 1 POUCO MAIS DE TRABALHO,
+
+MAS 
+
+
+UMA 
+
+OPÇÃO VÁLIDA,
+
+PQ 
+
+
+NÃO EXISTE NENHUM TYPE 
+
+'EFS' 
+
+
+BUILT-IN 
+
+
+
+NO 
+
+
+
+KUBERNETES...
+
+
+
+
+
+
+
+
+EXISTE O 'awsElasticBlockStore',
+
+
+
+
+MAS ESSE É UM AWS STORAGE SERVICE COMPLETAMENTE DIFERENTE..
+
+
+
+
+
+
+
+
+
+
+---> OK...
+
+
+
+
+
+
+
+
+
+
+
+-> MAS COMO O PROFESSOR MENCIONOU,
+
+
+
+MELHOR DO QUE USAR O 'NFS',
+
+
+
+
+
+
+
+
+
+SERIA UTILIZAR ESSE TYPE DE 'csi',
+
+
+QUE 
+
+
+SERVE JUSTAMENTE 
+
+PARA CASOS COMO ESSES 
+
+
+(
+
+    em que 
+
+
+    NÃO TEMOS 
+
+
+integration JÁ BUILT-IN 
+
+
+PARA 1 STORAGE SOLUTION QUE QUEREMOS USAR COM O KUBERNETES...
+     
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> A EQUIPE DO AWS JÁ CONSTRUIU UMA 
+
+INTEGRATION 
+
+
+
+DO  SERVICE 'AMAZON EFS' (amazon elastic file system)
+
+
+COM  
+
+
+
+
+O DRIVER CSI ... ------> TEMOS 1 GITHUB PROJECT 
+
+
+
+COM MAIS INFO E USAGE INSTRUCTIONS SOBRE  O USO 
+
+
+
+DESSE DRIVER 
+
+'EFS + CSI'....
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... RESUMINDO:
+
+
+
+GRAÇAS A ESSA FEATURE  DO CSI,
+
+SERIA 
+
+SUPER FÁCIL ADICIONAR 
+
+'EFS'
+
+
+COMO 
+
+ 1 STORAGE SOLUTION AOS SEUS 
+
+ KUBERNETES VOLUMES...
+
+
+
+
+
+
+
+
+
+
+
+--> EM OUTRAS PALAVRAS,
+
+O CSI VOLUME TYPE 
+
+É 
+
+
+1 
+
+TYPE MT FLEXÍVEL QUE TE DEIXA ATTACH 
+
+__QUALQUER_ STORAGE SOLUTION DO MUNDO,
+
+
+
+DESDE QUE 
+
+
+
+EXISTA ALGUMA INTEGRATION PARA ESSE TYPE DE 'CSI' (
+
+
+como esse 
+
+'AMAZON EFS CSI DRIVER'...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+E MTOS DESSES DRIVERS OFICIAIS JÁ EXISTEM,
+
+
+
+
+E, TEORICAMENTE,
+
+
+VC PODERIA 
+
+ESCREVER SEUS PRÓPRIOS DRIVERS OFICIAIS,
+
+SE 
+
+VC 
+
+'BRING IN'
+
+SEU PRÓPRIO DATA CENTER OU QUALQUER COISA DO GÊNERO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... É POR ISSO QUE O TYPE DE 'CSI' também é importante...
+
+
+
+
+
+
+
+
+NÃO VAMOS O UTILIZAR DURANTE ESTE MÓDULO, PQ 
+
+
+COM NOSSO LOCAL DEVELOPMENT 
+
+
+NÃO 
+VAMOS PRECISAR DISSO..
+
+
+
+
+
+
+
+
+
+
+
+MAS MAIS TARDE,
+
+QUANDO DEPLOYARMOS 
+
+NOSSO APP AO AWS,
+
+
+NOSSO APP KUBERNETES,
+
+
+
+VAMOS 
+
+REALMENTE 
+
+USAR 
+
+ESSE TYPE DE 'csi'
+
+PARA 
+
+USAR 
+
+O 
+SERVICE 
+
+DE 
+
+'EFS',
+
+PARA ARMAZENAR NOSSA DATA...
