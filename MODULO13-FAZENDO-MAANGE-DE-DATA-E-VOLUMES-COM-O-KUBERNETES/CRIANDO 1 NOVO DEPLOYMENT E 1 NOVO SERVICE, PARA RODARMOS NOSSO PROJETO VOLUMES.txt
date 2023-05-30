@@ -1,0 +1,1227 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... VAMOS COMEÇAR ETAPA POR ETAPA...
+
+
+
+
+
+
+
+
+
+ANTES DE MAIS NADA,
+
+
+
+
+CRIAREMOS 1 'DEPLOYMENT'
+
+E 
+
+1 
+'SERVICE'
+
+
+
+PARA 
+
+
+ESSE DEMO APP..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+VOU CRIAR 2 ARQUIVOS,
+
+
+'deployment.yaml'
+
+
+
+e 
+
+'service.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+COMEÇAMOS COM 'apiVersion: ',
+
+
+
+
+E AÍ 
+
+
+
+
+
+
+
+COLOCAMOS 
+
+
+'apps/v1' 
+
+
+para o deployment,
+
+e 
+
+
+
+'v1'
+
+PARA O SERVICE...
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR RODA 'kubectl get deployments',
+
+para checar se temos running deployments...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ELE TAMBÉM cria esses arquivos...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... O 'kind' do deployment será 'Deployment',
+
+e o 
+
+
+do service será 'Service'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+COMEÇO COM 1 CÓDIGO DE DEPLOYMENT TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+PRECISO TAMBÉM COLOCAR O 'spec' e os containers dentro do template...
+
+
+
+
+
+
+
+TIPO ALGO ASSIM:
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+  metadata:
+    labels:
+      story: story
+  spec:
+    containers:
+      - name: my-story-app
+        image: nothingnothings/my-story-app
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... MAS PRECISO CRIAR A IMAGE DESSE PROJETO, E AÍ A UPLOADAR AO DOCKERHUB...
+
+
+
+faço isso com este código:
+
+
+
+
+
+
+
+
+docker build -t nothingnothings/my-story-app .
+
+
+
+
+
+
+
+
+
+
+
+isso construiu a image...
+
+
+
+
+
+
+
+
+
+
+depois rodei:
+
+
+
+
+
+docker push nothingnothings/my-story-app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok....
+
+
+
+
+
+
+funcionou...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MEU ARQUIVO DE DEPLOYMENT ESTÁ ASSIM, ATUALMENTE:
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+  metadata:
+    labels:
+      story: story
+  spec:
+    containers:
+      - name: my-story-app
+        image: nothingnothings/my-story-app:latest
+
+
+
+
+
+
+
+
+
+
+
+certo... o que mais falta, aqui?
+
+
+
+
+
+
+
+
+
+poderia colocar a livenessProbe,
+
+
+mas decido não o fazer...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O SERVICE FICOU ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: story-service
+spec:
+  selector:
+    story: story
+  ports:
+    - protocol: 'TCP'
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+agora, para rodar esses 2 arquivos,
+
+devo 
+
+escrever assim:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+kubectl apply -f deployment.yaml -f service.yaml 
+
+
+
+
+
+
+
+
+
+
+
+ok, mas recebi alguns errors:
+
+
+
+
+
+Error from server (BadRequest): error when creating "deployment.yaml": Deployment in version "v1" cannot 
+be handled as a Deployment: strict decoding error: unknown field "spec.metadata", unknown field "spec.spec"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+consertei o error, consegui 1 error de linting (nenhum resource limit definido para o container)...
+
+
+
+
+
+
+
+
+
+
+
+defini 1 resource limit para o container/image, e ele ficou assim:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        story: story
+    spec:
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+
+
+
+
+
+
+
+
+
+
+E O SERVICE FICOU ASSIM:
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: story-service
+spec:
+  selector:
+    story: story
+  ports:
+    - protocol: 'TCP'
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... agora o deployment foi criado...
+
+
+
+
+
+
+
+-> para visualizá-lo, rodamos 
+
+
+
+'kubectl get deployments'...
+
+
+
+
+EX:
+
+
+PS A:\projeto15-DOCKER\MODULO13-FAZENDO-MAANGE-DE-DATA-E-VOLUMES-COM-O-KUBERNETES\volume-project> kubectl get deployments
+NAME    READY   UP-TO-DATE   AVAILABLE   AGE
+story   1/1     1            1           38s
+
+
+
+
+
+
+--> posso visualizar a port a que posso disparar esses requests,
+
+
+
+basta 
+
+
+rodar 
+
+
+
+
+
+minikube service story-service 
+
+
+
+
+EX:
+
+
+
+
+C:\WINDOWS\system32>minikube service story-service
+|-----------|---------------|-------------|-----------------------------|
+| NAMESPACE |     NAME      | TARGET PORT |             URL             |
+|-----------|---------------|-------------|-----------------------------|
+| default   | story-service |          80 | http://172.22.158.171:30662 |
+|-----------|---------------|-------------|-----------------------------|
+* Opening service default/story-service in default browser...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... podemos disparar, com o postman, 1 request a esse negócio...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESCREVO A URL DE 
+
+
+'' http://172.22.158.171:30662/story '''
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ISSO FEZ COM QUE 1 REQUEST FOSSE DISPARADO,
+
+
+
+
+E ELE 
+
+RETORNOU ESTE CONTEÚDO, NA RESPONSE:
+
+
+{
+    "story": ""
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+
+
+posso disparar 1 request de post,
+com json data,
+
+para criar data...
+
+
+
+
+
+
+
+
+posso fazer isso para testar o 'data persist' 
+
+
+
+
+
+do kubernetes...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... funcionou...
+
+
+
+
+
+
+
+
+
+AGORA DEVO VER O QUE ACONTECE QUANDO:
+
+
+
+
+
+
+
+1) CONTAINERS, RODANDO NO KUBERNETES, SÃO PARADOS...
+
+
+
+
+
+
+
+2) PODS, RODANDO NO KUBERNETES, SÃO REMOVIDOS... (e stopped, também)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR VAI ESCREVENDO O QUE ESCREVEMOS:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  O PROFESSOR 
+
+
+
+  
+
+  EXPLICA QUE VAMOS QUERER APENAS 1 'REPLICA' DE NOSSOS PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+em 'spec' dentro do 'template',
+
+especificamos como deverão ser os CONTAINERS de nosso pod...
+
+
+
+
+
+
+
+O PROFESSOR ADICIONA ALGUMAS LABELS, TAMBÉM...
+
+
+
+
+
+
+
+
+
+
+
+NUNCA SE ESQUEÇA DE COLOCAR 'selector'
+
+
+
+
+
+
+como key, e aí 
+coloque   
+
+
+
+a label de 'story: story'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> ADICIONAMOS O SERVICE...
+
+
+
+
+
+
+
+FICOU TIPO ASSIM:
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: story-service
+spec:
+  selector:
+    story: story
+  ports:
+    - protocol: 'TCP'
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+eu defini o protocol como 'TCP'... 
+
+
+
+
+
+
+
+--> depois defini a port como '80'...
+
+
+
+a target port, no caso,
+
+será '3000' (a port DENTRO DO CONTAINER)....
+
+
+
+
+
+
+
+
+
+
+
+
+ok... COLOQUEI TAMBÉM O TYPE DE 'LoadBalancer'...
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR ENTÃO FAZ UPLOAD DA NOSSA IMAGE LÁ NO DOCKERHUB...
+
+
+
+
+
+
+
+
+
+
+
+
+
+o professor então startou o minikube,
+
+
+com 
+
+
+
+'minikube start --driver=hyperv' ..
+
+
+
+
+
+
+
+
+
+
+-> depois ele aplicou o deployment e o service,
+
+com 
+
+
+
+
+kubectl apply -f deployment.yaml -f service.yaml 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+depois ele expõe o service de 'story-service',
+
+
+com 
+
+
+
+
+
+
+
+
+
+minikube service story-service...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... TUDO ISSO FUNCIONOU....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR COLOCOU O TYPE DE 'LoadBalancer' --> SE N ADICIONARMOS ISSO,
+
+
+
+
+
+NOSSA PORT SERÁ EXPOSTA APENAS INTERNAMENTE, NO CLUSTER ('ClusterIP'),
+
+
+e naõ 
+
+
+AO OUTSIDE (que é o que queremos, aqui)..
+
+
+
+
+
+
+
+
+
+
+CERTo.... isso feito,
+
+tudo funcionou...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA PODEMOS USAR ESSA URL COM O POSTMAN:
+
+
+
+
+
+
+
+http://172.22.158.171:30662/story
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO TUDO ESTÁ FUNCIONANDO, SIM...
+
+
+
+
+
+
+
+
+
+
+AGORA DEVEMOS VER OS __ PROBLEMAS __ RELATIVOS A ESSE DEPLOYMENT (
+
+
+    ver a solução, também, que é o uso de VOLUMES...
+)

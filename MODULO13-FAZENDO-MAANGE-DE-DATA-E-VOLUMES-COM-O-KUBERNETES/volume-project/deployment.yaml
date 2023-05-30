@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        story: story
+    spec:
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'

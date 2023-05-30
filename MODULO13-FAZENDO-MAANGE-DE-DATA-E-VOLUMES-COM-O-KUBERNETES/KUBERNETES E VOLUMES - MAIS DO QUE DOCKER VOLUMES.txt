@@ -433,3 +433,14 @@ NÃO PODEMOS USAR
 
 
  minikube start --driver=hyperv
+
+
+
+
+
+
+
+
+
+
+ 
