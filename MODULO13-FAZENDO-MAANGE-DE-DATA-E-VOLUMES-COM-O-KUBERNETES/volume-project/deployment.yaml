@@ -11,11 +11,33 @@ spec:
     metadata:
       labels:
         story: story
-    spec:
+    spec: ###### SPECIFICATION DE 1 POD...
       containers:
         - name: my-story-app
           image: nothingnothings/my-story-app:latest
+          volumeMounts: ## precisamos dessa option/key para DEFINIR QUAIS VOLUMES DEVERÃO SER MONTADOS EM ALGUM DE NOSSOS CONTAINERS, NESSE POD...
+            - mountPath: /app/story  ## QUEREMOS QUE NOSSA DATA/DATA DO USUÁRIO SEJA 'BINDADA' A ESSE INTERNAL PATH, DENTRO DE NOSSO CONTAINER (é exatamente como 1 named volume)....
+              name: story-volume
           resources:
             limits:
               memory: '256Mi'
               cpu: '500m'
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume...
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'...
+          emptyDir: {} ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
+
+# o type 'emptyDir'
+# VAI SIMPLESMENTE CRIAR 1 'NEW EMPTY DIRECTORY'
+# __ SEMPRE QUE O POD STARTAR.. --> E AÍ ELE VAI __ MANTER
+# ESSE DIRECTORY __ VIVO,
+# E CHEIO DE DATA,
+# DESDE QUE O POD FIQUE VIVO... ------> CERTO... -----> OS CONTAINERS
+# PODEM ENTÃO
+# FAZER
+# '''WRITE''' A ESSE DIRECTORY.... -------> E, SE, ENTÃO,
+# OS CONTAINERS SÃO __ RESTARTADOS OU REMOVIDOS,
+# ___ A DATA VAI SOBREVIVER... -->  MAS __ SE O POD __ FOR REMOVIDO,
+# O __ DIRECTORY INTEIRO SERÁ REMOVIDO....
+
+#E, QUANDO 1 NOVO POD FOR CRIADO, ESSE EMPTY DIRECTORY SERÁ RECRIADO....

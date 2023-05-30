@@ -1,0 +1,1836 @@
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... LEMBRE-SE DAQUILO QUE O PROFESSOR MENCIONOU,
+
+
+
+SOBRE O 'VOLUME LIFETIME' -------->
+
+
+
+
+
+
+
+
+
+O VOLUME LIFETIME É SEMPRE __ DEPENDENTE DO 'POD LIFTIME',
+
+
+JUSTAMENTE PQ 
+
+
+VOLUMES SÃO ___ ATTACHEADOS__ A PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ISSO, É CLARO,
+
+
+
+
+
+TEM RELAÇÃO COM AQUILO QUE O PROFESSOR HAVIA FALADO,
+
+
+
+
+
+QUE 
+
+
+
+
+
+VOLUMES SÃO ANEXADOS A PODS, E SÃO 'POD-SPECIFIC'...
+
+
+
+
+
+
+
+
+
+
+
+--> ENTRETANTO, COM ISSO,
+
+
+
+
+TEMOS 1 SÉRIA IMPLICATION:
+
+
+
+
+
+
+
+NÓS __ _TEMOS QUE DEFINIR VOLUMES, NO KUBERNETES,
+
+
+NOS LOCAIS EM QUE __ DEFINIMOS __ E CONFIGURAMOS 
+
+
+
+OS PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU SEJA,
+
+
+NESTA PARTE AQUI, DE NOSSOS ARQUIVOS YAML:
+
+
+
+
+
+
+
+
+
+
+
+
+    spec:
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- OK...  A SPECIFICATION DO POD FICA NESSA PARTE AÍ, EM QUE TEMOS 'containers'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. É NESSA POD SPECIFICATION QUE VAMOS ESPECIFICAR NOSSO VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS PARA VISUALIZARMOS SE O POD REALMENTE TEVE EFEITO,
+
+
+O PROFESSOR 
+
+
+ADICIONA UMA NOVA ROUTE NA NOSSA IMAGE,
+
+
+ROUTE DE 
+
+
+
+'/error',
+
+
+
+
+
+QUE VAI TRIGGAR O CÓDIGO DE 'process.exit(1)',
+
+
+
+
+
+
+JUSTAMENTE PARA QUE 
+
+
+
+NOSSO CONTAINER/POD SEJA RESTARTADO (e aí poderemos checar se nossa data realmente 
+ficará 
+
+contida em 1 volume...)
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+const path = require('path');
+const fs = require('fs');
+
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+
+const filePath = path.join(__dirname, 'story', 'text.txt');
+
+app.use(bodyParser.json());
+
+app.get('/error', (req, res) => { //para testarmos a data persist de volumes (se volumes forem settados no nosso pod em que esse container rodará, a data vai PERSIST)...
+  process.exit(1);
+});
+
+app.get('/story', (req, res) => {
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      return res.status(500).json({ message: 'Failed to open file.' });
+    }
+    res.status(200).json({ story: data.toString() });
+  });
+});
+
+app.post('/story', (req, res) => {
+  const newText = req.body.text;
+  if (newText.trim().length === 0) {
+    return res.status(422).json({ message: 'Text must not be empty!' });
+  }
+  fs.appendFile(filePath, newText + '\n', (err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Storing the text failed.' });
+    }
+    res.status(201).json({ message: 'Text was stored!' });
+  });
+});
+
+app.listen(3000);
+
+
+
+
+
+
+
+
+
+---------------------------------
+
+
+
+
+
+
+
+
+certo....
+
+
+
+
+
+
+isso feito, precisamos:
+
+
+
+
+
+
+
+1) rebuildar nossa image  (antes, apagamos a image anterior)...
+
+
+docker build -t nothingnothings/my-story-app .
+
+
+2) reuploadar a image no dockerhub
+
+
+docker push nothingnothings/my-story-app
+
+
+3) fazer 'apply' da image novamente, com 'kubectl'...
+
+
+
+kubectl apply -f deployment.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... mas ainda não consegui fazer o deploy, por alguma razão...
+
+
+
+
+
+
+
+
+é melhor apagar o deployment anterior, para aí rodarmos esse novo...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... apaguei e rodei 1 novo deployment... depois rodei a route de error...
+
+
+
+
+
+
+
+
+
+
+
+O MEU APP CRASHOU....
+
+
+
+
+
+
+
+
+
+
+
+ok, deu certo, toda minha data foi perdida, justamente pq o CONTAINER CRASHOU...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> sem volumes, nossa data toda é perdida --> MAS AQUI TEMOS 1 PORÉM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AQUI, PERDEMOS TODA DATA, SIM... -----> MAS O QUE FOI RESTARTADO,
+
+AQUI,
+
+
+FOI O ___cONTAINER___, E NÃO O POD EM SI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE NÓS VISUALIZARMOS NOSSOS PODS, com 
+
+
+'kubectl get pods',
+
+
+VEREMOS 
+ISTO:
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO13-FAZENDO-MAANGE-DE-DATA-E-VOLUMES-COM-O-KUBERNETES\volume-project> kubectl get pods
+NAME                     READY   STATUS    RESTARTS        AGE
+story-5b4dc5bbcf-4g7sg   1/1     Running   4 (4m10s ago)   6m12s
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... COM ISSO, VIMOS QUE TEMOS 1 ÚNICO POD,
+
+
+
+
+QUE FOI RESTARTADO 4x....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA QUE VIMOS O PROBLEMA EM AÇÃO,
+
+
+
+DEVEMOS USAR 1 VOLUME PARA __ CONSERTÁ-LO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+COMO VOLUMES SÃO ANEXADOS A PODS,
+
+
+
+
+
+devemos colocar 
+
+1 VOLUME 
+
+LÁ 
+
+
+em 'spec',
+
+
+
+no spec 
+
+
+
+
+
+
+DE NOSSO POD...
+
+
+
+
+
+
+
+
+
+
+
+-> DEVEMOS COLOCAR A KEY de 'volumes',
+
+NO MESMO NÍVEL DE 'containers',
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        story: story
+    spec:  ######SPECIFICATION DE 1 POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) 
+        - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... AGORA TEMOS ESSA KEY... ---> dentro dessa key,
+
+
+DEVEMOS ESPECIFICAR TODOS _OS VOLUMES_ que FARÃO 
+
+
+PARTE DESSE POD...
+
+
+
+
+
+
+
+
+
+
+--> E TODOS OS CONTAINERS DESSE POD SERÃO CAPAZES DE USAR ESSE VOLUME..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... 'volumes'
+
+SERÁ UMA LISTA... --> VAMOS COLOCANDO NOSSOS VOLUMES...
+
+
+
+
+
+cada volume tem um nome... colocamos 
+
+
+
+1 nome de 'story-volume'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        story: story
+    spec:  ######SPECIFICATION DE 1 POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume... 
+        - name: story-volume
+
+
+
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... ALÉM DO 'NAME',
+
+
+devemos 
+
+
+
+DEFINIR 
+
+
+
+O 
+
+TYPE DESSE VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NO KUBERNETES, TEMOS UMA LONGA LISTA DE TYPES... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+A DEPENDER DO 
+
+TYPE QUE VC ESCOLHEU,
+
+
+VC 
+
+
+TERÁ MAIS OPTIONS A SEREM SETTADAS, PARA O SEU GIVEN TYPE...
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR ESCOLHE O TYPE DE 'emptyDir',
+
+
+
+POR ISSO ELE ESCREVE ASSIm:
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        story: story
+    spec:  ######SPECIFICATION DE 1 POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume... 
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'...
+          emptyDir:
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... ISSO FEITO,
+
+
+
+O PROFESSOR DEFINE O VALUE DESSE 'emptyDir'
+
+
+
+COMO SENDO 1 EMPTY OBJECT,
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        story: story
+    spec:  ######SPECIFICATION DE 1 POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume... 
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'...
+          emptyDir: {}
+            
+
+
+
+--------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        story: story
+    spec:  ######SPECIFICATION DE 1 POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume... 
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'...
+          emptyDir: {}  ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok...
+
+
+
+
+
+
+QUEREMOS USAR ESSE TYPE DO JEITO DEFAULT MSM,
+
+
+
+sem nenhuma setting específica...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok, mas o que isso faz?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> BEM, 'emptyDir'
+
+
+
+
+VAI SIMPLESMENTE CRIAR 1 'NEW EMPTY DIRECTORY'
+
+
+
+__ SEMPRE QUE O POD STARTA.. --> E AÍ ELE VAI __ MANTER 
+
+
+
+ESSE DIRECTORY __ VIVO,
+
+E CHEIO DE DATA,
+
+
+
+
+DESDE QUE O POD FIQUE VIVO... ------> CERTO... -----> OS CONTAINERS 
+
+
+
+PODEM ENTÃO 
+
+FAZER 
+ 
+
+
+'''WRITE''' A ESSE DIRECTORY.... -------> E, SE, ENTÃO,
+
+
+OS CONTAINERS SÃO __ RESTARTADOS OU REMOVIDOS,
+
+
+
+___ A DATA VAI SOBREVIVER... -->  MAS __ SE O POD __ FOR REMOVIDO,
+
+
+
+O __ DIRECTORY INTEIRO SERÁ REMOVIDO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK...
+
+
+
+
+
+E QUANDO O POD FOR RECRIADO,
+
+
+1 NOVO 'EMPTY DIRECTORY' É CRIADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS ISSO É UM BOM PRIMEIRO PASSO,
+
+
+
+
+
+PQ COM ISSO FICAMOS COM 1 DIRECTORY QUE SOBREVIVE 
+
+
+
+A CONTAINER RESTARTS,
+
+E A DATA 
+
+
+
+DENTRO DO DIRECTORY TAMBÉM VAI SOBREVIVER...
+
+
+
+
+
+
+
+
+
+
+
+OK... SETTAMOS O VOLUME, SIM,
+
+
+
+
+MAS _ AINDA __ PRECISAMOS __ BINDAR__ ESSE VOLUME A ALGUM 
+
+CONTAINER (
+
+
+    deixar ele DISPONÍVEL 
+
+    DENTRO DE ALGUM CONTAINER...
+)
+
+
+
+
+
+
+
+
+
+FAZEMOS ISSO, NO CASO,
+
+
+DENTRO DA CONFIGURATION DO PRÓPRIO CONTAINER..
+
+
+
+
+--> devemos colocar a key de 'volumeMounts: ',
+
+
+
+
+
+
+
+QUE VAI JUSTAMENTE ESPECIFICAR OS VOLUMES,
+
+
+E COMO DEVEM SER MONTADOS...
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        story: story
+    spec:  ######SPECIFICATION DE 1 POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          volumeMounts:
+            -
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume... 
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'...
+          emptyDir: {}  ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS A OPTION DE 'volumeMounts' é uma LIST... e ela exige 2 options...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> A PRIMEIRA OPTION NECESSÁRIA É 'mountPath:'....
+
+
+
+
+
+
+
+mountPath --> é o PATH INTERNO QUE DEVE SER MONTADO, DENTRO DO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+--> É CLARO QUE ISSO DEPENDE 
+
+
+DO APP QUE VC TEM... E DO CAMINHO EM QUE SEU APP VAI WRITAR 
+
+A DATA....
+
+
+
+
+
+
+
+
+
+
+
+
+-> NOSSO APP,
+
+NO CASO,
+
+
+
+VAI ARMAZENAR A DATA EM 1 FOLDER DE 'story',
+
+
+
+
+
+
+
+E VAI __ fAZER ISSO _ DENTRO DO 'PROJECT FOLDER' 
+
+
+
+DESSE ARQUIVO 'app.js',
+
+
+
+
+OU SEJA,
+
+O PRÓPRIO 'WORK DIRECTORY' dessa image... -------> É POR ISSO QUE 
+
+
+
+O PATH, DENTRO DO CONTAINER,
+
+
+será 
+
+'/app/story'...
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        story: story
+    spec: ###### SPECIFICATION DE 1 POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          volumeMounts: ## precisamos dessa option/key para DEFINIR QUAIS VOLUMES DEVERÃO SER MONTADOS EM ALGUM DE NOSSOS CONTAINERS, NESSE POD...
+            - mountPath: /app/story  ## QUEREMOS QUE NOSSA DATA/DATA DO USUÁRIO SEJA 'BINDADA' A ESSE INTERNAL PATH, DENTRO DE NOSSO CONTAINER (é exatamente como 1 named volume)....
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume...
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'...
+          emptyDir: {} ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO....
+
+
+
+
+
+
+
+
+
+COM ISSO,
+
+
+
+
+
+É ACESSADA ESSA PASTA 
+
+
+
+DE 'story',
+
+em que 
+
+
+SERÁ 
+
+CRIADO/WRITTADO ESSE ARQUIVO...
+
+
+
+
+
+
+
+--> É O PATH NO CONTAINER EM QUE AQUELE 'emptyDir' (diretório vazio)
+
+SERÁ CRIADO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OU SEJA, ISSO É EXATAMENTE A MESMA COISA QUE O PROFESSOR HAVIA ESCRITO 
+
+NO ARQUIVO 'docker-compose',
+
+que estava assim:
+
+
+
+
+
+
+
+version: "3"
+services:
+  stories:
+    build: .
+    volumes:
+      - stories:/app/story
+    ports:
+      - 80:3000
+volumes:
+  stories: 
+
+
+
+
+
+
+
+
+
+
+
+
+  'stories:/app/story' --------> OU SEJA,
+
+  1 NAMED VOLUME, de nome 'stories',
+
+
+
+  COM 1 INTERNAL PATH, NO CONTAINER,
+
+  DE '/app/story'...
+
+
+
+
+
+
+
+
+
+
+
+
+OK... A ÚNICA DIFERENÇA,
+AGORA,
+
+É 
+
+
+
+QUE 
+
+
+NÃO TEMOS 
+
+
+1 
+
+'NAMED VOLUME' CRIADO AUTOMATICAMENTE,
+
+
+E 
+
+SIM QUE 
+
+
+
+
+'''PEDIMOS/COMUNICAMOS AO KUBERNETES QUE 
+
+ELE _ dEVE __ CRIAR ESSE DRIVER, esse emptyDir type'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...  o 'mountPath'
+
+
+
+
+
+é algo essencial, sim,
+
+
+
+
+
+
+MAS É CLARO QUE PODERÍAMOS TER MÚLTIPLOS VOLUME TYPES ALI EMBAIXO,
+
+
+PARA DIFERENTES CONTAINERS, POR EXEMPLO....
+
+
+
+
+
+
+
+
+(
+    ou, talvez,
+
+    pq 
+
+    1 mesmo container quer usar DIFERENTES 
+
+    VOLUMES E DIFERENTES VOLUME TYPES,
+
+    PARA 
+
+    DIFERENTES 'CONTAINER INTERNAL PATHS'...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE, ALÉM DE 'mountPath',
+ 
+
+ TEMOS 1 KEY DE 'name' -------> devemos especificar o 
+
+
+ 'VOLUME' que queremos usar PARA ESSE CONTAINER INTERNAL PATH... aqui vamos colocar 'story-volume',
+
+ pq esse é o NOSSO ÚNICO VOLUME...
+
+
+
+
+
+
+
+
+
+ ex:
+
+
+
+
+
+
+
+
+
+
+
+
+ apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        story: story
+    spec: ###### SPECIFICATION DE 1 POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          volumeMounts: ## precisamos dessa option/key para DEFINIR QUAIS VOLUMES DEVERÃO SER MONTADOS EM ALGUM DE NOSSOS CONTAINERS, NESSE POD...
+            - mountPath: /app/story  ## QUEREMOS QUE NOSSA DATA/DATA DO USUÁRIO SEJA 'BINDADA' A ESSE INTERNAL PATH, DENTRO DE NOSSO CONTAINER (é exatamente como 1 named volume)....
+              name: story-volume
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+      volumes: # VOLUMES, NO KUBERNETES, SÃO ANEXADOS AOS NOSSOS PODS (e não aos containers...) --> isso quer dizer que TODOS OS CONTAINERS, NO NOSSO POD, serão capazes de usar esse volume...
+        - name: story-volume
+          # HÁ MUITOS E MUITOS TYPES DE VOLUMES (Aws, azure, gcp)... o professor escolhe 'emptyDir'...
+          emptyDir: {} ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO....
+
+
+
+
+
+
+
+
+
+
+
+ISSO FARÁ COM QUE ESSE VOLUME, DEFINIDO ALI EMBAIXO,
+
+
+SEJA MOUNTADO 
+
+
+
+NAQUELE PATH ALI,
+
+DENTRO DO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+ISSO DEVE FAZER ALGUMA DIFERENÇA...
+
+
+
+
+
+
+APLICAMOS ESSA NOVA CONFIG DE NOSSO ARQUIVO 'deployment.yaml'...
+
+
+
+
+
+
+-> ISSO VAI __TERMINATE__ OS PODS ANTIGOS,
+
+
+
+E STARTAR ESSES NOVOS...
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO13-FAZENDO-MAANGE-DE-DATA-E-VOLUMES-COM-O-KUBERNETES\volume-project> kubectl apply -f deployment.yaml
+deployment.apps/story configured
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA NOSSA DATA DEVE SOBREVIVER A CONTAINER RESTARTS...
+
+
+
+
+
+
+
+
+
+--> vamos testar as routes novamente...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... FUNCIONOU...
+
+
+
+
+
+
+
+
+
+
+
+-> AGORA NOSSA DATA PERSISTE, 
+
+
+
+
+MESMO QUANDO 
+
+
+
+NOSSO CONTAINER É RESTARTADO (por conta do ERROR obtido pela route de '/error')...
+
+
+
+
+
+
+
+
+
+
+-> CERTO... O PRÓXIMO PASSO É FAZER A DATA PERSISTS 
+
+
+MESMO QUANDO NOSSO POD 
+
+FOR RESTARTADO... (será mais complicado...)
+
+
+
+
+

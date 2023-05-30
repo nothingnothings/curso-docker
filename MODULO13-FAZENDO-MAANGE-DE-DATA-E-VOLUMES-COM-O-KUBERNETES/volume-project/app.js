@@ -10,6 +10,10 @@ const filePath = path.join(__dirname, 'story', 'text.txt');
 
 app.use(bodyParser.json());
 
+app.get('/error', (req, res) => { //para testarmos a data persist de volumes (se volumes forem settados no nosso pod em que esse container rodará, a data vai PERSIST)...
+  process.exit(1);
+});
+
 app.get('/story', (req, res) => {
   fs.readFile(filePath, (err, data) => {
     if (err) {
