@@ -1,0 +1,1336 @@
+ok.... li o código do professor... faz sentido.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> se rodamos 'docker-compose up',
+
+
+os 
+
+
+3 
+
+
+
+
+containers são criados ('tasks api', 'auth api' e 'users api'0..
+
+
+
+
+
+)
+
+--> e os 3 containers são colocados em uma mesma network...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ENTRETANTO, COM O KUBERNETES, AS COISAS NÃO SÃO TÃO FÁCEIS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANTES DE MAIS NADA,
+
+
+
+
+
+
+
+
+
+CERTIFIQUE-SE DE QUE O MINIKUBE ESTÁ RODANDO....
+
+
+
+
+
+
+
+
+
+
+
+
+minikube status 
+
+
+
+
+
+
+
+
+
+
+
+aí 
+
+
+rode 
+
+
+
+
+
+minikube start --driver=hyperv
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> aí certifique-se de que nenhum deployment está rodando,
+
+com 
+
+
+'kubectl get deployments'...
+
+
+
+
+
+
+
+
+
+
+certo.... com nada rodando, 'we should be good to go'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+isso feito,
+
+
+
+
+
+
+
+
+vamos pensar....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... 
+
+
+
+
+
+
+
+
+
+temos também o comando de 'kubectl get all'...
+
+
+
+
+
+
+
+
+
+--> isso nos mostra TUDO QUE TEMOS, ATIVO, NO NOSSO CLUSTER...
+
+
+
+
+
+
+
+
+
+--> tipo assim:
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO14-NETWORKING-COM-O-KUBERNETES\projeto-container-pod-node-communication> kubectl get all
+NAME                         READY   STATUS        RESTARTS      AGE
+pod/story-84fc7675c6-f46qw   1/1     Terminating   2 (22h ago)   22h
+pod/story-84fc7675c6-mf6kg   1/1     Terminating   1 (22h ago)   22h
+
+NAME                    TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/kubernetes      ClusterIP      10.96.0.1        <none>        443/TCP        2d3h
+service/story-service   LoadBalancer   10.107.100.116   <pending>     80:30662/TCP   26h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... preciso remover esses 2 services, também....
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO14-NETWORKING-COM-O-KUBERNETES\projeto-container-pod-node-communication> kubectl delete service/kubernetes service/story-service
+service "kubernetes" deleted
+service "story-service" deleted
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo... todos deletados...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA DEVEMOS __ TRANSFORMAR NOSSO APP DOCKER LÁ NO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS FAZER ISSO 'PASSO-POR-PASSO'...
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR QUER COMEÇAR 
+
+
+
+
+
+PELO CONTAINER DE 'users-api',
+
+POR ISSO COMEÇAMOS 
+
+
+
+
+NOSSO 'deployment.yaml' (arquivo do kubernetes) assim:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: communication-app
+spec:
+  selector:
+    matchLabels:
+      app: communication
+  template:
+    metadata:
+      labels:
+        app: communication
+    spec:
+      containers:
+      - name: users-api
+        image: nothingnothings/users-api
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+          targetPort: 8080
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ACHO QUE ESTÁ TUDO CERTO.... para conseguirmos estabelecer a COMUNICAÇÃO COM 
+
+o 
+
+'MUNDO EXTERIOR',
+
+
+precisamos definir aquela option de 'ports' nesse container,
+
+
+e aí definir 'targetPort' (mundo externo) como 
+
+
+8080...
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+
+
+
+
+provavelmente PRECISAREMOS DE 1 SERVICE PARA TODO NOSSO APP,
+
+TAMBÉM...
+
+
+
+
+
+
+
+
+
+--> é por isso que escrevo assim, lá no service:
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: communication-app-service
+spec:
+  selector:
+    app: communication
+  ports:
+    - protocol: 'TCP'
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SÓ NÃO SEI SE ISSO ESTÁ CERTO... (com esse service + o config do container de 'users-api', lá no deployment.yaml, DEIXAMOS ABERTO ESSE CONTAINER ESPECÍFICO AO MUNDO EXTERNO, na porta 8080)...
+
+
+
+
+
+
+
+
+--------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...  O PROFESSOR DIZ QUE ANTES DE MAIS NADA,
+
+VAMOS 
+
+
+
+REVISAR OS 'KUBERNETES SERVICES'...
+
+
+
+
+
+
+
+
+
+
+--> MAS O PROFESSOR VAI ABRIR O ARQUIVO DE 'users-app.js',
+
+
+
+
+
+QUE DIZ QUE PRECISA SER TWEAKADO 1 POUCO...
+
+
+
+
+
+
+
+
+
+
+
+
+certo... é claro... pq __ TEMOS QUE TROCAR TODAS 
+
+
+AS MENÇÕES 
+
+
+à 'http://auth...'''
+
+
+
+
+
+
+
+POR __ URLS QUE REALMENTE EXISTAM (
+
+
+
+    pq o 'auth'
+
+
+
+COMO URL, AQUI,,
+
+
+VAI FUNCIONAR APENAS LÁ NO DOCKER E NO DOCKER-COMPOSE,
+
+PQ 
+
+
+
+
+LÁ NO DOCKER TEMOS 1 NETWORK,
+
+E NAS NETWORKS 
+
+OS NOMES DE CONTAINERS, COMO 'auth', 'users' e tal 
+
+
+
+
+REALMENTE SERÃO TROCADOS PELO ENDEREÇO INTERNO DOS CONTAINERS...
+)
+
+
+
+
+
+
+
+
+
+
+--> ENTRETANTO,
+
+LÁ 
+
+
+NO KUBERNETES NÃO TEMOS ESSES 'ENDEREÇOS INTERNOS 
+
+DOS CONTAINERS',
+
+
+
+justamente pq o conceito de 'docker NETWORKS'
+
+
+
+
+NÃO VAI EXISTIR 
+
+LÁ NO MUNDO KUBERNETES...
+
+
+
+
+
+
+
+HMMM PARECE QUE O PROFESSOR VAI TOCAR NESSE TÓPICO MAIS TARDE...
+
+
+
+
+
+
+
+
+
+
+POR ENQUANTO, ELE APENAS VAI COMENTAR ESSAS LINHAS DE CÓDIGO PARA FORA...
+
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+app.post('/signup', async (req, res) => {
+  // It's just a dummy service - we don't really care for the email
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (
+    !password ||
+    password.trim().length === 0 ||
+    !email ||
+    email.trim().length === 0
+  ) {
+    return res
+      .status(422)
+      .json({ message: 'An email and password needs to be specified!' });
+  }
+
+  try {
+    // const hashedPW = await axios.get('http://auth/hashed-password/' + password); /// isso NÃO FUNCIONARÁ no mundo kubernetes, pq no MUNDO KUBERNETES NÃO EXISTEM 'DOCKER NETWORKS', e justamente por isso o 'auto name-resolve' do docker, que troca os nomes dos containers PELOS __ ACTUAL IPS INTERNOS DOS CONTAINERS, não funcionará...
+    const hashedPw = 'dummy';
+    // since it's a dummy service, we don't really care for the hashed-pw either
+    console.log(hashedPW, email);
+    res.status(201).json({ message: 'User created!' });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ message: 'Creating the user failed - please try again later.' });
+  }
+});
+
+app.post('/login', async (req, res) => {
+  // It's just a dummy service - we don't really care for the email
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (
+    !password ||
+    password.trim().length === 0 ||
+    !email ||
+    email.trim().length === 0
+  ) {
+    return res
+      .status(422)
+      .json({ message: 'An email and password needs to be specified!' });
+  }
+
+  // normally, we'd find a user by email and grab his/ her ID and hashed password
+  const hashedPassword = password + '_hash';
+  // const response = await axios.get(
+  //   'http://auth/token/' + hashedPassword + '/' + password
+  // );    ///// /// isso NÃO FUNCIONARÁ no mundo kubernetes, pq no MUNDO KUBERNETES NÃO EXISTEM 'DOCKER NETWORKS', e justamente por isso o 'auto name-resolve' do docker, que troca os nomes dos containers PELOS __ ACTUAL IPS INTERNOS DOS CONTAINERS, não funcionará...
+
+  const response = {
+    status: 200,
+    data: {
+      token: 'abc',
+    },
+  };
+  if (response.status === 200) {
+    return res.status(200).json({ token: response.data.token });
+  }
+  return res.status(response.status).json({ message: 'Logging in failed!' });
+});
+
+app.listen(8080);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... VAMOS TROCAR ESSAS LINHAS, MAIS TARDE,
+
+
+
+
+
+
+
+MAS COMO O PROFESSOR QUER FOCAR NESSE CONTAINER DE 'users-api'
+
+
+agora,
+
+
+
+
+
+
+DEVEMOS DEIXAR ASSIM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... para UPDATARMOS NOSSO DEPLOYMENT, PRECISAMOS:
+
+
+
+
+
+1) DAR UPLOAD DA NOVA IMAGE DE 'users-api', pq nosso código mudou (lá no dockerhub, com docker push),
+
+
+E PARA ISSO PRECISAMOS REBUILDAR E REPUSHAR...
+
+
+
+
+
+
+2) depois, precisamos alterar o deployment.yaml e colocar 'imagePullPolicy' como 'Always',
+
+para que sempre seja pullada a latest image do docker hub...
+
+
+
+
+
+
+3) precisamos rodar 'kubectl apply -f deployment.yaml',
+
+para aplicar nossa change da imagePullPolicy e para pullarmos a image correta...
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+OK... FUNCIONOU...
+
+
+
+
+
+
+------------------------
+
+
+
+
+
+
+
+
+
+
+
+COM TUDO ISSO, DEVEMOS ESTAR 'FINE'...
+
+
+
+
+
+
+
+
+
+
+--> o professor faz build da image e a uploada ao dockerhub...
+
+
+
+
+
+
+
+ops... mas eu deveria ter criado 1 novo repository, no dockerhub..
+
+
+
+
+
+fiz push direto, e não tinha nada lá...
+
+
+
+
+
+
+
+
+
+
+
+--> parece que podemos fazer push direto de repositories lá para cima,
+
+basta estarmos loggados no terminal...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... isso funcionou...
+
+
+
+
+
+
+
+
+
+--> posso ver QUAL IMAGE ESTÁ SENDO USADA:
+
+
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO14-NETWORKING-COM-O-KUBERNETES\projeto-container-pod-node-communication> kubectl rollout history    
+error: required resource not specified
+PS A:\projeto15-DOCKER\MODULO14-NETWORKING-COM-O-KUBERNETES\projeto-container-pod-node-communication> kubectl rollout history deployment/communication-app
+deployment.apps/communication-app
+REVISION  CHANGE-CAUSE
+1         <none>
+
+PS A:\projeto15-DOCKER\MODULO14-NETWORKING-COM-O-KUBERNETES\projeto-container-pod-node-communication> kubectl rollout history deployment/communication-app --revision=1
+deployment.apps/communication-app with revision #1
+Pod Template:
+  Labels:       app=communication
+        pod-template-hash=668f7fc9b6
+  Containers:
+   users-api:
+    Image:      nothingnothings/users-api
+    Port:       8080/TCP
+    Host Port:  0/TCP
+    Limits:
+      cpu:      500m
+      memory:   128Mi
+    Environment:        <none>
+    Mounts:     <none>
+  Volumes:      <none>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  OK... ISSO ME MOSTROU QUE É A IMAGE DE 'users-api' mesmo...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  OK.... MAS AGORA, SIM, ESTAMOS COM O ARQUIVO YAML CONFIGURADO (com imagePullPolicy de 'Always' e 'latest'):
+
+
+
+
+
+
+
+
+
+
+
+
+
+  apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: communication-app
+spec:
+  selector:
+    matchLabels:
+      app: communication
+  template:
+    metadata:
+      labels:
+        app: communication
+    spec:
+      containers:
+      - name: users-api
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+
+
+
+----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+o professor builda a image, e aí 
+
+
+
+
+
+
+
+FAZ PUSH DELA PARA O DOCKERHUB..
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR CRIOU 1 NOVO FOLDER, DE NOME 'kubernetes',
+
+em que 
+
+
+VAI ARMAZENAR TODOS OS ARQUIVOS YAML..
+
+
+
+
+
+
+
+
+--> O PROFESSOR QUER DEFINIR O DEPLOYMENT DE CADA CONTAINER 
+
+
+
+EM 1 ARQUIVO YAML SEPARADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PODEMOS MERGEAR TUDO EM 1 ÚNICA YAML FILE... -> MAS O PROFESSOR QUER USAR MÚLTIPLAS 
+FILES,
+
+PARA QUE 
+
+
+
+TUDO FIQUE MAIS FÁCIL DE MANAGE...
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+MAS ELE VAI COLOCANDO  AS MESMAS COISAS QUE EU COLOQUEI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS ESQUECI DE DEFINIR O NÚMERO DE REPLICAS 
+
+
+
+
+PARA MEU CONTAINER... SERÁ DE '1'...
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: communication-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: communication
+  template:
+    metadata:
+      labels:
+        app: communication
+    spec:
+      containers:
+      - name: users-api
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+          # targetPort: 8080
+
+
+
+
+
+
+
+
+
+---------------------------------
+
+
+
+
+
+
+
+
+
+
+OK... no template do pod,
+
+
+
+COLOCAMOS A METADATA,
+
+
+E AÍ 
+
+
+
+COLOCAMOS A LABEL...
+
+
+
+
+
+
+
+
+
+
+
+OK.... É ASSIM QUE SETTAMOS 1 DEPLOYMENT, NADA DE NOVO....
+
+
+
+
+
+
+
+
+
+
+
+
+--> COLOCAMOS NOSSO ÚNICO CONTAINER,
+
+
+nada de mais...
+
+
+
+
+
+
+
+-> ok... terminamos essa parte....
+
+
+
+
+
+
+
+
+
+com isso, esse deployment está setup...
+
+
+
+
+
+
+
+
+
+
+--> agora esse deployment estará criado... teremos 1 pod up and running,
+
+com aquele 
+container de 'users' nele...
+
+
+
+
