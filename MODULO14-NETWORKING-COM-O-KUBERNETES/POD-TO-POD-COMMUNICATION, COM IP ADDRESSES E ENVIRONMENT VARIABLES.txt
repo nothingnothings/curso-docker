@@ -1,0 +1,972 @@
+
+
+
+
+
+
+
+
+---> OK... PRECISAMOS DO IP ADDRESS GERADO PARA O SERVICE 
+
+DE 
+
+'AUTH' (auth-api, que tem seu próprio pod)...
+
+
+
+
+
+
+
+
+
+
+
+--> OS OUTROS PODS,
+
+
+'tasks' e 'users',
+
+PRECISAM 
+
+
+SE CONECTAR 
+
+
+A ESSE 
+
+
+POD DE 'AUTH',
+
+
+MAS O POD DE AUTH NÃO PODE 
+
+FICAR EXPOSTO 
+
+
+AO MUNDO EXTERIOR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O SERVICE DE 'auth' FICOU ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth
+  ports:
+    - protocol: 'TCP'
+      port: 80  ## port que 'faces the outside world' 
+      targetPort: 80 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: ClusterIP ## colocamos isto pq 'PRECISAMOS DE 1 IP FIXO, MAS NÃO PRECISAMOS QUE ESSE IP/POD SEJA REACHABLE LÁ NO MUNDO EXTERNO AO NOSSO CLUSTER'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... COM SERVICES,
+
+
+
+FICAMOS COM 'STABLE IP ADDRESSES' --> O 'ClusterIP' TYPE NOS DÁ 
+
+
+1 
+STABLE IP ADDRESS AO MESMO TEMPO QUE 
+
+
+
+NÃO DEIXA ESSE NOSSO IP ACESSÍVEL AO MUNDO EXTERIOR (ao contrário de 'LoadBalancer', que deixa o ip acessível ao mundo externo ao cluster kubernetes)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... COMO O SERVICE NOS DÁ 1 IP ADDRESS QUE NÃO MUDA,
+
+
+
+
+
+
+
+OS PODS QUE 
+
+SÃO CONTROLADOS POR ESSE SERVICE PODEM SER 'REACHED' ATÉ MESMO 
+
+
+PELOS 
+
+PRÓPRIOS PODS DO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+-> OK... ISSO QUER DIZER QUE AGORA APENAS PRECISAMOS 
+
+ENCONTRAR O 'IP ADDRESS'
+
+QUE 
+
+ESSE 
+
+
+SERVICE DE 'auth-service'
+
+TEM...
+
+
+
+
+
+
+
+
+
+--> UMA MANEIRA PARA DESCOBRIR ISSO SERIA/É 
+
+
+
+
+SIMPLESMENTE:
+
+
+
+
+
+
+1) rodar o código de apply, 'kubectl apply -f auth-service.yaml auth.deployment.yaml'...
+
+
+
+
+
+
+
+ISSO NOS DÁ UM BRAND NEW DEPLOYMENT E 1 BRAND NEW SERVICE...
+
+
+
+
+
+
+
+
+SE ENTÃO RODAMOS 
+
+
+
+'kubectl get services',
+
+
+
+
+FICAMOS COM ISTO:
+
+
+
+
+
+(3 pods, 3 deployments, 3 containers version - more advanced)\kubernetes> kubectl get services       
+NAME            TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+auth-service    ClusterIP      10.105.227.13    <none>        80/TCP           5s
+kubernetes      ClusterIP      10.96.0.1        <none>        443/TCP          3h39m
+tasks-service   LoadBalancer   10.105.249.143   <pending>     8000:31323/TCP   5s
+users-service   LoadBalancer   10.96.87.189     <pending>     8080:31162/TCP   5s
+
+
+
+
+
+
+
+
+
+
+
+OU SEJA,
+
+
+TEMOS AQUELE 'auth-service'...
+
+
+
+
+
+
+
+aquele 'cluster-ip',
+
+
+IP ADDRESS,
+
+
+
+
+QUE AGORA FICA AVAILABLE DENTRO DO CLUSTER (
+    ou seja,
+
+
+    esse ip não ficará disponível na sua local machine, é inacessível
+),
+
+
+
+
+
+QUE __ DEVERÁ _SER USADO COMO VALUE 
+
+
+DA env 
+
+de 
+'AUTH_ADDRESS',
+
+
+em vez do value anterior, de 'localhost'...
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+      - name: users-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            # value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+            #   ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+            value: 10.105.227.13 ### obtido com 'kubectl get services' no terminal
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SE APLICAMOS ESSE ARQUIVO 'users-deployment.yaml' e tentamos 
+
+enviar o 
+
+
+request 
+
+
+
+ao 'auth-api',
+
+
+
+
+
+A COISA AINDA VAI DAR CERTO,
+
+
+
+ISSO PQ 
+
+
+COLOCAMOS 
+
+ESSE IP ADDRESS AÍ,
+
+
+
+
+
+QUE ENCONTRAMOS PARA ESSE SERVICE DE 'auth-service'
+
+QUE 
+CRÍAMOS...
+
+
+
+
+
+
+
+
+
+MAS É CLARO QUE FAZER O GET DESSE IP ADDRESS MANUALMENTE __ É __ ANNOYING --> A BOA NOTÍCIA 
+
+
+É QUE 
+
+É ESTÁVEL... ------> PODERÍAMOS FICAR PEGANDO ESSE IP MANUALMENTE (pq o ip não vai mudar do nada),
+
+MAS ISSO É ANNOYING...
+
+
+
+
+
+
+
+
+
+
+-> PARA SOLUCIONAR ISSO,
+
+
+O KUBERNETES 
+GERA AUTOMATICAMENTE ENV VARIABLES NOS SEUS PROGRAMAS,
+
+
+
+
+COM _ INFORMAÇÕES 
+
+SOBRE __ TODOS OS SERVICES QUE ESTÃO ATUALMENTE RODANDONO SEU CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... quer dizer que ganhamos ENV VARIABLES AUTOMATICAMENTE, PELO KUBERNETES,
+
+
+
+AO FICARMOS COM ESSES SERVICES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, POR MEIO DESSES ENV VARIABLES,
+
+
+O KUBERNETES VAI NOS DAR INFO/DATA,
+
+
+
+
+
+
+
+
+
+COMO JUSTAMENTE 
+
+
+
+O 'IP ADDRESS' DESSES DIFERENTES SERVICES..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, PARA CONSEGUIRMOS ESSE IP,
+
+
+
+
+
+PODEMOS IR ATÉ 'users-api.js'
+
+
+
+E 
+
+TIRARMOS VANTAGEM 
+
+
+DESSA 
+
+'AUTOMATICALLY GENERATED ENVIRONMENT VARIABLE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> basta escrever, em vez de 'process.env.AUTH_ADDRESS',
+
+
+
+O NOME DA _ VARIABLE__ AUTOMATICAMENTE 
+
+
+
+GERADA PELO KUBERNETES...
+
+
+
+
+
+
+
+--> E O NOME __ DESSAS VARIABLES GERADAS AUTOMATICAMENTE 
+
+
+
+SERÁ 
+
+
+
+
+
+
+
+
+'SEUSERVICENAMETODOEMCAPSCOMDASHESREPLACEDBYUNDERSCORES' + '_SERVICE_HOST'...
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+SE O NOME DE SEU NEGÓCIO FOR 'auth-service',
+
+ELE FICARÁ 
+
+
+'AUTH_SERVICE_SERVICE_HOST'...
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+app.post('/signup', async (req, res) => {
+  // It's just a dummy service - we don't really care for the email
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (
+    !password ||
+    password.trim().length === 0 ||
+    !email ||
+    email.trim().length === 0
+  ) {
+    return res
+      .status(422)
+      .json({ message: 'An email and password needs to be specified!' });
+  }
+
+  try {
+    //  const hashedPW = await axios.get('http://auth/hashed-password/' + password); /// isso NÃO FUNCIONARÁ no mundo kubernetes, pq no MUNDO KUBERNETES NÃO EXISTEM 'DOCKER NETWORKS', e justamente por isso o 'auto name-resolve' do docker, que troca os nomes dos containers PELOS __ ACTUAL IPS INTERNOS DOS CONTAINERS, não funcionará...
+
+    // TODO - ESTA VERSÃO ABAIXO FUNCIONA NO CONTEXTO DE 'CONTAINER-TO-CONTAINER' COMMUNICATION, DENTRO DE 1 POD...
+    // const hashedPW = await axios.get(`http://${process.env.AUTH_ADDRESS}` + '/hashed-password/' + password);
+    // TODO - ESTA VERSÃO ABAIXO FUNCIONA NO CONTEXTO DE 'POD-TO-POD' COMMUNICATION, DENTRO DO CLUSTER KUBERNETES
+    // ?## o pattern de naming das env variables criadas automaticamente pelo kubernetes é
+    // ? #'SEUSERVICENAMETODOEMCAPSCOMDASHESREPLACEDBYUNDERSCORES' + '_SERVICE_HOST'...  --> no caso, será 'AUTH_SERVICE' + '_SERVICE_HOST'...
+    const hashedPW = await axios.get(
+      `http://${process.env.AUTH_SERVICE_SERVICE_HOST}` +
+        '/hashed-password/' +
+        password
+    );
+
+    // const hashedPw = 'dummy';
+    // since it's a dummy service, we don't really care for the hashed-pw either
+    console.log(hashedPW, email);
+    res.status(201).json({ message: 'User created!' });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ message: 'Creating the user failed - please try again later.' });
+  }
+});
+
+app.post('/login', async (req, res) => {
+  // It's just a dummy service - we don't really care for the email
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (
+    !password ||
+    password.trim().length === 0 ||
+    !email ||
+    email.trim().length === 0
+  ) {
+    return res
+      .status(422)
+      .json({ message: 'An email and password needs to be specified!' });
+  }
+
+  // normally, we'd find a user by email and grab his/ her ID and hashed password
+  const hashedPassword = password + '_hash';
+  const response = await axios.get(
+    // 'http://auth/token/' + hashedPassword + '/' + password  // sem env variables
+
+    //  TODO - ESTA VERSÃO ABAIXO FUNCIONA NO CONTEXTO DE 'CONTAINER-TO-CONTAINER' COMMUNICATION, DENTRO DE 1 POD...
+    // `http://${process.env.AUTH_ADDRESS}/token/` +
+    //   hashedPassword +
+    //   '/' +
+    //   password // ?com env variables
+
+
+    // TODO - ESTA VERSÃO ABAIXO FUNCIONA NO CONTEXTO DE 'POD-TO-POD' COMMUNICATION, DENTRO DO CLUSTER KUBERNETES
+    // ?## o pattern de naming das env variables criadas automaticamente pelo kubernetes é
+    // ? #'SEUSERVICENAMETODOEMCAPSCOMDASHESREPLACEDBYUNDERSCORES' + '_SERVICE_HOST'...  --> no caso, será 'AUTH_SERVICE' + '_SERVICE_HOST'...
+    `http://${process.env.AUTH_SERVICE_SERVICE_HOST}/token/` +
+      hashedPassword +
+      '/' +
+      password // ?com env variables
+  ); ///// /// isso NÃO FUNCIONARÁ no mundo kubernetes, pq no MUNDO KUBERNETES NÃO EXISTEM 'DOCKER NETWORKS', e justamente por isso o 'auto name-resolve' do docker, que troca os nomes dos containers PELOS __ ACTUAL IPS INTERNOS DOS CONTAINERS, não funcionará...
+
+  // const response = {
+  //   status: 200,
+  //   data: {
+  //     token: 'abc',
+  //   },
+  // };
+  if (response.status === 200) {
+    return res.status(200).json({ token: response.data.token });
+  }
+  return res.status(response.status).json({ message: 'Logging in failed!' });
+});
+
+app.listen(8080);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... E ESSE PATTERN,
+
+
+
+
+
+ENVIRONMENT VARIABLES DESSE PATTERN,
+
+
+SÃO CRIADAS 
+
+
+PARA TODOS SEUS SERVICES....
+
+
+
+
+ 
+ TIPO ASSIM:
+
+
+
+
+
+
+     // ## ex: process.env.USERS_SERVICE_SERVICE_HOST
+    // ## ex: process.env.AUTH_SERVICE_SERVICE_HOST
+    // ## ex: process.env.TASKS_SERVICE_SERVICE_HOST
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E NÓS SEMPRE VAMOS RECEBER ISSO,
+
+PARA TODOS OS 
+
+
+
+
+SERVICES DE NOSSO CLUSTER....
+
+
+
+
+
+
+
+E ESSA VARIABLE 
+É AUTOMATICAMENTE GERADA E CONFIGURADA PELO 
+
+KUBERNETES...
+
+
+
+
+
+
+
+E ISSO VAI SEGURAR O IP ADDRESS QUE FOI AUTOMATICAMENTE ASSIGNADO 
+
+PARA ESSE SERVICE, O SERVICE DE 'auth-service'...
+
+
+
+
+
+
+
+
+
+
+-> É CLARO QUE ISSO 'KINDOF' 
+
+
+
+NOS MACHUCA,
+
+QUANDO 
+
+
+PRECISAMOS 
+
+
+RODAR O 'docker-compose',
+
+
+PQ 
+
+
+
+
+
+__ TERÍAMOS DE TER 1 VARIABLE, NO DOCKER-COMPOSE,
+
+
+COM 
+
+O EXATO MESMOO NOME... --> MAS ESSE É UM PROBLEMA 
+
+QUE 
+PODEMOS 
+
+RESOLVER, é só colocar isso como nome 
+
+de nossa env variable lá no docker-compose...
+
+
+
+
+
+
+
+O DOCKER-COMPOSE PODE FICAR ASSIM:
+
+
+
+
+
+
+
+version: "3"
+services:
+  auth:
+    build: ./auth-api
+  users:
+    environment:
+      AUTH_SERVICE_SERVICE_HOST: auth  ## ver anotações em 'auth-service.yaml' e 'users-app.js'
+    build: ./users-api
+    ports: 
+      - "8080:8080"
+  tasks:
+    build: ./tasks-api
+    ports: 
+      - "8000:8000"
+    environment:
+      TASKS_FOLDER: tasks
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+precisamos disso pq a variável 
+'AUTH_SERVICE_SERVICE_HOST'
+
+NÃO É GERADA AUTOMATICAMENTE, No 'mundo docker'...
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... TEREMOS DE REBUILDAR A IMAGE DE 'users-api'...
+
+
+
+
+
+
+fazer push,
+
+e aí
+
+
+
+
+
+
+
+re-rodar as coisaas, com 'kubectl apply .....'...
+
+
+
+
+
+
+
+
+
+
+ok... agora devemos ser capazes de enviar os requests de 
+
+
+'login' e 'signup'... --> mas agora devemos 
+
+TER EM MENTE QUE 
+
+
+
+
+ESTAMOS USANDO ESSA 'AUTOMATICALLY GENERATED VARIABLE',
+
+criada para esse service de 'auth-service.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+ESSA É UMA FEATURE SUPER ÚTIL,
+
+PQ 
+
+DEIXA 
+
+
+ESSE PROCESSO DE 'GET THE IP'
+
+
+MT DINÂMICO...

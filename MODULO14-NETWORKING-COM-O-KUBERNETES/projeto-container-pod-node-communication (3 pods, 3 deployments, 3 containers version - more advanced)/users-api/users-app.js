@@ -24,7 +24,22 @@ app.post('/signup', async (req, res) => {
 
   try {
     //  const hashedPW = await axios.get('http://auth/hashed-password/' + password); /// isso NÃO FUNCIONARÁ no mundo kubernetes, pq no MUNDO KUBERNETES NÃO EXISTEM 'DOCKER NETWORKS', e justamente por isso o 'auto name-resolve' do docker, que troca os nomes dos containers PELOS __ ACTUAL IPS INTERNOS DOS CONTAINERS, não funcionará...
-     const hashedPW = await axios.get(`http://${process.env.AUTH_ADDRESS}` + '/hashed-password/' + password); 
+
+    // TODO - ESTA VERSÃO ABAIXO FUNCIONA NO CONTEXTO DE 'CONTAINER-TO-CONTAINER' COMMUNICATION, DENTRO DE 1 POD...
+    // const hashedPW = await axios.get(`http://${process.env.AUTH_ADDRESS}` + '/hashed-password/' + password);
+    // TODO - ESTA VERSÃO ABAIXO FUNCIONA NO CONTEXTO DE 'POD-TO-POD' COMMUNICATION, DENTRO DO CLUSTER KUBERNETES
+    // ?## o pattern de naming das env variables criadas automaticamente pelo kubernetes é
+    // ? #'SEUSERVICENAMETODOEMCAPSCOMDASHESREPLACEDBYUNDERSCORES' + '_SERVICE_HOST'...  --> no caso, será 'AUTH_SERVICE' + '_SERVICE_HOST'...
+    // ## ex: process.env.USERS_SERVICE_SERVICE_HOST
+    // ## ex: process.env.AUTH_SERVICE_SERVICE_HOST
+    // ## ex: process.env.TASKS_SERVICE_SERVICE_HOST
+
+    const hashedPW = await axios.get(
+      `http://${process.env.AUTH_SERVICE_SERVICE_HOST}` +
+        '/hashed-password/' +
+        password
+    );
+
     // const hashedPw = 'dummy';
     // since it's a dummy service, we don't really care for the hashed-pw either
     console.log(hashedPW, email);
@@ -57,8 +72,25 @@ app.post('/login', async (req, res) => {
   const hashedPassword = password + '_hash';
   const response = await axios.get(
     // 'http://auth/token/' + hashedPassword + '/' + password  // sem env variables
-    `http://${process.env.AUTH_ADDRESS}/token/` + hashedPassword + '/' + password // ?com env variables
-  );    ///// /// isso NÃO FUNCIONARÁ no mundo kubernetes, pq no MUNDO KUBERNETES NÃO EXISTEM 'DOCKER NETWORKS', e justamente por isso o 'auto name-resolve' do docker, que troca os nomes dos containers PELOS __ ACTUAL IPS INTERNOS DOS CONTAINERS, não funcionará...
+
+    //  TODO - ESTA VERSÃO ABAIXO FUNCIONA NO CONTEXTO DE 'CONTAINER-TO-CONTAINER' COMMUNICATION, DENTRO DE 1 POD...
+    // `http://${process.env.AUTH_ADDRESS}/token/` +
+    //   hashedPassword +
+    //   '/' +
+    //   password // ?com env variables
+
+    // TODO - ESTA VERSÃO ABAIXO FUNCIONA NO CONTEXTO DE 'POD-TO-POD' COMMUNICATION, DENTRO DO CLUSTER KUBERNETES
+    // ?## o pattern de naming das env variables criadas automaticamente pelo kubernetes é
+    // ? #'SEUSERVICENAMETODOEMCAPSCOMDASHESREPLACEDBYUNDERSCORES' + '_SERVICE_HOST'...  --> no caso, será 'AUTH_SERVICE' + '_SERVICE_HOST'...
+    // ## ex: process.env.USERS_SERVICE_SERVICE_HOST
+    // ## ex: process.env.AUTH_SERVICE_SERVICE_HOST
+    // ## ex: process.env.TASKS_SERVICE_SERVICE_HOST
+
+    `http://${process.env.AUTH_SERVICE_SERVICE_HOST}/token/` +
+      hashedPassword +
+      '/' +
+      password // ?com env variables
+  ); ///// /// isso NÃO FUNCIONARÁ no mundo kubernetes, pq no MUNDO KUBERNETES NÃO EXISTEM 'DOCKER NETWORKS', e justamente por isso o 'auto name-resolve' do docker, que troca os nomes dos containers PELOS __ ACTUAL IPS INTERNOS DOS CONTAINERS, não funcionará...
 
   // const response = {
   //   status: 200,

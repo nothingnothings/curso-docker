@@ -1,7 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service
+  name: auth-service  ### se queremos conectar 1 pod AO POD QUE ESTÁ COM ESSE SERVICE, devemos passar, como env variable, o nome/env variable de 'process.env.AUTH_SERVICE_SERVICE_HOST'
+      ## o pattern de naming das env variables criadas automaticamente pelo kubernetes é 
+#'SEUSERVICENAMETODOEMCAPSCOMDASHESREPLACEDBYUNDERSCORES' + '_SERVICE_HOST'...
+## ex: process.env.USERS_SERVICE_SERVICE_HOST 
+## ex: process.env.AUTH_SERVICE_SERVICE_HOST
+## ex: process.env.TASKS_SERVICE_SERVICE_HOST 
 spec:
   selector:
     app: auth

@@ -4,7 +4,7 @@ services:
     build: ./auth-api
   users:
     environment:
-      AUTH_ADDRESS: auth
+      AUTH_SERVICE_SERVICE_HOST: auth  ## ver anotações em 'auth-service.yaml' e 'users-app.js'
     build: ./users-api
     ports: 
       - "8080:8080"
