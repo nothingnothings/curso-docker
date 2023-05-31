@@ -1,0 +1,1430 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... NA AULA ANTERIOR, DEFINIMOS 
+
+
+
+1 
+
+'PERSISTENT VOLUME',
+
+
+
+
+
+VISTO LÁ NO ARQUIVO 'persistent-volume.yaml':
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+## os 'PERSISTENT VOLUMES' requerem maiores configurações/mais informações na key de 'spec' para serem settados...
+spec:
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+  capacity:
+    ## É A 'OVERALL CAPACITY' de nosso persistent volume (os pods, mais tarde, farão CLAIMS a esse volume, e aí deverão especificar QUANTO DESSA COTA 'overall' VÃO QUERER 'claim')
+    storage: 512mb
+  volumeMode: Filesystem ## pode ser 'Block' ou 'FileSystem'
+  accessModes:
+    # - ReadWriteOnce   # podem ser: 'ReadWriteOnce', 'ReadOnlyMany', 'ReadWriteMany'... e os 3 podem ser especificados, ao mesmo tempo... (pq é APENAS QUANDO VC FAZ 'CLAIM' DE 1 VOLUME, LÁ EM UM DE SEUS PODS, QUE VC DEVE ESPECIFICAR QUAL TIPO VC VAI QUERER USAR)....
+    - ReadWriteOnce # ? significa que 'ESSE VOLUME PODE SER MONTADO COMO READ E WRITE _POR APENAS 1 ÚNICO NODE' (PODE SER ACESSADOS POR MÚLTIPLOS PODS, MAS ESSES PODS DEVEM FAZER PARTE DE 1 MESMO NODE)...
+    # - ReadOnlyMany ### SIGNIFICA QUE ESSE VOLUME PODE SER READ POR MÚLTIPLOS PODS, EM DIFERENTES NODES, MAS NÃO PODEM FAZER WRITE... --> e essa option NÃO EXISTE no type de 'hostPath', pq O 'hostPath', POR DEFINIÇÃO, SEMPRE TEM APENAS 1 ÚNICO NODE... por isso não funciona, pq precisamos de 'many nodes'...
+    # - ReadWriteMany ### SIGNIFICA QUE ESSE VOLUME PODE SER READ E written POR MÚLTIPLOS PODS, EM DIFERENTES NODES --> e essa option, como o 'ReadOnlyMany' NÃO EXISTE no type de 'hostPath', pq O 'hostPath', POR DEFINIÇÃO, SEMPRE TEM APENAS 1 ÚNICO NODE... por isso não funciona, pq precisamos de 'many nodes'...
+  # persistentVolumeReclaimPolicy: Recycle
+  # storageClassName: slow
+  # mountOptions:
+  #   - hard
+  #   - nfsvers=4.1
+  # nfs:
+  #   path: /tmp
+  #   server: 172.17.0.2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... E ESSA É A 'PRIMEIRA PARTE DA EQUAÇÃO'..
+
+
+
+
+
+ 
+
+ isso 
+
+
+
+
+
+
+ pq o arquivo só DEFINE O __ PERSISTENT VOLUME NO CLUSTER...
+
+
+
+
+
+
+
+
+
+ PARA PODER USAR __ ESSE PERSISTENT VOLUME,
+
+ PRECISAMOS 
+
+
+
+ 
+
+
+
+ ESCREVER 1 'PERSISTENT VOLUME CLAIM'
+
+ NO POD  
+
+
+
+
+QUE QUEREMOS QUE UTILIZE ESSE VOLUME.... 
+
+
+
+
+
+
+
+
+
+
+
+
+PARA ISSO,
+
+
+PRECISAMOS FAZER 
+__ DUAS_ COISAS:
+
+
+
+
+
+
+
+1a COISA) --> PRECISAMOS  CONFIGURAR _ ESSA 'CLAIM'...
+
+
+
+
+
+
+2a COISA) --> PRECISAMOS __ USAR_  ESSA CLAIM __ EM TODOS OS PODS QUE DESEJAREM A UTILIZAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+
+
+PARA CONFIGURAR 1 'persistent volume claim',
+
+
+VAMOS CRIAR 1 ARQUIVO DE 
+
+NOME 
+
+'persistent-volume-claim.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSA SERÁ A CLAIM PARA AQUELE PERSISTENT-VOLUME....
+
+
+
+
+
+
+O PROFESSOR EXPLICA QUE PODERÍAMOS MERGEAR TODAS ESSAS COISAS EM 1 ÚNICA YAML FILE (com '---'),
+
+
+
+mas 
+que 
+
+
+
+ELE ESTÁ SEPARANDO ISSO EM DIFERENTES ARQUIVOS PARA QUE AS COISAS FIQUEM MAIS 'manageable'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok...
+
+
+
+
+
+
+vamos começar com 'apiVersion: v1'....
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO, PRECISAMOS DEFINIR O 'kind' como sendo 
+
+'persistentVolumeClaim':
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR EXPLICA QUE 'TUDO É UM RESOURCE, NO MUNDO KUBERNETES'...
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO.... ---> VAMOS ADICIONAR 'metadata',
+
+E AÍ 
+
+VAMOS 
+
+DAR 
+
+
+1
+
+NAME 
+
+A ESSA CLAIM -------> ESSE NAME MAIS TARDE SERÁ IMPORTANTE,
+
+
+
+PQ É ESSE NOME QUE USAREMOS PARA VINCULAR ESSA 'CLAIM' A ALGUM POD...
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: story-persistent-volume-claim  ### depois vamos usar esse NOME lá nos nossos PODS...
+spec:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+TEREMOS O 'SPEC',
+
+
+a specification/configuration PARA ESSA CLAIM ESPECIFICA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... AQUI, É CLARO,
+
+PRECISAMOS 'ESPECIFICAR QUAL VOLUME ESPECÍFICO VAMOS QUERER __CLAIM__''' 
+
+
+
+
+
+
+É CLARO QUE AQUI TEMOS APENAS 1 ÚNICO PERSISTENT VOLUME QUE VAMOS QUERER UTILIZAR,
+
+
+
+MAS 
+
+EM 
+
+APPS DE VERDADE PODERÍAMOS 
+
+
+
+ESPECIFICAR MÚLTIPLOS VOLUMES... -> E ESSES VOLUMES PODEM TER DIFERENTES TYPES... 
+
+
+EM APPS DE VERDADE,
+
+NÃO É INCOMUM TER MÚLTIPLOS 
+
+VOLUMES 
+
+
+
+VINCULADOS A 1 CLAIM... E ESSES VOLUMES PODEM POSSUIR DIFERENTES TYPES... (como 'nfs', 'csi', 'Azurefile', etc)...
+
+
+
+
+
+
+
+
+
+
+
+
+PARA _ CONSEGUIRMOS __ CONECTAR __ A NOSSA CLAIM A ESSE 
+
+
+VOLUME ESPECÍFICO,
+
+
+DEVEMOS 
+
+
+COLOCAR 1 KEY DE NOME 'volumeName',
+
+
+
+e aí 
+
+
+
+
+
+
+COLOCAR O NOME DO PERSISTENT VOLUME QUE DEFINIMOS ANTES:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: story-persistent-volume-claim  ### depois vamos usar esse NOME lá nos nossos PODS...
+spec:
+  volumeName: story-persistent-volume ## nome do persistent volume que vamos querer 'CLAIM' (a que vamos querer nos conectar, basicamente, com essa claim)....
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK....
+
+
+
+
+
+
+
+
+
+
+
+
+MAS O PROFESSOR APONTA QUE QUANDO O ASSUNTO É O _ _CLAIM _ _DE PERSISTENT VOLUMES,
+
+
+
+
+O KUBERNETES NOS OFERECE 
+
+
+1 
+
+
+MONTE DE FLEXIBILIDADE ----------> PODEMOS FAZER CLAIM __ NÃO SÓ POR NAME,
+
+
+MAS POR 
+
+'RESOURCE'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS PQ DIABOS FARÍAMOS CLAIM POR 'RESOURCE',
+E 
+
+
+NÃO POR 'NAME'?
+
+
+
+
+
+
+--> PQ TALVEZ VAMOS QUERER 
+
+
+
+
+CLAIM ___ NÃO 1 VOLUME ESPECÍFICO,
+
+
+
+
+E SIM 
+
+
+
+
+
+''''QUERO O VOLUME __ QUE TENHA __ TANTO E TANTO DE ESPAÇO,
+
+E COM TAL E TAL CONFIGURAÇÃO'''' ------> ESSAS CONFIGURAÇÕES 
+
+
+
+podem ficar cada vez mais complexas/específicas,
+
+
+
+por isso o professor não vai tocar nesse tópico...
+
+
+
+
+
+
+
+
+
+
+
+
+
+mas podemos configurar bem mais, essencialmente.... há muitas maneiras de fazer 'claim' de 
+
+1 volume...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... MAS É CLARO QUE O CLAIM POR NOME É SUPER STRAIGHTFORWARD,
+
+POR ISSO 
+
+
+O PROFESSOR O UTILIZARÁ.... 
+
+
+
+
+
+
+
+
+
+
+DEFINIDO QUAL PERSISTENT VOLUME QUEREMOS USAR,
+
+
+PRECISAMOS DEFINIR MAIS INFO..
+
+
+
+
+
+
+
+
+
+
+-> NOVAMENTE,
+
+PRECISAMOS 
+
+ESCREVER 
+
+'accessModes',
+
+
+e 
+
+ESPECIFICAR 'QUAIS MODES QUEREMOS USAR, AQUI,
+
+PARA __ CLAIM___ ESSE VOLUME'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> poderíamos definir múltiplos MODES, AQUI,
+
+mas o professor 
+
+vai colocar o único mode que é suportado no minikube,
+
+que é 
+
+
+'ReadWriteOnce'...
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: story-persistent-volume-claim  ### depois vamos usar esse NOME lá nos nossos PODS...
+spec:
+  volumeName: story-persistent-volume ## nome do persistent volume que vamos querer 'CLAIM' (a que vamos querer nos conectar, basicamente, com essa claim)....
+  ### HÁ MTAS MANEIRAS DE FAZER O NEGÓCIO DECIDIR SE VAI 'CLAIM' 1 VOLUMe... o 'volumeName' É A MANEIRA MAIS BÁSICA DE DETERMINAR QUE CERTO VOLUME DEVE SER CLAIMED, mas existem outras (você pode dizer, com essas configs, '''quero claim APENAS OS VOLUMES COM TANTO E TANTO DE ESPAÇO; OU, ENTÃO,  QUERO CLAIM APENAS OS VOLUMES COM TAL E TAL CONFIGURAÇÃO...'''')  
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce ## é  ÚNICO MODE QUE FUNCIONA, no contexto do minikube (pq temos só 1 node, 1 único node que é tanto master como worker node)...
+    # - ReadWriteMany
+    # - ReadOnlyMany
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> CERTO...
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+
+O PROFESSOR EXPLICA QUE PODEMOS ADICIONAR 
+
+
+A 
+
+KEY 
+
+
+DE 'resources'...
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: story-persistent-volume-claim  ### depois vamos usar esse NOME lá nos nossos PODS...
+spec:
+  volumeName: story-persistent-volume ## nome do persistent volume que vamos querer 'CLAIM' (a que vamos querer nos conectar, basicamente, com essa claim)....
+  ### HÁ MTAS MANEIRAS DE FAZER O NEGÓCIO DECIDIR SE VAI 'CLAIM' 1 VOLUMe... o 'volumeName' É A MANEIRA MAIS BÁSICA DE DETERMINAR QUE CERTO VOLUME DEVE SER CLAIMED, mas existem outras (você pode dizer, com essas configs, '''quero claim APENAS OS VOLUMES COM TANTO E TANTO DE ESPAÇO; OU, ENTÃO,  QUERO CLAIM APENAS OS VOLUMES COM TAL E TAL CONFIGURAÇÃO...'''')  
+  resources: ### ? é basicamente A CONTRAPARTE À KEY DE 'capacity' (que fica lá na definição do próprio 'persistent volume')...
+  ## com 'resources', definimos 'QUAL SERÁ _A  COTA__ DE STORAGE_ QUE VAMOS QUERER UTILIZAR, LÁ DO NOSSO RECURSO PERSISTENT VOLUME'..
+    requests:
+      storage: 128mb
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce ## é  ÚNICO MODE QUE FUNCIONA, no contexto do minikube (pq temos só 1 node, 1 único node que é tanto master como worker node)...
+    # - ReadWriteMany
+    # - ReadOnlyMany
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK....
+
+
+
+
+
+
+
+
+
+a key de 'resources' 
+
+TEM 
+
+1 
+
+KEY 
+
+DE 'requests'
+
+
+NESTEADA DENTRO DE SI... -->  E, DENTRO DISSO,
+
+PODEMOS 
+
+
+DEFINIR A __ STORAGE _ QUE VAMOS QUERER PEDIR....
+
+
+
+
+
+
+
+
+
+
+
+
+--> o professor havia definido 1 capacity de '1Gi'
+
+
+no 
+
+
+
+PERSISTENT VOLUME... -> POR ISSO O PROFESSOR DECIDE COLOCAR '1Gi'
+
+
+
+
+NA STORAGE desse 'persistent-volume-claim'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR EXPLICA QUE 
+
+'SE TIVERMOS MÚLTIPLAS CLAIMS 
+
+A 
+
+1 MESMO PERSISTENT VOLUME,
+
+TVZ SEJA MELHOR PEDIR MENOS DO QUE 
+
+A CAPACITY TOTAL... ISSO PARA QUE, NO TOTAL,
+
+NÃO 
+
+FAÇAMOS REQUEST DE MAIS DO QUE TEMOS AVAILABLE'... -> AÍ FICARÍAMOS 
+
+
+TENTANDO FAZER WRITE DE MAIS DATA DO QUE 
+
+O POSSÍVEL...
+
+
+
+
+
+
+
+
+
+--> ok..
+
+
+
+
+
+
+COM ISSO, TEREMOS CRIADO 1 'PERSISTENT VOLUME CLAIM'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS ISSO, POR SI SÓ,
+
+
+NÃO VAI ESTABELECER 
+
+1 
+
+CONNECTION A 1 POD... 
+
+
+
+CONNECTION DO POD A 1 PERSISTENT VOLUME....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O QUE ESSE ARQUIVO/RESOURCE VAI FAZER, NO CASO,
+
+
+
+
+É __ SER USADO PARA ''FAZER 1 CLAIM ÀQUELE PERSISTENT VOLUME'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> é por isso que devemos voltar 
+
+AO ARQUIVO 'deployment.yaml',
+
+
+
+PARA QUE 
+
+
+
+
+CONECTEMOS 
+
+
+NOSSO POD A ESSA CLAIM,
+
+
+PARA QUE, NO FINAL DAS CONTAS,
+
+A 
+
+CLAIM 
+
+SE 
+
+CONECTE 
+
+
+AO 
+PERSISTENT VOLUME 
+
+
+E CONSIGA SEU VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, PARA DEFINIR ESSA CONEXÃO,
+
+
+
+AINDA VAMOS UTILIZAR 
+
+
+
+A OPÇÃO DE 'volumes',
+
+DENTRO 
+
+
+
+DOS SPECS 
+
+
+
+
+DE NOSSO POD...
+
+
+
+
+OU SEJA,
+
+
+ESTE TRECHO AQUI:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      volumes:
+        - name: story-volume
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CÓDIGO COMPLETO:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story
+spec:
+  selector:
+    matchLabels:
+      story: story
+
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        story: story
+    spec:
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          volumeMounts:
+            - mountPath: /app/story
+              name: story-volume
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+      volumes:
+        - name: story-volume
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate
+
+
+
+
+
+-------------------------------------------
+
+
+
+
+
+
+
+OK... SIGNIFICA QUE VAMOS TROCAR 
+
+
+
+
+_ ESSE VOLUME DE type 'hostPath'
+
+que temos aqui....
+
+
+
+
+
+
+
+
+
+
+
+
+----> isso pq, agora,
+
+em vez 
+
+de usarmos aquele 
+
+
+type de 'hostPath' (que vai criar 1 volume de type 'hostPath' APENAS 
+
+PARA ESSE POD AÍ, para esse TIPO DE POD
+
+ ),
+
+
+
+
+
+
+
+
+
+ AGORA VAMOS USAR 
+
+
+
+ O 
+
+
+
+ TYPE DE 'persistentVolumeClaim',
+
+
+
+
+
+
+ TIPO ASSIM:
+
+
+
+
+
+
+
+       volumes:
+        - name: story-volume
+        persistentVolumeClaim:
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+         persistentVolumeClaim:   ### isso deve ser usado junto com o arquivo yaml de 'persistent-volume-claim'... //////// E 'PERSISTENT-VOLUMES', junto dos 'PERSISTENT-VOLUME-CLAIMS' (que são usados para acessar os persistent volumes) são o VOLUME TYPE MAIS USADO, NO KUBERNETES... PQ SÃO 1 ARMAZENAMENTO CENTRAL, que precisa ser definido apenas 1 única vez...
+            claimName: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E ISSO FAZ EXATAMENTE O QUE DIZ O NOME... --> DEVEMOS USAR O NOME 
+
+DE NOSSO 
+'PERSISTENT VOLUME CLAIM'
+
+
+
+
+nesse local, nesse 'claimName'...
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+          persistentVolumeClaim:   ### isso deve ser usado junto com o arquivo yaml de 'persistent-volume-claim'... //////// E 'PERSISTENT-VOLUMES', junto dos 'PERSISTENT-VOLUME-CLAIMS' (que são usados para acessar os persistent volumes) são o VOLUME TYPE MAIS USADO, NO KUBERNETES... PQ SÃO 1 ARMAZENAMENTO CENTRAL, que precisa ser definido apenas 1 única vez...
+            claimName: persistent-volume-claim  ### ? E NADA TE IMPEDE DE USAR ESSE 'persistent-volume-claim' EM DIFERENTES LOCAIS DE SEU APP (em outros pods, em outros nodes)...
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------
+
+
+
+
+
+
+
+
+
+ok... precisamos do 'claimName'
+
+PQ 
+
+
+
+
+
+__ O KUBERNETES NÃO VAI SABER QUAL 'CLAIM' VAMOS QUERER USAR....
+
+
+
+
+
+
+
+
+
+NÃO PRECISAMOS MUDAR MAIS NADA 
+
+
+
+DOS 'volumeMounts'
+
+QUE TEMOS ALI EM CIMA,
+
+
+
+ISSO PQ NOSSO VOLUME AINDA SERÁ MONTADO COMO ANTES...
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK...
+TIVEMOS MT TRABALHO, 
+
+
+
+E MT CONVERSA.. --> MAS 
+
+
+
+
+SE 
+
+
+
+RODARMOS TUDO ISSO,
+
+
+
+DEVEMOS TER NOSSO APP UP AND RUNNING MAIS UMA VEZ,
+
+
+MAS 
+
+AGORA 
+
+COM 
+
+DATA 
+TOTALMENTE 
+
+
+INDEPENDENTE 
+
+
+DE NOSSOS PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> é parecido com o 'hostPath'
+
+ANTERIOR, 
+
+MAS AGORA 
+
+COM 
+
+1 VOLUME TOTALMENTE INDEPENDENTE 
+
+DE NOSSOS NODES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> o que aprendemos sobre o set de 'persistent volumes'
+
+
+e 
+
+'persistent volume claims' 
+
+
+SE APLICA _ 
+
+
+
+
+
+COM TODOS OS VOLUME TYPES (
+
+
+    o 'hostPath' é apenas o mais básico, usado para testes... o que o professor 
+
+    ensinou, aqui,
+
+    funciona com todos os volume types...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... TEMOS 'REAL NODE INDEPENDENCE'...
+
+
+
+
+
+devemos ver isso em ação...

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: story-persistent-volume-claim  ### depois vamos usar esse NOME lá nos nossos PODS...
+spec:
+  volumeName: story-persistent-volume ## nome do persistent volume que vamos querer 'CLAIM' (a que vamos querer nos conectar, basicamente, com essa claim)....
+  ### HÁ MTAS MANEIRAS DE FAZER O NEGÓCIO DECIDIR SE VAI 'CLAIM' 1 VOLUMe... o 'volumeName' É A MANEIRA MAIS BÁSICA DE DETERMINAR QUE CERTO VOLUME DEVE SER CLAIMED, mas existem outras (você pode dizer, com essas configs, '''quero claim APENAS OS VOLUMES COM TANTO E TANTO DE ESPAÇO; OU, ENTÃO,  QUERO CLAIM APENAS OS VOLUMES COM TAL E TAL CONFIGURAÇÃO...'''')  
+  resources: ### ? é basicamente A CONTRAPARTE À KEY DE 'capacity' (que fica lá na definição do próprio 'persistent volume')...
+  ## com 'resources', definimos 'QUAL SERÁ _A  COTA__ DE STORAGE_ QUE VAMOS QUERER UTILIZAR, LÁ DO NOSSO RECURSO PERSISTENT VOLUME'..
+    requests:
+      storage: 128mb
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce ## é  ÚNICO MODE QUE FUNCIONA, no contexto do minikube (pq temos só 1 node, 1 único node que é tanto master como worker node)...
+    # - ReadWriteMany
+    # - ReadOnlyMany

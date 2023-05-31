@@ -34,11 +34,26 @@ spec:
           # ! emptyDir: {} ### isso significa que queremos usar o type emptyDir 'AS IT IS', sem ter uma configuração específica...
 
           ## TODO  'hostPath' --> É 'NODE-SPECIFIC' (específico a 1 worker/master node... não pode ser usado em outros nodes)...
-          hostPath: ### 'hostPath' é o outro VOLUME TYPE. ELE FUNCIONA 1 POUCO COMO UMA BIND MOUNT
-            ## hostPath --> requer a key de 'path', que é usada para especificar o PATH NA 'HOST MACHINE' (no nosso worker node, essencialmente)...
-            path: /data ### ? --> com isso, TUDO QUE ESTÁ DENTRO DO PATH DE '/data', no folder de 'data', NO NOSSO WORKER NODE/HOST MACHINE, será compartilhado com NOSSOS CONTAINERS NESSES PODS (no caso, com o container de 'my-story-app') --> e todos os containers que tiverem MONTADO esse volume vão poder se aproveitar/usar dessa data...
-            #### outros values possíveis para type são 'Directory', 'File', 'FileOrCreate', Socket
-            type: DirectoryOrCreate ### ? COM ESSA KEY, especificamos 'COMO DEVE SER HANDLADO O PATH/FOLDER desse volume' --> com 'DirectoryOrCreate',  dizemos que 'ESSE PATH DEVERÁ SER 1 EXISTING DIRECTORY'... se não existir no momento, CRIE 1 NOVO DIRECTORY COM ESSE NOME..
+          # hostPath: ### 'hostPath' é o outro VOLUME TYPE. ELE FUNCIONA 1 POUCO COMO UMA BIND MOUNT
+          #   ## hostPath --> requer a key de 'path', que é usada para especificar o PATH NA 'HOST MACHINE' (no nosso worker node, essencialmente)...
+          #   path: /data ### ? --> com isso, TUDO QUE ESTÁ DENTRO DO PATH DE '/data', no folder de 'data', NO NOSSO WORKER NODE/HOST MACHINE, será compartilhado com NOSSOS CONTAINERS NESSES PODS (no caso, com o container de 'my-story-app') --> e todos os containers que tiverem MONTADO esse volume vão poder se aproveitar/usar dessa data...
+          #   #### outros values possíveis para type são 'Directory', 'File', 'FileOrCreate', Socket
+          #   type: DirectoryOrCreate ### ? COM ESSA KEY, especificamos 'COMO DEVE SER HANDLADO O PATH/FOLDER desse volume' --> com 'DirectoryOrCreate',  dizemos que 'ESSE PATH DEVERÁ SER 1 EXISTING DIRECTORY'... se não existir no momento, CRIE 1 NOVO DIRECTORY COM ESSE NOME..
+          persistentVolumeClaim:   ### isso deve ser usado junto com o arquivo yaml de 'persistent-volume-claim'... //////// E 'PERSISTENT-VOLUMES', junto dos 'PERSISTENT-VOLUME-CLAIMS' (que são usados para acessar os persistent volumes) são o VOLUME TYPE MAIS USADO, NO KUBERNETES... PQ SÃO 1 ARMAZENAMENTO CENTRAL, que precisa ser definido apenas 1 única vez...
+            claimName: persistent-volume-claim  ### ? E NADA TE IMPEDE DE USAR ESSE 'persistent-volume-claim' EM DIFERENTES LOCAIS DE SEU APP (em outros pods, em outros nodes)...
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # o type 'emptyDir'
 # VAI SIMPLESMENTE CRIAR 1 'NEW EMPTY DIRECTORY'
