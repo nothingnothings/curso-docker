@@ -1,0 +1,1017 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... AGORA, PARA APLICAR TUDO QUE CONFIGURAMOS  
+
+
+EM 'deployment.yaml',
+
+
+
+
+
+
+
+
+EM QUE CONFIGURAMOS AQUELA PERSISTENT VOLUME CLAIM
+
+
+
+
+
+DE NOSSO PERSISTENT VOLUME,
+
+
+
+
+
+
+
+
+
+DEVEMOS RODAR O 
+
+
+
+kubectl apply -f deployment.yaml -f service.yaml -f persistent-volume.yaml -f persistent-volume-claim.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS ANTES DISSO,
+
+
+O PROFESSOR QUER NOS MOSTRAR 1 CONCEITO QUE É BEM IMPORTANTE..
+
+
+
+
+
+
+
+
+
+
+
+
+--> É O CONCEITO DE 'STORAGE CLASSES'...
+
+
+
+
+
+
+
+
+E O PROFESSOR NOS DIZ QUE 
+
+TEMOS 
+
+1 'STORAGE CLASS' POR DEFAULT...
+
+
+
+
+
+
+
+
+
+PARA VER ESSA STORAGE CLASS DEFAULT,
+
+VC DEVE RODAR 
+'kubectl get sc'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VEREMOS QUE EXISTE 1 STORAGE CLASS, A DEFAULT,
+
+NO MINIKUBE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+STORAGE CLASS --------> É OUTRO CONCEITO QUE TEMOS NO KUBERNETES,
+
+
+QUE 
+
+
+DÁ A ADMINISTRATORS
+
+FINE-GRAIN CONTROL
+
+
+SOBRE
+
+
+
+
+'''COMO STORAGE É MANAGEADA'''',
+
+
+
+
+E 
+
+SOBRE 'COMO VOLUMES PODEM SER CONFIGURADOS'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> é um conceito AVANÇADO,
+
+
+
+
+MAS, PARA NOSSOS PROPÓSITOS,
+
+AQUI,
+
+
+
+
+A STORAGE CLASS DEFAULT É TOTALMENTE FINE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+STORAGE CLASS --> NO FINAL DAS CONTAS DEFINE _ AO _ KUBERNETES 
+
+
+'''COMO ESSA STORAGE, QUE QUEREMOS USAR,
+
+
+DEVE __ SER _ PROVISIONADA'' (
+
+
+HOW EXACTLY 
+
+
+THE STORAGE WE WANT TO USE SHOULD BE _ PROVISIONED 
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NO CASO,
+
+
+VAI DETERMINAR EXATAMENTE COMO A NOSSA 'hostPath' STORAGE DEVERÁ 
+
+SER 'PROVISIONED'...
+
+
+
+
+
+
+
+
+
+
+
+-> QUER DIZER QUE, POR TRÁS DAS CENAS,
+
+
+
+
+A STORAGE CLASS VAI PROVIDENCIAR INFO IMPORTANTE 
+
+
+
+À CONFIGURAÇÃO DE 'PERSISTENT VOLUME'
+
+QUE 
+
+SETTAMOS ANTERIORMENTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... E NOSSA STORAGE CLASS PADRÃO,
+
+QUE JÁ VEIO COM O MINIKUBE,
+
+
+
+
+QUE JÁ VEM CONFIGURADA PARA ESSE TYPE DE 'hostPath',
+
+
+
+
+VAI FUNCIONAR JUST FINE..
+
+
+
+
+
+
+
+
+
+
+-> APENAS TEMOS QUE _ NOS ASSEGURAR _ 
+
+DE QUE 
+
+ESTAMOS _ USANDO _ ESSA STORAGE CLASS....
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+
+
+NO ARQUIVO de 'persistentVolume',
+
+
+
+LÁ NA SPECIFICATION (spec),
+
+
+
+
+
+
+
+
+DEVEMOS ADICIONAR 1 KEY DE 'storageClassName',
+
+
+e aí 
+
+
+
+COLOCAR 
+
+'standard'... -------> DEVEMOS FAZER ISSO JUSTAMENTE 
+
+
+
+PQ,
+
+VEJA (comando 'kubectl get sc'):
+
+
+
+
+
+
+
+
+
+C:\WINDOWS\system32>kubectl get sc
+NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+standard (default)   k8s.io/minikube-hostpath   Delete          Immediate           false                  38h
+
+
+
+
+
+
+
+
+
+
+COMO VOCÊ PODE VER,
+
+
+
+__ O NOME DE NOSSA 'STORAGE CLASS' PADRÃO É 
+
+
+
+REALMENTE 'standard'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok...
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE MEU CÓDIGO FICARÁ ASSIM:
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: story-persistent-volume
+## os 'PERSISTENT VOLUMES' requerem maiores configurações/mais informações na key de 'spec' para serem settados...
+spec:
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+  capacity:
+    ## É A 'OVERALL CAPACITY' de nosso persistent volume (os pods, mais tarde, farão CLAIMS a esse volume, e aí deverão especificar QUANTO DESSA COTA 'overall' VÃO QUERER 'claim')
+    storage: 512mb
+  volumeMode: Filesystem ## pode ser 'Block' ou 'FileSystem'
+  accessModes:
+    # - ReadWriteOnce   # podem ser: 'ReadWriteOnce', 'ReadOnlyMany', 'ReadWriteMany'... e os 3 podem ser especificados, ao mesmo tempo... (pq é APENAS QUANDO VC FAZ 'CLAIM' DE 1 VOLUME, LÁ EM UM DE SEUS PODS, QUE VC DEVE ESPECIFICAR QUAL TIPO VC VAI QUERER USAR)....
+    - ReadWriteOnce # ? significa que 'ESSE VOLUME PODE SER MONTADO COMO READ E WRITE _POR APENAS 1 ÚNICO NODE' (PODE SER ACESSADOS POR MÚLTIPLOS PODS, MAS ESSES PODS DEVEM FAZER PARTE DE 1 MESMO NODE)...
+    # - ReadOnlyMany ### SIGNIFICA QUE ESSE VOLUME PODE SER READ POR MÚLTIPLOS PODS, EM DIFERENTES NODES, MAS NÃO PODEM FAZER WRITE... --> e essa option NÃO EXISTE no type de 'hostPath', pq O 'hostPath', POR DEFINIÇÃO, SEMPRE TEM APENAS 1 ÚNICO NODE... por isso não funciona, pq precisamos de 'many nodes'...
+    # - ReadWriteMany ### SIGNIFICA QUE ESSE VOLUME PODE SER READ E written POR MÚLTIPLOS PODS, EM DIFERENTES NODES --> e essa option, como o 'ReadOnlyMany' NÃO EXISTE no type de 'hostPath', pq O 'hostPath', POR DEFINIÇÃO, SEMPRE TEM APENAS 1 ÚNICO NODE... por isso não funciona, pq precisamos de 'many nodes'...
+  storageClassName: standard
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  E DEVEMOS USAR 
+
+
+
+  ESSE MESMO 
+
+  'storageClassName'
+
+  QUANDO 
+
+
+  FIZERMOS NOSSA CLAIM,
+
+  TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: story-persistent-volume-claim  ### depois vamos usar esse NOME lá nos nossos PODS...
+spec:
+### HÁ MTAS MANEIRAS DE FAZER O NEGÓCIO DECIDIR SE VAI 'CLAIM' 1 VOLUMe... o 'volumeName' É A MANEIRA MAIS BÁSICA DE DETERMINAR QUE CERTO VOLUME DEVE SER CLAIMED, mas existem outras (você pode dizer, com essas configs, '''quero claim APENAS OS VOLUMES COM TANTO E TANTO DE ESPAÇO; OU, ENTÃO,  QUERO CLAIM APENAS OS VOLUMES COM TAL E TAL CONFIGURAÇÃO...'''')  
+  volumeName: story-persistent-volume ## nome do persistent volume que vamos querer 'CLAIM' (a que vamos querer nos conectar, basicamente, com essa claim)....
+  storageClassName: standard ### precisamos escolher a 'storage class' que foi definida no persistent-volume que estamos tentando 'claim'...
+  resources: ### ? é basicamente A CONTRAPARTE À KEY DE 'capacity' (que fica lá na definição do próprio 'persistent volume')...
+  ## com 'resources', definimos 'QUAL SERÁ _A  COTA__ DE STORAGE_ QUE VAMOS QUERER UTILIZAR, LÁ DO NOSSO RECURSO PERSISTENT VOLUME'..
+    requests:
+      storage: 128mb
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce ## é  ÚNICO MODE QUE FUNCIONA, no contexto do minikube (pq temos só 1 node, 1 único node que é tanto master como worker node)...
+    # - ReadWriteMany
+    # - ReadOnlyMany
+
+
+
+
+
+
+
+
+
+
+OK....
+
+
+
+
+
+
+
+
+
+AGORA PODEMOS APLICAR TUDO ISSO...
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+kubectl apply  -f persistent-volume.yaml -f persistent-volume-claim.yaml -f deployment.yaml -f service.yaml 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... ISSO VAI CONFIGURAR TUDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo... funcionou... 
+
+
+
+
+
+PARA VER SE OS PERSISTENT VOLUMES FORAM CRIADOS,
+
+DEVEMOS 
+
+
+
+
+escrever 
+
+
+'kubectl get pv'...
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO13-FAZENDO-MAANGE-DE-DATA-E-VOLUMES-COM-O-KUBERNETES\volume-project> kubectl get pv
+NAME                      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                   STORAGECLASS   REASON   AGE
+story-persistent-volume   512M       RWO            Retain           Bound    default/story-persistent-volume-claim   standard                31s
+
+
+
+
+
+
+
+
+------------------------------------
+
+
+
+
+
+
+
+OK... ELE ESTÁ COM STATUS DE 'BOUND',
+E ESTÁ COM UMA STORAGECLASS DE 'standard'...
+
+
+
+
+
+
+
+
+--> E SE RODARMOS 'kubectl get pvc',
+
+VEREMOS 
+
+
+
+A CLAIM QUE FOI FEITA...
+
+
+
+EX:
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO13-FAZENDO-MAANGE-DE-DATA-E-VOLUMES-COM-O-KUBERNETES\volume-project> kubectl get pvc
+NAME                            STATUS   VOLUME                    CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+story-persistent-volume-claim   Bound    story-persistent-volume   512M       RWO            standard       98s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E SE RODAMOS 'kubectl get deployments',
+
+
+
+VEREMOS NOSSO deployment com aqueles 2 pods,
+
+que 
+devem 
+
+estar 
+
+usando 
+
+
+
+aquele PERSISTENT VOLUME,
+
+POR MEIO 
+
+
+
+
+DAQUELA 'PERSISTENT-VOLUME-CLAIM'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> NOSSO APP TERÁ QUASE O MESMO BEHAVIOR,
+
+
+
+PQ __ JÁ TÍNHAMOS ESSA DATA PERSISTENCE COM O REGULAR VOLUME DE 'hostPath'... --> MAS A GRANDE 
+DIFERENÇA,
+
+NO CASO,
+
+
+
+É QUE 
+
+ESSE 
+
+'PERSISTENT VOLUME'
+
+
+
+É __ INDEPENDENTE _ sERÁ TANTO _ DOS 'PODS'
+
+
+
+
+COMO __ DOS __ NODES_ EM SI (e isso é novo, pq antes, o 'regular volume hostPath', ele não é independente 
+dos nodes, PQ PRECISA PERTENCER A 1 NODE, a 1 host machine... )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> e agora temos essa independence 
+
+NÃO SÓ COM O 'hostPath',
+
+MAS COM QUALQUER 
+
+
+
+VOLUME TYPE,
+
+
+
+QUALQUER SUPPORTED TYPE PARA PERSISTENT VOLUMES (E podemos encontrar esses types nos official docs)...
+
+
+
+
+
+
+
+ISSO QUER DIZER QUE AGORA TEMOS ESSE 'STANDALONE VOLUME',
+
+
+E QUE AGORA 
+
+
+_QUALQUER POD __ 
+
+
+
+
+
+PODE USAR A NOSSA 'CLAIM' para acessar esse persistent volume....
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> PODEMOS ATÉ MESMO CRIAR DIFERENTES 'PERSISTENT VOLUME CLAIMS'
+
+
+para nosso 
+
+
+pod,
+
+para ter comportamentos diferentes,
+
+
+
+e aí 
+
+
+VINCULAR 
+
+
+ESSES 'PERSISTENT VOLUME CLAIMS' nos pods 
+
+
+em que 
+queremos 
+
+que exista esse acesso a esse volume central...
+
+
+
+
+
+
+
+
+
+--> A ÚNICA COISA QUE FAZEMOS NO POD, PORTANTO,
+É 
+
+'REACH OUT'
+
+
+A ALGUMA CLAIM -----> PQ TODA A CONFIGURATION DE ACESSO àQUELE PERSISTENT VOLUME
+
+
+CONSTARÁ 
+
+DENTRO 
+
+DA CONFIG DA CLAIM( nesse caso, no arquivo 'persistent-volume-claim.yaml')...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA, COM ISSO,
+
+ATINGIMOS 
+
+POD E NODE 
+
+INDEPENDENCE...
+
+
+
+
+
+
+
+
+
+-> OK... COM ISSO,
+
+APRENDEMOS SOBRE PERSISTENT VOLUMES... --> E É UMA FEATURE PODEROSA,
+
+
+PQ NOS DEIXA ARMAZENAR DATA DE 1 MANEIRA 
+
+QUE 
+
+
+
+'NEVER WILL BE LOST',
+
+
+
+PQ __ SERÁ 'NODE AND POD INDEPENDENT',
+
+
+
+O QUE, PARA CERTOS TIPOS DE DATA,
+
+É CRUCIAL....
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR VOLTA AO CONCEITO  DE 'STATE'
+
+QUE MENCIONOU MAIS CEDO,
+NESTE MÓDULO..
+
+
+
+
+
+
+
+
+
+O PROFESSOR FALOU SOBRE 2 TIPOS DE STATE/DATA...:
+
+
+
+
+
+
+
+
+1) USER-GENERATED DATA, USER ACCOUNTS --> DATA ESSENCIAL, CRUCIAL..
+
+
+
+
+
+
+
+
+
+2) INTERMEDIATE RESULTS,
+
+TEMPORARY DATA...
+
+
+
+
+
+
+
+
+
+
+
+
+--> EM AMBOS CASOS,
+
+VOLUMES SÃO 1 ÓTIMA SOLUÇÃO..
+
+
+
+
+
+
+
+
+
+
+--> ENTRETANTO,
+PARA INTERMEDIATE/TEMPORARY RESULTS,
+
+
+
+
+
+'POD-SPECIFIC VOLUMES'
+
+PODEM SER __ O BASTANTE.. ---> VC TALVEZ NÃO PRECISARÁ 
+
+DE 
+
+1 'PERSISTENT VOLUME'
+
+PARA ESSE TIPO DE DATA,
+
+
+
+APESAR DE SEU USO SER POSSÍVEL, SE VC QUISER...
+
+
+
+
+
+
+
+
+
+MAS PARA _ 'USER-GENERATED DATA',
+
+USER ACCOUNTS E ETC,
+
+
+
+
+
+PERSISTENT VOLUMES SÃO O MÁXIMO,
+
+PQ 
+SUA DATA FICA TOTALMENTE INDEPENDENTE 
+
+
+DO CONTAINER, DO POD E DO 
+
+
+_NODE _ EM QUE O POD 
+
+
+
+RODA... ISSO SE VC USAR 
+
+'persistent volumes'
+
+
+e 
+
+'persistent volume claims'...

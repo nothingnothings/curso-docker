@@ -9,7 +9,7 @@ spec:
     type: DirectoryOrCreate
   capacity:
     ## É A 'OVERALL CAPACITY' de nosso persistent volume (os pods, mais tarde, farão CLAIMS a esse volume, e aí deverão especificar QUANTO DESSA COTA 'overall' VÃO QUERER 'claim')
-    storage: 512mb
+    storage: 512M
   volumeMode: Filesystem ## pode ser 'Block' ou 'FileSystem'
   accessModes:
     # - ReadWriteOnce   # podem ser: 'ReadWriteOnce', 'ReadOnlyMany', 'ReadWriteMany'... e os 3 podem ser especificados, ao mesmo tempo... (pq é APENAS QUANDO VC FAZ 'CLAIM' DE 1 VOLUME, LÁ EM UM DE SEUS PODS, QUE VC DEVE ESPECIFICAR QUAL TIPO VC VAI QUERER USAR)....
@@ -17,6 +17,7 @@ spec:
     # - ReadOnlyMany ### SIGNIFICA QUE ESSE VOLUME PODE SER READ POR MÚLTIPLOS PODS, EM DIFERENTES NODES, MAS NÃO PODEM FAZER WRITE... --> e essa option NÃO EXISTE no type de 'hostPath', pq O 'hostPath', POR DEFINIÇÃO, SEMPRE TEM APENAS 1 ÚNICO NODE... por isso não funciona, pq precisamos de 'many nodes'...
     # - ReadWriteMany ### SIGNIFICA QUE ESSE VOLUME PODE SER READ E written POR MÚLTIPLOS PODS, EM DIFERENTES NODES --> e essa option, como o 'ReadOnlyMany' NÃO EXISTE no type de 'hostPath', pq O 'hostPath', POR DEFINIÇÃO, SEMPRE TEM APENAS 1 ÚNICO NODE... por isso não funciona, pq precisamos de 'many nodes'...
   # persistentVolumeReclaimPolicy: Recycle
+  storageClassName: standard ## precisamos escolher algum 'storage class' (o default é 'standard')... e precisamos colocar isso no 'persistent-volume-claim', também...
   # storageClassName: slow
   # mountOptions:
   #   - hard
