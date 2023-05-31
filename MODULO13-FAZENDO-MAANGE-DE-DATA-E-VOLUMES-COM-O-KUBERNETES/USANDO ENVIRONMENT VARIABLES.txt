@@ -1,3 +1,552 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AGORA QUE APRENDEMOS SOBRE AS FEATURES CRUCIAIS DOS VOLUMES,
+
+
+
+'REGULAR VOLUMES',
+
+
+
+'PERSISTENT VOLUMES'
+
+
+E 
+
+
+
+'PERSISTENT VOLUME CLAIMS',
+
+
+
+
+
+
+
+
+
+
+
+
+DEVEMOS VER AS 'ENVIRONMENT VARIABLES'....
+
+
+
+
+
+
+
+
+
+
+ISSO PQ ENVIRONMENT VARIABLES IMPORTAM EM  1 MONTE DE APPS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VEREMOS NO NOSSO APP...
+
+
+
+
+
+
+
+
+
+
+
+--> O FOLDER DE 'story'.... ----> 
+
+
+
+
+
+O FOLDER EM QUE ARMAZENAMOS O ARQUIVO DE 'text.txt'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> ISSO ESTÁ HARDCODADO NO NOSSO CÓDIGO...
+
+
+
+
+
+
+
+
+
+
+--> CERTO... MAS O FATO DE QUE 'VAMOS ARMAZENAR ESSE ARQUIVO DENTRO DO FOLDER DE "story" ' 
+
+
+
+ESTÁ ESCRITO 
+
+
+
+LÁ NO NOSSO 'deployment.yaml',
+
+
+
+
+
+
+como visto aqui:
+
+
+
+
+
+
+
+
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          volumeMounts: ## precisamos dessa option/key para DEFINIR QUAIS VOLUMES DEVERÃO SER MONTADOS EM ALGUM DE NOSSOS CONTAINERS, NESSE POD...
+            - mountPath: /app/story ## QUEREMOS QUE NOSSA DATA/DATA DO USUÁRIO SEJA 'BINDADA' A ESSE INTERNAL PATH, DENTRO DE NOSSO CONTAINER (é exatamente como 1 named volume)....
+              name: story-volume
+
+
+
+
+
+
+
+
+
+
+
+
+
+- mountPath: /app/story
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ESSE É O FOLDER QUE NÓS FAZEMOS 'SAVE',
+
+COM A AJUDA DE 1 
+
+VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR DIZ QUE TALVEZ SEJA MELHOR 
+
+
+
+
+
+
+
+
+DEFINIR ESSE EXACT FOLDER NAME AQUI,
+
+
+
+no nosso arquivo yaml,
+
+
+E AÍ 
+
+
+UTILIZAR 
+
+
+ESSE VALUE/VARIÁVEL
+
+
+
+
+
+LÁ DENTRO DO 'app.js',
+
+
+
+
+
+
+
+com aquele código de 'process.env.XXX'...
+
+
+
+
+
+
+
+
+
+--> E APRENDEMOS SOBRE O APPLY DE ENVIRONMENT VARIABLES COM 
+
+O DOCKER E DOCKER-COMPOSE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E É CLARO QUE O KUBERNETES TAMBÉM SUPORTA ENVIRONMENT VARIABLES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR COMEÇA COM ISTO, LÁ EM 'app.js':
+
+
+
+
+
+
+
+
+//TODO DEFINIDO LÁ NO 'deployment.yaml', essa env variable...
+const filePath = path.join(__dirname, process.env.STORY_FOLDER, 'text.txt');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA PRECISAMOS GARANTIR QUE 
+
+
+ESSA ENVIRONMENT VARIABLE SERÁ SETTADA A 1 FOLDER NAME QUE QUEREMOS USAR __ NO MOMENTO EM QUE 
+
+DEPLOYAMOS 
+
+NOSSO CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PRECISAMOS PROVIDENCIAR 1 VALUE PARA ESSE ENV VARIABLE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, VC DEVE IR ATÉ 'deployment.yaml'
+
+
+
+E, 
+
+
+
+na config dos containers,
+
+
+
+
+
+vc deve 
+
+COLOCAR A KEY DE 'env'...
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+          #### TODO uso de ENV VARIABLES nos nossos containers
+          env:
+            - name: 
+
+
+
+
+
+
+
+
+
+
+
+
+OK... DENTRO DE 'env',
+
+VC 
+
+DEVE 
+
+COLOCAR 
+
+
+A LISTA DE ENVIRONMENT VARIABLES QUE VC VAI QUERER USAR...
+
+
+
+
+
+
+
+
+
+
+
+--> o professor coloca 'name:',
+
+
+
+
+QUE COLOCA COMO 'STORY_FOLDER',
+
+
+
+
+
+
+
+
+E DEPOIS COLOCA 'value',
+que 
+vai 
+
+providenciar o VALOR 
+
+
+
+
+DESSA ENV VARIABLE,
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+         env:
+            - name: STORY_FOLDER
+              value: 'story'
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+BEM SIMPLES.. COM ISSO, EXTERNALIZAMOS ESSE FOLDER NAME,
+
+E O TORNAMOS MAIS FLEXÍVEL...
+
+
+
+
+
+
+
+
+
+
+AGORA SE QUISERMOS 
+
+
+TROCAR O FOLDER NAME,
+
+
+
+
+BASTARÁ 
+
+
+
+
+TROCAR O VALUE DESSA ENV VARIABLE 
+
+
+NO 
+
+'deployment.yaml',
+
+
+SEM PRECISAR ALTERAR TUDO LÁ NO NOSSO CÓDIGO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> ok.... O PROFESSOR UPDATA A IMAGE, e aí rebuildamos tudo de novo,
+
+e aí 
+
+fazemos deploy...
+
+
+
+
+
+
+
+
+
+
+
+O NOSSO CÓDIGO FICA ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -74,3 +623,46 @@ spec:
 # O __ DIRECTORY INTEIRO SERÁ REMOVIDO....
 
 #E, QUANDO 1 NOVO POD FOR CRIADO, ESSE EMPTY DIRECTORY SERÁ RECRIADO....
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------
+
+
+
+
+
+
+
+aí ele aplica as changes ao nosso deployment,
+
+com 
+
+
+
+
+kubectl apply -f deployment.yaml
+
+
+
+
+
+
+
+
+
+
+ok.... funcionou...
+
+
+
+
+
+TUDO FUNCIONA, MAS AGORA COM ENV VARIABLES...
