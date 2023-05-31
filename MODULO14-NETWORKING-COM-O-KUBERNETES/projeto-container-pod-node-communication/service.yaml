@@ -7,6 +7,6 @@ spec:
     app: communication
   ports:
     - protocol: 'TCP'
-      port: 8080
-      targetPort: 8080
+      port: 8080  ## port que 'faces the outside world' 
+      targetPort: 8080 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
   type: LoadBalancer

@@ -1,0 +1,1196 @@
+
+
+
+
+
+
+
+
+
+
+CERTO... O PROFESSOR CRIOU O 
+
+
+DEPLOYMENT DE 'USERS-API',
+
+
+
+QUE ATÉ AGORA FICOU ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: communication-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: communication
+  template:
+    metadata:
+      labels:
+        app: communication
+    spec:
+      containers:
+      - name: users-api
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COMO PRÓXIMA ETAPA,
+
+ADICIONAREMOS 1 SERVICE...
+
+
+
+
+
+
+
+
+
+
+
+PQ ADICIONAR 1 SERVICE?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PQ PRECISAMOS FAZER COM QUE 
+
+
+
+A 
+
+
+
+
+API DE 'USERS'
+
+SEJA 
+
+ACESSÍVEL 
+
+PELO MUNDO EXTERNO...
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ISSO FAZ SENTIDO.... --> A TOOL POSTMAN/WEBAPPS 
+
+
+PRECISAM 
+
+
+SER 
+
+CAPAZES 
+
+
+DE 
+
+ATINGIR 
+
+
+
+NOSSA 
+
+API 
+
+
+DE 
+
+'USERS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARA ISSO, PRECISAMOS DE 1 SERVICE...
+
+
+
+
+
+
+
+
+
+PQ SERVICES NOS DEIXAM FAZER 2 MAIN THINGS:
+
+
+
+
+
+
+
+
+1) NOS DÃO UM 'STABLE ADDRESSES', 1 ADDRESS QUE NÃO FICA MUDANDO O TEMPO INTEIRO... (é útil até internamente, no caso)...
+
+
+
+-> ISSO PQ pods possuem ip addresses por default,
+
+MAS ESSES IP ADDRESSES MUDAM SE __ OS PODS SÃO REMOVIDOS OU MOVIDOS PARA DIFERENTES NODES...
+
+
+
+
+
+
+
+
+
+
+2) ALÉM DE STABLE IP ADDRESSES,
+
+OS SERVICES 
+
+
+
+POSSIBILITAM O ACESSO PELO MUNDO EXTERNO (que, por default, não é possível)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- PARA ISSO,
+ 
+ O PROFESSOR CRIA 1 ARQUIVO DE nome 'users-service.yaml'...
+
+
+
+
+
+
+
+
+
+ -> O PROFESSOR PROVAVELMENTE VAI QUERER CRIAR MÚLTIPLOS ARQUIVOS 'service',
+
+
+ 1 para cada coisa...
+
+
+
+
+
+ ELE COMEÇA ASSIM:
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: communication-app-service
+spec:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... EM 'spec',
+QUEREMOS FAZER 3 COISAS:
+
+
+
+
+
+
+
+
+1) SELECIONAR QUAIS PODS DEVERÃO FAZER PARTE DESSE SERVICE...
+
+
+
+
+
+
+
+
+
+
+
+2) ALÉM DISSO, QUEREMOS DEFINIR 'QUAIS PORTS DEVEM SER EXPOSED'....
+
+
+
+
+
+
+
+
+3) DEFINIR QUAL TYPE DE SERVICE DEVERÁ SER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+QUEREMOS SELECIONAR TODOS OS CONTAINERS 
+
+
+
+
+COM LABEL DE 
+
+
+''         app: communication',
+
+
+
+POR ISSO ESCREVEMOS ASSIM:
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: communication-app-service
+spec:
+  selector:
+    app: communication
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    CERTO....
+
+
+
+
+
+
+
+    ISSO FEITO,
+
+
+
+
+
+
+
+agora sabemos quais pods fazem parte desse service...
+
+
+
+
+
+
+
+
+
+
+
+como próxima ETAPA,
+
+
+
+PRECISAMOS DEFINIR O 'TYPE'
+
+DESSE SERVICE...
+
+
+
+
+
+
+
+
+
+
+----> O TYPE DEFAULT É 'ClusterIP'...
+
+
+
+
+
+
+
+
+
+
+
+--> SE VC NÃO ESPECIFICA 1 TYPE, ESSE SERÁ O SEU TYPE...
+
+
+
+
+
+
+
+
+
+
+
+-> ClusterIP --> SEU SERVICE SERÁ UM 'INTERNAL SERVICE',
+
+O QUE 
+
+QUER DIZER QUE 
+
+
+ELE 
+
+SÓ 
+
+
+
+SERÁ REACHABLE __ _ DE DENTRO DE SEU CLUSTER.... (E não pelo mundo externo)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> 'NodePort' ---> COM ISSO, FICAMOS COM 1 SERVICE QUE É 'REACHABLE'
+
+
+
+do mundo externo,
+
+MAS 
+
+
+
+
+
+ISSO USA ACTUALLY O IP ADDRESS DO NODE,
+
+
+E ISSO 
+
+
+NÃO É BOM, NECESSARIAMENTE... -------> SE TIVERMOS 
+
+
+MÚLTIPLOS NODES, E PODS SE MOVEREM POR NODES,
+
+
+
+
+
+AÍ _ FICAREMOS COM DIFERENTES IP ADDRESSES... -> POR ISSO 
+
+ESSA OPÇÃO NÃO É O QUE 
+
+QUEREMOS....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+''''O TIPO MAIS ÚTIL DE SERVICE É REALMENTE LoadBalancer,
+
+que faz com que SEU SERVICE REALMENTE SEJA ALCANÇÁVEL 
+LÁ NO MUNDO EXTERNO'''...
+
+
+
+
+
+COM ISSO,
+
+NOSSO SERVICE E OS PODS CONECTADOS A ELE CONSEGUEM SER ATINGIDOS PELO MUNDO EXTERNO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM 'LoadBalancer',
+
+
+
+NOSSO SERVICE TAMBÉM DISTRIBUI 
+
+INCOMING REQUESTS 
+
+ACROSS 
+
+
+DIFERENTES PODS,
+
+
+
+NÃO IMPORTANDO O NODE EM QUE ESTIVEREM RODANDO -------> E 
+
+
+O IP ADDRESS 
+
+
+TAMBÉM SERÁ INDEPENDENTE 
+
+DO 
+
+
+NODE EM QUE 
+
+O POD 
+VAI RODAR,
+
+
+ISSO 
+
+PQ 
+
+UM 'BRAND NEW IP ADDRESS' 
+
+
+VAI SER CRIADO, POR ASSIM DIZER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+LoadBalancer --> TIPO MT USADO...
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... --> O PROFESSOR DIZ 1 DETALHE -> COM 'ClusterIP',
+
+
+
+
+VC TAMBÉM TERIA 'LOAD BALANCING',
+
+PQ 
+
+
+O KUBERNETES TBM FAZ DISTRIBUTE DINAMICO 
+
+
+AO LONGO DOS DIFERENTES PODS QUE FAZEM PARTE DESSE SERVICE... ---> ENTRETANTO,
+
+
+
+ESSA OPTION/TYPE 
+NÃO VAI DEIXAR 
+
+VC 
+
+SE COMUNICAR AO MUNDO EXTERNO... ---------> SE VC ESCOLHER 'ClusterIP',
+
+
+OU __ VC _ VAI USAR _ 1 'LOAD BALANCING SERVICE'
+
+
+
+POR PARTE DE 1 CLOUD PROVIDER,
+
+
+OU VC 
+
+JÁ 
+VAI 
+
+TER 
+
+
+1 'OUTSIDE WORLD-FACING IP ADDRESS'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. ISSO QUER DIZER QUE 
+
+
+O CLUSTERIP 
+
+TE DÁ LOAD BALANCING INTERNAMENTE,
+
+
+MAS 
+
+
+O 
+
+
+LOADBALANCER 
+
+
+
+
+TE DÁ O LOAD BALANCING 
+
+
+
+
+
+E ___ TAMBÉM __ DEIXA SEU SERVICE EXPOSTO AO MUNDO EXTERNO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O TYPE 'LoadBalancer' não é a úniica coisa que te dá load Balancing,
+
+
+pelo visto (pq ClusterIP TAMBÉM FAZ ISSO, apesar de apenas fazer isso internamente)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...  ISSO FEITO,
+
+
+DEFINIMOS OS PORTS PARA ESSE SERVICE... -> DEFINIMOS QUAIS PORTS DEVEM SER ABERTOS,
+
+DEVEM SER 'REACHABLE',
+
+
+
+E 
+
+A QUE 
+
+PORTS 
+
+VC 
+
+VAI QUERER REDIRECIONAR,
+DENTRO DE SEUS PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+O PROFESSOR ESCREVE ASSIM:
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: communication-app-service
+spec:
+  selector:
+    app: communication
+  ports:
+    - protocol: 'TCP'
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ELE DIZ QUE PODEMOS FAZER 'LISTEN TO' 
+
+A DIVERSOS PORTS,
+
+
+BASTA 
+
+
+
+USAR '-'...
+
+
+
+
+
+
+-> TEREMOS 'PORT' E 'targetPort'..
+
+
+
+
+
+
+
+--> 'port' É  o port EXTERNO, realmente o que fica no 'outside world'
+
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: communication-app-service
+spec:
+  selector:
+    app: communication
+  ports:
+    - protocol: 'TCP'
+      port: 8080  ## port que 'faces the outside world' 
+      targetPort: 8080 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> o 'targetPort',
+
+portanto,
+
+é 
+
+
+
+o PORT DENTRO DO POD,
+
+DENTRO DO CONTAINER,
+
+A QUE O REQUEST SERÁ FORWARDED...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E É BEM COMUM USAR OS MESMOS 'port' e 'target port',
+
+aqui... (mas vc pode settar diferentes ports)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK.. COMO AQUI NOSSA 'USERS-API'
+
+FAZ LISTEN NA PORT 8080,
+
+
+
+
+COLOCAMOS 8080 
+
+
+
+NAS 2 PORTS... (poderíamos colocar outra 'port', a port externa, mas usamos 8080 mesmo assim)...
+
+
+
+
+
+
+
+
+
+
+-> O 'targetPort' precisava ser obrigatoriamente '8080',
+pq é isso que definimos 
+
+lá 
+
+
+
+na DOCKERFILE
+
+
+
+
+do users-api...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> certo... aí aplicamos esse service, e tudo dá certo...
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO CRIADO, NO MUNDO MINIKUBE,
+
+PARA CONSEGUIRMOS ACESSO 
+
+
+
+A ESSE SERVICE,
+
+PRECISAMOS RODAR O COMANDO DE ('minikube service communication-app-service')... --> LEMBRE-SE: ESSE É UM COMANDO EXCLUSIVO AO MINIKUBE,
+
+
+PQ 
+
+EM APPS DE VERDADE,
+
+
+
+
+VC 
+
+JÁ VAI CONSEGUIR 1 IP ADDRESS AUTOMÁTICO, POR CONTA DO LOAD BALANCER QUE SERÁ 
+
+CRIADO 
+
+
+NO 
+
+
+CLOUD PROVIDER... aqui só precisamos rodar esse comando por causa do minikube,
+
+
+
+que nos dá um 'dynamically generated ip address',
+por meio 
+
+
+desse comando....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... PEGAMOS A URL,
+
+ALGO COMO 
+
+
+'192.168.99.100:32023',
+
+E AÍ 
+
+TENTAMOS ENVIAR 1 REQUEST A 'login'..
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+192.168.99.100:32023/login 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... TESTAMOS ISSO AÍ...
+
+
+
+
+
+
+
+
+
+
+
+ok... mas estou recebendo 1 error, por alguma razão...
+
+
+
+
+
+
+
+
+
+
+ah, meu header estava errado, e o tipo de request para login é 'POST', e não get...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA FUNCIONOU...
+
+
+
+
+CONSEGUIMOS UMA TOKEN DE VOLTA...
+
+
+
+--> E SE OMITIMOS O PASSWORD,
+
+
+VAMOS GANHAR 1 ERROR...
+
+
+
+
+
+
+
+
+
+
+
+OK.. TUDO ISSO ESTÁ FUNCIONANDO....
+
+
+
+
+
+
+
+
+
+
+
+
+SE TENTAMOS FAZER SIGN UP,
+
+
+COM 
+
+
+
+
+a route de '/signup' em vez de login,
+
+ganhamos 
+
+
+
+
+
+1 token também...
+
+
+
+
+
+
+
+
+
+--> isso mostra que nosso container está UP AND RUNNING...
+
+
+
+
+
+
+
+
+
+--> OK....  TUDO ISSO MOSTRA QUE CONTAINERS SÃO 1 'KEY RESOURCE' QUANDO O ASSUNTO 
+
+É NETWORK NO KUBERNETES,
+
+E QUANDO FALAMOS DO HANDLE DE REQUESTS (externos e internos)..
+
+
+
+
+
+
+CERTO... COMO PRÓXIMO PASSO, DEVEMOS ENABLAR AQUELA 'POD INTERNAL COMMUNICATION',
+
+
+ENTRE 
+
+A API DE USERS E A DE 'AUTH'...
