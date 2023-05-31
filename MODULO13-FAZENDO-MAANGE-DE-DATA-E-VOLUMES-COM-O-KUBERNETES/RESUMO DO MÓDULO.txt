@@ -1,0 +1,440 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ESSE FOI OUTRO MODULE KEY... --> PQ APRENDEMOS A FAZER 'PERSIST' DE DATA 
+
+
+NO KUBERNETES,
+
+COM A AJUDA DOS VOLUMES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ERA ALGO QUE TÍNHAMOS USADO COM O DOCKER,
+
+MAS AGORA 
+
+
+NO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> COMO SEU APP VAI RODAR EM MÚLTIPLOS PODS,
+
+EM MÚLTIPLOS NODES,
+
+
+
+OS VOLUMES SÃO  1 POUCO MAIS COMPLEXOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE PODEMOS ADICIONAR VOLUMES DIRETAMENTE NAS 'SPECS' 
+
+DE NOSSOS PODS/CONTAINERS,
+
+
+COMO FIZEMOS 
+
+ANTES,
+
+
+
+
+COM O CÓDIGO DE 
+
+
+
+
+volumes:
+  - name: story-volume
+  emptyDir: {},
+
+
+
+
+
+
+
+
+
+
+
+
+  QUE USAMOS PARA CONSEGUIR 
+
+
+
+  1 VERY SIMPLE BASIC VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --. AÍ FIZEMOS MOUNT DESSE VOLUME EM NOSSOS CONTAINERS,
+
+  COM A CONFIG 
+
+  DE 
+
+
+
+
+  volumeMounts:
+    - mountPath: /app/story 
+      name: story-volume
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    FORA ISSO,
+
+    TUDO FUNCIONAVA DO JEITO QUE JÁ CONHECÍAMOS..
+
+
+
+
+
+
+
+
+
+
+
+
+MAS ESPECIALMENTE SE TIVERMOS APPS MAIORES,
+
+COM MÚLTIPLOS NODES,
+
+
+
+
+COM MÚLTIPLOS PODS,
+
+
+
+NOSSA DATA AINDA PODE ACABAR PERDIDA... --> ISSO PQ VOLUMES 
+
+SÃO ANEXADOS A PODS E NODES,
+POR DEFAULT..
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA 'WORK AROUND' 
+ISSO,
+
+
+PODEMOS TRABALHAR COM 'PERSISTENT VOLUMES'.... --> SÃO STANDALONE, DETACHED VOLUMES,
+
+
+
+
+COM 1 BROAD VARIETY DE  TYPES SUPORTADOS,
+
+
+
+E QUE VÃO ARMAZENAR NOSSA DATA 
+
+
+EM ALGUM OUTRO LUGAR,
+
+
+NÃO NOS NOSSOS NODES,
+
+
+E NÃO NOS NOSSOS PODS.... ->   ISSO QUER DIZER QUE PERSISTENT VOLUMES SOBREVIVEM
+
+
+
+MESMO 
+
+
+
+SE 
+
+FAZEMOS 'SHUT DOWN' DO NOSSO POD,
+
+
+
+E ATÉ 
+
+
+MESMO 
+
+
+
+
+SE O POD RESTARTA EM 1 DIFERENTE NODE... --> PQ A DATA SEMPRE VAI CONTINUAR A MESMA,
+
+
+
+VAI PERSISTIR JUSTAMENTE PQ 
+
+
+
+O VOLUME SERÁ 'DETACHED'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS APRENDEMOS QUE O PERSISTENT VOLUME,
+
+POR SI SÓ,
+NÃO VALE MT...
+
+
+
+
+
+
+
+
+
+
+--> PRECISAMOS DE 1 'PERSISTENT VOLUME CLAIM'...
+
+
+
+
+
+
+
+
+
+
+
+--> O PVC É UM COUNTERPART AO 'persistent volume',
+
+
+
+pq 
+
+
+ELE DEFINE 
+
+
+
+'COMO O VOLUME DEVERÁ SER CLAIMED',
+
+
+
+
+QUANTO ESPAÇO PRECISAMOS, ETC....
+
+
+
+
+
+
+
+
+
+
+----> E, ENTÃO, É O CLAIM 
+
+QUE DEFINIMOS COMO 'VOLUME',
+
+
+
+EM NOSSOS PODS....
+
+
+
+
+
+
+
+
+
+TUDO POR MEIO DO TYPE DE 'persistentVolumeClaim' -----> ISSO COMUNICA AO KUBERNETES QUE 
+
+
+''ESSE POD QUER USAR ESSA CLAIM ESPECÍFICA PARA TARGETTAR ESSE VOLUME ESPECÍFICO,
+
+DEFINIDO NESSA CLAIM''...
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, FICAMOS COM VOLUMES INDEPENDENTES DE PODS E NODES,
+
+DENTRO 
+
+
+DE NOSSO APP...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ALÉM DISSO,
+
+
+NAS ÚLTIMAS LIÇÕES,
+
+
+
+
+aprendemos sobre as env variables... --> podem ser facilmente adicionadas, 
+
+
+nos arquivos .yaml (deployment),
+
+com 
+
+
+
+a key de 'env'...
+
+
+
+
+
+
+
+
+
+
+alternativamente a 'value',
+
+
+
+
+na key de 'env',
+
+podemos usar 
+
+
+
+'valueFrom',
+
+QUE NOS DEIXA PEGAR OS VALUES DAS ENV VARIABLES 
+
+
+
+
+LÁ 
+
+DE configMaps externos (como em 'environment.yaml')...
+
+
+
+
+
+
+
+
+
+OK... ISSO É TUDO QUE PRECISAMOS SABER QUANDO O ASSUNTO É DATA E VOLUMES,
+
+
+
+EM KUBERNETES-BASED APPLICATIONS...
+
+
+
+
+
+
+
+
+isso feito,
+devemos avançar ainda mais no kubernetes...
