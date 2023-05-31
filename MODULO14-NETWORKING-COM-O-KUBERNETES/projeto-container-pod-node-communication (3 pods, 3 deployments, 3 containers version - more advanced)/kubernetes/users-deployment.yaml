@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+      - name: users-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+              ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        # ports:
+        # - containerPort: 8080
+          # targetPort: 8080

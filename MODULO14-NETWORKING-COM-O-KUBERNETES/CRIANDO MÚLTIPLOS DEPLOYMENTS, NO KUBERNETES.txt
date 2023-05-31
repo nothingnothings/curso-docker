@@ -1,0 +1,1670 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... DEPOIS DA ÚLTIMA AULA,
+
+AGORA 
+
+FICAMOS COM ESTA VERSÃO DE NOSSO APP IMPLEMENTADA:
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ CLUSTER {
+
+        POD {
+    AUTH API <-------- USERS API 
+        }                      ^
+                               I
+                               I
+                               I
+                               I
+ }                             I
+                               I
+                               I
+                               I
+                               I
+CLIENT--------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... mas ainda falta a api de 'tasks'... 
+
+
+
+
+
+
+
+
+
+MAS PARA AS APIS DE 'USERS' E 'AUTH',
+
+
+
+
+
+
+
+
+
+AMBAS JÁ ESTÃO FUNCIONANDO,
+
+
+
+
+
+AMBAS NO MESMO POD,
+
+
+
+
+__ E ELAS SÃO CAPAZES DE CONVERSAR 1 COM A OUTRA... -> E NÓS, COMO 'MUNDO EXTERNO',
+
+SOMOS 
+
+
+CAPAZES 
+
+
+DE 
+
+
+ENVIAR REQUESTS 
+À 
+
+API 
+
+
+DE 
+
+'users',
+
+
+
+QUE ENTÃO DISPARA 1 REQUEST, INTERNO,
+
+
+
+À 
+
+API 
+
+DE 
+
+
+'auth'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS É CLARO QUE QUEREMOS DEPLOYAR TAMBÉM A API DE 'tasks' ------> E O PROFESSOR QUER 
+
+
+FAZER 
+
+
+DEPLOY 
+
+
+DESSA API 
+
+
+EM 
+
+1 
+
+DEPLOYMENT 
+
+SEPARADO,
+
+
+
+EM 1 POD SEPARADO,
+
+
+
+
+_ E TAMBÉM QUER QUE CONSIGAMOS ENVIAR REQUESTS A ELA,
+
+TAMBÉM...
+
+
+
+
+
+
+
+
+
+--> ADICIONALMENTE,
+
+
+
+
+
+
+
+
+A API DE 'AUTH'
+
+
+NÃO DEVE SER 'PUBLIC-FACING' ___ AT ALL (e ela já KINDOF é, pq 
+
+NÃO ESTAMOS FAZENDO 'EXPOSE' DO PORT DELA NO SERVICE...)
+
+
+
+
+
+
+
+
+
+-> OK.... ELA JÁ É KINDOF NÃO PUBLIC-FACING,
+
+
+MAS 
+
+O QUE 
+
+O PROFESSOR QUER 
+
+GARANTIR,
+
+TAMBÉM,
+
+
+É QUE 
+
+
+
+
+A API DE 
+
+
+__TASKS_ _CONSIGA __ SE COMUNICAR 
+
+
+
+COM 
+
+
+
+
+A API 
+
+
+DE 
+
+
+'auth' (pq ela FAZ ISSO, no seu código)... MAS O QUE O PROFESSOR QUER 
+
+
+É QUE 
+
+
+
+
+
+''AO MESMO TEMPO QUE ESSA TASKS API CONSIGA SE COMUNICAR COM A AUTH API,
+
+
+VOU QUERER _QUE __ A TASKS API _ 
+
+RODE EM 1 POD SEPARADO''.'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PORTANTO,
+
+
+
+
+O GOAL, NO FINAL DAS CONTAS,
+
+É 
+
+
+'CREATE A BRAND NEW POD' (e, com isso, 1 BRAND NEW DEPLOYMENT) 
+
+
+
+PARA 
+
+A 
+
+API DE USERS...
+
+
+
+
+
+
+
+
+
+
+
+--> NO FINAL,
+
+TEREMOS 3 __ DIFERENTES TIPOS DE PODS... -------> COMO TEREMOS 3 DIFERENTES 
+
+TIPOS 
+
+
+DE 
+PODS,
+
+
+TEREMOS 
+
+3 
+DIFERENTES DEPLOYMENTS (os 3 no mesmo cluster kubernetes)...
+
+
+
+
+
+
+
+
+
+
+
+DEVEMOS ASSEGURAR:
+
+
+
+
+1) QUE ESSES 3 PODS __ CONSIGAM FAZER 'COMMUNICATE' ENTRE SI, INTERNAMENTE, NO CLUSTER...
+
+
+
+
+
+
+
+2) que os pods de 'tasks' e 'users' CONSIGAM FICAR EXPOSTOS AO 'OUTSIDE WORLD'
+
+
+
+
+
+3) que o pod de 'auth' FIQUE INACESSÍVEL AO MUNDO EXTERIOR, MAS ACESSÍVEL 
+
+AOS PODS DE 'tasks' e 'users', internamente...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... ISSO SIGNIFICA:
+
+
+
+1) PRECISAREMOS DE MÚLTIPLOS DEPLOYMENTS
+
+
+
+
+2) PRECISAREMOS DE MÚLTIPLOS SERVICES
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... PARA ISSO, CRIEI 1 SEGUNDO PROJECT FOLDER.... vou o utilizar...
+
+
+
+
+
+
+
+acho que devo CRIAR 1 ARQUIVO 'deployment.yaml'
+
+PARA 
+
+CADA 
+
+
+TIPO DE POD,
+
+tipo assim:
+
+
+
+
+
+
+
+
+
+
+users:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+      - name: users-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+              ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+auth:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth-api
+        image: nothingnothings/auth-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+service de users:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+spec:
+  selector:
+    app: users
+  ports:
+    - protocol: 'TCP'
+      port: 8080  ## port que 'faces the outside world' 
+      targetPort: 8080 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA FICAMOS COM 
+
+
+
+
+
+
+
+
+
+3 PODS, CADA 1 COM 1 CONTAINER,
+
+
+
+
+
+
+e com apenas 1 service (no momento),
+
+que é 
+
+o 
+
+service de 
+
+'users'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+JÁ POSSO IR CODANDO O 'tasks-deployment',
+
+
+também:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks
+  template:
+    metadata:
+      labels:
+        app: tasks
+    spec:
+      containers:
+      - name: tasks-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+              ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+-----------------
+
+
+
+
+
+
+
+
+PARECE QUE O CÓDIGO DE 'tasks'
+
+
+TEM O MESMO PROBLEMA QUE 
+
+
+
+
+O _ 'users-api' 
+
+
+
+TINHA, 
+
+
+QUE 
+
+ERA 
+
+
+A 
+
+REFERÊNCIA 
+
+a 
+
+'http://auth' (código correto no contexto do docker-compose, mas INCORRETO NO CONTEXTO DO KUBERNETES, EM QUE DEVEMOS ESCREVER 'localhost:' + 'port aberto no container a que queremos nos comunicar')...
+
+
+
+
+
+
+
+
+
+
+
+ok... MAS AQUI TEMOS OUTRO PROBLEMA... -----> o 'localhost:80'
+
+
+FUNCIONAVA APENAS 
+
+
+nos casos DE 
+
+
+'COMUNICAÇÃO ENTRE CONTAINERS,
+
+EM 1 MESMO POD'...
+
+
+
+
+
+
+
+
+
+
+
+como aqui 
+
+
+'tasks' e 'auth' ESTÃO EM PODS SEPARADOS, ISSO NÃO FUNCIONARÁ....
+
+
+
+
+
+
+
+
+não sei o que colocar no lugar de 'auth',
+portanto...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OS ARQUIVOS ATÉ AGORA:
+
+
+
+
+
+
+
+
+
+users deployment:
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+      - name: users-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+              ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        # ports:
+        # - containerPort: 8080
+          # targetPort: 8080
+
+
+
+
+
+
+
+
+
+tasks deployment:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks
+  template:
+    metadata:
+      labels:
+        app: tasks
+    spec:
+      containers:
+      - name: tasks-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+              ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+auth deployment:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth-api
+        image: nothingnothings/auth-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+users service:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+spec:
+  selector:
+    app: users
+  ports:
+    - protocol: 'TCP'
+      port: 8080  ## port que 'faces the outside world' 
+      targetPort: 8080 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+tasks service:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasks-service
+spec:
+  selector:
+    app: tasks
+  ports:
+    - protocol: 'TCP'
+      port: 8000  ## port que 'faces the outside world' 
+      targetPort: 8000 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo.... 
+
+
+
+
+
+
+
+
+significa que 'users' e 'tasks' estão expostas 
+
+ao mundo externo,
+
+
+mas o 
+
+
+
+
+'auth'
+ 
+ NÃO ESTÁ EXPOSTO A LUGAR ALGUM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O SERVICE DO 'auth' 
+
+
+NÃO DEVE SER PUBLIC-FACING AT ALL,,
+
+
+
+
+DEVE SER CLUSTER-INTERNAL,
+
+
+MAS DEVE 
+SER REACHABLE 
+
+
+
+
+ÀS API 
+
+DE 
+
+'tasks' 
+
+e 
+
+'users'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> OK... AGORA VEREMOS 'POD-TO-POD' 
+
+
+
+COMMUNICATION, DENTRO DE 1 CLUSTER...
+
+
+
+
+
+
+
+
+E USAREMOS MÚLTIPLOS SERVICES PARA CONSEGUIR ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- OK...
+
+
+
+
+
+
+
+
+
+
+PROFESSOR DIZ QUE PRECISAMOS 
+
+
+
+
+
+
+
+FAZER MAIS CHANGES...
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR CRIA 1 NOVO ARQUIVO DE DEPLOYMENT,
+
+'auth-deployment.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR COPIA E COLA A CONFIGURATION DE USERS,
+
+
+
+
+MAS DÁ UMA MEXIDA...
+
+
+
+
+
+
+
+
+
+FICOU TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth-api
+        image: nothingnothings/auth-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NO 
+
+YAML FILE DO USER,
+
+O PROFESSOR REMOVE 
+
+
+
+O CONTAINER DE 'auth':
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+      - name: users-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+              ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        # ports:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, FICAMOS COM A CRIAÇÃO DE 2 DIFERENTES PODS...
+
+
+
+
+
+
+
+
+
+
+CERTO... ISSO TUDO TEM CERTAS KEY IMPLICATIONS...
+
+
+
+
+
+
+
+
+
+--> COMO O 'auth-deployment'
+
+
+
+
+
+vai criar 1 BRAND NEW POD,
+
+ESSE POD 
+
+NÃO SERÁ 
+
+'REACHABLE'
+
+
+
+ATRAVÉS DE 1 SERVICE,
+
+
+E SIM 
+
+
+
+__ APENAS__ 
+
+DENTRO 
+
+DO CLUSTER EM SI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO AINDA NÃO TEMOS 1 SERVICE PARA ESSE DEPLOYMENT DE 
+
+'auth',
+
+O IP ADDRESS 
+
+DESSE 'AUTH DEPLOYMENT' PODERIA MUDAR O TEMPO TODO (
+
+    SE NÓS 'scale it up',
+
+    ou se ele falhar e precisar ser recreated...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE O PROFESSOR VAI CRIAR 1 NOVO ARQUIVO,
+
+'auth-service.yaml',
+
+
+
+E PROVAVELMENTE VAI COLOCAR 1 TYPE DE 'ClusterIP',
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth
+  ports:
+    - protocol: 'TCP'
+      port: 80  ## port que 'faces the outside world' 
+      targetPort: 80 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: ClusterIP ## colocamos isto pq 'PRECISAMOS DE 1 IP FIXO, MAS NÃO PRECISAMOS QUE ESSE IP SEJA REACHABLE LÁ NO MUNDO EXTERNO AO NOSSO CLUSTER'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TALVEZ FIQUE ASSIM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mas as ports realmente serão '80'?
+
+
+
+
+
+
+
+
+
+parece que sim...
+
+
+
+
+
+
+
+
+
+O TYPE É IMPORTANTE... COM 'LoadBalancer',
+
+
+
+a 'AUTH API'
+
+seria exposta ao PÚBLICO... E ISSO NÃO DEVE ACONTECER... ------> 
+
+
+
+
+
+
+
+É POR ISSO QUE NÃO USAREMOS 'LOAD BALANCER',
+
+
+
+E SIM 'ClusterIP'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO, CONFORME MENCIONADO,
+
+
+VAI 
+
+FAZER 
+
+
+ALGUM 'LOAD BALANCING',
+
+
+MAS NÃO VAI EXPOR ESSE POD AO EXTERIOR...
+
+
+
+
+
+
+
+
+É POR ISSO QUE FICOU ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth
+  ports:
+    - protocol: 'TCP'
+      port: 80  ## port que 'faces the outside world' 
+      targetPort: 80 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: ClusterIP ## colocamos isto pq 'PRECISAMOS DE 1 IP FIXO, MAS NÃO PRECISAMOS QUE ESSE IP/POD SEJA REACHABLE LÁ NO MUNDO EXTERNO AO NOSSO CLUSTER'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS ISSO NOS LEVA A UMA GRANDE PERGUNTA:
+
+
+
+
+
+
+
+''''QUAL DEVERÁ SER O AUTH ADDRESS QUE ATINGE ESSE POD DE AUTH,
+
+__ NO CONTEXTO __ DO NOSSO CLUSTER, INTERNAL (pod-to-pod)?''''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ANTES ERA 'localhost',
+
+
+PARA A COMUNICAÇÃO 'CONTAINER-TO-CONTAINER',
+
+
+em 1 mesmo pod...
+
+
+
+
+
+
+MAS COMO AGORA ESTAMOS COM CONTAINERS EM DIFERENTES PODS,
+
+
+ISSO NÃO SE APLICA MAIS...
+
+
+
+
+
+
+
+
+
+
+ok..
+
+
+
+
+QUAL DEVE SER O 'NEW ADDRESS', aqui?
