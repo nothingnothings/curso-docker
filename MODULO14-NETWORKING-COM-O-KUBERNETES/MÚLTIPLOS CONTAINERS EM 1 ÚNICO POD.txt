@@ -1,0 +1,1263 @@
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA DEVEMOS FAZER COM QUE A API DE 'USERS'
+
+CONSIGA SE COMUNICAR COM A API DE 'AUTH'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, PRIMEIRAMENTE 
+
+PRECISAMOS 
+
+
+
+VOLTAR ATÉ 
+
+
+
+
+
+O CÓDIGO DO ARQUIVO NODE 
+
+'users-app.js',
+
+
+
+PQ 
+
+
+LÁ 
+
+AINDA 
+
+
+
+
+TEMOS AQUELE 'DUMMY CODE'
+
+
+
+das url,
+
+
+COMO PODEMOS OBSERAR NESTA 
+
+
+
+ROUTE DE SIGNUP:
+
+
+
+
+
+app.post('/signup', async (req, res) => {
+  // It's just a dummy service - we don't really care for the email
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (
+    !password ||
+    password.trim().length === 0 ||
+    !email ||
+    email.trim().length === 0
+  ) {
+    return res
+      .status(422)
+      .json({ message: 'An email and password needs to be specified!' });
+  }
+
+  try {
+    // const hashedPW = await axios.get('http://auth/hashed-password/' + password); /// isso NÃO FUNCIONARÁ no mundo kubernetes, pq no MUNDO KUBERNETES NÃO EXISTEM 'DOCKER NETWORKS', e justamente por isso o 'auto name-resolve' do docker, que troca os nomes dos containers PELOS __ ACTUAL IPS INTERNOS DOS CONTAINERS, não funcionará...
+    const hashedPw = 'dummy';
+    // since it's a dummy service, we don't really care for the hashed-pw either
+    console.log(hashedPW, email);
+    res.status(201).json({ message: 'User created!' });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ message: 'Creating the user failed - please try again later.' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NESSA ROUTE,
+
+
+
+
+O
+ 
+
+ 'hashedPassword'
+
+
+ DEVE VOLTAR A USAR AQUELE AXIOS REQUEST... MESMA COISA NA ROUTE DE LOGIN..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... PRECISAMOS COLOCAR A URL ALI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> REPARE:
+
+
+
+
+ESSES AXIOS REQUESTS ESTÃO SENDO ENVIADOS 
+
+
+A 'http://auth'... --> O PROFESSOR MANTEVE ESSE CÓDIGO AÍ PQ 
+
+
+
+ESTÁVAMOS 
+
+ 
+
+ O UTILIZANDO NO CONTEXTO DO DOCKER-COMPOSE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> APRENDEMOS MAIS CEDO NO CURSO QUE 
+
+
+
+ O 
+
+ DOCKER-COMPOSE CRIA 1 NETWORK PARA NÓS,
+
+
+ AUTOMATICAMENTE,
+
+
+
+
+
+
+ E __ QUE __ ESSES SERVICE NAMES (Dos containers)
+
+ podem ser usados 
+ INTERNAMENTE,
+
+ NAQUELA NETWORK,
+
+ NO CÓDIGO QUE RODA NOS CONTAINERS,
+
+ PARA QUE 
+
+ SEJAM 
+ ENVIADOS 
+
+
+ REQUESTS ENTRE ELES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> é por isso que ainda temos 
+
+
+ aquilo,
+ o 
+
+ '''http://auth'.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ISSO FUNCIONOU COM O DOCKER COMPOSE,
+
+ SIM,
+
+
+
+
+ MAS _ ISSO _ NÃO FUNCIONARÁ COM O KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARA FICARMOS FLEXÍVEIS, AQUI,
+
+
+O PROFESSOR VAI SUBSTITUIR ESSA URL/ADDRESS POR 1 ENVIRONMENT VARIABLE,
+
+
+
+TUDO 
+
+PARA QUE 
+
+
+
+
+O ADDRESS 
+
+
+
+QUE É USADO MUDE A DEPENDER DO ENVIRONMENT EM QUE NOSSO APP ESTÁ RODANDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PARA ISSO, DEVE-SE SUBSITUIR ESSA STRING 
+
+POR 
+
+
+
+
+
+1 VARIABLE, TIPO ASSIM:
+
+
+
+
+
+${process.env.AUTH_ADDRESS}
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+app.post('/signup', async (req, res) => {
+  // It's just a dummy service - we don't really care for the email
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (
+    !password ||
+    password.trim().length === 0 ||
+    !email ||
+    email.trim().length === 0
+  ) {
+    return res
+      .status(422)
+      .json({ message: 'An email and password needs to be specified!' });
+  }
+
+  try {
+    //  const hashedPW = await axios.get('http://auth/hashed-password/' + password); /// isso NÃO FUNCIONARÁ no mundo kubernetes, pq no MUNDO KUBERNETES NÃO EXISTEM 'DOCKER NETWORKS', e justamente por isso o 'auto name-resolve' do docker, que troca os nomes dos containers PELOS __ ACTUAL IPS INTERNOS DOS CONTAINERS, não funcionará...
+     const hashedPW = await axios.get(`http://${process.env.AUTH_ADDRESS}` + '/hashed-password/' + password); 
+    // const hashedPw = 'dummy';
+    // since it's a dummy service, we don't really care for the hashed-pw either
+    console.log(hashedPW, email);
+    res.status(201).json({ message: 'User created!' });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ message: 'Creating the user failed - please try again later.' });
+  }
+});
+
+app.post('/login', async (req, res) => {
+  // It's just a dummy service - we don't really care for the email
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (
+    !password ||
+    password.trim().length === 0 ||
+    !email ||
+    email.trim().length === 0
+  ) {
+    return res
+      .status(422)
+      .json({ message: 'An email and password needs to be specified!' });
+  }
+
+  // normally, we'd find a user by email and grab his/ her ID and hashed password
+  const hashedPassword = password + '_hash';
+  const response = await axios.get(
+    // 'http://auth/token/' + hashedPassword + '/' + password  // sem env variables
+    `http://${process.env.AUTH_ADDRESS}/token/` + hashedPassword + '/' + password // ?com env variables
+  );    ///// /// isso NÃO FUNCIONARÁ no mundo kubernetes, pq no MUNDO KUBERNETES NÃO EXISTEM 'DOCKER NETWORKS', e justamente por isso o 'auto name-resolve' do docker, que troca os nomes dos containers PELOS __ ACTUAL IPS INTERNOS DOS CONTAINERS, não funcionará...
+
+  // const response = {
+  //   status: 200,
+  //   data: {
+  //     token: 'abc',
+  //   },
+  // };
+  if (response.status === 200) {
+    return res.status(200).json({ token: response.data.token });
+  }
+  return res.status(response.status).json({ message: 'Logging in failed!' });
+});
+
+app.listen(8080);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA FICAMOS COM ESSA 'INJECTED ENVIRONMENT VARIABLE'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA FAZER COM QUE NOSSO APP CONTINUE RODANDO DE MANEIRA CORRETA 
+
+
+
+LÁ NO 'docker-compose',
+
+BASTA 
+
+
+
+
+COLOCAR 1 ENV VARIABLE NAQUELE ARQUIVO 'docker-compose.yaml',
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+version: "3"
+services:
+  auth:
+    build: ./auth-api
+  users:
+    environment:
+      AUTH_ADDRESS: auth
+    build: ./users-api
+    ports: 
+      - "8080:8080"
+  tasks:
+    build: ./tasks-api
+    ports: 
+      - "8000:8000"
+    environment:
+      TASKS_FOLDER: tasks
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... ISSO SIGNIFICA QUE, NO MUNDO DOCKER-COMPOSE,
+
+SERÁ 
+USADA 
+
+ESSA VARIABLE AÍ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA PRECISAMOS FAZER A MESMA COISA, MAS NO 'MUNDO KUBERNETES',
+
+
+por meio 
+
+da configuração de 'env'
+
+
+lá 
+
+
+no 'deployment.yaml',
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: communication-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: communication
+  template:
+    metadata:
+      labels:
+        app: communication
+    spec:
+      containers:
+      - name: users-api
+        env:
+          - name: AUTH_ADDRESS
+            value: 
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        # ports:
+        # - containerPort: 8080
+          # targetPort: 8080
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... MAS QUAL DEVERÁ SER O VALUE DESSE NEGÓCIO, COM O KUBERNETES?
+
+
+
+
+
+
+
+
+
+
+
+
+--> PROVAVELMENTE SERÁ O 'NOME DO PRÓPRIO CONTAINER __ DE AUTH'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> o professor logo nos dirá qual será esse value...
+
+
+
+
+
+
+
+
+
+
+
+--> OK... MAS ANTES DE TOCARMOS NESSE TÓPICO,
+
+
+DEVEMOS 'GARANTIR QUE _ CONSIGAMOS 1 CONTAINER DE AUTH, AUTH-API, RODANDO TAMBÉM,
+
+
+LÁ NO KUBERNETES'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, TEREMOS DE EDITAR NOSSO ARQUIVO 'deployment.yaml'...
+
+
+
+
+
+
+
+
+
+
+---> PARA ISSO, PRECISAMOS BUILDAR A IMAGE DE 'auth-api'
+
+E 
+
+
+FAZER UPLOAD DELA AO DOCKERHUB..
+
+
+TIPO ASSIM:
+
+
+
+
+
+docker build -t nothingnothings/auth-api . 
+
+
+
+
+docker push nothingnothings/auth-api 
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+
+
+
+
+
+
+isso fez o push da image...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+agora basta fazermos alguns ajustes no arquivo 'deployment.yaml',
+
+que atualmente está assim:
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: communication-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: communication
+  template:
+    metadata:
+      labels:
+        app: communication
+    spec:
+      containers:
+      - name: users-api
+        # env:  ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+        #   - name: AUTH_ADDRESS
+        #     value: 
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+      - name: auth-api
+        image: nothingnothings/auth-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo.... ambos os containers estão no mesmo service (service de 'communication-app-service', que 
+procura pela label 
+'app: communication', essa label aí, que foi usada como selector...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... MAS O QUE MAIS FAZEMOS?
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR DIZ QUE 'PODERÍAMOS CRIAR 1 NOVO DEPLOYMENT PARA ESSA API DE AUTH'.. 
+
+
+
+
+
+
+
+
+
+
+ENTRETANTO,,
+
+
+POR ENQUANTO O PROFESSOR VAI QUERER TER 
+
+
+
+A API DE 'AUTH'
+
+
+NO MESMO 
+
+
+POD DA 
+
+
+
+
+'USERS API'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É POR ISSO QUE NÃO CRIAREMOS 1 NOVA FILE DE 'deployment.yaml', para 
+
+
+
+esse container de 'auth-api'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> PQ SE NÓS FÔSSEMOS CRIAR 1 NOVO ARQUIVO DE 'deployment.yaml',
+
+
+
+
+
+NÓS TERÍAMOS DE CRIAR 1 NOVO TIPO DE POD.... ------> E, SIM, 
+
+
+1
+ 
+
+ DEPLOYMENT CONSEGUE 'CREATE E MANAGE MÚLTIPLOS PODS',
+
+
+
+
+
+MAS __ CADA DEPLOYMENT É CAPAZ __ DE FAZER CREATE E MANAGE __ DE APENAS 1 ÚNICO 
+
+TIPO DE POD....
+
+
+
+
+
+
+
+
+
+
+
+--> OK... E, NO FUTURO,
+
+QUANDO FALARMOS SOBRE 'MÚLTIPLOS PODS',
+
+
+ESTAREMOS 
+
+
+FALANDO APENAS DAS 'REPLICAS',
+
+
+E NÃO 
+
+DE 
+
+
+'MÚLTIPLOS TIPOS DE PODS EM 1 MESMO DEPLOYMENT'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- OK... QUER DIZER QUE NÃO VAMOS CRIAR 1 NOVO DEPLOYMENT,
+
+E SIM 
+
+
+
+NO JÁ EXISTENTE deployment
+VAMOS 
+
+CRIAR 
+
+
+
+1 NOVO CONTAINER...
+
+
+
+
+
+
+
+
+
+
+--> POR ISSO QUE O PROFESSOR ESCREVE:
+
+
+
+
+
+
+- name: auth 
+  image: nothingnothings/auth-api
+
+
+
+
+
+
+
+
+
+
+
+
+
+  CERTO... 
+
+
+
+  PQ É CLARO QUE VAMOS PRECISAR RE-PUSHAR 
+
+
+
+
+  A IMAGE DE 'users-api'...
+
+
+
+
+
+
+
+
+
+
+
+
+  OK....
+   
+
+
+
+   ADICIONAMOS ESSE CONTAINER DE AUTH...
+
+
+
+
+
+
+
+
+
+
+
+MAS NÃO VAMOS EDITAR O ARQUIVO DE 'service.yaml',
+
+
+
+
+
+
+
+
+
+POR UMA BOA RAZÃO:
+
+
+
+
+
+
+
+APESAR DE 'auth-api'
+
+
+FAZER LISTEN TO EM 1 PORT DIFERENTE,
+
+
+PORT 
+
+
+DE 
+
+'80',
+
+
+
+
+
+
+NÓS __ NÃO VAMOS QUERER FAZER 'EXPOSE'
+
+
+
+DESSE PORT __ AO MUNDO EXTERNO --------> ISSO PQ __ 
+
+
+
+
+O REQUEST 
+A ESSE POD 
+
+DEVE SER FEITO 
+
+DE FORMA 
+
+'POD-INTERNAL' ---------> OK... É POR ISSO QUE,
+
+
+NO SERVICE,
+
+
+
+NÓS 
+
+NÃO VAMOS QUERER ADICIONAR/EXPOR A PORT DE '80', a port usada pelo 'auth-api'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> É POR ISSO QUE DEIXO APENAS A PORT DE '8080',
+
+QUE É 
+
+A PORT EXTERNA USADA 
+
+PELO 'USERS-API',
+
+
+
+
+O CONTAINER DE USERS... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> É POR ISSO QUE TEMOS ESSES 2 CONTAINERS, 1 ACESSÍVEL AO MUNDO DE FORA,
+OUTRO NÃO... (
+    2 containers em 1 único pod,
+
+    em 1 
+
+
+    mesmo deployment... que é o certo....
+)
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA PRECISAMOS REPUSHAR TODAS AS IMAGES,
+
+E AÍ 
+
+TAMBÉM 
+
+PRECISAMOS 
+
+GARANTIR QUE 
+
+NO MUNDO KUBERNETES
+
+VAMOS 
+PROVIDENCIAR 
+
+1 
+
+VALUE 
+
+
+PARA 
+
+
+O 
+
+ADDRESS DE 'process.env.AUTH_ADDRESS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... MAS QUAL SERÁ ESSE VALUE, EXATAMENTE? (pq não será 'auth', como no docker-compose, isso é certo...).
+
+
+
+
+
+
+
+
+
+
+
+
+A PERGUNTA É 'QUAL VALUE DEVE SER PROVIDENCIADO, NO MUNDO/CLUSTER KUBERNETES'?... ----->  qual o address correto 
+
+
+PARA QUE 
+
+
+A API DE USERS CONSIGA 
+
+
+SE COMUNICAR COM O CONTAINER DE 'AUTH',
+
+QUE VIVE NO MESMO POD,
+MAS EM 1 CONTAINER DIFERENTE...
