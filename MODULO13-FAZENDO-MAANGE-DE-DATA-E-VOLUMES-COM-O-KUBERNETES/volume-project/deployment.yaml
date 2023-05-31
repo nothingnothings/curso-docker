@@ -17,10 +17,20 @@ spec:
         - name: my-story-app
           image: nothingnothings/my-story-app:latest
           imagePullPolicy: Always
-          #### TODO uso de ENV VARIABLES nos nossos containers
-          env:
+          #### TODO - uso de ENV VARIABLES nos nossos containers
+          env: ## env variables settadas NESSE PRÓPRIO ARQUIVO 'deployment.yaml'
             - name: STORY_FOLDER
               value: 'story'
+            - name: VARIABLE_1 ### exemplo de values de env variables obtidos do lado de fora desse arquivo,  retiradas lá do arquivo/resource 'environment.yaml'
+              valueFrom: 
+                configMapKeyRef:
+                  name: data-store-story-env
+                  key: variable1
+            - name: VARIABLE_2
+              valueFrom: 
+                configMapKeyRef:
+                  name: data-store-story-env
+                  key: variable2
           volumeMounts: ## precisamos dessa option/key para DEFINIR QUAIS VOLUMES DEVERÃO SER MONTADOS EM ALGUM DE NOSSOS CONTAINERS, NESSE POD...
             - mountPath: /app/story ## QUEREMOS QUE NOSSA DATA/DATA DO USUÁRIO SEJA 'BINDADA' A ESSE INTERNAL PATH, DENTRO DE NOSSO CONTAINER (é exatamente como 1 named volume)....
               name: story-volume

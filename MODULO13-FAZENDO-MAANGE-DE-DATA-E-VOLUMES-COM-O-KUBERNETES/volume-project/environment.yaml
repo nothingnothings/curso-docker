@@ -1,0 +1,32 @@
+
+
+
+# -->  ISSO 
+# É 
+
+# SIMPLESMENTE OUTRO RESOURCE,
+
+# OUTRO OBJECT COMPREENDIDO PELO KUBERNETES... --> E, COMO O NOME `ConfigMap` NOS SUGERE,
+
+
+
+# ISSO 
+
+
+# CRIA 1 MAP DE 
+
+# CONFIGURATIONS... -------> É BASICAMENTE UMA 'KEY-VALUE PAIR LIST'...
+
+
+
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-store-story-env
+data:   ### é aqui que definimos os 'key-value pairs' que serão usados em nossos DIFERENTES PODS/deployments, AS DIFERENTES ENVIRONMENT VARIABLES...
+  folder: 'story'  ### com isso, definimos uma key/variable de nome 'folder', com value de 'story'...
+  variable1: 'exemplo1'
+  variable2: 'exemplo2'
+  #key: value...

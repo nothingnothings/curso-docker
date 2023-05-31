@@ -1,0 +1,871 @@
+
+
+
+
+
+
+
+
+
+OK... MAS E SE NÃO 
+
+
+QUISERMOS 
+
+
+SETTAR 
+
+
+ENVIRONMENT VARIABLES 
+
+
+
+
+
+DENTRO 
+
+
+
+
+
+DA ESPECIFICAÇÃO DOS CONTAINERS,
+
+
+
+DENTRO DO 'deployment.yaml'...?
+
+
+
+
+
+
+
+
+
+
+E SE QUISÉSSEMOS 
+
+DEFINIR 
+
+
+
+AS ENVIRONMENT VARIABLES  EM 1 FILE SEPARADA,
+
+
+
+
+EM 
+
+1 
+
+
+RESOURCE 
+
+
+
+SEPARADO, NO SEU CLUSTER....?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TALVEZ PARA QUE 
+
+
+
+
+'''MÚLTIPLOS PODS, DE DIFERENTES DEPLOYMENTS,
+
+
+CONSIGAM 
+
+__ UTILIZAR AS MESMAS ENVIRONMENT VARIABLES'''....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ESSE É UM COMMON USE-CASE,
+
+E ALGO QUE VC 
+
+PODE IMPLEMENTAR FACILMENTE,
+
+COM O KUBERNETES..
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, O PROFESSOR CRIA UM ARQUIVO DE nome 'environment.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> DENTRO DESSE ARQUIVO,
+
+
+
+CRIAREMOS UM RESOURCE CHAMADO 
+
+DE 
+
+
+
+'ConfigMap'...
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+apiVersion: v1 
+kind: ConfigMap 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->  ISSO 
+É 
+
+SIMPLESMENTE OUTRO RESOURCE,
+
+OUTRO OBJECT COMPREENDIDO PELO KUBERNETES... --> E, COMO O NAME NOS SUGERE,
+
+
+
+ISSO 
+
+
+CRIA 1 MAP DE 
+
+CONFIGURATIONS... -------> É BASICAMENTE UMA 'KEY-VALUE PAIR LIST'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+COMEÇAMOS ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --> COLOCAMOS UM NOME DE 'data-store-env' A ESSA ENV VARIABLE...
+
+
+
+
+
+
+  --> ALÉM DA 'metadata',
+
+
+  PRECISAMOS 
+
+
+  DEFINIR  'A DATA QUE QUEREMOS REALMENTE SETTAR NESSE CONFIG MAP'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> DENTRO DO CONFIG MAP,
+
+NÃO USAMOS 'spec',
+
+E SIM 
+
+USAMOS 
+
+a key de 'data'...
+
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-store-story-env
+data:   ### é aqui que definimos os 'key-value pairs' que serão usados em nossos DIFERENTES PODS/deployments, AS DIFERENTES ENVIRONMENT VARIABLES...
+  folder: 'story'  ### com isso, definimos uma key/variable de nome 'folder', com value de 'story'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA ISSO É UMA CONFIG MAP...
+
+
+
+
+
+PODERÍAMOS TER MÚLTIPLOS KEY-VALUE PAIRS,
+
+SE 
+
+
+TIVÉSSEMOS TANTAS VARIÁVEIS ASSIM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO..
+
+
+
+
+
+
+TEMOS VÁRIOS KEY-VALUE PAIRS DENTRO 
+
+
+
+
+dessa key de 'data'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO FEITO,
+
+
+
+PODEMOS _ APLICAR__ ESSE ARQUIVO,
+
+
+com 
+
+
+
+'kubectl apply -f=environment.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COMO SEMPRE, COM 
+
+'kubectl get configmap',
+
+
+
+
+PODEMOS 
+
+VER TODOS OS CONFIGMAPS QUE TEMOS...
+
+
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO13-FAZENDO-MAANGE-DE-DATA-E-VOLUMES-COM-O-KUBERNETES\volume-project> kubectl apply -f environment.yaml
+configmap/data-store-story-env created
+PS A:\projeto15-DOCKER\MODULO13-FAZENDO-MAANGE-DE-DATA-E-VOLUMES-COM-O-KUBERNETES\volume-project> kubectl get configmap
+NAME                   DATA   AGE
+data-store-story-env   1      6s
+kube-root-ca.crt       1      2d
+PS A:\projeto15-DOCKER\MODULO13-FAZENDO-MAANGE-DE-DATA-E-VOLUMES-COM-O-KUBERNETES\volume-project> 
+
+
+
+
+----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... COM ISSO, QUEREMOS USAR ESSE CONFIG MAP,
+
+PARA ENTÃO 
+
+
+
+SETTAR 
+
+
+
+
+AS ENVIRONMENT VARIABLES 
+
+PARA 
+
+ESSE 
+
+
+
+CONTAINER DE 'nothingnohints/kub-first-app'...
+
+
+
+
+
+
+NESTE TRECHO AQUI:
+
+
+
+
+    spec: ###### SPECIFICATION DE 1 POD/NOSSO POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          imagePullPolicy: Always
+          #### TODO uso de ENV VARIABLES nos nossos containers
+          env:
+            - name: STORY_FOLDER
+              value: 'story'
+
+
+
+
+
+
+--> PARA ISSO,
+
+
+
+
+
+
+
+
+A KEY DE 'env'
+
+
+
+
+SUPORTA 1 SINTAXE ESPECIAL... --> EM VEZ DE SETTAR 1 ENV VARIABLE ASSIM,
+
+
+
+vc 
+
+pode 
+
+
+
+
+colocar 
+
+
+
+- name
+  valueFrom: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --> COM ESSE 'valueFrom',
+
+
+
+  VC PODE ASSIGNAR 1 VALUE A ESSE ENVIRONMENT VARIABLE,
+  SIM,
+
+
+  MAS 
+
+  1 
+  VALUE VINDO DE _ FORA__ 
+  DESSE ARQUIVO YAML,
+
+
+
+
+
+
+  TIPO ASSIM:
+
+
+
+
+
+
+
+
+(environment.yaml):
+
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-store-story-env
+data:   ### é aqui que definimos os 'key-value pairs' que serão usados em nossos DIFERENTES PODS/deployments, AS DIFERENTES ENVIRONMENT VARIABLES...
+  folder: 'story'  ### com isso, definimos uma key/variable de nome 'folder', com value de 'story'...
+  variable1: 'exemplo1'
+  variable2: 'exemplo2'
+
+
+
+
+
+
+(deployment.yaml):
+
+           - name: VARIABLE_1
+              valueFrom: 
+                configMapKeyRef:
+                  key: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok...  dentro de 'valueFrom',
+
+
+
+
+VC PODE APONTAR A 1 CONFIGMAP ESPECÍFICO, E, DENTRO DELE,
+
+
+
+1 
+SPECIFIC DATA KEY
+
+
+QUE 
+
+
+VC 
+
+QUER 
+
+QUE 
+SEJA 
+SETTADA 
+COMO O VALUE 
+
+
+
+PARA ESSA ENV VARIABLE,
+
+NESSE CONTAINER...
+
+
+
+
+
+
+
+
+--> para isso, 'configMapKeyRef' exige 
+
+
+mais 
+
+
+1 key,
+
+'name:',
+
+
+
+EM QUE 
+
+COLOCAMOS 
+
+O NOME __ DO configmap...
+
+
+
+
+--> DEPOIS DISSO,
+
+TEMOS 'key',
+
+EM QUE 
+ESPECIFICAMOS A KEY QUE 
+
+QUEREMOS QUE SEJA O 
+
+VALUE 
+
+PARA ESSA ENV VARIABLE,
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+    spec: ###### SPECIFICATION DE 1 POD/NOSSO POD...
+      containers:
+        - name: my-story-app
+          image: nothingnothings/my-story-app:latest
+          imagePullPolicy: Always
+          #### TODO - uso de ENV VARIABLES nos nossos containers
+          env: ## env variables settadas NESSE PRÓPRIO ARQUIVO 'deployment.yaml'
+            - name: STORY_FOLDER
+              value: 'story'
+            - name: VARIABLE_1 ### exemplo de values de env variables obtidos do lado de fora desse arquivo,  retiradas lá do arquivo/resource 'environment.yaml'
+              valueFrom: 
+                configMapKeyRef:
+                  name: data-store-story-env
+                  key: variable1
+            - name: VARIABLE_2
+              valueFrom: 
+                configMapKeyRef:
+                  name: data-store-story-env
+                  key: variable2
+
+
+------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok...  ISSO SIGNIFICA QUE 
+
+
+OS VALUES DAS ENV VARIABLES SERÃO PULLADOS LÁ DAQUELE CONFIG MAP QUE 
+
+CRIAMOS E APLICAMOS, MAIS CEDo...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTo...
+
+
+
+
+
+
+
+
+
+
+
+
+
+nosso pod agora vai funcionar como antes,
+
+MAS 
+
+AGORA 
+
+COM ESSAS ENV VARIABLES SENDO PASSADAS (
+
+    tanto a que foi criada lá em 'deployment.yaml',
+
+
+    como aquelas 
+
+
+
+    definidas no configMap de 'environment.yaml'...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ACABAMOS COM ESSE TÓPICO..
+
+
+
+TEMOS FULL FLEXIBILITY ---> PQ PODEMOS 
+
+USAR 
+
+
+1 
+FILE
+
+QUE 
+USAMOS 
+COMO CONFIGMAP (com 'valueFrom:', lá no deployment.yaml),
+
+
+OU ENTÃO 
+
+
+
+SETTAR OS VALUES DAS ENV VARIABLES DIRETAMENTE NO SEU 'deployment.yaml' (com 'value:')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... COM ISSO,
+
+AGORA SABEMOS COMO SETTAR ENV VARIABLES.... 
+
+
+
+
+
+
+
+
+
+E, ANTES DISSO,
+
+VIMOS COMO TRABALHAMOS COM 
+
+
+VOLUMES..
+
+
+
+
+
+
+
+
+
+
