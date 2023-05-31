@@ -1,0 +1,663 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... PARA 'POD-INTERNAL COMMUNICATION',
+
+
+OU SEJA,
+
+
+
+
+__ 2 CONTAINERS RODANDO EM 1 MESMO POD...  ---> E SÓ NESSA HIPÓTESE... --> 
+
+
+
+
+
+
+
+
+
+
+NESSA HIPÓTESE ESPECÍFICA,
+
+
+O 
+
+
+
+KUBERNETES TE PERMITE USAR o address de 'localhost'
+
+
+ 
+
+
+
+
+PARA ENVIAR REQUESTS.--- --> VC DEVE USAR 'localhost' + 'O PORT QUE É EXPOSTO PELO OUTRO CONTAINER'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE NOSSAS URLS,
+
+NO CÓDIGO NODE,
+
+TERÃO DE FICAR ASSIM:
+
+
+
+
+   const hashedPW = await axios.get(`http://localhost:80` + '/hashed-password/' + password); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... MAS É CLARO QUE, AQUI,
+
+
+NO CURSO DO PROFESSOR,
+
+
+
+VAMOS USAR 
+
+ENVIRONMENT VARIABLES,
+
+PQ SÃO BEM MAIS CONVENIENTES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--. É POR ISSO QUE O CÓDIGO DE 'env', 
+
+USADO 
+
+
+
+
+COM NOSSO CÓDIGO NODE,
+
+VAI FICAR ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: communication-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: communication
+  template:
+    metadata:
+      labels:
+        app: communication
+    spec:
+      containers:
+      - name: users-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+              ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+      - name: auth-api
+        image: nothingnothings/auth-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... NOSSO CÓDIGO FICA ASSIM, PORTANTO...
+
+
+
+
+
+
+
+
+
+
+QUER DIZER QUE 
+
+'localhost'
+
+
+É O MAGIC ADDRESS QUE 
+
+VC 
+
+PODE USAR,
+
+DENTRO 
+DE 
+1 POD...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE VC TIVER 1 CONTAINER, RODANDO EM 1 POD, QUE EXECUTA 
+
+
+
+1 CÓDIGO QUE RODA NO 'SERVERSIDE' NO POD,
+
+
+
+E SE ESSE CODE PRECISAR DE 1 ADDRESS,
+
+
+VC 
+PODE 
+
+USAR 
+
+'localhost'
+
+COMO ADDRESS __ SE VC _ QUISER_  ENVIAR __ O REQUEST_  A ALGUM 
+
+
+OUTRO CONTAINER, RODANDO NO MESMO POD...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK..
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE O PROFESSOR ESCREVE EXATAMENTE O QUE EU ESCREVI, TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+  spec:
+      containers:
+      - name: users-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+              ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+
+
+
+
+
+----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... PODERÍAMOS PEGAR ESSE VALUE LÁ DE 1 FILE,
+
+COMO O PROFESSOR NOS MOSTROU 
+
+EM 1 AULA ANTERIOR  (com 'envFrom'),
+
+
+
+
+
+
+
+MAS O QUE INTERESSA É QUE ISSO AÍ DEVE FUNCIONAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NO MUNDO 'docker-compose' --> providenciamos 
+
+'auth'
+
+COMO VALUE DA ENVIRONMENT VARIABLE... (ou seja, o SERVICE NAME de nosso container de 'auth')...
+
+
+
+
+
+
+
+
+
+
+
+--> JÁ NO MUNDO KUBERNETES,
+ 
+
+ USAMOS 
+
+
+ 'localhost:portExposta'
+
+
+ COMO VALUE 
+
+ DA ENVIRONMENT VARIABLE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ E ISSO DEVE FUNCIONAR... --> PQ 
+
+
+ O 
+
+ 'localhost'
+
+
+
+
+ É O SPECIAL ADDRESS QUE PODE SER USADO, DENTRO DE 1 MESMO POD,
+
+ SE 
+
+
+
+ 2 CONTAINERS 
+
+
+
+ NESSE MESMO POD QUISEREM COMUNICAR-SE ENTRE SI....
+
+
+
+
+
+
+
+
+
+
+
+
+ OK... O PROFESSOR SALVA ISSO,
+
+ E AÍ REBUILDA
+
+
+
+
+
+
+
+ AS IMAGES 
+
+
+ E 
+
+
+
+ APLICA 
+
+
+ A FILE DE 'deployment.yaml'...
+
+
+
+
+
+
+
+
+ CERTO... HORA DE TESTAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ rodo o código de 
+
+
+
+
+
+ kubectl apply -f deployment.yaml 
+
+
+
+
+
+
+
+
+
+
+
+
+ OK.... CHECAMOS SE OS PODS ESTÃO RODANDO..
+
+
+
+
+
+
+
+
+
+
+
+ parece que houve um erro...
+
+
+
+
+
+
+
+
+
+
+ --> alguma coisa deu bem errado....
+
+
+
+
+
+
+
+
+
+
+
+
+ OK... AGORA FUNCIONOU...
+
+
+
+
+
+
+
+
+
+
+
+ -> se rodamos 'kubectl get pods',
+
+
+ 
+
+ O NEGÓCIO MOSTRA 1 ÚNICO POD,
+
+
+
+
+ com este output:
+
+
+
+
+ PS A:\projeto15-DOCKER\MODULO14-NETWORKING-COM-O-KUBERNETES\projeto-container-pod-node-communication> kubectl get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+communication-app-58cc484b-8hxvt   2/2     Running   0          77s
+
+
+
+
+
+
+
+
+
+
+
+SIGNIFICA QUE CONSEUGIMOS 
+
+
+
+RODAR ESSE POD,
+
+QUE ESTÁ COM 2 CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... 2 CONTAINERS UP AND RUNNING... VAMOS TESTAR SE TUDO ISSO FUNCIONA...
+
+
+
+
+
+
+
+
+
+--> O CHANGE DE 1 DEPLOYMENT NÃO MUDA O SERVICE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VAMOS ENVIAR O REQUEST, E AÍ TUDO FUNCIONA... --> SIGNIFICA QUE A COMUNICAÇÃO 
+
+ENTRE OS CONTAINERS ESTÁ FUNCIONANDO.... (request e response, etc)...
+
+
+
+
+
+
+
+
+
+
+COMO NÃO ESTAMOS GANHANDO UMA RESPONSE DE ERROR,
+
+
+ISSO É SINAL QUE 
+
+
+
+AS COISAS ESTÃO DANDO CERTO...
+
+
+
+
+
+
+
+ISSO ESTÁ FUNCIONANDO JUSTAMENTE PQ USAMOS 
+
+'localhost' como address 
+
+
+
+DE NOSSOS REQUESTS,
+
+PQ 
+
+ESTAMOS 
+
+RODANDO 
+2 CONTAINERS EM 1 MESMO POD... (para pod-internal communication, use 'localhost')...
