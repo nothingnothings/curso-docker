@@ -1,0 +1,1111 @@
+
+
+
+
+
+
+
+
+
+
+
+OK.... PARA ESTE MODULE,
+
+
+TEREMOS 
+
+OUTRO 
+
+
+DEMO APPLICATION...
+
+
+
+
+
+
+
+
+
+
+
+--> É 1 APP QUE CONSISTE DE 
+
+
+3 
+DIFERENTES 'BACKEND APIs',
+
+
+QUE VÃO 
+
+
+
+
+TRABALHAR EM CONJUNTO....
+
+
+
+
+
+
+
+
+
+
+
+--> NO CASO,
+
+SERÃO 3 DIFERENTES CONTAINERS....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É UM NODEJS APP,
+
+
+
+
+
+E PODEMOS VER O CÓDIGO... SERÁ UM DUMMY APP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> temos as apis de 
+
+'auth',
+
+'tasks'
+
+
+e 
+
+'users'....
+
+
+
+
+
+
+
+
+
+AUTH API ----> ELA VAI 'DEAL' COM O __ VERIFY __ DE TOKENS 
+
+E 
+
+
+O GENERATE 
+
+DE TOKENS PARA AUTHENTICATED USERS...
+
+
+
+
+
+
+
+
+
+
+
+
+USERS API --> VAI DEAL COM O __ CREATE __ DE USERS,
+
+E  O LOG DE USERS IN...
+
+
+
+
+
+
+
+
+
+
+-> TUDO ISSO VAI ACONTECER EM 1 'DUMMY MODE'... -->  NÃO USAREMOS UMA DATABASE,
+
+NÃO VAMOS ARMAZENAR A DATA 
+
+EM FILES,
+
+
+
+E VAMOS TRABALHAR APENAS COM DUMMY DATA,
+
+QUE NÃO 
+É 
+
+STORED...
+
+
+
+
+
+
+
+
+
+
+
+
+---> ESSE MODULE NÃO VAI SER SOBRE O STORE DE DATA,
+E SIM 
+
+SERÁ 
+
+SOBRE O 'CONNECT' 
+
+DESSES 
+
+
+DIFERENTES SERVICES....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> E, DE FATO,
+
+
+
+ESSA API DE 'USERS'
+
+VAI EVENTUALMENTE 
+
+
+FAZER 'REACH OUT'
+
+
+
+
+AO SERVICE DE 'auth-api'
+
+
+
+
+PARA, POR EXEMPLO,
+
+
+FAZER 'GET'
+
+
+
+DA TOKEN 
+
+QUE 
+
+É 
+
+GERADA
+ 
+ QUANDO 
+
+
+ 1 
+ USER FAZ LOGIN...
+
+
+
+
+
+
+
+
+
+
+
+-> AÍ TEMOS A API DE 'tasks',
+
+
+EM QUE 
+PODEMOS 
+
+BASICAMENTE 
+
+
+
+
+
+'RETURN A LIST __ OF STORED TASKS',
+
+
+
+
+
+
+
+e aí 
+PODEMOS 
+
+
+ARMAZENAR TAMBÉM UMA NOVA TASK... --> E, DE FATO,
+
+
+
+
+
+ESSA TASK VAI SER ARMAZENADA EM 1 FILE,
+
+
+
+
+1 FILE QUE VAI AGIR COMO 1 'DUMMY STORAGE', pq é claro que uma database 
+
+seria 
+
+um data storage melhor, na vida real..
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS O QUE INTERESSA NÃO É O STORAGE,
+E SIM 
+
+
+
+
+
+A COMUNICAÇÃO ENTRE AS APIS...
+
+
+
+
+
+
+
+
+
+
+a api de 'tasks-app'
+
+
+VAI ACTUALLY RECEBER 1 TOKEN,
+
+
+
+
+1 TOKEN QUE VAI 'IDENTIFY 1 LOGGED IN USER',
+
+
+
+
+E, PORTANTO,
+
+
+VAI FAZER REACH OUT 
+
+
+
+ÀQUELE 
+
+
+
+
+API DE 'auth',
+
+PARA VERIFICAR ESSA TOKEN...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AQUI ESTÁ A ESTRUTURA GERAL DE NOSSO DUMMY APP:
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+ TEMOS NOSSO CLUSTER, E AÍ AS 3 APIs...
+
+
+
+
+
+
+
+
+
+ tipo assim:
+
+
+
+
+
+
+
+
+
+
+
+
+
+ CLUSTER {
+
+
+    AUTH API 
+
+
+    USERS API 
+
+
+    TASKS API 
+
+
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+ --> OK.... DENTRO DESSE CLUSTER, O API DE 'USERS' VAI CONVERSAR COM 
+
+
+ A API DE 'AUTh' -->  PQ QUANDO ENVIARMOS 1 REQUEST AO API DE 'users'
+
+ PARA QUE 
+
+
+ __sEJA _ CRIADO 1 NOVO USER,
+
+
+
+
+
+ A API DE 'USERS'
+
+
+ VAI CONVERSAR COM A API DE 'AUTH' PARA _ QUE __ SEJA __ GERADO 
+
+
+
+ 1 TOKEN PARA AQUELE USER...
+
+
+
+
+
+
+
+
+
+ TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+ 
+ CLUSTER {
+
+
+    AUTH API <-------- USERS API 
+
+
+
+
+
+    TASKS API 
+
+
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+ESSES 2 CONTAINERS,
+
+
+
+ESSES 2 APIS (cada api roda em 1 container separado),
+
+
+
+
+
+
+CADA 1 DELES SERÁ __ CRIADO __ EM 1 MESMO POD...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NO INÍCIO DESSE MODULO,
+
+
+
+
+'AUTH API' e 'USERS API'
+FARÃO 
+
+PARTE DE 1 MESMO POD...
+
+
+
+
+
+
+ex:
+
+
+
+
+ 
+ CLUSTER {
+
+        POD {
+    AUTH API <-------- USERS API 
+        }
+
+
+
+    TASKS API 
+
+
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+com isso,
+
+TEREMOS 
+
+'POD-INTERNAL COMMUNICATION',
+
+
+
+pq a API DE 'AUTH'
+
+
+
+NÃO 
+
+SERÁ 
+
+
+ALCANÇADA DO 'LADO DE FORA DO CLUSTER',
+
+
+
+
+e sim 
+
+SERÁ 
+
+ALCANÇADA 
+
+APENAS POR DENTRO DAQUELE POD (ficará isolada do mundo externo, com conexão apenas ao 'Users api', dentro daquele pod)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E A API DE 'TASKS' VAI RODAR EM 1 POD SEPARADO...
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+ 
+ CLUSTER {
+
+        POD {
+    AUTH API <-------- USERS API 
+        }
+
+
+
+    POD {
+    TASKS API 
+    }
+
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E AMBOS OS PODS 
+
+SERÃO 
+
+
+REACHABLE LÁ DO MUNDO EXTERNO,
+
+POR 1 CLIENT (postman),
+
+
+
+
+
+
+
+
+MAS O QUE INTERESSA É QUE 
+
+
+
+O 
+
+
+
+CONTAINER de 'AUTH API' 
+
+
+
+NÃO VAI __ SER 'DIRECTLY REACHED',
+
+
+
+
+PQ ELE NÃO VAI HANDLAR DIRETAMENTE REQUESTS 
+
+DO MUNDO EXTERNO 
+
+
+(
+
+    O único container que vai handlar diretamente requests é o 
+    container de 
+
+    'users',
+
+    
+    e nós teremos esse 
+
+    'pod-internal communication' entre a AUTH API e o USERS API...
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS ESSE NÃO SERÁ O STATE FINAL DE NOSSO APP,
+
+
+
+
+
+
+MAS VAMOS COMEÇAR COM ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NA VERDADE,
+
+
+O PROFESSOR 
+VAI COMEÇAR COM 1 EXEMPLO AINDA MAIS SIMPLES;
+
+
+
+APENAS COM 
+
+
+
+A API DE 'USERS',
+
+
+
+SEM TER ESSA COMUNICAÇÃO COM A API DE 'AUTH',
+
+
+
+APENAS 
+
+
+PARA 
+
+GARANTIR QUE 
+
+
+
+
+A API DE 'USERS'
+
+
+CONSIGA HANDLAR INCOMING REQUESTS...
+
+
+
+
+
+
+
+
+
+-----> MAS ANTES DE TRADUZIRMOS TODO CÓDIGO 
+
+
+DOCKER/NODE EM KUBERNETES,
+
+
+O PROFESSOR DIZ QUE PODEMOS 'PLAY AROUND'
+
+COM ESSA API ----------> PQ O PROFESSOR JÁ PROVIDENCIOU 
+
+
+
+DOCKERFILES E DOCKER-COMPOSE FILES...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... podemos construir essas images,
+
+
+
+
+
+
+PODEMOS STARTAR ESSES 3 CONTAINERS COM 'docker-compose up'...
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS USAR O POSTMAN PARA ENVIAR 
+
+
+
+1 REQUEST à ROUTE DE 'localhost:8080/login',
+
+
+
+
+
+com 
+
+
+
+
+1 body de '{
+    token: "abc"
+}',
+
+
+
+
+
+
+
+QUE ___ REALMENTE_ CHEGARIA NA API DE 'users',
+
+
+
+
+
+
+QUE ESTÁ FAZENDO LISTEN TO NA PORT DE 8080 ------> aí, para o REQUEST 
+
+
+DE LOGIN QUE O PROFESSOR RECÉM ENVIOU,
+
+
+
+
+ESSE 'USERS API'
+
+
+vai realmente 
+
+
+FAZER EXTRACT DO EMAIL E PASSWORD,
+
+
+VERIFICAR 
+
+
+
+ESSE PASSWORD/EMAIL DE UMA FORMA MT SIMPLES,
+
+
+E AÍ 
+
+
+
+
+VAI ACTUALLY CONTATAR 
+
+
+
+
+
+
+__ A API DE 'AUTH'
+
+PARA ENVIAR 
+
+
+
+
+
+DATA A ELA... -----> COM ISSO,
+
+
+VAMOS ACTUALLY GANHAR DE VOLTA 1 TOKEN,
+
+
+QUE FARÁ 
+
+PARTE 
+DA 
+
+RESPONSE 
+
+
+
+
+
+DA 'AUTH API'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> NÓS TAMBÉM PODEMOS TENTAR ENVIAR 1 REQUEST 
+
+
+
+À 
+
+
+
+
+API DE 'auth'
+
+DIRETAMENTE,
+
+
+E ISSO VAI 100% FALHAR.. --> ISSO VAI FALHAR PQ __ A API DE 'AUTH'
+
+
+
+
+
+____ NÃO ESTÁ EXPOSTA PUBLICAMENTE,
+NESSE SETup (
+
+
+apenas os outros containers conseguem enviar requests a ela...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+OBSSS:::: 'TO SEND REQUESTS TO THE /TASKS API, YOU NEED TO ADD AN 
+
+_"AUTHORIZATION" header, with a value of "Bearer abc" ',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E PODEMOS TENTAR FETCHEAR TASKS,
+
+
+
+MAS ISSO INICIALMENTE VAI FALHAR... ---> SE ADICIONARMOS 1 TASK, COM A ROUTE DE 'localhost:8080/tasks' com 
+
+
+1 
+
+
+BODY 
+
+
+
+QUE TENHA ESTE FORMATO:
+
+
+
+
+{
+    "text": "A second task",
+    "title": "Did this, too!"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+--> E, SE VC FIZER ISSO, ESSA TASK SERÁ STORED...---> E SE DEPOIS ENVIARMOS 
+
+1 REQUEST 
+
+
+
+A ESSE 'localhost:8080/tasks',
+
+
+request de tipo get,
+
+
+VAMOS CONSEGUIR 
+
+
+FETCHEAR ISSO AÍ...
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK... É CLARO QUE QUANDO RODARMOS 'docker-compose down'
+
+
+a data de nosso app SERÁ TODA PERDIDA. .. -> ISSO PQ O FOCO, AQUI,
+
+
+
+
+NÃO É A DATA STORAGE,
+
+E SIM 
+
+
+A 
+'CONTAINER-CONTAINER' INTERACTION...
+
+
+
+
+
+
+
+
+
+
+
+ok... devemos analisar esse código...
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR RODA 'docker-compose down',
+
+PQ 
+
+
+
+NOSSO GOAL AQUI NÃO É USAR DOCKER-COMPOSE...
+
+
+
+
+
+
+
+
+
+VEREMOS ISSO, NA PRÓXIMA AULA...
