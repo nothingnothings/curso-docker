@@ -6,6 +6,13 @@ const app = express();
 
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  next();
+});
+
 app.post('/signup', async (req, res) => {
   // It's just a dummy service - we don't really care for the email
   const email = req.body.email;

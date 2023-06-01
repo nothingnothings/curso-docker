@@ -1451,3 +1451,33 @@ TEMOS O COMANDO
 
 
 kubectl logs <pod-name>
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... mas é claro que só termos algum output se ALGUM ERROR TIVER ACONTECIDO...
+
+
+
+
+
+
+
+
+
+
+
+RODEI TUDO ISSO...
+
+
+
+

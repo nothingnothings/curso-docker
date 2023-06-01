@@ -174,3 +174,1489 @@ MICROSERVICE-LIKE APP.....
 
 
 o código frontend... DUMMY CODE.. -> nenhum app complexo...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... O CÓDIGO É ESTE:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect, useCallback } from 'react';
+
+import './App.css';
+import TaskList from './components/TaskList';
+import NewTask from './components/NewTask';
+
+function App() {
+  const [tasks, setTasks] = useState([]);
+
+  const fetchTasks = useCallback(function () {
+    fetch('.../tasks', {
+      headers: {
+        'Authorization': 'Bearer abc'
+      }
+    })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (jsonData) {
+        setTasks(jsonData.tasks);
+      });
+  }, []);
+
+  useEffect(
+    function () {
+      fetchTasks();
+    },
+    [fetchTasks]
+  );
+
+  function addTaskHandler(task) {
+    fetch('.../tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer abc',
+      },
+      body: JSON.stringify(task),
+    })
+      .then(function (response) {
+        console.log(response);
+        return response.json();
+      })
+      .then(function (resData) {
+        console.log(resData);
+      });
+  }
+
+  return (
+    <div className='App'>
+      <section>
+        <NewTask onAddTask={addTaskHandler} />
+      </section>
+      <section>
+        <button onClick={fetchTasks}>Fetch Tasks</button>
+        <TaskList tasks={tasks} />
+      </section>
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... QUER DIZER QUE AS TASKS SÃO FETCHEADAS 
+
+
+
+
+
+LOGO NO LOAD DO APP,
+
+
+
+
+
+
+E DEPOIS HÁ 1 CÓDIGO PARA 
+
+
+CRIAR TASKS,
+
+COMO VISTO AQUI:
+
+
+
+
+  function addTaskHandler(task) {
+    fetch('http://192.168.99.100:32140/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer abc',
+      },
+      body: JSON.stringify(task),
+    })
+      .then(function (response) {
+        console.log(response);
+        return response.json();
+      })
+      .then(function (resData) {
+        console.log(resData);
+      });
+  }
+
+
+
+
+--------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... É CLARO QUE A URL A QUE ESSES REQUESTS ESTÁ 'MISSING', ATUALMENTE:
+
+
+
+
+
+
+APENAS PARA TESTAR O FRONTEND,
+
+
+O PROFESSOR 
+
+
+
+COLOCA O URL LÁ DO POSTMAN,
+
+
+
+
+AQUELE URL QUE JÁ ESTAVA EXPOSTO PELO MINIKUBE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... SE VC_ _JÁ 
+
+TEM  O SEU IP ADDRESS/DOMÍNIO 
+
+
+
+
+
+ESTÁTICO (com load balancer) 
+
+settado,
+
+
+
+
+
+VC PODE SIMPLESMENTE COLOCAR O IP/DOMÍNIO 
+
+
+
+
+
+NESSA URL...
+
+
+
+
+
+
+
+
+
+
+AINDA NÃO TINHA VISTO O CÓDIGO DOCKER FILE DESSE FRONTEND:
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM node:14-alpine as builder
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+FROM nginx:1.19-alpine
+
+COPY --from=builder /app/build /usr/share/nginx/html
+
+COPY conf/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD [ "nginx", "-g", "daemon off;" ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+como você pode ver,
+
+
+
+é uma file 'multi-stage',
+
+é um multistage setup...
+
+
+
+
+
+
+
+
+
+
+-> ISSO PQ ANTES O CÓDIGO É BUILDADO (npm run build),
+
+
+
+para SÓ ENTÃO SER SERVIDO, USANDO 1 SERVER NGINX..
+
+
+
+
+
+
+
+TUDO COM ESTE TRECHO:
+
+
+
+
+
+
+FROM nginx:1.19-alpine
+
+COPY --from=builder /app/build /usr/share/nginx/html
+
+
+
+
+
+
+
+
+
+
+
+
+--> e a configuração toda está naquela file de 'nginx.conf',
+
+
+vista aqui:
+
+
+
+
+
+
+
+
+
+server {
+  listen 80;
+  
+  location / {
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+    try_files $uri $uri/ /index.html =404;
+  }
+  
+  include /etc/nginx/extra-conf.d/*.conf;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR NOS MOSTROU TUDO ISSO ANTES,
+
+
+
+
+isso é algo que ele já havia nos mostrado,
+
+
+quando 
+
+deployamos apps sem o kubernetes...
+
+
+
+
+
+
+
+
+
+
+-> E, DE FATO, ATÉ AGORA,
+
+
+
+NÃO USAMOS KUBERNETES COM ESSE FRONTEND...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> EM VEZ DISSO,
+
+
+
+podemos 
+
+
+BUILDAR ESSE FRONTEND EM 1 IMAGE, E AÍ 
+
+UPLOADAR
+ 
+
+
+
+ESSA FRONTEND IMAGE AO NOSSO DOCKERHUB...
+
+
+
+
+
+
+
+
+buildada essa image, PODEMOS RODAR 1 LOCAL CONTAINER COM 
+
+BASE NESSA IMAGE...
+
+
+
+
+
+
+
+
+
+
+--> ESSE LOCAL CONTAINER  SERÁ _ cAPAZ__ 
+
+DE SE COMUNICAR 
+
+
+COM NOSSO 
+
+
+KUBERNETES APP QUE ESTÁ RODANDO NO NOSSO CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+ISSO PQ O __ CÓDIGO_ QUE ESTÁ RODANDO NESSE JAVASCRIPT APP _ REACT 
+
+
+__ É CÓDIGO QUE VAI RODAR NO BROWSER DO USER,
+
+
+E NÃO 
+
+
+
+
+
+NO PRÓPRIO KUBERNETES CLUSTER/DOCKER CONTAINER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+
+
+
+ISSO TUDO É CÓDIGO QUE SERÁ SERVIDO NO BROWSER DO USER,
+
+e rodado no browser do user...
+
+
+
+
+
+
+
+
+
+
+
+É EXATAMENTE POR ISSO QUE PODEMOS USAR O 'IP ESTÁTICO 
+
+
+DO BACKEND DE TASKS' (que está estático por conta do LOAD BALANCER em 'tasks-api'),
+
+
+
+
+
+O QUE QUER DIZER QUE 
+
+
+
+algo como 
+
+'http://192.168.99.100:32140' 
+
+
+
+NÃO VAI SER INTERPRETADO COMO 1 'IP-INTERNAL ADDRESS'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+quer dizer que nosso minikube server vai ser REACHABLE 
+
+por esse address...
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, O PROFESSOR DIZ QUE DEVEREMOS 
+
+SER CAPAZES 
+
+
+
+DE RODAR ESSE FRONTEND REACT NO NOSSO PC,
+
+
+E AÍ 
+
+DISPARAR 
+
+
+REQUESTS 
+
+
+
+CONTRA  
+
+
+
+
+
+
+NOSSO BACKEND KUBERNETES, sem nenhum problema...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> é claro que isso não tem nada a ver com o kubernetes,
+
+pq 
+
+estamos usando o docker para rodar nosso frontend NA NOSSA LOCAL HOST MACHINE,
+
+PARA AÍ 
+
+
+
+
+
+NOS CONECTARMOS A ESSE CLUSTER (que usa o kubernetes, sim)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO....  COM ESSE APP STARTADO,
+
+
+
+
+teremos 1 coisa curiosa:
+
+
+
+
+
+
+
+nenhuma task será fetcheada,
+
+
+
+
+
+
+NENHUMA TASK VAI APARECER 
+
+
+
+
+NO NOSSO APP,
+
+
+MESMO 
+
+
+
+
+
+OS 2 APPS (frontend e backend) ESTANDO 'CONNECTED' (entre aspas)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... MAS PQ NÃO FICAMOS COM NENHUMA TASK, NO FRONTEND?
+
+
+
+
+
+
+
+
+
+
+
+--> É PQ _ RECEBEMOS UM ERRO___ DE CORS___...S
+
+
+
+
+
+
+
+
+
+
+
+
+-----> e esse erro de CORS NÃO É UM _ BUG COM O KUBERNETES 
+
+
+NEM NADA DO GÊNERO,
+
+
+MAS, EM VEZ DISSO,
+
+
+
+NOSSO BACKEND,
+
+
+
+
+
+QUE __ DEPLOYAMOS COM O KUBERNETES,
+
+
+
+NÃO TEM O CÓDIGO APROPRIADO 
+
+
+PARA __ PERMITIR __ 
+
+
+
+
+REQUESTS __ ENVIADOS __ à APPLICATION DE 'tasks-api'
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COM O POSTMAN,
+
+O ENVIO DE REQUESTS À APPLICATION DE 'tasks-api'
+
+
+NÃO ERA 1 PROBLEMA... -> ISSO PQ A IDEIA DE 'CROSS-ORIGIN RESOURCE SHARING' (cors)
+
+
+NÃO 
+
+
+IMPORTA AO 
+
+
+POSTMAN..
+
+
+
+
+
+
+
+
+
+
+
+ENTRETANTO, PARA BROWSERS, ESSA IDEIA, DO CORS,
+
+IMPORTA... --> 
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+
+
+
+
+
+
+
+
+A SOLUÇÃO SIMPLES A ISSO É:
+
+
+
+
+
+
+
+
+
+
+DEVEMOS UPDATAR NOSSO CÓDIGO,
+
+
+
+
+NA API DE 'tasks',
+
+
+PARA __ GARANTIR __ QUE 
+
+
+
+_ ALGUNS HEADERS EXTRA SEJAM SETTADOS,
+
+
+
+TUDO PARA QUE 
+
+
+
+
+O BROWSER 
+
+
+
+'SAIBA'
+
+
+
+
+QUE 
+
+
+__ O __ REACH _ OUT __ 
+
+
+A ESSA API É 'OKAY'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, O CÓDIGO QUE PRECISAMOS ADICIONAR AO SEU 'tasks-app.js'
+
+ 
+
+
+
+
+
+ É ESTE AQUI:
+
+
+
+
+
+
+
+ app.use((req, res, next) => {
+  // código CORS, necessário para nosso frotend
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  next();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. ESSE CÓDIGO GARANTE QUE 
+
+
+
+
+APPS RODANDO NO BROWSER CONSEGUIRÃO SE COMUNICAR 
+
+
+
+
+AO BACKEND SEM PROBLEMAS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR NÃO COLOCOU ESSE CÓDIGO CORS 
+
+
+NO FRONTEND 
+
+'users-api'
+
+
+NÃO TENTA SE COMUNICAR A ESSA API.. --> MAS VAMOS ADICIONAR MESMO ASSIM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+COM ESSE SOURCE CODE ADICIONADO,
+
+
+
+
+
+
+
+
+ISSO QUER DIZER QUER PRECISAMOS REDEPLOYAR A COISA TODA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+->  ok... fiz push de tudo no dockerhub,
+
+
+
+
+
+
+mas também preciso fazer push da 'IMAGE DO REACT'..
+
+
+
+
+
+
+
+
+
+
+
+-> para isso, vou criar 1 image de 'react-frontend',
+e aí uploadar lá...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... uploadadas todas as coisas lá no dockerhub,
+
+
+
+
+
+
+
+
+
+
+
+PRECISO APLICAR TUDO ISSO NOS DEPLOYMENTS DO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ao rodarmos esse negócio no browser,
+
+
+
+DEPOIS,
+
+GANHO UM ERROR:
+
+
+
+
+
+
+
+'UNAUTHORIZED' --> é outro erro relacionado com a ausência de headers...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> precisamos do header de 'Authorization',
+
+
+com  o value de 'Bearer abc'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ADICIONARMOS O HEADER,
+
+PRECISAMOS IR NO REACT SOURCE CODE 
+
+E COLOCARMOS 
+
+
+o argumento no call da fetch api,
+
+
+
+tipo 
+
+
+
+
+
+fetch(url, {
+    headers: {
+        'Authorization': 'Bearer abc'
+    }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FICOU TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect, useCallback } from 'react';
+
+import './App.css';
+import TaskList from './components/TaskList';
+import NewTask from './components/NewTask';
+
+function App() {
+  const [tasks, setTasks] = useState([]);
+
+  const fetchTasks = useCallback(function () {
+    fetch('http://172.22.158.171:31323/tasks', {
+      headers: {
+        'Authorization': 'Bearer abc'
+      }
+    })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (jsonData) {
+        setTasks(jsonData.tasks);
+      });
+  }, []);
+
+  useEffect(
+    function () {
+      fetchTasks();
+    },
+    [fetchTasks]
+  );
+
+  function addTaskHandler(task) {
+    fetch('http://172.22.158.171:31323/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer abc',
+      },
+      body: JSON.stringify(task),
+    })
+      .then(function (response) {
+        console.log(response);
+        return response.json();
+      })
+      .then(function (resData) {
+        console.log(resData);
+      });
+  }
+
+
+  return (
+    <div className='App'>
+      <section>
+        <NewTask onAddTask={addTaskHandler} />
+      </section>
+      <section>
+        <button onClick={fetchTasks}>Fetch Tasks</button>
+        <TaskList tasks={tasks} />
+      </section>
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTo... 
+
+
+
+
+
+
+
+
+agora podemos rodar essa image do react,
+para 
+
+testar 
+
+
+
+se 
+
+
+
+
+nosso load das tasks funciona...
+
+
+
+EX:
+
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO14-NETWORKING-COM-O-KUBERNETES\projeto-container-pod-node-communication ( (3 pods, 3 deployments, 3 containers version - more advanced)\frontend> docker run --rm -d -p 80:80 nothingnothings/react-frontend
+82c7776ce6f432353cc422efd05c76ce2095f658e20733bc29742f26b33997cd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.. mas recebemos o erro de cors... para resolver isso, tenho que fazer apply 
+
+
+de todos meus deploments, mais uma vez...
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA FINALMENTE FUNCIONOU...
+
+
+
+
+
+
+
+
+
+
+-> é possível fetchear as outras tasks, aqui...
+
+
+
+
+
+
+
+
+
+-> SE CRIAMOS UMA NOVA TASK, NO FRONTEND,
+
+ISSO TAMBÉM FUNCIONA.. 
+
+
+
+
+
+
+
+
+
+
+
+É UM BASIC APP,
+
+
+
+SEM QUALQUER FUNCIONALIDADE AVANÇADA... -> NÃO TEMOS NENHUM ERROR HANDLING BUILT 
+
+NESSE APP...
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR APENAS COLOCOU 
+
+ESSE FRONTEND PARA NOS MOSTRAR QUE 
+
+
+'1 FRONTEND, QUE NÃO SEJA O POSTMAN,
+
+É CAPAZ, SIM, DE FALAR COM ESSE BACKEND KUBERNETES'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+->  OK... MAS AGORA O PROFESSOR QUER DIVAR EM 1 TÓPICO BEM MAIS IMPORTANTE..
+
+
+
+
+
+
+
+
+
+
+
+
+--> E SE QUISÉSSEMOS QUE ESSE ___fRONTEND__ FOSSE SERVIDO POR NOSSO CLUSTER, TAMBÉM?
+
+
+
+
+
+
+
+ISSO PQ, ATÉ AGORA,
+
+TIVEMOS 
+
+DE 
+
+RODAR 
+
+NOSSO FRONTEND LOCALMENTE (desacoplado de nosso KUBERNETES)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... RODAR O CONTAINER DO FRONTEND LOCALMENTE, COM DOCKER RUN... --> ISSO É ALGO QUE 
+
+PODEMOS 
+
+FAZER DURANTE O DEVELOPMENT,
+
+
+
+MAS _ ISSO NÃO É O QUE TIPICAMENTE VAMOS QUERER FAZER,
+
+
+QUANDO SERVIRMOS NOSSO SITE AOS NOSSOS END USERS... ----> NO PASSO DE DEPLOYMENT,
+
+
+O IDEAL 
+
+É _ QUE _ ESSE FRONTEND ESTEJA EM ALGUM SERVER,
+
+
+
+
+TALVEZ ATÉ MESMO NESSE MESMO SERVER/CLUSTER EM QUE TODOS NOSSOS OUTROS BACKEND 
+
+SERVICES ESTÃO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> VEREMOS, NA PRÓXIMA AULA,
+
+'''COMO PODEMOS DEPLOYAR ESSE FRONTEND APP NO KUBERNETES'..
+
+
+
+
+
+
+
+
+
+
+
+-> o professor para todos os containers...
+
+
+
+
+
+
+
