@@ -4,7 +4,8 @@ services:
     build: ./auth-api
   users:
     environment:
-      AUTH_SERVICE_SERVICE_HOST: auth  ## ver anotações em 'auth-service.yaml' e 'users-app.js'
+      # AUTH_SERVICE_SERVICE_HOST: auth  ## ver anotações em 'auth-service.yaml' e 'users-app.js'
+      AUTH_ADDRESS: auth # ver anotações em 'users-deployment.yaml' e 'tasks-deployment.yaml'
     build: ./users-api
     ports: 
       - "8080:8080"

@@ -1,0 +1,176 @@
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... PARA ACABARMOS ESSE COURSE MODULE,
+
+
+O PROFESSOR ADICIONOU 1 PEQUENO FRONTEND PROJECT...
+
+
+
+
+
+
+
+É 1 FRONTEND CONSTRUÍDO COM REACT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> FOLDER DE 'frontend',
+
+que contém esse app...
+
+
+
+
+
+
+
+
+
+
+ATÉ AGORA, SEMPRE USAMOS O POSTMAN PARA TESTAR NOSSA DEPLOYED APPLICATION
+
+
+
+
+
+
+
+
+
+NO MUNDO REAL, TIPICAMENTE TEREMOS 1 FRONTEND APP,
+
+NÃO INTERESSA SE 1 SITE NO BROWSER OU 
+
+
+
+
+
+MOBILE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> MAIS CEDO NO CURSO,
+
+JÁ VIMOS COMO PODEMOS TER MULTI-CONTAINER APPS EM QUE 
+
+
+
+1 
+
+DOS CONTAINERS SERÁ 1 FRONTEND... -----> ATÉ MESMO JÁ FIZEMOS DEPLOY DESSE 
+
+
+APP, NA SECTION DE DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR QUER RECAPITULAR ISSO PQ, NOVAMENTE, TEMOS 
+
+ALGO SENDO DEPLOYED...
+
+
+
+
+
+
+
+
+
+
+
+--> ESTAMOS USANDO O KUBERNETES PARA FAZER DEPLOY DESSE MULTI-CONTAINER 
+
+
+MICROSERVICE-LIKE APP.....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E É EXATAMENTE POR ISSO QUE PODEMOS ENVIAR ESSES REQUESTS...
+
+
+
+
+
+
+
+
+
+--> OK... TEMOS O CÓDIGO ALI...
+
+
+
+
+
+
+o código frontend... DUMMY CODE.. -> nenhum app complexo...

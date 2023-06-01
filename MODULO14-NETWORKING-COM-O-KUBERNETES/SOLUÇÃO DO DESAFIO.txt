@@ -1,0 +1,1453 @@
+
+
+
+
+
+
+
+
+
+
+OK... PRECISO CRIAR 1 SERVICE E 1 DEPLOYMENT 
+
+
+PARA 
+
+
+
+O CONTAINER/POD 
+
+
+
+
+DE 'tasks'..
+
+
+
+
+
+
+
+
+
+
+--> O CÓDIGO DE 'tasks':
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const path = require('path');
+const fs = require('fs');
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+
+const filePath = path.join(__dirname, process.env.TASKS_FOLDER, 'tasks.txt');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+const extractAndVerifyToken = async (headers) => {
+  if (!headers.authorization) {
+    throw new Error('No token provided.');
+  }
+  const token = headers.authorization.split(' ')[1]; // expects Bearer TOKEN
+
+  const response = await axios.get('http://auth/verify-token/' + token);
+  return response.data.uid;
+};
+
+app.get('/tasks', async (req, res) => {
+  try {
+    const uid = await extractAndVerifyToken(req.headers); // we don't really need the uid
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ message: 'Loading the tasks failed.' });
+      }
+      const strData = data.toString();
+      const entries = strData.split('TASK_SPLIT');
+      entries.pop(); // remove last, empty entry
+      console.log(entries);
+      const tasks = entries.map((json) => JSON.parse(json));
+      res.status(200).json({ message: 'Tasks loaded.', tasks: tasks });
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(401).json({ message: err.message || 'Failed to load tasks.' });
+  }
+});
+
+app.post('/tasks', async (req, res) => {
+  try {
+    const uid = await extractAndVerifyToken(req.headers); // we don't really need the uid
+    const text = req.body.text;
+    const title = req.body.title;
+    const task = { title, text };
+    const jsonTask = JSON.stringify(task);
+    fs.appendFile(filePath, jsonTask + 'TASK_SPLIT', (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ message: 'Storing the task failed.' });
+      }
+      res.status(201).json({ message: 'Task stored.', createdTask: task });
+    });
+  } catch (err) {
+    return res.status(401).json({ message: 'Could not verify token.' });
+  }
+});
+
+app.listen(8000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PRIMEIRAMENTE, QUERO QUE ESSE CONTAINER/POD CONSIGA SE CONECTAR AO MUNDO EXTERNO..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O CÓDIGO DO SEU SERVICE:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasks-service
+spec:
+  selector:
+    app: tasks
+  ports:
+    - protocol: 'TCP'
+      port: 8000  ## port que 'faces the outside world' 
+      targetPort: 8000 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+--> com isso, conseguimos acesso externo nesse container..
+
+
+
+
+
+o mundo externo consegue enviar requests a ele...
+
+
+
+
+
+
+
+
+
+
+isso feito,
+
+
+
+
+
+DEVO ALTERAR O CÓDIGO DE 'tasks-app.js'
+
+PARA QUE 
+
+
+ELE 
+
+
+
+CONSIGA USAR A VARIABLE DE 
+
+'AUTH_ADDRESS',
+
+
+
+VARIÁVEL ESSA QUE TERÁ 1 VALUE DE 
+
+
+
+'auth-service.default',
+
+
+
+
+
+
+PQ 
+
+ESSE É O AUTOMATIC DNS 
+
+
+que 
+
+
+o 
+
+
+kubernetes nos dá,
+quando o service de 'auth-service' é criado...
+
+
+
+
+
+
+
+
+
+--> FICA TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks
+  template:
+    metadata:
+      labels:
+        app: tasks
+    spec:
+      containers:
+      - name: tasks-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            value: auth-service.default  # ? ESSA É A MELHOR MANEIRA (coredns) DE ESTABELECER 'POD-TO-POD' COMMUNICATION (basta vc especificar o SERVICE EM QUE SEU OUTRO POD ESTARÁ CONECTADO/ESTÁ CONECTADO)... como queremos nos conectar ao pod de 'auth', basta especificar 'auth-service'...
+            ### ? '.namespace' --> precisamos adicionar '.' + 'nome-do-namespace-em-que-isso-está', para que esse COREDNS fucnione...
+            # value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+              ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+        image: nothingnothings/users-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... COM ISSO, NOSSO SERVICE E DEPLOYMENT DE TASKS FICAM 'VINCULADOS'...
+
+
+
+
+
+
+
+
+
+
+
+BASTA ALTERAR O CÓDIGO 'tasks-app.js':
+
+
+
+
+
+
+
+
+
+
+
+const path = require('path');
+const fs = require('fs');
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+
+const filePath = path.join(__dirname, process.env.TASKS_FOLDER, 'tasks.txt');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+const extractAndVerifyToken = async (headers) => {
+  if (!headers.authorization) {
+    throw new Error('No token provided.');
+  }
+  const token = headers.authorization.split(' ')[1]; // expects Bearer TOKEN
+
+  // const response = await axios.get('http://auth/verify-token/' + token);
+  const response = await axios.get(`http://${process.env.AUTH_ADDRESS}/verify-token/` + token);
+  return response.data.uid;
+};
+
+app.get('/tasks', async (req, res) => {
+  try {
+    const uid = await extractAndVerifyToken(req.headers); // we don't really need the uid
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ message: 'Loading the tasks failed.' });
+      }
+      const strData = data.toString();
+      const entries = strData.split('TASK_SPLIT');
+      entries.pop(); // remove last, empty entry
+      console.log(entries);
+      const tasks = entries.map((json) => JSON.parse(json));
+      res.status(200).json({ message: 'Tasks loaded.', tasks: tasks });
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(401).json({ message: err.message || 'Failed to load tasks.' });
+  }
+});
+
+app.post('/tasks', async (req, res) => {
+  try {
+    const uid = await extractAndVerifyToken(req.headers); // we don't really need the uid
+    const text = req.body.text;
+    const title = req.body.title;
+    const task = { title, text };
+    const jsonTask = JSON.stringify(task);
+    fs.appendFile(filePath, jsonTask + 'TASK_SPLIT', (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ message: 'Storing the task failed.' });
+      }
+      res.status(201).json({ message: 'Task stored.', createdTask: task });
+    });
+  } catch (err) {
+    return res.status(401).json({ message: 'Could not verify token.' });
+  }
+});
+
+app.listen(8000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo... acho que isso funcionará...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE TAMBÉM PRECISAMOS ALTERAR O CÓDIGO DO 'docker-compose',
+
+
+PARA QUE 
+
+
+A VARIABLE NAME SEJA 'AUTH_ADDRESS', novamente...
+
+
+EX:
+
+
+
+
+
+version: "3"
+services:
+  auth:
+    build: ./auth-api
+  users:
+    environment:
+      # AUTH_SERVICE_SERVICE_HOST: auth  ## ver anotações em 'auth-service.yaml' e 'users-app.js'
+      AUTH_ADDRESS: auth # ver anotações em 'users-deployment.yaml' e 'tasks-deployment.yaml'
+    build: ./users-api
+    ports: 
+      - "8080:8080"
+  tasks:
+    build: ./tasks-api
+    ports: 
+      - "8000:8000"
+    environment:
+      TASKS_FOLDER: tasks
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+acho que está pronto...
+
+
+
+
+
+
+basta aplicar toda essa config,
+
+
+
+
+
+
+
+com 'kubectl apply -f tasks-deployment.yaml -f tasks-service.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+AGORA VEREMOS A AULA DO PROFESSOR...
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR DEIXOU ASSIM, COM A AUTH VARIABLE DE 'AUTH_ADDRESS':
+
+
+
+
+
+
+
+
+
+
+
+
+const path = require('path');
+const fs = require('fs');
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+
+const filePath = path.join(__dirname, process.env.TASKS_FOLDER, 'tasks.txt');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+const extractAndVerifyToken = async (headers) => {
+  if (!headers.authorization) {
+    throw new Error('No token provided.');
+  }
+  const token = headers.authorization.split(' ')[1]; // expects Bearer TOKEN
+
+  // const response = await axios.get('http://auth/verify-token/' + token);
+  const response = await axios.get(`http://${process.env.AUTH_ADDRESS}/verify-token/` + token);
+  return response.data.uid;
+};
+
+app.get('/tasks', async (req, res) => {
+  try {
+    const uid = await extractAndVerifyToken(req.headers); // we don't really need the uid
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ message: 'Loading the tasks failed.' });
+      }
+      const strData = data.toString();
+      const entries = strData.split('TASK_SPLIT');
+      entries.pop(); // remove last, empty entry
+      console.log(entries);
+      const tasks = entries.map((json) => JSON.parse(json));
+      res.status(200).json({ message: 'Tasks loaded.', tasks: tasks });
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(401).json({ message: err.message || 'Failed to load tasks.' });
+  }
+});
+
+app.post('/tasks', async (req, res) => {
+  try {
+    const uid = await extractAndVerifyToken(req.headers); // we don't really need the uid
+    const text = req.body.text;
+    const title = req.body.title;
+    const task = { title, text };
+    const jsonTask = JSON.stringify(task);
+    fs.appendFile(filePath, jsonTask + 'TASK_SPLIT', (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ message: 'Storing the task failed.' });
+      }
+      res.status(201).json({ message: 'Task stored.', createdTask: task });
+    });
+  } catch (err) {
+    return res.status(401).json({ message: 'Could not verify token.' });
+  }
+});
+
+app.listen(8000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> o professor diz que tínhamos 2 options:
+
+
+
+
+
+
+
+1) use the 'automatically generated environment variable', que é 'process.env.AUTH_SERVICE_SERVICE_HOST'...
+
+
+
+
+
+
+
+
+
+2) usar o DOMAIN NAME/SERVICE NAME no mundo kubernetes, e o 'service name', no mundo docker...
+
+
+
+
+
+
+
+--> optamos pela segunda alternativa,
+
+
+por isso o professor colocou 
+
+
+
+'process.env.AUTH_ADDRESS'...
+
+
+
+
+
+
+
+
+
+--> lá no docker-compose, o professor também escreveu assim:
+
+
+
+
+
+
+
+ users:
+    environment:
+      # AUTH_SERVICE_SERVICE_HOST: auth  ## ver anotações em 'auth-service.yaml' e 'users-app.js'
+      AUTH_ADDRESS: auth # ver anotações em 'users-deployment.yaml' e 'tasks-deployment.yaml'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      -> lá nos arquivos yaml, ficamos com TASKS-SERVICE:
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasks-service
+spec:
+  selector:
+    app: tasks
+  ports:
+    - protocol: 'TCP'
+      port: 8000  ## port que 'faces the outside world' 
+      targetPort: 8000 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+e o 
+
+
+
+'TASKS-DEPLOYMENT':
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks
+  template:
+    metadata:
+      labels:
+        app: tasks
+    spec:
+      containers:
+      - name: tasks-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            value: auth-service.default  # ? ESSA É A MELHOR MANEIRA (coredns) DE ESTABELECER 'POD-TO-POD' COMMUNICATION (basta vc especificar o SERVICE EM QUE SEU OUTRO POD ESTARÁ CONECTADO/ESTÁ CONECTADO)... como queremos nos conectar ao pod de 'auth', basta especificar 'auth-service'...
+            ### ? '.namespace' --> precisamos adicionar '.' + 'nome-do-namespace-em-que-isso-está', para que esse COREDNS fucnione...
+            # value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+              ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+        image: nothingnothings/tasks-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO.... ACABAMOS COM O SERVICE E DEPLOYMENT DE 'TASKS'....
+
+
+
+
+
+
+
+
+
+
+o tasks deve ser alcançável do lado de fora do cluster,
+
+por isso 
+
+definimos 'LoadBalancer' em vez de 'ClusterIP'....
+
+
+
+
+
+
+
+
+
+
+
+
+a port será 8000 pq é isso que definimos lá na dockerfile....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA PRECISAMOS CRIAR ESSA IMAGE E FAZER PUSH DELA..
+
+
+
+
+
+
+
+
+
+certo... já tenho isso no dockerhub, mas é bom rebuildar tudo...
+
+
+
+
+
+
+ 
+ certo.... agora basta rebuildar tudo e pushar tudo, depois configurar tudo... 
+
+
+
+
+
+
+
+
+ CERTO...  CONSEGUI...
+
+
+
+ EX:
+
+
+
+
+
+
+ PS A:\projeto15-DOCKER\MODULO14-NETWORKING-COM-O-KUBERNETES\projeto-container-pod-node-communication (3 pods, 3 deployments, 3 containers version - more advanced)\kubernetes> kubectl apply -f auth-service.yaml -f tasks-service.yaml -f 
+users-service.yaml -f auth-deployment.yaml -f tasks-deployment.yaml -f users-deployment.yaml
+service/auth-service unchanged
+service/tasks-service unchanged
+service/users-service unchanged
+deployment.apps/auth-deployment created
+deployment.apps/tasks-deployment created
+deployment.apps/users-deployment created
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok...
+
+
+
+agora posso testar esses deployments, com o postman..
+
+
+
+
+
+
+
+
+
+
+basta rodar  'minikube service tasks-service'
+
+
+
+e 
+
+
+'minikube service users-service'
+
+
+
+
+(
+  pq os 2 rodam em PORTS SEPARADAS/DISTINTAS, existem em lugares distintos de nosso app...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... mas houve 1 problema... -----> os pods deram _ ERROR__....
+
+
+
+
+
+
+
+
+
+OS 3, NO CASO....
+
+
+
+
+
+
+
+
+
+
+
+
+QUAL PODERIA SER O PROBLEMA?
+
+
+
+
+
+
+
+
+BEM.... O PROFESSOR NOS DIZ QUE EXISTE UMA 'LITTLE TRICK'
+
+
+
+
+
+
+
+
+
+
+
+--> O ARQUIVO DE 'tasks-app.js'
+
+ACTUALLY USA MAIS DO QUE 1 ÚNICA ENVIRONMENT VARIABLE...
+
+
+
+
+
+
+
+
+
+
+
+-> É A ENV VARIABLE DE 'TASKS_FOLDER'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> isso pq, lá no kubernetes, não settamos o value dessa variable...
+
+
+
+
+
+
+
+
+mas imagino que colocaremos o MESMO VALUE DO MUNDO DOCKER,
+
+OU SEJA,
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks
+  template:
+    metadata:
+      labels:
+        app: tasks
+    spec:
+      containers:
+      - name: tasks-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            value: auth-service.default  # ? ESSA É A MELHOR MANEIRA (coredns) DE ESTABELECER 'POD-TO-POD' COMMUNICATION (basta vc especificar o SERVICE EM QUE SEU OUTRO POD ESTARÁ CONECTADO/ESTÁ CONECTADO)... como queremos nos conectar ao pod de 'auth', basta especificar 'auth-service'...
+            ### ? '.namespace' --> precisamos adicionar '.' + 'nome-do-namespace-em-que-isso-está', para que esse COREDNS fucnione...
+            # value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+              ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+          - name: TASKS_FOLDER
+            value: tasks
+        image: nothingnothings/tasks-api:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... AGORA ESSA ENV VARIABLE ESTÁ CONFIGURADA, HORA DE TESTAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... agora o deployment de 'auth-api' está funcionando,
+
+mas os outros 2 ainda não...
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS AINDA ESTÁ DANDO ERROR...
+
+
+
+
+
+
+
+
+
+
+fiz alguma coisa errada, acho...
+
+
+
+
+
+
+
+
+
+
+preciso do 'minikube dashboard', para investigar isso aí...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> o erro foi de 'insufficient cpu'...
+
+
+
+
+
+
+
+
+
+
+
+ok.... mas parece que tenho cpu para isso... o erro parece ser outro...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... agora consegui rodar 2 dos deployments... o terceiro ainda está dando error...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+o 'users-api' está dando error....
+
+
+
+
+
+
+
+
+
+
+
+
+
+bem, este é o error:
+
+
+
+
+
+
+
+
+
+
+
+Error: Cannot find module '/app/tasks-app.js'
+    at Function.Module._resolveFilename (internal/modules/cjs/loader.js:931:15)
+    at Function.Module._load (internal/modules/cjs/loader.js:774:27)
+    at Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:75:12)
+    at internal/main/run_main_module.js:17:47 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... resolvi o problema... eu havia FEITO PUSH DE 1 IMAGE ERRADA, LÁ NO DOCKERHUB (fiz push de 'tasks' em vez de 'users')...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+seria bom saber 'COMO ACESSAR OS LOGS DE 1 CONTAINER, LÁ NO KUBERNETES'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... agora temos esses services:
+
+
+
+
+
+
+
+
+NAME            TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+auth-service    ClusterIP      10.105.227.13    <none>        80/TCP           16h
+kubernetes      ClusterIP      10.96.0.1        <none>        443/TCP          20h
+tasks-service   LoadBalancer   10.105.249.143   <pending>     8000:31323/TCP   16h
+users-service   LoadBalancer   10.96.87.189     <pending>     8080:31162/TCP   16h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> para conseguir os 'urls públicos' para conseguirmos enviar 
+
+
+
+
+
+requests a 'tasks' e a 'users',
+
+
+
+
+
+
+
+
+devemos rodar 'minikube service YOUR_SERVICE_NAME',
+
+
+
+
+
+
+tipo 
+
+
+
+
+
+
+
+'minikube service tasks-service' 
+
+
+
+
+
+
+
+e 
+
+
+'minikube service users-service'
+
+
+
+
+
+
+
+
+
+
+
+
+How do I make Kubernetes Dashboard available?
+Ans: In a terminal window, enter kubectl proxy 
+to make the Kubernetes Dashboard available. Open a browser and go
+
+ to 
+ http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes–dashboard:/proxy/#!/login to display the Kubernetes Dashboard that was deployed when the cluster was created.
+
+
+
+
+
+
+
+
+
+--------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... NOSSO API DE TASKS FOI DEPLOYADO CORRETAMENTE,
+
+
+E CONSEGUE SER ATINGIDO PELO MUNDO EXTERNO....
+
+
+
+
+
+
+
+
+
+e o 'auth api' 
+
+ficou protegido do mundo exterior.... ------> TUDO GRAÇAS AO 'auth-service.default' domain name,
+
+que passamos como env variable...
+
+
+
+
+
+
+
+
+
+
+
+PARA CONSEGUIRMOS OS LOGS DE ALGUM CONTAINER, COM O KUBERNETES,
+
+TEMOS O COMANDO 
+
+
+
+'kubectl logs'...
+
+
+
+
+
+
+
+
+
+
+kubectl logs <pod-name>
