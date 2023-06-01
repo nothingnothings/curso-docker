@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: 'TCP'
+      port: 80  ## port que 'faces the outside world' 
+      targetPort: 80 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: LoadBalancer

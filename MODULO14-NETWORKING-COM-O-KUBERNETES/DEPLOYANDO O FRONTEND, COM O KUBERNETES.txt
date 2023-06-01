@@ -1,0 +1,864 @@
+
+
+
+
+
+
+
+
+
+
+--> OK, MAS COMO PODEMOS DEPLOYAR 1 FRONTEND APP,
+
+PARA QUE 
+
+NÃO TENHAMOS 
+
+QUE 
+
+
+RODAR O 'DOCKER RUN' LOCALMENTE ( o que certamente não ajudaria users que tentam acessar nosso app)....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+BEM... O PROFESSOR NOS DIZ QUE JÁ DEPLOYAMOS FRONTENDS MAIS CEDO NO CURSO...
+
+
+
+
+
+
+
+
+-> já temos todos os elementos necessários:
+
+
+
+
+
+
+1) uma MULTI-STAGE DOCKERFILE,
+
+
+QUE BUILDA O APP (com node) E ENTÃO SETTA 1 NGINX WEBSERVER,
+
+QUE 
+
+FAZ 
+
+SERVE DO WEBAPP...
+
+
+
+
+
+
+
+
+
+
+
+
+-> TUDO QUE PRECISAMOS FAZER, PARA DEIXAR ESSE 'REACT WEBAPP'
+
+reachable,
+
+
+
+
+É RODAR ISSO COMO 1 CONTAINER,
+
+E 
+
+AÍ VINCULAR 1 SERVICE A ELE,
+
+
+PARA QUE 
+
+ELE FIQUE 
+
+DISPONÍVEL
+ 
+ AO 
+
+
+ 'OUTSIDE WORLD'...
+
+
+
+
+
+
+
+
+--> AGORA PRECISAMOS MOVER ESSE CONTAINER PARA DENTRO DE 1 POD, NO CONTAINER,
+
+PARA QUE FIQUE REACHABLE AOS NOSSOS END  USERS...
+
+
+
+
+
+
+
+
+-> ok, começamos com 1 pod, aqui...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COMEÇAMOS COM ALGO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: react-frontend-api
+        # env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+        #   - name: AUTH_ADDRESS
+        #     value: auth-service.default  # ? ESSA É A MELHOR MANEIRA (coredns) DE ESTABELECER 'POD-TO-POD' COMMUNICATION (basta vc especificar o SERVICE EM QUE SEU OUTRO POD ESTARÁ CONECTADO/ESTÁ CONECTADO)... como queremos nos conectar ao pod de 'auth', basta especificar 'auth-service'...
+        #     ### ? '.namespace' --> precisamos adicionar '.' + 'nome-do-namespace-em-que-isso-está', para que esse COREDNS fucnione...
+        #     # value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+        #       ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+        image: nothingnothings/react-frontend:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "256m"
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+ISSO VAI CRIAR O DEPLOYMENT DO 'REACT-APP'...
+
+
+
+
+
+
+
+
+
+AGORA PRECISAMOS DO SERVICE...
+
+
+
+
+
+
+
+crio 1 arquivo 'react-frontend-service.yaml'...
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: 'TCP'
+      port: 80  ## port que 'faces the outside world' 
+      targetPort: 80 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+AGORA É SÓ 
+
+
+
+
+
+
+PASSAR, DE ALGUMA FORMA,
+
+
+
+AS ENV VARIABLES DO KUBERNETES PARA DENTRO 
+
+
+
+DO MEU CÓDIGO REACT....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> e, para fazer isso, provavelmente usarei a mesma GAMBIARRA
+ 
+ que 
+ usei 
+
+
+ LÁ NO CÓDIGO REACT USADO NO DEPLOY DO DOCKER-compose,
+
+ NO MÓDULO  PASSADO...
+
+
+
+
+
+
+
+
+
+
+-> é aquela variable especial de 
+
+'process.env.NODE_ENV'...
+
+
+
+
+
+
+
+
+
+entretanto, aqui quero que o frontend FUNCIONE TANTO LOCALMENTE, COM O DOCKER-COMPOSE,
+
+
+como 
+
+
+
+NO MUNDO KUBERNETES,
+
+
+
+com o pass do value do 'actual endereço IP do pod, dentro do cluster'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PRECISAMOS DE 1 OUTRO POD JUSTAMENTE PQ NOSSO FRONTEND 
+
+NÃO 
+
+É 
+
+'INTRINSECAMENTE LIGADO'
+
+
+
+A QUALQUER 1 DE NOSSOS API BACKENDS.... ----> NÃO HÁ NENHUM 'TIGHT COUPLING'
+
+
+
+com nenhum dos apis..
+
+
+
+
+
+
+
+
+
+
+
+
+-> é por isso que o professor vai escrevendo 1 código de 'frontend-deployment':
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: react-frontend-api
+        # env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+        #   - name: AUTH_ADDRESS
+        #     value: auth-service.default  # ? ESSA É A MELHOR MANEIRA (coredns) DE ESTABELECER 'POD-TO-POD' COMMUNICATION (basta vc especificar o SERVICE EM QUE SEU OUTRO POD ESTARÁ CONECTADO/ESTÁ CONECTADO)... como queremos nos conectar ao pod de 'auth', basta especificar 'auth-service'...
+        #     ### ? '.namespace' --> precisamos adicionar '.' + 'nome-do-namespace-em-que-isso-está', para que esse COREDNS fucnione...
+        #     # value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+        #       ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+        image: nothingnothings/react-frontend:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "256m"
+
+
+
+
+
+
+
+
+
+
+
+
+    --------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS E QUANTO A ESSE 'ADDRESS'/ENV_VARIABLE?
+
+
+
+
+
+
+
+
+
+
+
+--> não vamos precisar disso, por enquanto... mas logo vamos precisar...
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: react-frontend-api
+        image: nothingnothings/react-frontend:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "256m"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE ESSE CONTAINER/POD DEVERÁ 
+
+
+
+SER EXPOSTO AO PÚBLICO,
+
+POR ISSO O PROFESSOR CRIA 1 ARQUIVO 'react-frontend-service.yaml',
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: 'TCP'
+      port: 80  ## port que 'faces the outside world' 
+      targetPort: 80 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+VAMOS USAR O TYPE DE 'LOAD BALANCER'
+
+
+PQ 
+
+
+
+
+ESSE SERVICE DEVERÁ SER ACESSÍVEL LÁ DO EXTERNAL WORLD..
+
+
+
+
+
+
+
+
+
+
+
+
+estamos fazendo listen to na port 80,
+
+
+
+
+por isso usamos 
+
+'80' no port e no targetPort 80...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok..
+acabamos com esse service...
+
+
+
+
+
+
+
+
+
+
+CERTO..
+
+
+
+
+-> O PROFESSOR RODA 'apply' PARA APLICAR O DEPLOYMENT E O SERVICE 
+
+
+DO FRONTEND...
+
+
+
+
+
+
+
+
+
+-> ok.. mas ainda temos que fazer push 
+
+
+da image...
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... pushado esse repository... a image foi pushed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... AGORA APLICAMOS TUDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... AGORA O REACT APP ESTARÁ SERVIDO POR NOSSO KUBERNETES CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... É ASSIM QUE PODEMOS DEPLOYAR NO KUBERNETES,
+
+
+MAS HÁ 1 ASPECTO QUE 
+
+O PROFESSOR N CURTIU MT...
+
+
+
+
+
+
+
+É A PARTE DE ADDRESS, QUE AINDA ESTÁ COM ISTO:
+
+
+
+
+
+
+const backendUrl =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8000'
+    : process.env.TASK_SERVICE_SERVICE_HOST;
+
+
+
+
+
+
+
+
+
+
+ISSO N ESTÁ EXATAMETNE CERTO....
+
+
+
+
+
+
+
+ESSE É O ADDRESS DE NOSSO SERVICE DE 'TASK'... ELE FUNCIONA, SIM,
+
+
+
+
+MAS É CLARO QUE FOMOS FORÇADOS A FAZER 'HARD CODE' 
+
+
+DE NOSSO IP ALI...
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO NÃO É NECESSARIAMENTE HORRÍVEL.... --> PQ, TIPICAMENTE,
+
+SE VC DEPLOYAR ISSO EM 1 CLOUD PROVIDER DE VERDADE (e não só com o minikube),
+
+
+
+
+esse ip address será PRETTY STABLE,
+
+
+E 
+
+
+VOCÊ TALVEZ ATÉ MAPPEIE SEU PRÓPRIO __DOMAIN__ A ESSE IP ADDRESS,
+
+PARA QUE 
+
+ELE FIQUE 'SUPER STABLE'... -----> por isso talvez não seja 
+
+
+
+tão 
+
+ruim fazer 
+
+
+
+hardcode 
+
+
+de seu ip, no seu código (
+
+
+    E, DE FATO, MAIS CEDO NO CURSO,
+    FIZEMOS EXATAMENTE ISSO,
+
+
+    FIZEMOS HARD CODE DE NOSSO DOMAIN DA AWS 
+
+    NO NOSSO FRONTEND CODE (
+
+        
+
+        com o código de 
+
+
+
+        '''''
+
+
+const backendUrl =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:80'
+    : 'URL-EM-QUE-VAMOS-RODAR-O-BACKEND-NO-AWS-ECS'; //FORMATO: 'https://ecs-lb-121251251.us-east-2.elb.amazonaws.com'
+
+''''
+
+    )
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS AQUI 
+
+
+O PROFESSOR QUER MOSTRAR 1 TRICK, 1 TRICK QUE PODERÍAMOS TER USADO 
+
+MAIS CEDO NO CURSO,
+
+MAS QUE 
+AGORA 
+
+O PROFESSOR FINALMENTE QUER USAR...
+
+
+
+
+
+ESSE TRICK VAI NOS SALVAR DESSE 'HARDCODE DO DOMAIN ADDRESS'
+
+
+
+dentro do nosso source code...
