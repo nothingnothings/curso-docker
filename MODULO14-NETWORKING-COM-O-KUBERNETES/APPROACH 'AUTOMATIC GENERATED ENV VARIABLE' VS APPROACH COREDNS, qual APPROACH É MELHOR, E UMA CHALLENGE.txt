@@ -1,0 +1,438 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok...
+
+
+
+
+
+
+
+
+
+
+AGORA  QUE VIMOS TODAS ESSAS DIFERENTES MANEIRAS DE CONECTAR PODS E CONTAINERS,
+
+
+
+
+A PERGUNTA AGORA É:
+
+
+
+
+
+''QUAL APPROACH É O MELHOR,
+
+E COMO PODEMOS TERMINAR O NOSSO SETUP,,
+
+
+FAZER COM QUE A API DE TASKS TAMBÉM FUNCIONE?''''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+BEM, ACERCA DO MELHOR APPROACH,
+
+
+TUDO _ DEPENDE _' SE VC QUER TER 2 CONTAINERS EM 1 MESMO POD, OU NÃO'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> NA GRANDE MAIORIA DOS CASOS,
+
+
+VC 
+NÃO VAI QUERER TER 2 CONTAINERS POR POD....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> VC ___ PODE__ TER 2 CONTAINERS POR POD,
+
+
+MAS VC _ SÓ DEVE _ FAZER ISSO
+
+
+SE 
+
+
+
+2 CONTAINERS FOREM REALMENTE 'TIGHTLY COUPLED'
+
+
+
+1 COM O OUTRO...
+
+
+
+
+
+
+
+
+
+
+
+--> SE ALGUM CONTAINER TAMBÉM INTERAGE COM _OUTRO CONTAINER,
+
+
+EM OUTRO POD,
+
+
+
+VC DEFINITIVAMENTE VAI QUERER TER ESSE CONTAINER EM 1 POD SEPARADO --> E É JUSTAMENTE 
+
+POR ISSO QUE 
+
+ESTAMOS 
+
+USANDO 
+
+
+3 PODS,
+aqui...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS QUANDO O ASSUNTO É 'CONNECT DE PODS 1 COM O OUTRO',
+
+
+temos 
+
+3 diferentes options:
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE PRECISAMOS DE SERVICES, PARA __ OS 3 DIFERENTES PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA CADA POD/DEPLOYMENT,
+
+
+SEMPRE VAMOS PRECISAR DE '1 SERVICE ESPECÍFICO' -> ISSO ATÉ MESMO 
+
+
+SE PRECISAMOS APENAS DE 1 'CLUSTER INTERNAL IP ADDRESS'..
+
+
+
+
+
+
+
+
+
+--> MAS QUANDO O ASSUNTO É 'SEND REQUESTS A ESSE SERVICE',
+
+podemos __ OU:
+
+
+
+
+
+
+
+
+1) LOOK UP O IP ADDRESS POR CONTA PRÓPRIA, E ENTÃO USAR 
+
+
+O IP NO NOSSO CÓDIGO, TIPO POR MEIO DE UMA ENV VARIABLE (ideia ruim)
+
+
+
+
+
+
+2) OU, PODEMOS USAR OS 'AUTOMATICALLY GENERATED ENVIRONMENT VARIABLES',
+
+
+uma feature built-in do kubernetes,
+
+
+é aquela coisa de 'process.env.AUTH_SERVICE_SERVICE_HOST',
+
+
+QUE NOS DÁ 
+
+
+ACESSO AOS IP ADDRESSES DOS DIFERENTES SERVICES QUE NOSSO CLUSTER TEM...
+
+
+
+
+
+
+
+
+
+3) OU, POR FIM,
+
+PODEMOS USAR 
+
+
+OS AUTO-GENERATED 'DOMAIN NAMES' (coredns feature),
+
+
+
+
+
+
+como visto em 'users-deployment.yaml':
+
+
+
+
+
+
+      - name: users-api
+        env:  # ? ///esse env COEXISTE com o 'env' lá da dockerfile... vc pode ter os 2, sim, e aí TER CONTAINERS FUNCIONANDO TANTO EM DEV (docker) COMO EM PROD (kub) usando o mesmo 'process.env.AUTH_ADDRESS', a mesma variável no seu código node...
+          - name: AUTH_ADDRESS
+            # value: localhost:80   ### NO MUNDO KUBERNETES, QUANDO NOS COMUNICAMOS 'DE CONTAINER PARA CONTAINER', internamente em 1 pod ('POD-INTERNAL' COMMUNICATION), DEVEMOS OBRIGATORIAMENTE USAR 'localhost' + 'PORT QUE ESTÁ SENDO USADA PELO CONTAINER QUE VC QUER REACH'...
+            #   ### no caso, como o container de 'users-api' quer alcançar o container de 'auth-api', QUE _ ABRIU A PORT DE '80' no contexto interno do pod (sem acesso ao mundo externo), devemos ESCREVER 'localhost:80'... (colocar esse value na nossa environment variable, que será passada nas partes de 'process.env.AUTH_ADDRESS' do código node, dentro do container)....
+            # value: 10.105.227.13 ### obtido com 'kubectl get services' no terminal --- mas não devemos usar assim...
+            value: auth-service.default # ? ESSA É A MELHOR MANEIRA (coredns) DE ESTABELECER 'POD-TO-POD' COMMUNICATION (basta vc especificar o SERVICE EM QUE SEU OUTRO POD ESTARÁ CONECTADO/ESTÁ CONECTADO)... como queremos nos conectar ao pod de 'auth', basta especificar 'auth-service'...
+            ### ? '.namespace' --> precisamos adicionar '.' + 'nome-do-namespace-em-que-isso-está', para que esse COREDNS fucnione...
+
+
+
+
+
+
+
+
+
+
+
+ESSES 'names', como 'auth-service.default',
+
+são 
+
+
+ 
+GERADOS AUTOMATICAMENTE PARA CADA _ SERVICE QUE 
+
+É LANÇADO NO NOSSO CLUSTER,
+
+E AÍ 
+
+PODEMOS 
+
+
+USAR ESSE DOMAIN NAME __ DE DENTRO __ DO CLUSTER,
+
+PARA 
+
+ENVIAR 
+
+1 REQUEST A ESSE SERVICE (o service name + '.' + 'namespace escolhido' vira o 'DOMAIN NAME'/referência ao ip address do service referenciado... )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O TERCEIRO APPROACH É O MELHOR,
+
+JUSTAMENTE PQ:
+
+
+
+
+1) SÃO EASY TO REMEMBER 
+
+
+
+2) EASY TO ADD 
+
+
+
+3) VC NÃO É OBRIGADO A 'FIDDLE AROUND' COM ENV VARIABLES (
+
+    mas o professor quer fazer isso mesmo assim,
+
+    pq quer que nosso código de 'users-app.js'
+
+    TAMBÉM FUNCIONE NO docker-compose, localmente...
+
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK...
+
+
+
+
+
+
+
+VC PODE ESCOLHER SEU FAVORITE APPROACH, E AÍ 
+
+CONECTAR 
+
+SEUS PODS E CONTAINERS 
+
+DO MODO QUE VC QUISER...
+
+
+
+
+
+
+
+
+
+-----> MAS É CLARO QUE AINDA NÃO ACABAMOS..
+
+
+
+AINDA 
+
+PRECISAMOS FAZER DEPLOY 
+
+
+DESSA 'TASKS API/CONTAINER',
+
+
+e precisamos garantir que 
+
+
+
+ELE CONSIGA SE COMUNICAR COM A API DE 'auth'
+
+TAMBÉM...
+
+
+
+
+
+
+
+
+
+
+-> ESSE SERÁ 1 ÓTIMO EXERCÍCIO PARA NÓS...
+
+
+
+
+
+
+
+
+
+--> A TASKS API:
+
+
+
+
+
+
+
+
+1) PRECISA SER ACESSÍVEL DO LADO DE FORA (external world),
+
+
+
+
+2) PRECISA SER CAPAZ DE FALAR COM A API DE 'AUTH'...

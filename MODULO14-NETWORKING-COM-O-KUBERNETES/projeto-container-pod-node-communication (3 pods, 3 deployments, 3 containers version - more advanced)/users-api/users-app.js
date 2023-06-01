@@ -35,9 +35,11 @@ app.post('/signup', async (req, res) => {
     // ## ex: process.env.TASKS_SERVICE_SERVICE_HOST
 
     const hashedPW = await axios.get(
-      `http://${process.env.AUTH_SERVICE_SERVICE_HOST}` +
-        '/hashed-password/' +
-        password
+      // TODO - este código abaixo funciona, mas A VERSÃO DO 'COREDNS' é ainda melhor (vista com a env variable de 'AUTH_ADDRESS', que simplesmente aponta ao service de 'auth-service')...
+      // `http://${process.env.AUTH_SERVICE_SERVICE_HOST}` +
+
+      // TODO - ESTA VERSÃO ABAIXO É A VERSÃO 'COREDNS' de comunicação 'pod-to-pod'...
+      `http://${process.env.AUTH_ADDRESS}` + '/hashed-password/' + password
     );
 
     // const hashedPw = 'dummy';
@@ -85,8 +87,11 @@ app.post('/login', async (req, res) => {
     // ## ex: process.env.USERS_SERVICE_SERVICE_HOST
     // ## ex: process.env.AUTH_SERVICE_SERVICE_HOST
     // ## ex: process.env.TASKS_SERVICE_SERVICE_HOST
+    // TODO - este código abaixo funciona, mas A VERSÃO DO 'COREDNS' é ainda melhor (vista com a env variable de 'AUTH_ADDRESS', que simplesmente aponta ao service de 'auth-service')...
+    // `http://${process.env.AUTH_SERVICE_SERVICE_HOST}/token/` +
 
-    `http://${process.env.AUTH_SERVICE_SERVICE_HOST}/token/` +
+    // TODO - ESTA VERSÃO ABAIXO É A VERSÃO 'COREDNS' de comunicação 'pod-to-pod'...
+    `http://${process.env.AUTH_ADDRESS}/token/` +
       hashedPassword +
       '/' +
       password // ?com env variables
