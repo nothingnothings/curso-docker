@@ -1,0 +1,361 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------> ok... mas espere um segundo:
+
+
+
+
+
+
+
+'aws eks' -> JÁ NÃO USAMOS ISSO?
+
+
+
+
+
+
+
+
+
+
+BEM, NÓS USAMOS 'AWS ECS'..
+
+
+
+
+
+
+
+
+
+
+
+--. O ECS É DIFERENTE DO EKS...
+
+
+
+
+
+
+
+
+
+
+
+
+MAS EXISTE 1 IMPORTANTE DIFERENÇA ENTRE OS 2 SERVICES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EKS --> ELASTIC KUBERNETES SERVICE 
+
+
+
+
+
+
+ECS --> ELASTIC CONTAINER SERVICE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EKS --> É UM SERVICE PARA KUBERNETES DEPLOYMENTS -> ELE É TODO SETUP PARA O KUBERNETES,
+
+ELE CONHECE OS CONCEITOS KUBERNETES,
+E SETTA 
+
+TUDO 
+
+DE FORMA QUE 
+
+VC CONSIGA USAR SUA KUB CONFIG 
+
+
+E A APLICAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ECS -----> ESSE SERVICE NÃO SABE NADA SOBRE KUBERNETES,
+
+
+
+É UM SERVICE 'GENERAL' PARA CONTAINER DEPLOYMENT,
+
+MAS 
+
+NÃO QUER NEM ACEITA 
+
+QUALQUER 
+
+
+KUBERNETES CONFIG FILES PARA SI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EKS --> TE DEIXA __ 'STAY IN THE KUB WORLD',
+
+E AÍ 
+
+
+
+TE DEIXA __ USAR __ A SINTAXE E FILOSOFIA __ KUBERNETES,
+
+APPROACHES QUE VC APRENDEU LÁ... ->  E VC NÃO PRECISA 
+
+
+DE NENHUMA 
+
+SINTAXE OU SETTING ESPECÍFICA AO AWS...
+
+
+
+
+
+
+
+
+
+--> EM VEZ DISSO,
+ VC PODE  APLICAR O QUE VC APRENDEU 
+
+
+ SOBRE O KUBERNETES,
+
+ E AÍ 
+ USAR 
+
+
+ AQUELA JÁ EXISTING CONFIGURATION..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ECS --> NÃO TEM NADA A VER COM KUB... -> TRAZ SUA PRÓPRIA APPROACH,
+
+ SUA PRÓPRIA 
+
+
+
+PHILOSOPHY, A SINTAXE 'AWS-SPECIFIC',
+
+
+
+CONCEITOS PRÓPRIOS,
+
+
+
+E AÍ 
+
+
+VC 
+
+PRECISA 
+
+SETTAR 
+
+TUDO 
+
+
+DA MANEIRA QUE 
+
+O 
+
+
+AMAZON ECS QUER... -------> menor controle do que o AWS EKS (menor customização)..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ALGUNS CONCEITOS VISTOS 
+
+
+
+LÁ 
+
+NO SERVICE DE 'ECS'
+
+
+
+POSSUEM RELAÇAÕ COM ALGUNS SERVICES 
+
+VISTOS NO KUBERNETES... MAS ESSAS SIMILARIDADES 
+
+
+
+
+EXISTEM POR COINCIDÊNCIA, OU PQ 
+
+
+
+'É SIMPLESMENTE CONVENIENTE SOLUCIONAR ESSES PROBLEMAS 
+PARECIDOS, DA MESMA FORMA'...
+
+
+
+
+
+
+
+
+
+------> ALÉM DESSAS PEQUENAS COISAS, NÃO HÁ NENHUMA CONEXÃO ENTRE OS 2...
+
+
+
+
+
+
+
+
+
+
+O ECS NÃO ENTENDE NEM QUER AS CONFIGS DO KUBERNETES --> E __ É ABSOLUTELY FINE 
+
+USAR 
+
+
+
+O SERVICE DE 'ecs',
+
+MAS 
+
+
+SE 
+VC QUER 
+
+
+APLICAR SEU CONHECIMENTO 
+
+DE KUBERNETES,
+
+
+
+1 MANAGED SERVICE,
+COMO  O EKS,
+
+É A ESCOLHA MELHOR..
+
+
+
+
+(
+    ou, entaõ,
+
+    não usar nenhum dos 2,
+
+
+    settar tudo por conta própria, com a ajuda do 'kops'...
+)
+
+
+
+
+
+
+
+
+
+
+
+MAS AQUI VAMOS USAR O 'AWS EKS'..
+
+
+
+
+
+
+
+
+
+
+
