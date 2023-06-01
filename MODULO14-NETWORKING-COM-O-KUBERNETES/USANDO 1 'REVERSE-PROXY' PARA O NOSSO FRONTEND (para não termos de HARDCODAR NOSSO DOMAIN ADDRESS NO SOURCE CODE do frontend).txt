@@ -1,0 +1,2332 @@
+
+
+
+
+
+
+
+
+
+OK.... QUER DIZER QUE FAZER O HARDCODE 
+
+
+
+
+DE NOSSO IP ADDRESS,
+
+LÁ NO CÓDIGO DO FRONTEND,
+
+
+É 
+
+
+ALGO MEIO RUIM....
+
+
+
+
+
+
+
+
+
+
+
+
+TIPO CÓDIGOS ASSIM:
+
+
+
+
+
+
+
+
+fetch('http://192.168.99.100:32140/tasks')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ISSO É POSSÍVEL, 
+
+E NÃO É 'TÃO DRAMÁTICO',
+
+
+
+MAS PODEMOS ACTUALLY AVOID ISSO AÍ... --> BASTA USAR 1 TRUQUE,
+
+
+
+TRUQUE 
+
+QUE PODERÍAMOS 
+
+USAR ANTES,
+
+
+
+MAS QUE O PROFESSOR SÓ QUER MOSTRAR AGORA..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PODEMOS USAR AQUILO QUE CHAMAMOS DE 'REVERSE PROXY' --> ESSE É UM 
+
+
+
+'''TERMO SUPER FANCY''''
+
+
+PARA ___ 1 COISA SIMPLES QUE QUEREMOS FAZER:
+
+
+''''QUEREMOS _ MANDAR__ O  __ REQUEST_ _ A NÓS MESMOS'''' -----> por 'nós mesmos',
+
+
+
+
+
+QUEREMOS DIZER '''O SERVER QUE SERVE ESSE FRONTEND APP''''' --> OU SEJA,
+
+
+NESSE CASO,
+
+
+É 
+
+O 
+
+PRÓPRIO 'NGINX SERVER' 
+
+
+
+
+QUE SETTAMOS E STARTAMOS NA NOSSA PRÓPRIA DOCKERFILE,
+
+PARA ESSE FRONTEND...
+
+
+
+
+
+
+
+
+
+
+
+
+OK... QUEREMOS ENVIAR O REQUEST A NÓS MESMOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TIPICAMENTE, QUANDO 1 REQUEST CHEGA NAQUELE SERVER 'nginx',
+
+
+
+
+AQUELE FRONTEND APP é servido...
+
+
+
+
+
+
+
+
+
+-> MAS PODEMOS ACTUALLY __ dIVAR__ NA CONFIGURAÇÃO DE 
+
+
+NOSSO SERVER,
+
+
+SERVER 
+
+'nginx.conf'
+
+
+
+
+
+,
+
+
+DESSE SERVER NGINX,
+
+
+
+PARA AÍ 
+
+
+
+
+
+
+
+
+
+'''GERALMENTE SERVIR NOSSO FRONTEND''''.... -> SIM,
+
+
+'''GERALMENTE'''
+
+ELE 
+
+FARÁ 
+
+
+
+O _ SERVE __ de NOSSO FRONTEND,
+
+
+
+MAS TBM PODEMOS ADICIONAR 1 OPÇÃO 
+
+
+
+PARA 
+
+
+
+QUE __ ELE _ _TAMBÉM FAÇA _ REDIRECTS __ a OUTROS 
+
+
+HOSTS/OUTRO DOMAIN ____ SE O USER/FRONTEND APP __ 
+
+
+
+TARGETTAR 
+
+
+
+
+1 CERTA 
+
+
+ESTRUTURA,
+
+1 PATH ESPECÍFICO...
+
+
+
+
+
+
+
+
+
+
+O ARQUIVO 'nginx.conf'
+
+ESTÁ ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+server {
+  listen 80;
+  
+  location / {
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+    try_files $uri $uri/ /index.html =404;
+  }
+  
+  include /etc/nginx/extra-conf.d/*.conf;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ISSO SIGNIFICA QUE QUEREMOS QUE 
+
+
+'''' SE CERTO PATH ESPECÍFICO FOR TARGETTADO,
+
+
+VAMOS QUERER _ rEDIRECIONAR _ NOSSOS REQUESTS __ 
+
+A ALGUM ENDEREÇO/DOMAIN DIFERENTE'''',
+
+
+
+
+
+
+
+
+
+E QUE VAMOS ESCREVER ISSO 
+
+
+
+NO NOSSO PRÓPRIO ARQUIVO 'nginx.conf'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS ENABLAR 'reverse proxies' no NGINX, por exemplo...
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARA FAZER ISSO, DEVEMOS IR ATÉ 'nginx.conf'
+
+
+
+E ADICIONAR,
+
+
+
+
+NO MEIO DE 'listen 80'
+
+
+e 
+
+'location',
+
+
+
+
+
+OUTRA KEY DE 'location',
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+server {
+  listen 80;
+
+
+
+  location /api
+
+  
+  location / {
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+    try_files $uri $uri/ /index.html =404;
+  }
+  
+  include /etc/nginx/extra-conf.d/*.conf;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+server {
+  listen 80;
+
+
+# este SERÁ O NOSSO REVERSE PROXY...
+  location /api {  
+
+
+  }
+
+
+
+  
+  location / {
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+    try_files $uri $uri/ /index.html =404;
+  }
+  
+  include /etc/nginx/extra-conf.d/*.conf;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+isso significa que 
+
+
+
+AGORA 
+
+
+
+VAMOS QUERER SETTAR 1 'DEDICATED CONFIGURATION' 
+
+
+PARA REQUESTS 
+
+
+
+QUE 'REACH' ESSE NGINX 
+SERVER,
+
+
+
+
+1 DEDICATED CONFIGURATION PARA 
+
+TODOS OS REQUESTS QUE TARGETTEM 
+
+
+O _ _PATH____ (parte depois do 'domain/ip address')  
+
+
+
+
+de '/api'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... ISSO QUER DIZER QUE 
+
+
+REQUESTS 
+
+A 
+
+
+'http://nosso-server/api''''
+
+
+
+
+
+VÃO SOFRER 
+
+
+
+ESSE 'REVERSE-PROXY' aí,
+
+
+
+
+que 
+
+
+VAI 
+
+
+
+
+__rEDIRECIONAR __ NOSSOS REQUESTS 
+
+
+A ALGUMA OUTRA URL ( a url de tasks/users, de nosso backend, no caso)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> CASO A URL DO USER/NOSSO APP NÃO TARGETTE 
+
+
+
+'http://nosso-server/api'',
+
+
+
+
+
+
+
+
+e sim 
+só 
+
+
+
+'http://nosso-server/',
+
+
+
+
+
+
+ou qualquer outra coisa,
+
+
+
+
+
+NOSSA __ APPLICATION SERÁ SERVIDA DE FORMA NORMAL....
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> OK... SE 1 REQUEST 
+
+
+TARGETTAR 
+
+
+' http://nosso-server/api',
+
+
+ou então 
+
+
+
+http://nosso-server/api/mais-alguma-coisa,
+
+
+
+
+
+
+
+
+
+
+ESSA CONFIGURATION AÍ VAI 'KICK IN'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... FAZ TOTAL SENTIDO...
+
+
+
+
+
+
+
+
+
+
+
+
+entretanto,
+até agora,
+
+
+essa parte 
+
+de 
+
+'location/api {
+
+}'
+
+
+
+
+
+
+
+
+
+
+NÃO FAZ COISA ALGUMA...
+
+
+
+
+
+
+
+
+
+
+
+DENTRO DESSE LOCAL,
+
+
+
+PODEMOS USAR 
+
+1 INSTRUCTION ESPECIAL,
+
+QUE 
+
+O NGINX COMPREENDE...
+
+
+
+
+
+
+
+
+
+
+
+-> É A INSTRUCTION DE 
+
+
+'proxy_pass'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ESSA INSTRUCTION DIZ AO NGINX QUE 
+
+O __ REQUEST __ A 'this-nginx-server/api' 
+
+
+
+
+
+
+__ DEVERÁ __ sER FORWARDADO A ALGUM OUTRO ADDRESS... 
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+
+
+location /api {
+  proxy_pass
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo.... para fazer esse redirect,
+
+
+
+podemos 
+
+
+
+
+
+pegar nossa URL,
+
+
+A URL QUE APONTA 
+
+a 
+
+
+
+ESSE 'DEPLOYED TASK SERVICE',
+
+
+
+
+
+E COLOCAR NESSA INSTRUCTION DE 'proxy_pass',
+
+
+TIPO ASSIM:
+
+
+
+
+
+location/api {
+
+  proxy_pass http://192.168.99.100:32140
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO QUER DIZER QUE REQUESTS ENVIADOS A 'this-server/api'
+
+
+SERÃO 
+
+
+
+REDIRECIONADOS 
+
+
+
+
+A ESSE SERVER AÍ (que é o server de TASKS, A API DE TASKS)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SIDENOTE: adicione ';' EM 'proxy_pass',
+
+PARA 
+
+EVITAR 1 ERRO MAIS TARDE....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... mas pq isso é helpful?
+
+
+
+
+
+
+
+
+
+
+porque isso seria interessante?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bem, se salvarmos esse arquivo,
+
+
+
+
+
+o nginx.conf,
+
+PODEMOS 
+
+IR 
+
+
+
+
+ATÉ 
+
+
+
+'App.js' 
+
+
+
+E __ ALTERAR _ A URL QUE É PASSADA 
+
+
+
+
+
+
+
+AOS NOSSOS METHODS DE FETCH,
+
+PARA QUE FIQUEM ASSIM:
+
+
+
+
+
+
+
+
+
+
+const backendUrl =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8000'
+    : '/api';
+// : 'VEJA O ARQUIVO DE 'nginx.conf, em que settamos 1 REVERSE PROXY (é por isso que ficou '/api')...;
+
+
+
+
+
+
+
+
+
+
+
+E ASSIM:
+
+
+
+
+
+
+    fetch(`${backendUrl}/tasks`, {
+      headers: {
+        Authorization: 'Bearer abc',
+      },
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO..
+
+
+
+
+
+
+
+
+
+ISSO AÍ VAI DIZER AO BROWSER QUE 
+
+
+
+'''  ELE ___ DEVE __ ENVIAR O REQUEST __ AO MESMO SERVER QUE 
+
+FEZ SERVE DESSE APP''',
+
+
+MAS QUE ENTÃO 
+
+
+
+'''ESSE REQUEST DEVE SER ENVIADO A this-server/api/tasks''''' --> E, COMO 
+
+
+O PATH COMEÇA COM '/api',
+
+
+
+
+
+
+ESSE REQUEST VAI SER FORWARDADO, POR NOSSO SERVER,
+
+
+
+
+aO ADDRESS 
+
+
+DE 
+
+'' http://192.168.99.100:32140 '',
+
+
+
+
+
+LÁ NO 'nginx.conf',
+
+
+
+
+
+
+
+
+ENDEREÇO QUE É REALMENTE 
+
+
+O ENDEREÇO 
+
+
+DE NOSSA API DE 'tasks', que queremos atingir, nesse deployment...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... E, PARA DEIXAR AS COISAS AINDA MELHORES, ACHO QUE 
+
+
+É POSSÍVEL PASSAR 1 ENV VARIABLE COMO VALUE, NESSE 'proxy_pass',
+
+
+EM VEZ DE 1 HARDCODE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... COM ISSO, ESTAMOS USANDO ESSE CONCEITO DE 'REVERSE PROXY'...
+
+
+
+
+
+
+
+
+
+
+
+--> MAS AINDA NÃO ACABAMOS..
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR QUER TWEAKAR ISSO AINDA MAIS..
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR QUER TESTAR SE ISSO FUNCIONA..
+
+
+
+
+
+
+
+
+
+ELE REBUILDA A IMAGE,
+
+
+
+PQ MUDAMOS A CONFIGURATION E O SOURCE CODE..
+
+
+
+
+
+
+-> DEPOIS ELE VAI LÁ e faz PUSH DA UPDATED IMAGE AO DOCKERHUB,
+
+PARA QUE O KUBERNETES CONSIGA USAR ESSA PUSHED IMAGE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ASSIM QUE ISSO TERMINAR,
+
+
+
+
+
+
+
+
+
+testamos...
+
+
+
+
+
+
+
+
+
+
+
+
+--> SEMI COLON NO nginx.conf --> é necessário..
+
+
+
+
+
+
+
+
+
+
+
+
+
+FAZEMOS PUSH DA UPDATED IMAGE AO DOCKERHUB...
+
+
+
+
+
+
+
+
+
+SE AGORA VISITARMOS O MESMO IP NO BROWSER,
+
+
+
+AS COISAS VÃO FUNCIONAR... __ QUASE__...
+
+
+
+
+
+
+
+
+
+AS TASKS TERÃO SUMIDO.. --> SE ABRIMOS OS DEV TOOLS,
+
+
+
+
+
+
+ENCONTRAMOS 1 ERROR:
+
+
+
+
+
+
+
+
+'ERRO 404' --> nosso frontend não conseguiu encontrar essa url... 
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE TENTAMOS ENVIAR 1 REQUEST A 
+
+'/api/tasks',
+
+
+
+
+
+o negócio 
+
+FALHA EM ENCONTRAR ESSA ROUTE...
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS ELE DEVERIA ENCONTRAR ESSA URL.... PQ LÁ NO NGINX.CONF,
+
+
+ESTAMOS REDIRECIONANDO 
+
+
+
+ESSES REQUESTS,
+
+
+REQUESTS QUE COMECEM COM 
+
+'/api'..
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK, MAS A QUE LUGAR ESTAMOS REDIRECIONANDO ESSES REQUESTS?
+
+
+
+
+
+
+
+
+
+-> ESTAMOS REDIRECIONANDO ÀQUELE IP DE 
+
+
+''http://192.168.99.100:32140''...
+
+
+
+
+
+
+
+
+
+
+
+MAS QUAL É O PROBLEMA DESSE IP?
+
+
+
+
+
+
+
+
+
+BEM, ESSE É UM IP _ QUE _ PODEMOS USAR NA NOSSA MÁQUINA ___ LOCAL___ PARA 
+
+
+
+ACESSAR 
+
+ESSE CLUSTER... ACESSAR ESSE CLUSTER QUE É 'SPUN-UP' E MANAGEADO 
+
+PELO MINIKUBE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS ESSA CONFIGURATION, DE FATO,
+
+NÃO VAI _ SER EXECUTADA __ NA NOSSA LOCAL MACHINE... -> 
+
+
+
+
+a configuration de 'nginx.conf'
+
+
+
+VAI __ SER EXECUTADA __ NO PRÓPRIO __ SERVER,
+
+
+POR ASSIM DIZER...
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE ESSA CONFIG VAI RODAR _ _dENTRO __ DO CONTAINER...
+
+
+
+
+
+
+
+--> E ESSA É UMA _ KEY DIFFERENCE, EM RELAÇÃO AO NOSSO CÓDIGO REACT....
+
+
+
+
+
+
+
+
+
+
+
+--> PQ O REACT CODE RODA NO BROWSER...  --> OU SEJA,
+
+TECNICAMENTE FORA DO CLUSTER,
+
+
+__ NA NOSSA LOCAL HOST MACHINE...
+
+
+
+
+
+
+
+--> O CÓDIGO 'nginx' RODA NO CONTAINER.... o código da configuration,
+
+
+no caso,
+
+
+É PARSEADA __ QUANDO O SERVER STARTA --> E ISSO ACONTECE 
+
+ NO 
+
+ CLUSTER, 
+
+
+ DENTRO DO CLUSTER ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ FORA DO CLUSTER (REACT) VS DENTRO DO CLUSTER (NGINX)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> E É EXATAMENTE POR ISSO QUE ESTAMOS USANDO O 'REVERSE-PROXY', NO NGINX.CONF:
+
+
+
+
+
+
+
+
+
+ '''''PODEMOS USAR ___ CLUSTER-INTERNAL__ IP ADDRESSES''' ->  ISSO QUER DIZER, 
+
+ EM OUTRAS PALAVRAS,
+
+
+
+
+
+ QUE PODEMOS 
+
+
+ USAR 
+
+
+ NOSSOS 
+
+ 'AUTOMATICALLY GENERATED DOMAIN NAMES'... --> E ESSA É A COISA LEGAL,
+
+ AQUI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+PQ PODEMOS USAR 'tasks-service.default',
+
+por exemplo...
+
+
+
+
+
+
+TIPO ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+  location /api {  
+
+
+
+# '''proxy_pass''' serve para DIZER AO NGINX QUE O __ REQUEST __ A 'this-nginx-server/api'  __ DEVERÁ __ sER FORWARDADO A ALGUM OUTRO ADDRESS... 
+
+   
+   # proxy_pass http://192.168.99.100:32140; MELHOR DO QUE ISSO É A OPÇÃO DE BAIXO:
+    # com essa opção de baixo, conseguimos REDIRECIONAR REQUESTS AO PATH DE 'this-server/api' A __ ESSE SERVICE AÍ, DE 'tasks' (Que vai receber nossos requests e então vai os handlar com sucesso, pq temos o service para isso...)... 
+     proxy_pass http://tasks-service.default   
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  OU SEJA,
+
+
+
+
+  FICARÁ 
+
+
+
+
+
+  'proxy_pass http://tasks-service.default'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+podemos usar esses domain names JUSTAMENTE PQ 
+
+
+ 
+ ''''ESSES DOMAIN NAMES SÃO GERADOS AUTOMATICAMENTE 
+
+ PARA OS SERVICES REGISTRADOS NO SEU CLUSTER'''...
+
+
+
+
+
+
+
+
+ E, COMO ESSE CÓDIGO DO 'nginx.conf'
+
+ RODA NO CLUSTER,
+
+  
+
+
+
+
+
+  __ ESSE ENDEREÇO DE 'tasks-service.default' 
+
+
+  PODE _ SER 'EVALUATED' E RESOLVED, 
+
+  PELO KUBERNETES,
+
+  E AÍ 
+  VAI ACTUALLY 
+
+
+  ENCONTRAR 
+
+
+  NOSSO SERVICE DE 'tasks-service',
+
+  quando 
+
+
+
+  USARMOS ESSE DOMAIN/name...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  E ESSA É A COISA LEGAL SOBRE O REVERSE-PROXY:
+
+
+
+
+
+
+
+
+
+
+
+  '''AINDA QUE NOSSO CÓDIGO EXECUTE NO BROWSER,
+
+
+  E, PORTANTO,
+
+
+  NÃO RODA NORMALMENTE DENTRO DO CONTAINER,
+
+
+
+  COM __o  CONCEITO DE 'REVERSE-PROXY',
+
+
+  PODEMOS 
+
+
+
+  KINDOF 
+
+
+  __WORKAROUND 
+
+  ISSO AÍ,
+
+  E AÍ 
+
+
+  AINDA TER 
+
+  CÓDIGO QUE RODA DENTRO DO CONTAINER,
+
+
+  E AÍ 
+  AINDA 
+  PODEMOS TIRAR VANTAGEM 
+
+  DE COISAS 
+
+  COMO 
+
+
+  O 
+
+  'AUTOMATIC ASSIGN DO DOMAIN NAME' e  __ 
+
+
+  a TRANSLATION PARA 'cluster-managed ip addresses'''....
+
+
+
+
+
+
+
+
+
+
+--> ISSO TUDO QUE O PROFESSOR MOSTROU 
+NÃO 
+é 
+
+
+
+UMA 'DIRTY TRICK',
+
+
+
+E SIM 
+
+É UM 
+
+
+'NORMAL APPROACH'
+
+
+PARA 
+
+FAZER 
+
+ESSE SETUP TODO FUNCIONAR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... E O PROFESSOR APONTA QUE PODERÍAMOS TER 
+
+USADO ISSO MAIS CEDO NO CURSO,
+
+TAMBÉM... (quando fizemos deploy no aws)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ESSE CONCEITO NÃO TEM NADA A VER COM KUBERNETES,
+
+
+MAS É CLARO QUE TAMBÉM FUNCIONA COM O KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... DEVEMOS MUDAR A CONFIGURATION ASSIM,
+
+
+REBUILDAR NOSSA IMAGE,
+
+
+
+E AÍ 
+
+
+
+
+
+
+CONSEGUIREMOS ENVIAR NOSSO REQUEST COM SUCESSO...
+
+
+
+
+
+
+
+
+MAS ALÉM 
+
+
+DE DEFINIRMOS 
+
+ESSE DOMAIN NAME AÍ,
+
+HÁ MAIS 
+
+2 COISAS QUE 
+
+PRECISAMOS 
+
+FAZER, AQUi...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> precisamos colocar '/' depois do '.default',
+
+
+
+
+e 
+
+também 
+
+'/' 
+
+depois 
+
+de 
+
+'/api',
+
+tipo assim:
+
+
+
+
+
+
+
+
+# este SERÁ O NOSSO REVERSE PROXY...
+  location /api/ {  
+
+
+
+# '''proxy_pass''' serve para DIZER AO NGINX QUE O __ REQUEST __ A 'this-nginx-server/api'  __ DEVERÁ __ sER FORWARDADO A ALGUM OUTRO ADDRESS... 
+
+   
+   # proxy_pass http://192.168.99.100:32140; MELHOR DO QUE ISSO É A OPÇÃO DE BAIXO:
+    # com essa opção de baixo, conseguimos REDIRECIONAR REQUESTS AO PATH DE 'this-server/api' A __ ESSE SERVICE AÍ, DE 'tasks' (Que vai receber nossos requests e então vai os handlar com sucesso, pq temos o service para isso...)... 
+     
+     #ex: tasks-service.default, auth-service.default, users-service.default
+
+     proxy_pass http://tasks-service.default/;  
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  isso pode não parecer mt coisa,
+
+
+  MAS ISSO ASSEGURA QUE 
+
+
+
+  'O PATH CORRETO SERÁ FORWARDADO AO SEU 'task-service'...
+
+
+
+
+
+
+
+
+
+
+
+
+  --> OK... POR FIM,
+
+
+
+  DEVEMOS TER EM MENTE QUE 
+  O SERVICE 
+
+  de 'task-service'
+
+
+
+  FAZ LISTEN TO NA PORT DE '8000'...
+
+
+
+
+
+
+
+
+
+-----> PQ É ISSO QUE DECLARAMOS 
+
+
+
+
+
+NA YAML FILE DO TASKS-SERVICE,
+
+como visto aqui:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasks-service
+spec:
+  selector:
+    app: tasks
+  ports:
+    - protocol: 'TCP'
+      port: 8000  ## port que 'faces the outside world' 
+      targetPort: 8000 ###port interno, dentro desse 'service ip address', a que podemos enviar requests, INTERNAMENTE...
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+É POR ISSO QUE, NESSE ARQUIVO 'nginx.conf',
+
+
+
+VAMOS QUERER FORWARDAR 
+
+
+
+
+À port correta,
+
+com 
+
+
+
+'''http://tasks-service.default:8000/'''...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> NÃO PODEMOS FORWARDAR A PORT 80,
+
+
+pq a port 80 
+NÃO É A PORT EXPOSTA PELO 'tasks-service'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+COM ISSO ADICIONADO,
+
+TUDO DEVE FUNCIONAR.,..
+
+
+
+
+
+
+
+
+
+
+
+
+DEVEMOS SÓ 
+
+
+
+
+VOLTAR AO 
+
+
+FOLDER DE FRONTEND,
+
+REBUILDAR NOSSA IMAGE,
+
+E AÍ
+
+
+
+
+
+
+PUSHAR TUDO ISSO AO DOCKERHUB...
+
+
+
+
+
+
+
+
+
+
+AÍ VAMOS FAZER 
+
+
+REDEPLOY DE TUDO...
+
+
+
+
+
+
+
+
+
+
+
+
+certo....
+
+
+
+
+
+
+
+
+
+
+
+
+
+VOU FAZER REDEPLOY DO FRONTEND...
+
+
+
+
+PS A:\projeto15-DOCKER\MODULO14-NETWORKING-COM-O-KUBERNETES\projeto-container-pod-node-communication (3 pods, 3 deployments, 3 containers version - more advanced)\kubernetes> kubectl apply -f react-frontend-deployment.yaml -f react-frontend-service.yaml
+deployment.apps/react-frontend-deployment created
+service/react-frontend-service created
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... agora basta rodar 'minikube service react-frontend-service
+
+
+
+
+
+
+
+
+
+
+
+
+OK... ISSO FUNCIONOU...
+
+
+
+
+
+
+
+
+
+com isso, ficamos com 1 app kubernetes com 4 deployments diferentes (4 pods),
+
+
+
+
+
+com apenas 3 pods expostos ao mundo externo (auth não fica exposto),
+
+
+
+
+
+
+
+
+
+
+
+e com 1 frontend funcional, conectado a backend apis....
+
+
+
+
+
+
+O PROFESSOR QUERIA MOSTRAR ESSE CONCEITO DE 'reverse-proxy'
+
+
+
+
+PQ ELE ACHA QUE É UMA BOA MANEIRA DE SE APROVEITAR 
+
+DOS 
+'AUTO-GENERATED DOMAIN NAMES',
+
+
+
+
+E ASSEGURA 
+
+
+QUE 
+
+VC 
+
+NUNCA 
+
+TERÁ 
+
+DE 
+
+'MANUALLY FETCH AND ENTER IP ADDRESSES OF YOUR BACKEND SERVICES'
+
+
+dentro 
+
+do seu código frontend... --> e podemos USAR ESSE CONCEITO 
+
+DE 
+
+'REVERSE-PROXY',
+
+em vez disso,
+
+
+PARA FAZER COM QUE 
+O 
+
+
+PRÓPRIO KUBERNETES 
+
+
+
+ENTREGUE 
+
+
+O IP DO SEU 'TASKS-SERVICE',
+
+e para que 
+
+
+
+
+SEU 
+
+
+
+CÓDIGO NUNCA CONTENHA AQUELE IP... --> O QUE DEIXA SEU CÓDIGO MAIS FLEXÍVEL,
+
+
+
+
+
+
+E O QUE TE DEIXA 
+
+
+
+MAIS LIVRE PARA 
+
+
+ESCREVER 
+
+
+E FOCAR NO WRITE DE SEU CÓDIGO E NO SET DA CONFIG KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+ESSE É UM PATTERN QUE FUNCIONA NÃO SÓ COM O KUBERNETES,
+
+MAS QUE FUNCIONA COM O KUBERNTES...
+
+
+
+
+
+
+
+
+ok... agora acabmaos este módulo....

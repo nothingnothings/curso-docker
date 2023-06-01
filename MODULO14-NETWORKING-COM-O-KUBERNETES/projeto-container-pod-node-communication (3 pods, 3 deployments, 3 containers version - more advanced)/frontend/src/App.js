@@ -7,8 +7,8 @@ import NewTask from './components/NewTask';
 const backendUrl =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:8000'
-    : process.env.TASK_SERVICE_SERVICE_HOST;
-// : 'URL-DO-KUBERNETES-TASK-POD';
+    : '/api';
+// : 'VEJA O ARQUIVO DE 'nginx.conf, em que settamos 1 REVERSE PROXY (é por isso que ficou '/api')...;
 
 function App() {
   const [tasks, setTasks] = useState([]);
