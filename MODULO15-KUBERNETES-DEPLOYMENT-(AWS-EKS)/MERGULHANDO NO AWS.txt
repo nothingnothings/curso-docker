@@ -1,0 +1,227 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... aqui, nesse módulo, novamente usaremos AWS como 1 exemplo...
+
+
+
+
+
+
+
+
+
+
+
+ANTES DE COMEÇARMOS COM O AWS,
+
+
+O PROFESSOR QUER 
+
+
+ENFATIZAR QUE 
+
+ESSE 
+
+
+É APENAS 1 EXEMPLO... EXISTEM OUTROS 
+
+
+CLOUD PROVIDERS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+AZURE --> TAMBÉM TEM 1 SERVICE KUBERNETES, PARA O DEPLOY DE 
+
+
+APPS KUBERNETES....
+
+
+
+
+
+
+
+
+
+
+O EKS É APENAS 1 EXEMPLO.... -> É CLARO QUE PODEMOS USAR OUTROS SERVICES -> TEMOS 
+
+
+QUE 
+
+LER OS DOCS DE CADA CLOUD PROVIDER, PARA SABER COMO FAZER DEPLOY DE TUDO..
+
+
+
+
+
+
+
+
+
+
+MAS O APP KUB,
+
+NOSSO KUB APP,
+
+SEMPRE SERÁ O  MESMO..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ESSE EXEMPLO AQUI, COM O EKS,
+
+
+
+
+CUSTARÁ DINHEIRO...
+
+
+
+
+
+
+
+
+
+-> PODEMOS VER A PÁGINA DO EKS,
+
+PARA VER MAIS SOBRE O PRICING...
+
+
+
+
+
+
+
+
+
+
+
+MAS HÁ CERTOS ASPECTOS AQUI, CERTOS SERVICES,
+
+
+QUE 
+NÃO 
+
+SÃO 
+FREE....
+
+
+
+
+
+
+
+
+
+
+O QUE FAREMOS, NESSE MÓDULO,
+
+
+
+SERÁ PAGO...
+
+
+
+
+
+
+
+
+-> AS PÁGINAS DE PRICING... --> PQ ISSO PODE MUDAR AO LONGO DO TEMPO....
+
+
+
+
+
+
+
+
+PRECISAMOS DE 1 CARTÃO DE CRÉDITO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PODEMOS SEGUIR ESSES VÍDEOS PASSIVAMENTE... ----> CRIE 1 CONTA AWS...
+
+
+
+
+
+
+
+
+
+
+
+--> ASSIM QUE VC ESTIVER 'LOGGED IN',
+
+TEREMOS O 'AWS MANAGEMENT CONSOLE'..
+
+
+
+
+
+
+
+
+-> podemos escrever 'eks'...
+
+
+
+
+
+
+
+
+
+
+
+OK.... AGORA VAMOS COMEÇAR COM O EKS...
