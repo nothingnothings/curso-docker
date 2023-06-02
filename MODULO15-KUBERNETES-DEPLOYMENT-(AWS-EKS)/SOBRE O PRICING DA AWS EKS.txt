@@ -1,0 +1,5 @@
+Just like AWS ECS (which we used earlier in the course), AWS EKS is NOT covered by the AWS "Free Tier" (see: https://aws.amazon.com/free).
+
+Instead, check out the AWS Pricing pages to learn about costs you might face when using AWS EKS: https://aws.amazon.com/eks/pricing/
+
+The examples shown in the course will NOT lead to a huge bill (only a couple of dollars typically) - but don't forget to remove any unused resources once you're done following along.

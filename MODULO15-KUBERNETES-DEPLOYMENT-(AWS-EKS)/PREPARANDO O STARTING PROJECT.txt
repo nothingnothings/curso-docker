@@ -1,0 +1,873 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ok... PARA CONSEGUIRMOS PRATICAR O DEPLOYMENT EM 1 CLOUD PROVIDER DE VERDADE,
+
+
+
+PRECISAMOS DE 1 DEMO PROJECT....
+
+
+
+
+
+
+
+
+
+
+
+
+-> ELE É PARECIDO COM O 
+
+
+PROJETO DA ÚLTIMA COURSE SECTION,
+
+
+MAS É MAIS POLIDO E, POR ENQUANTO, MAIS SIMPLIFICADO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> POR ENQUANTO, TEMOS 2 APIS:
+
+
+
+
+1) USERS API 
+
+
+
+
+2) AUTH API...
+
+
+
+
+
+
+
+
+
+
+
+
+A API DE 'USERS' VAI SE COMUNICAR COM A API DE 'AUTH'...
+
+
+
+
+
+
+
+E A API 
+
+
+
+
+
+DE 'AUTH'
+
+NÃO DEVERÁ SER CAPAZ DE SE COMUNICAR COM O MUNDO EXTERIOR...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO, O PROFESSOR PREPAROU UM ARQUIVO 'docker-compose.yaml'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... NESSE ARQUIVO, TEMOS ESTE CÓDIGO:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+version: "3"
+services:
+  auth:
+    build: ./auth-api
+    ports:
+      - '8000:3000'
+    environment:
+      TOKEN_KEY: 'shouldbeverysecure'
+  users:
+    build: ./users-api
+    ports:
+      - '8080:3000'
+    environment:
+      MONGODB_CONNECTION_URI: 'mongodb+srv://maximilian:wk4nFupsbntPbB3l@cluster0.ntrwp.mongodb.net/users?retryWrites=true&w=majority'
+      AUTH_API_ADDRESSS: 'auth:3000'
+
+
+
+
+
+
+
+
+
+
+
+OK... SIGNIFICA QUE ESSE APP FICARÁ EXPOSTO NAS PORTS 
+
+
+
+DE 
+
+
+'8000'
+
+
+
+e 
+
+
+
+'8080',
+
+
+
+
+
+
+e que, dentro dos containers,
+
+
+
+ficarão abertas as ports '3000'...
+
+
+
+
+
+
+---> ok... o professor também ESTÁ USANDO O MONGODB ATLAS,
+
+O QUE PODEMOS PERCEBER 
+
+COM AQUELE 'MONGODB_CONNECTION_URI'...
+
+
+
+
+
+
+
+ELE TAMBÉM ESTÁ USANDO UMAS ENV VARIABLES,
+
+no caso 
+
+
+'AUTH_API_ADDRESS',
+
+
+
+
+que está sendo usado para 
+
+SUBSTITUIR 
+
+ESSA ENV VARIABLE por 'auth:3000' (setup docker-compose)...
+
+
+
+
+
+
+
+
+
+
+tudo isso vai funcionar no docker-compose environment,
+
+
+
+localmente...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+podemos rodar isso com 'docker-compose up'...
+
+
+
+
+
+
+
+
+
+
+-> OK... TAMBÉM 
+TEMOS 1 CONFIGURATION 
+
+
+KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+arquivo 'auth.yaml'
+
+e 
+
+
+
+'users.yaml'..
+
+
+
+
+
+
+
+
+
+
+
+
+VEJA O CÓDIGO:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+spec:
+  selector:
+    app: users
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+        - name: users-api
+          image: academind/kub-dep-users:latest
+          env:
+            - name: MONGODB_CONNECTION_URI
+              value: 'mongodb+srv://maximilian:wk4nFupsbntPbB3l@cluster0.ntrwp.mongodb.net/users?retryWrites=true&w=majority'
+            - name: AUTH_API_ADDRESSS
+              value: 'auth-service.default:3000'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COMO VC PODE PERCEBER, ESTAMOS ESCREVENDO O CÓDIGO DO SERVICE E DO DEPLOYMENT 
+
+EM 1 MESMO ARQUIVO...
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+spec:
+  selector:
+    app: users
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+        - name: users-api
+          resources:
+            limits:
+              memory: 128Mi
+              cpu: 200m
+          image: academind/kub-dep-users:latest
+          env:
+            - name: MONGODB_CONNECTION_URI
+              value: 'mongodb+srv://maximilian:wk4nFupsbntPbB3l@cluster0.ntrwp.mongodb.net/users?retryWrites=true&w=majority'
+            - name: AUTH_API_ADDRESSS
+              value: 'auth-service.default:3000'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+
+
+pelo visto, a api de users vai ser exposta ao público (service de type 'LoadBalancer')....
+
+
+
+
+
+
+
+
+
+
+
+
+
+ele também está usando aquele 'COREDNS' PARA FAZER A CONEXÃO DO 'USERS API'
+
+ao 
+
+
+'auth api'...
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+
+
+
+
+            - name: AUTH_API_ADDRESS
+              value: 'auth-service.default:3000'
+
+
+
+
+
+
+-----------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok.... ATÉ AÍM TUDO BEM...
+
+
+
+
+
+
+
+
+
+
+
+
+PODEMOS COMBINAR 'SERVICE + DEPLOYMENT' em 1 único arquivo, 
+
+a única coisa que temos de fazer é colocar ''''---''''
+
+entre os resources...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> ok....
+
+
+
+
+
+TEMOS ALGUMAS ENV VARIABLES, SIM..
+
+
+
+
+
+
+
+
+
+
+--> para a file 
+
+de 
+
+
+
+'auth.yaml',
+
+temos 
+
+
+
+1 type de service de 'clusterIP',
+
+
+
+
+e ele faz listen to na port de '3000'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----> perceba que, em 'users.yaml',
+
+temos uma 
+
+
+ENV VARIABLE de 'AUTH_API_ADDRESS',
+que 
+
+actually 
+
+está usando 
+aquele AUTO-GENERATED DOMAIN NAME 
+
+de 
+
+'auth-service.default:3000',
+
+
+
+
+
+
+
+
+
+
+
+TUDO PARA QUE O SERVICE DE 'USERS container/image/pod'
+
+
+
+
+
+
+
+
+CONSIGA _ SE COMUNICAR _  COM O POD/CONTAINER DE 
+
+
+'auth'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> É CLARO QUE TAMBÉM ESTAMOS ENVIANDO ESSE REQUEST à PORT 3000 (
+
+    pq a auth api 
+    está fazendo listen to 
+
+    nessa port de 3000...
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok...
+
+
+
+
+
+
+
+
+
+
+E A AUTH API TEM UM PUNHADO DE UTILITY FUNCTIONALITIES,
+
+EM QUE 
+
+
+
+NOS DEIXA HASH PASSWORDS,
+
+CREATE TOKENS E VERIFY TOKENS -----> E ESSA API DE 'AUTH'
+
+VAI FICAR ACESSÍVEL APENAS DENTRO DO CLUSTER (e não no lado de fora)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+É CLARO QUE TEMOS ALGUMAS ENV VARIABLES QUE PRECISAM SER AJUSTADAS...
+
+
+
+
+
+
+
+
+
+
+a env variable de 'MONGODB_CONNECTION_URI' --> PQ ESTAMOS NOS CONECTANDO AO MONGODB 
+
+ATLAS...
+
+
+
+
+
+
+
+
+
+
+-> PRECISAMOS DE 1 CLUSTER MONGODB ATLAS...
+
+
+
+
+
+o professor fala do mongodb atlas...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O OUTRO AJUSTE QUE TEMOS QUE FAZER É 
+
+
+AS CONTAINERS IMAGES... ----> PRECISAMOS BUILDAR TODAS AS IMAGES E AS PUSHAREM 
+
+
+AO DOCKERHUB...
+
+
+
+
+
+
+
+
+bem simples....
+
+
+
+
+
+
+ESSAS SÃO TODAS COISAS QUE FIZEMOS MÚLTIPLAS VEZES, AO LONGO DAS OUTRAS COURSE SECTIONS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ASSIM QUE 
+
+
+TIVERMOS TODAS ESSAS IMAGES UPLOADADAS AO DOCKERHUB,
+
+
+
+
+
+
+
+
+
+SE TIVERMOS O CLUSTER MONGODB SETTADO (mongodb atlas),
+
+
+TEMOS TODO 
+
+ESSE PROJETO KUBERNETES SETTADO... -----> DEVEMOS SETTAR NOSSO CLUSTER 
+
+
+EKS, 
+
+PARA DEPLOYARMOS NOSSO APP LÁ..
+
+
+
+
+
+
+
+
+
+
+
+
+-> PODEMOS TESTAR ESSA CONFIG NO MINIKUBE CLUSTER LOCAL, ANTERIORMENTE,
+
+ANTES 
+
+
+
+DE 
+
+
+
+
+PASSARMOS ISSO LÁ PARA O EKS DA AWS....
