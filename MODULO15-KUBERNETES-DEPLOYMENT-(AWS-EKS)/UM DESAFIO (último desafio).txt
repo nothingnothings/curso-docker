@@ -1,0 +1,474 @@
+
+
+
+
+
+
+
+
+
+
+
+
+OK....
+
+
+
+
+
+
+
+
+ATÉ AGORA,
+ 
+ JÁ 
+ DEPLOYAMOS 
+
+
+
+ NOSSO 'KUBERNETES-MANAGED APP'
+
+
+ ao cluster...
+
+
+
+
+
+
+
+
+
+
+
+
+ -> agora temos 2 diferentes tipos de pods 
+
+ rodando lá...
+
+
+
+
+
+
+
+
+
+
+ -> O POD DE 'USERS API'
+
+
+
+
+ E 
+
+
+
+
+ -_> O POD DE 'AUTH API'....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> TEMOS TAMBÉM 
+
+
+2 SERVICES ANEXADOS A ESSES PODS/DEPLOYMENTS..
+
+
+
+
+
+
+
+
+
+
+
+
+---> UM DOS SERVICES É 
+
+'CLUSTER-INTERNAL' (ClusterIP),
+
+o 'auth api',
+
+
+
+e
+ 
+
+ o 
+
+
+ OUTRO 
+
+ USA 
+
+ 1
+  
+
+  LOAD BALANCER( o 'users api')... (para conseguir ficar EXPOSTO AO MUNDO EXTERNO)...
+
+
+
+
+   
+
+
+
+   --> CONSEGUIMOS FAZER OS PODS/CONTAINERS SE COMUNICAREM 1 COM O OUTRO,
+
+
+
+   POR MEIO DAQUELE AUTO-DOMAIN NAME, de 'auth-service.default',
+
+
+
+
+   QUE 
+
+
+   É GERADO AUTOMATICAMENTE PELO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> também estamos usando 1 volume, 
+
+
+
+usando o volume type de 'EFS',
+
+
+OFERECIDO PELA AWS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... VIMOS TODOS OS TÓPICOS,
+
+APLICADOS EM AÇÃO,
+
+NESSE CLUSTER DE VERDADE,
+
+
+
+
+HOSTEADO PELA AWS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA É HORA DE 
+
+PRATICAR...
+
+
+
+
+
+
+
+
+
+
+
+
+PARA ISSO,
+
+
+
+
+
+TEMOS 
+
+
+
+
+1 NOVO FOLDER,
+
+
+
+
+
+
+COM 'auth-api',
+
+
+'tasks-api'
+
+
+
+e 
+
+'users-api'...
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR FEZ 1 POUCO DE CODE CHANGES 
+
+
+EM __ TODAS ESSAS APIS... --> E O PROFESSOR ADICIONOU A 
+
+API DE 'TASKS'...
+
+
+
+
+
+
+
+
+
+
+NOSSA TASK SERÁ ADICIONAR ESSA API DE 'TASKS'
+
+
+
+AO 
+CLUSTER AWS...
+
+
+
+
+
+
+
+
+
+
+DEVEMOS 'START FROM SCRATCH',
+
+
+DEVEMOS:
+
+
+
+
+
+
+
+1) ADICIONAR 1 NOVO DEPLOYMENT 
+
+
+
+
+
+2) ADICIONAR 1 NOVO SERVICE 
+
+
+
+
+
+
+
+3) A API DE 'TASKS' DEVE SER ACESSÍVEL DO MUNDO EXTERIOR... 
+
+
+
+
+(NÃO DEVE SER CLUSTER-INTERNAL)...
+
+
+
+
+
+
+
+
+4) MAS DEVEMOS GARANTIR QUE A API DE 'TASKS'
+
+SEJA 
+
+CAPAZ 
+
+DE 
+SE COMUNICAR COM 
+
+
+A API DE 'AUTH'...
+
+
+
+
+
+
+
+
+
+
+-> PARA ISSO, PODEMOS USAR O 'DOCKER-COMPOSE' FILE 
+
+
+DE INSPIRAÇÃO,
+
+
+
+
+
+PARA ENTÃO SETTAR 
+
+SEU 
+
+
+TASKS DEPLOYMENT...
+
+
+
+
+
+
+
+
+-> O PROFESSOR COLOCOU ALGUMAS DAS ENV VARIABLES 
+
+
+QUE SÃO USADAS 
+
+
+NO CÓDIGO DE 'TASKS' -> DEVEMOS SUBSTITUIR OS VALUES 
+
+DE 
+
+'MONGODB_CONNECTION_URI'
+
+
+
+
+E ETC 
+
+
+
+PELOS VALUES APROPRIADOS DE NOSSA CONFIGURAÇÃO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+CERTO... HORA DE ACABAR COM ISSO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> OUTRA NOTE:
+
+
+
+
+
+
+
+
+'''O PROFESSOR TAMBÉM MEXEU NO CÓDIGO DE USERS-API E AUTH-API,
+
+POR ISSO 
+
+
+PRECISAMOS REBUILDAR ESSAS IMAGES E FAZER PUSH 
+
+DELAS LÁ NO DOCKERHUB'...
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO, VC DEVE SUBSTITUIR OS CURRENT DEPLOYMENTS 
+
+COM ESSES AÍ,
+
+PARA 
+
+QUE 
+
+
+
+
+
+OS NOVOS DEPLOYMENTS FIQUEM 
+
+
+SETTADOS..
+
+
+
+
+
+
+
+
+
+
+
+certo... DEVEMOS FAZER DEPLOY DESSES APIS 
+
+
+NO CLUSTER DO KUBERNETES...

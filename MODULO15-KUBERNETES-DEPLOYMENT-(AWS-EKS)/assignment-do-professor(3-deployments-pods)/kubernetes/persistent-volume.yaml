@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kub-aws-pv
+spec:
+  # hostPath:  ////isso é usado no CONTEXTO LOCAL, COM O MINIKUBE (esse type de 'hostPath')...
+  #   path: /stories
+  #   type: DirectoryOrCreate
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc # AQUI NÃO DEVEMOS USAR 'standard', e sim 'efs-sc', pq vamos usar o ELASTIC FILE SYSTEM...
+  csi:
+    driver: efs.csi.aws.com ## ? é necessário
+    volumeHandle: fs-59d14521 ## ? id ENCONTRADO LÁ NA AWS, NO ELASTIC FILE SYSTEM, NA COLUna 'FILE SYSTEM ID' //// 'ex: fs-59d14521'

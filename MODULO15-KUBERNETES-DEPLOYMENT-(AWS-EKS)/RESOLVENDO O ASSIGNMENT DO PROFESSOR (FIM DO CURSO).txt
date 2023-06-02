@@ -1,0 +1,891 @@
+
+
+
+
+
+
+
+
+COMEÇO LENDO O CÓDIGO DOCKER-COMPOSE DO PROFESSOR:
+
+
+
+
+
+
+
+
+
+
+version: "3"
+services:
+  auth:
+    build: ./auth-api
+    ports:
+      - '8000:3000'
+    environment:
+      TOKEN_KEY: 'shouldbeverysecure'
+  users:
+    build: ./users-api
+    ports:
+      - '8080:3000'
+    environment:
+      MONGODB_CONNECTION_URI: 'mongodb+srv://maximilian:wk4nFupsbntPbB3l@cluster0.ntrwp.mongodb.net/users?retryWrites=true&w=majority'
+      AUTH_API_ADDRESSS: 'auth:3000'
+
+
+
+
+
+
+
+
+
+
+
+      SERIA BOM COLOCAR 1 ARQUIVO DOCKER IGNORE 
+
+      PARA MEUS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  OK... ESSE ARQUIVO JÁ EXISTE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --> ACHO QUE CONSEGUI FAZER TUDO...
+
+
+
+
+
+
+
+
+
+  ADICIONEI O ARQUIVO 'tasks.yaml',
+
+  em que há o deployment( pods) e o service...
+
+
+
+
+
+
+
+
+  coloquei 1 type de 'LoadBalancer',
+
+
+
+
+
+  pq esse container deve ficar exposto ao exterior (mundo externo)...
+
+
+
+
+
+
+
+
+
+  também coloquei as env variables apropriadas....
+
+
+
+
+
+
+
+
+
+  o código ficou assim:
+
+
+
+
+
+
+
+
+  apiVersion: v1
+kind: Service
+metadata:
+  name: tasks-service
+spec:
+  selector:
+    app: tasks
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks
+  template:
+    metadata:
+      labels:
+        app: tasks
+    spec:
+      containers:
+        - name: tasks-api
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: 128Mi
+              cpu: 200m
+          image: nothingnothings/kub-dep-users:latest
+          env:
+            - name: TASKS_FOLDER
+              value: tasks
+            - name: AUTH_ADDRESS
+              value: 'auth-service.default:3000'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR COMEÇA ASSIM:
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks
+  template:
+    metadata:
+      labels:
+        app: tasks
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ok...
+
+
+
+
+      
+
+      AGORA COLOCAMOS A SPEC:
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks
+  template:
+    metadata:
+      labels:
+        app: tasks
+    spec:
+      containers:
+        - name: tasks-api
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: 128Mi
+              cpu: 200m
+          image: nothingnothings/kub-dep-users:latest
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+a image está certa,
+
+
+
+
+
+e agora entram as env variables:
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks
+  template:
+    metadata:
+      labels:
+        app: tasks
+    spec:
+      containers:
+        - name: tasks-api
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: 128Mi
+              cpu: 200m
+          image: nothingnothings/kub-dep-users:latest
+          env:
+            - name: TASKS_FOLDER
+              value: tasks
+            - name: AUTH_ADDRESS
+              value: 'auth-service.default:3000'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... MAS E O SERVICE?
+
+
+
+
+
+
+
+
+
+
+vai ficando assim:
+
+
+
+
+  apiVersion: v1
+kind: Service
+metadata:
+  name: tasks-service
+spec:
+  selector:
+    app: tasks
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 8000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      certo...
+
+
+
+
+
+
+
+
+
+ELE DEVERÁ SER EXPOSTO AO EXTERIOR...
+
+
+
+
+
+
+QUANTO AS PORTS, EU COLOQUEI 
+
+
+como 
+
+
+'9000' a exterior...
+
+
+
+
+
+
+
+
+
+a port interna será de '8000',
+pq essa é a 
+
+
+
+PORT DO DOCKERFILE:
+
+
+
+
+
+
+FROM node:14-alpine
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 8000
+
+CMD [ "node", "tasks-app.js" ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ESSE É O SERVICE E O DEPLOYMENT...
+
+
+
+
+
+
+
+
+
+NÃO PRECISAMOS 
+
+ADICIONAR MAIS NADA AQUI PARA AS TASKS...
+
+
+
+
+
+
+
+
+
+
+
+-> PQ NAS TASKS N USAMOS NADA QUE REQUEIRA 
+
+1 VOLUME..
+
+
+
+
+
+
+
+
+
+
+
+--> PRECISAMOS FAZER BUILD E PUSH DESSA IMAGE 
+DE 
+
+
+
+'tasks'...
+
+
+
+
+
+
+
+
+
+
+certo...
+
+
+
+
+docker build -t nothingnothings/image-name .
+
+
+
+
+
+
+
+
+
+
+
+docker push nothingnothings/image-name 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... 
+
+
+
+
+
+
+
+AGORA DEVEMOS TENTAR APLICAR 
+
+
+ESSAS IMAGES/PODS AO NOSSO CLUSTER..
+
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+
+
+
+
+
+
+
+kubectl apply -f tasks.yaml...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... E ISSO VAI AUTOMATICAMENTE 
+
+CRIAR 1 LOAD BALANCER,
+
+NA AWS,
+
+
+PARA 
+
+ESSE SERVICE...
+
+
+
+
+
+
+
+
+
+
+
+
+--> GARANTA QUE TODAS SUAS IMAGES FORAM REBUILDADAS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR TAMBÉM FAZ DELETE DOS DEPLOYMENTS ANTERIORES,
+
+PARA TUDO FICAR CERTO...
+
+
+
+tipo 
+
+
+
+
+
+
+kubectl delete deployment auth.yaml deployment users.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+REAPLICAMOS TUDO, E AÍ FICAMOS COM 3 DEPLOYMENTS RODANDO...
+
+
+
+
+
+
+
+
+
+
+
+podemos tentar isso de novo...
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AGORA TEMOS 2 
+
+SERVICES COM EXTERNAL IP (
+
+
+  tanto o 'tasks-service'
+
+  como o 
+
+  'users-service'...
+)
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR TESTA ESSAS ROUTES NO POSTMAN...
+
+
+
+
+
+
+
+
+
+
+
+VAMOS CONSEGUIR 
+
+
+
+
+
+1 RESPONSE COM 1 ARRAY DE TASKS VAZIO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+podemos criar tasks, também...
+
+
+
+
+
+
+
+
+
+TAMBÉM PODEMOS DELETAR TASKS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo... agora está tudo funcionando...
+
+
+
+
+
+
+
+acabamos com esse challenge,
+
+
+
+
+temos 3 main apis 
+
+
+DEPLOYADAS 
+
+
+NO NOSSO CLUSTER KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+FICAMOS COM 1 API/POD QUE É 'CLUSTER-INTERNAL',
+
+
+O 
+
+
+
+DO 'AUTH',
+
+
+
+POR CONTA DO SERVICE DELE..
+
+
+
+
+
+
+
+-> E FICAMOS COM 2 
+
+
+PODS 'EXTERNAL-FACING',
+
+com aquele LoadBalancer...
+
+
+
+
+
+
+
+
+---> os pods são manageados pelo kubernetes e pelo eks,
+
+que nos dá 
+esse kubernetes cluster...
+
+
+
+
+
+
+
+
+
+também ficamos com 1 volume 'persistent', 
+
+
+com o EFS..
+
+
+
+
+
+-> TUDO EM 1 CLOUD PROVIDER DE VERDADE,
+
+
+EM 1 CLUSTER DE VERDADE...
