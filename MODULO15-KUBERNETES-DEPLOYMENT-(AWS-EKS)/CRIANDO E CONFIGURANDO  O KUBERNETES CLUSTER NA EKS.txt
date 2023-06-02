@@ -1,0 +1,1697 @@
+
+
+
+
+
+
+OK.... PODEMOS COMEÇAR COM O CREATE DE 1 CLUSTER NO EKS..
+
+
+
+
+
+
+
+
+--> PQ O CLUSTER É REALMENTE A COISA QUE TEREMOS DE CRIAR, POR CONTA PRÓPRIA...
+
+
+
+
+
+
+
+
+AS 'COISAS QUE RODAM NO CLUSTER', COMO OS PODS E OS CONTAINERS,
+
+
+TUDO ISSO É __ MANAGEADO _ PELO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS A INFRAESTRUTURA,
+
+A NETWORK,
+
+
+
+
+TUDO ISSO PRECISA SER CRIADO POR NÓS... ---> mas o service EKS vai deixar isso bem fácil...
+
+
+
+
+
+
+
+
+
+
+
+
+-> O PROFESSOR CRIA NOSSO CLUSTER,
+
+
+de nome 
+
+'kub-dep-demo'...
+
+
+
+
+
+
+
+
+--> ISSO FEITO, ENTRAMOS EM 1 PAGE 
+
+
+EM QUE PODEMOS 
+
+
+
+
+ESCOLHER VÁRIAS COISAS, COMO A VERSION KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+-> DEPOIS DISSO, O QUE DEVEMOS PEGAR É O 
+
+
+'CLUSTER SERVICE ROLE' --------> PARA ENTENDER ISSO,
+
+VC 
+
+
+DEVE SABER COMO  O AWS FUNCIONA...
+
+
+
+
+
+
+
+
+
+O AWS É PODEROSO... -> E VC TEM 1 MONTE DE SERVICES --> E ESSES SERVICES 
+
+
+
+PODEM TRABALHAR EM CONJUNTO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> POR EXEMPLO, O 'EKS',
+
+POR TRÁS DAS CENAS,
+
+
+VAI CRIAR ALGUMAS EC2 INSTANCES... -> EC2 É AQUELE SERVICE QUE 
+
+TE DEIXA 
+
+LANÇAR AQUELAS REMOTE INSTANCES... -> E O EKS VAI USAR ESSES SERVICES,
+
+
+UNDER THE HOOD...
+
+
+
+
+
+
+
+
+
+
+A IDEIA DO EKS SÓ É 1 PCO DIFERENTE 
+
+PQ 
+
+ELA 
+
+
+__ FAZ ISSO PARA VOCÊ,O CREATE DESSAS INSTANCES... --------> E, JUSTAMENTE,
+
+PARA PERMITIR QUE 
+
+O 
+
+EKS 
+
+CRIE OUTROS SERVICES 'ON YOUR BEHALF',
+
+
+
+VC PRECISA 
+
+DAR 
+
+
+PERMISSÕES APROPRIADAS AO EKS ---------> E VC  FAZ ISSO POR MEIO DE OUTRO SERVICE 
+
+DO 
+
+
+
+AWS,
+
+QUE É 
+
+O 
+
+'IAM CONSOLE/SERVICE'-------> 'IDENTITY AND ACCESS MANAGEMENT' -> NESSE SERVICE,
+
+
+
+
+
+PODEMOS __ CONFIGURAR VÁRIOS ROLES, QUE ENTÃO VC ASSIGNA A USERS OU OUTROS SERVICES...
+
+
+
+
+
+
+
+
+
+
+
+
+ISSO, NO FINAL DAS CONTAS,
+VAI CONTROLAR 
+
+O QUE 
+
+
+__ ESSES USERS E SERVICES SERÃO CAPAZES DE FAZER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AQUI VAMOS QUERER CRIAR 
+
+
+
+1 ROLE _ PARA O 'EKS',
+
+
+
+1 ROLE QUE 
+
+DÊ A ELE CERTAS PERMISSÕES, 'ON OUR BEHALF'...
+
+
+
+
+
+
+
+
+
+--------> ok... VAMOS CRIAR 1 NOVO ROLE....
+
+
+
+
+
+
+
+
+
+
+
+
+------> selecione 'eks'...
+
+
+
+
+
+
+
+
+NA OPÇÃO DE 'EKS',
+
+SELECIONE 'EKS CLUSTER' -> ISSO VAI TE DAR 1 'PREDEFINED ROLE'
+
+
+
+
+___,
+
+
+
+
+1 ROLE PREDEFINIDO PARA O EKS,
+
+
+PARA QUE 
+
+O 
+
+EKS 
+
+JÁ CONSIGA TODAS AS PERMISSIONS NECESSÁRIAS PARA ELE FAZER 
+
+
+SEU TRABALHO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> o professor nomeia o role como 'eksClusterRole'....
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO VAI CRIAR ESSE ROLE....
+
+
+
+
+
+
+
+
+
+
+
+ok...
+
+ISSO VAI CRIAR ESSE ROLE...
+
+
+
+
+
+
+
+
+
+AGORA TEMOS ESSE ROLE SUPER IMPORTANTE...
+
+
+
+
+
+
+
+
+
+DE VOLTA AO CLUSTER CONFIGURATION DO EKS,
+
+
+SELECIONE ESSE ROLE DE EKS que recém criamos...
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO,
+DEIXE TODOS OS OUTROS DEFAULTS E SELECIONE 'NEXT'..
+
+
+
+
+
+
+
+
+
+
+
+COMO PRÓXIMO PASSO,
+
+
+
+TEMOS QUE SETTAR/CONFIGURAR __ A NETWORK _ PARA ESSE CLUSTER... -> OU SEJA,
+
+
+A NETWORK
+
+EM QUE TODOS OS NODES/REMOTE MACHINES 
+
+
+
+
+
+
+SERÃO ADICIONADAS ---------> E É CLARO QUE ESSA NETWORK 
+
+PRECISA SER CRIADA DE FORMA QUE:
+
+
+
+
+
+
+
+1) CONSIGA SER ACESSÍVEL DO LADO DE FORA... (lá da web)
+
+
+
+
+
+
+
+2) CONSIGA SER, ATÉ CERTO PONTO,
+
+
+
+SER APENAS ACESSÍVEL DO LADO DE DENTRO (
+    para que 
+    vc tenha 
+    'PROTECTED, NETWORK-INTERNAL COMMUNICATION'...
+)
+
+
+
+
+
+
+
+
+
+
+
+QUEREMOS TER AS 2...
+
+
+
+
+
+
+
+
+-_> PARA CRIAR 1 DESSAS NETWORKS,
+
+
+VC PODERIA USAR O CONSOLE DE VPC,
+
+MAS É 
+
+MELHOR 
+
+
+PROCURAR POR 
+
+
+'cloudformation',
+
+LÁ 
+
+
+
+NO SEARCH DO AWS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> 'CloudFormation' --> ESSE SERVICE TE DEIXA FACILMENTE CRIAR 
+
+'THINGS'
+
+com os outros services,
+
+
+com base em certos templates..
+
+
+
+
+
+
+
+
+
+
+
+
+-> CLIQUE EM 'CREATE STACK ------> DEIXE TODOS OS DEFAULTS LIGADOS...
+
+
+
+
+
+
+
+
+
+-> AÍ ALI,
+
+
+EM 'SPECIFY TEMPLATE',
+
+
+
+VC PRECISA COLAR ALI NA 'AMAZON S3 URL'
+
+
+
+UMA CERTA URL...
+
+
+URL QUE ENCONTRAMOS 
+
+
+
+NO LINK DE 
+
+
+
+''
+
+https://docs.aws.amazon.com/eks/latest/userguide/creating-a-vpc.html#create-vpc
+
+''
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... COM ISSO,
+
+DENTRO DESSE LINK,
+
+TEMOS 1 URL QUE PODEMOS UTILIZAR:
+
+
+
+
+
+
+
+
+
+https://s3.us-west-2.amazonaws.com/amazon-eks/cloudformation/2020-10-29/amazon-eks-vpc-private-subnets.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-. ok.. copiamos essa url...
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+DEPOIS CLICAMOS EM 'NEXT' --> ISSO VAI SIMPLESMENTE CONTER UM 'TEMPLATE',
+
+
+
+1 MODELO,
+
+PARA A NETWORK QUE QUEREMOS CRIAR...
+
+
+
+
+
+
+
+
+
+
+
+
+-> COLOCAMOS 1 NOME NESSE STACK,
+como 
+
+
+
+'eks-vpc'...
+
+
+
+
+
+
+
+
+
+---> DEIXE TODOS OS OUTROS DEFAULTS COMO ESTÃO,
+
+
+e aí 
+
+
+vá clicando 'next'....
+
+
+
+
+
+
+
+
+-> NO FINAL, CLIQUE EM 'CREATE STACK'... -> E ISSO JÁ VAI CRIAR 
+
+1 
+
+'VPC NETWORK'
+
+PARA NÓS..
+
+
+
+
+
+
+
+
+
+
+
+--> ESSA VPC NETWORK CREATION PODE DEMORAR 1 POUCO,...
+
+
+
+
+
+
+
+
+
+
+
+------> ok... LÁ NO NEGÓCIO DE 'CREATE EKS CLUSTER',
+
+
+NA OPÇÃO DE 'VPC',
+
+
+SELECIONE ESSE VPC QUE VC RECÉM CRIOU com esse 'cloudformation'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> USE AS CONFIGS DEFAULT, DE RESTO..
+
+
+
+
+
+
+
+
+
+
+
+QUANDO CHEGAR NO 'CLUSTER ENDPOINT ACCESS',
+
+MARQUE 
+
+
+'PUBLIC AND PRIVATE' --> ISSO __ PQ QUEREMOS CRIAR 1 
+
+CLUSTER 
+
+
+CAPAZ 
+
+DE HANDLAR REQUESTS
+
+
+
+TANTO DO MUNDO DE FORA,
+
+COMO 
+
+TAMBÉM 
+
+'PROTECTED TRAFFIC' DENTRO 
+
+DO CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+
+-----------> ok... quer dizer que 'node-to-node' TRAFFIC 
+
+DEVE 
+
+SER 
+
+_DENTRO DO CLUSTER (e não vazar _ para fora do cluster),
+
+
+
+
+
+E TBM QUEREMOS TER CERTOS 
+
+
+ENDPOINTS 'REACHABLE' DO LADO DE FORA...
+
+
+
+
+
+
+
+
+
+OK... NÃO PRECISAMOS ENABLAR NADA DE LOGGING,
+
+
+MAS ISSO É POSSÍVEL, SE QUISERMOS...
+
+
+
+
+
+
+
+
+FAÇA REVIEW DE TODA AS SETTINGS... CLIQUE EM CREATE...
+
+
+
+
+
+
+
+
+
+ISSO VAI CRIAR 1 KUBERNETES CLUSTER --> OU SEJA,
+
+1 KUB CLUSTER,
+
+COM A AJUDA DO EKS...
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... AÍ ELE VAI SETTAR A NETWORK E O CLUSTER EM SI...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+COMO PRÓXIMA ETAPA,
+
+
+ADICIONAREMOS OS __ NODES__.... AS REMOTE MACHINES EM QUE O KUBERNETES 
+SOFTWARE
+ 
+ SERÁ INSTALADO,
+
+ E EM QUE 
+
+ ENTÃO 
+ PODEREMOS 
+
+ RODAR 
+
+ NOSSOS PODS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -----> ok.. ENQUANTO NOSSO CLUSTER E NETWORK ESTÃO SENDO SETTADOS,
+
+ O PROFESSOR DIZ QUE JÁ PODEMOS TRABALHAR EM OUTRA COISA...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> OK.... ele revisa o comando de 'kubectl'... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> NÓS USAMOS, ANTES, ESSE COMANDO O TEMPO INTEIRO,
+
+
+
+
+ PARA ENVIAR COMANDOS AO NOSSO CLUSTER (
+
+
+    anteriormente,
+    o cluster era o minikube,
+
+
+    AQUELE CLUSTER DE DEVELOPMENT,
+
+
+    que rodava em 1 virtual machine dentro de nossa LOCAL MACHINE..
+
+ )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -> OK... ENTRETANTO,
+  LOGO,
+
+  VAMOS QUERER 
+
+  ENVIAR ESSES COMANDOS, com 'kubectl',
+
+
+
+  AO NOSSO CLUSTER EKS,
+  EM VEZ DO MINIKUBE...
+
+
+
+
+
+
+
+
+
+
+
+
+  OK, MAS 'COMO DIABOS O KUBECTL SABE QUE QUEREMOS FALAR COM O __MINIKUBE'?
+
+
+
+
+
+
+
+
+  BEM, ISSO ACONTECE POR CONTA DE 1 FILE ESPECÍFICA,
+
+  LÁ 
+
+  NO SEU FOLDER DE 'users'..
+
+
+
+
+
+
+
+
+
+
+  O FILE RESPONSÁVEL POR ISSO FICA NO FOLDER DE '.kube'...
+
+
+
+
+
+
+
+
+
+
+
+  CERTO... NESSE FOLDER,
+
+
+
+  TEMOS 
+
+
+
+
+  O ARQUIVO DE 'config'... -->  CERTO.... -----> PODEMOS ABRIR ESSA CONFIG FILE
+
+
+
+
+  E AÍ 
+
+
+
+
+
+  TEREMOS ESTE CONTEÚDo:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: C:\Users\Usuário\.minikube\ca.crt
+    extensions:
+    - extension:
+        last-update: Thu, 01 Jun 2023 09:53:38 -03
+        provider: minikube.sigs.k8s.io
+        version: v1.30.1
+      name: cluster_info
+    server: https://172.22.158.171:8443
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    extensions:
+    - extension:
+        last-update: Thu, 01 Jun 2023 09:53:38 -03
+        provider: minikube.sigs.k8s.io
+        version: v1.30.1
+      name: context_info
+    namespace: default
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: C:\Users\Usuário\.minikube\profiles\minikube\client.crt
+    client-key: C:\Users\Usuário\.minikube\profiles\minikube\client.key
+
+
+
+
+
+-----------------------------------
+
+
+OK... QUER DIZER QUE, NO MOMENTO,
+
+
+
+
+
+ESSE NEGÓCIO 
+
+SEGURA INFO _ QUE FAZ COM QUE 
+
+
+
+
+O 'kubectl' (kube control)
+
+
+
+SE CONECTE AO 'MINIKUBE CLUSTER',
+
+
+QUE ESTÁ RODANDO NA NOSSA LOCAL MACHINE...
+
+
+
+
+
+
+
+
+ISSO ERA BOM ATÉ ANTES,
+
+
+PQ ERA O QUE QUERÍAMOS (development local)... --> MAS AGORA ISSO VAI MUDAR,
+
+PQ 
+
+aGORA QUEREMOS 
+
+
+FALAR COM NOSSO EKS CLUSTER, QUANDO ELE ESTIVER PRONTO...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR RECOMENDA QUE SALVEMOS UMA CÓPIA, DE NOME 
+
+'config.minikube',
+
+
+PQ 
+
+
+AGORA 
+
+VAMOS OVERWRITTAR O CONFIG FILE ORIGINAL COM __ 1 CONFIG FILE 
+
+QUE 
+
+VAI NOS deixar
+
+
+
+
+ESTABELECER CONEXÃO COM O AWS EKS...
+
+
+
+
+
+
+
+
+
+
+
+--> PARA FAZER OVERWRITE 
+
+
+DESSE ARQUIVO,
+
+
+
+
+É MELHOR USAR 1 CERTA TOOL _ OFERECIDA __ PELO AWS...
+
+
+
+
+
+
+
+
+
+
+-> É A TOOL DE 'AWS CLI'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> ESSA É UMA TOOL QUE TE DEIXA __ RODAR COMANDOS,
+
+DE DENTRO DO SEU CLI, NO SEU TERMINAL, NA SUA LOCAL MACHINE,,
+
+
+
+CONTRA SUA 'AWS ACCOUNT'...
+
+
+
+
+
+
+
+
+
+
+BASTA BAIXAR ISSO 
+
+
+NO SEU PC...
+
+
+
+
+
+
+
+
+
+-> CERTO..
+
+
+
+
+
+
+
+
+ISSO FEITO,
+
+PROVAVELMENTE TEREMOS DE LOGGAR NA NOSSA MÁQUINA...
+
+
+
+
+
+
+
+
+
+
+
+
+-> AÍ TEREMOS ESSA 'CLI' (command line interface tool)
+
+
+
+NA NOSSA LOCAL MACHINE...
+
+
+
+
+
+
+
+
+ASSIM QUE ISSO ESTIVER INSTALADO, NA NOSSA LOCAL MACHINE,
+SEREMOS CAPAZES DE FAZER ISSO.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS PARA CONSEGUIRMOS USAR 
+
+
+ESSE 'CLI',
+
+PRECISAMOS IR ATÉ NOSSA CONTA AWS,
+
+E ENTÃO ATÉ O 
+
+'my security credentials' --> VÁ ATÉ 'access keys' ---> VC PRECISARÁ DE 1 'ACCESS KEY',
+
+
+
+
+LÁ NO 
+
+AWS CLI, 
+
+PARA RODAR COMANDOS CONTRA SUA CONTA 
+
+
+AWS....
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK... devemos ir até 'security credentials', no aws,
+
+e aí 
+
+devemos baixar o arquivo da 'access key' que foi criada...
+
+
+
+
+
+NESSE ARQUIVO,
+
+teremos 
+
+'AWSAccessKeyId' 
+
+
+e 
+
+'AWSSecretKey'...
+
+
+
+
+
+VAMOS PRECISAR DE AMBOS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> ok... AGORA DEVEMOS RODAR 'aws configure',
+
+PARA 
+
+CONECTAR 
+
+
+
+
+
+___ O 'AWS CLI', que INSTALAMOS, 
+
+
+A NOSSA 
+
+
+
+CONTA AWS.... --> para que ele seja capaz de rodar comandos contra essa conta aws...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ele vai pedir sua 'key id' 
+
+e sua 
+'access key'...
+
+
+
+
+
+
+
+coloque as 2, aí aperte enter...
+
+
+
+
+
+
+
+
+
+
+
+certo... 'aws configure'...
+
+
+
+
+
+
+
+
+
+
+
+-> coloque suas keys, depois escolha sua region (será 'us-east-2' )
+
+
+
+
+
+
+--> PRECISAMOS COLOCAR A MESMA REGION EM QUE ESTAMOS USANDO NOSSOS SERVICES AWS...
+
+
+
+
+
+
+
+-> para 'output format',
+aperte só enter (sem digitar nada)...
+
+
+
+
+
+
+
+
+
+
+COM ISSO, O CLI AWS VAI ESTAR CONFIGURADO DE MODO QUE VC VAI CONSEGUIR 
+FALAR COM SUA 
+
+CONTA 
+AWS 
+E 
+
+RODAR COMANDOS PARA VOCê...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----> FIZEMOS ISSO PARA QUE CONSIGAMOS RODAR 1 
+
+COMANDO CONTRA NOSSA CONTA AWS...
+
+
+
+
+
+
+
+
+
+--> escreva 
+
+
+'aws eks',
+
+
+
+PARA ENTÃO FAZER ALGO COM O SERVICE DE EKS..
+
+
+
+
+
+
+
+
+depois escreva '--region'...
+
+
+
+
+
+
+
+--> DEPOIS DIGITE O NOME DE SUA REGION (
+
+  como 'us-east-2'...
+)
+
+
+
+
+
+
+tipo 
+
+
+
+
+aws eks --region us-east-2 
+
+
+
+
+
+
+
+
+
+DEPOIS DISSO,
+
+ESCREVA 
+
+
+
+
+
+
+'update-kubeconfig',
+
+
+
+
+
+
+
+E AÍ '--name <your-cluster-name>'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> NO CASO,
+
+COLOCAREMOS 'kub-dep-demo' ( o NOME DO CLUSTER QUE ESCOLHEMOS, ANTERIORMENTE)...
+
+
+
+
+
+
+
+
+EX:
+
+
+
+
+
+
+aws eks --region us-east-2 update-kubeconfig --name kub-dep-demo
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --> PQ ESSE COMANDO?
+
+
+
+
+
+
+
+
+
+ PQ ELE _ VAI _ 'UPDATE' O ARQUIVO 'config' do minikube COM TODA A DATA NECESSÁRIA 
+
+
+ AO SEU 
+
+ ARQUIVO 'config'
+
+
+
+DO KUBECTL,
+PARA QUE 
+
+ELE TENHA TODA A DATA NECESSÁRIA PARA ELE FALAR COM O 'CLUSTER AWS',
+EM VEZ 
+
+
+DE NOSSO 
+
+
+MINIKUBE....
+
+
+
+
+
+
+
+
+OK... SE INSPECIONARMOS 
+
+
+NOSSO KUBE FILE MAIS UMA VEZ,
+
+
+VEREMOS QUE 
+
+
+
+
+
+ELE FICARÁ COM 1 MONTE DE DATA 'AWS-SPECIFIC'
+
+
+
+
+DENTRO DE SI...
+
+
+
+
+
+
+
+
+
+
+-> OK... com isso, ao rodarmos 'kubectl get pods',
+
+
+TEREMOS 1 BEHAVIOR COMO ANTES NO CURSO,
+
+
+NOS MÓDULOS ANTERIORES,
+
+MAS AGORA ___ ELE ESTARÁ FALANDO __ COM SEU CLUSTER AWS,
+
+
+
+E NAÕ COM O CLUSTER MINIKUBE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> PODEMOS RODAR 'minikube delete'
+
+PARA DELETAR O MINIKUBE,
+
+
+
+E ISSO VAI REALMENTE DELETAR O CLUSTER DO MINIKUBE.. --> mesmo sem o minikube rodando,
+
+vc 
+
+
+
+poderá 
+
+
+
+rodar o 'kubectl' para ver o deployment status e deployar coisas lá na aws eks...
+
+
+
+
+
+
+
+ok... esse é um bom início...
