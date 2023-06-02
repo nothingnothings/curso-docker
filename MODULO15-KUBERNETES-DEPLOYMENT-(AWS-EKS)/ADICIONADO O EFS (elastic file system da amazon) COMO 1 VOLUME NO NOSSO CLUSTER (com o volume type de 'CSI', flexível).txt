@@ -1,0 +1,487 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK.... ANTES DE MAIS NADA,
+PRECISAMOS 
+
+
+RODAR O COMANDO 
+
+QUE 
+ENCONTRAMOS 
+
+
+NA PÁGINA 
+
+
+
+
+DE 'AWS EFS CSI DRIVER DOCS PAGE'...
+
+
+
+
+
+
+
+
+
+-> é o comando de
+
+
+
+
+
+
+
+
+
+
+'''
+
+kubectl apply -k "github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.5"
+
+
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO BASICAMENTE INSTALA ESSE DRIVER DO CSI/EFS
+
+
+
+
+
+NO SEU SETUP KUBERNETES,
+
+
+COM O COMANDO 'kubectl'...
+
+
+
+
+
+
+
+
+ISSO VAI INSTALAR ESSE DRIVER NO SEU CLUSTER,
+
+PARA QUE 
+
+VC CONSIGA O UTILIZAR, NO FUTURO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> E ISSO É OBRIGATÓRIO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS AINDA PRECISAMOS CRIAR 1 'ELASTIC FILE SYSTEM' DA AMAZON,
+
+
+PARA QUE 
+
+ELE CONSIGA SER USADO NOS NOSSOS PODS...
+
+
+
+
+
+
+
+
+
+
+--> VÁ ATÉ A PÁGINA DE 'ELASTIC FILE SYSTEM'...
+
+
+
+
+
+
+
+
+
+
+
+MAS ANTES DISSO,
+
+
+
+VÁ ATÉ A PAGE DO EC2...
+
+
+
+
+
+
+
+
+
+
+
+--> LÁ DENTRO, VÁ EM 'SECURITY GROUPS''
+
+
+
+
+
+E __ CRIE 1 NOVO SECURITY GROUP... --------> COLOQUE QUALQUER NOME,
+
+COMO 
+
+
+'EKS-EFS'....
+
+
+
+
+
+
+
+
+
+--> depois disso, selecione o VPC USADO PELO SEU EKS -----> ISSO PARA QUE 
+
+
+SEU SECURITY GROUP (que te deixa controlar acesso em 1 certo VPC)
+
+
+FUNCIONE 
+
+
+
+
+__ NO VPC __ NA NETWORK QUE FOI CRIADA PELO NOSSO KUBERNETES CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> DEPOIS CLIQUE EM 'INBOUND RULES'
+
+
+
+
+
+E SELECIONE 
+
+
+A RULE DE 
+
+'NFS',
+
+
+
+
+
+QUE É MEIO AUTOMÁTICA.... 
+
+
+
+
+
+
+
+EM 'source',
+
+
+COLOQUE 'custom',
+
+
+E AÍ 
+
+
+
+em 'cidr blocks',
+
+
+
+
+
+
+DEVEMOS ENTRAR NA PÁGINA DE 'VPCS',
+
+
+CLICAR NO 'eksVPC',
+
+
+CLICAR NO NOSSO VPC ID,
+
+
+
+
+
+E DEPOIS COPIAR O 'ipv4 CIDR',
+
+
+
+
+
+E AÍ 
+
+
+COLAR 
+
+
+ESSE 
+
+
+
+ipv4 CIDR lá no campo de 'custom' ........
+
+
+
+
+
+
+ISSO FEITO,
+
+DEIXE AS OUTBOUND RULES COMO ESTÃO,
+
+
+E AÍ 
+
+
+CLIQUE EM 'CREATE SECURITY GROUP'...
+
+
+
+
+
+
+
+
+
+
+
+-> CERTO...
+
+
+
+
+
+
+
+COM ESSE SECURITY GROUP CRIADO,
+
+PODEMOS FECHAR 
+
+ESSA PÁGINA E VOLTAR 
+
+
+
+
+
+À PAGE DE 'EFS'...
+
+
+
+
+
+
+
+
+
+
+LÁ NA PAGE DE 'EFS',
+
+
+DEVEMOS CRIAR EM 'CREATE FILE SYSTEM' ->  COLOCAMOS QUALQUER NOME DE NOSSA ESCOLHA...
+
+
+
+
+
+
+
+
+
+O PROFESSOR COLOCA 'eks-efs'...
+
+
+
+
+
+
+
+
+
+
+------> DEPOIS DISSO, SELECIONE O 'EKS VPC' (a network que foi criada para seu cluster,
+
+TUDO PARA QUE ESSE 
+
+FILE SYSTEM FAÇA PARTE DA MESMA NETWORK EM QUE SEU CLUSTER ESTÁ RODANDO..)
+
+
+
+
+
+
+
+
+
+
+
+
+--> depois disso,
+
+
+
+
+
+CLIQUE EM 'CUSTOMIZE',
+
+
+
+
+
+E AÍ DEIXE TODOS OS DEFAULTS... -----> MAS NA PAGE DE 'NETWORK ACCESS',
+
+
+REMOVA TODOS OS SECURITY GROUPS DEFAULTS... -----> (das availability zones )...
+
+
+
+
+
+
+
+
+
+
+
+MAS NO DROPDOWN DE 'SECURITY GROUP',
+
+
+SELECIONE, PARA AS 2 AVAILABILITY ZONES,
+
+
+O SECURITY GROUP QUE 
+
+VC 
+
+
+
+CRIOU NAQUELE PASSO ANTERIOR ------> PARA QUE VC USE O SECURITY GROUP QUE 
+
+VC USOU NA ETAPA ANTERIOR...
+
+
+
+
+
+
+
+
+
+
+
+
+--> CERTO... EM 'FILE SYSTEM POLICTY',
+
+
+NÃO COLOQUE COISA ALGUMA...
+
+
+
+
+
+
+
+
+-> DEPOIS CLIQUE EM CREATE...
+
+
+
+
+
+
+
+
+-. ISSO VAI CRIAR 1 NOVO FILE SYSTEM PARA VOCÊ,
+QUE VC 
+
+VAI PODER USAR COMO VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> COPIE O ID DO FILE SYSTEM, PQ VC LOGO VAI PRECISAR DELE..
+
+
+
+
+
+
+
+
+
+
+--> SIGA PARA A CONFIGURATION DO KUBERNETES, OS ARQUIVOS 
+'users.yaml' e 'auth.yaml',
+
+pq vamos editar algumas coisas...
