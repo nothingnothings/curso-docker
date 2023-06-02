@@ -1,0 +1,932 @@
+
+
+
+
+
+
+
+
+ok, com tudo já settado,
+
+
+
+com o  EFS file system 
+
+JÁ CRIADO LÁ NA AWS,
+
+
+
+
+
+
+E __ O VOLUME CONFIGURADO E SETTADO LÁ NA NOSSA CONFIG DE 'users.yaml',
+
+
+
+O PROFESSOR TWEAKOU 1 POUCO O NOSSO CÓDIGO,
+
+PARA QUE 
+
+
+
+REALMENTE 
+
+
+
+
+EXISTA O 'WRITE DE DATA A 1 FILE'
+
+
+
+
+
+
+
+NO FILESYSTEM,
+
+
+
+
+
+
+
+
+
+
+
+E É JUSTAMENTE POR ISSO QUE O PROFESSOR ADICIONOU 
+
+
+
+
+ARQUIVOS DIFERNETES 'user-actions' 
+
+e 
+
+'user-routes'..
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR MUDOU 1 POUCO O CÓDIGO;
+
+
+
+AGORA HÁ A FUNCTION DE 'getLogs',
+
+
+
+QUE TENTA LER 1 FILE,
+
+
+este AQUI:
+
+
+
+
+
+const getLogs = (req, res, next) => {
+  fs.readFile(path.join('/app', 'users', 'users-log.txt'), (err, data) => {
+    if (err) {
+      createAndThrowError('Could not open logs file.', 500);
+    } else {
+      const dataArr = data.toString().split('\n');
+      res.status(200).json({ logs: dataArr });
+    }
+  });
+};
+
+
+
+
+
+
+tenta ler
+
+
+1 FILE QUE __ É _ _sEMPRE _ ESCRITA _ QUANDO 1 NOVO USER É CRIADO..
+
+
+
+
+
+
+
+
+
+
+-> PQ QUANDO 1 NOVO USER É CRIADO,
+
+
+
+
+
+A DATE, O USER ID E O EMAIL ADDRESS 
+
+
+
+DO _ USER _ 
+
+SÃO 
+
+
+SALVAS 
+
+
+
+EM 1 ARQUIVO 'users-log.txt',
+LÁ 
+
+
+
+NO FOLDER DE 'users',
+
+
+
+
+DENTRO DE NOSSO APP... (app folder),
+
+
+
+
+E É JUSTAMENTE 
+
+
+
+ESSA FILE QUE 
+
+
+ACABA SENDO LIDA 
+
+PELA function de 'getLogs'...
+
+
+
+
+
+
+
+E ESSA 
+
+
+
+FUNCTION É TRIGGADA SEMPRE QUE 
+
+
+
+
+
+1 REQUEST É ENVIADO à ROUTE DE '/logs':
+
+
+
+
+
+
+
+
+
+const getLogs = (req, res, next) => {
+  fs.readFile(path.join('/app', 'users', 'users-log.txt'), (err, data) => {
+    if (err) {
+      createAndThrowError('Could not open logs file.', 500);
+    } else {
+      const dataArr = data.toString().split('\n');
+      res.status(200).json({ logs: dataArr });
+    }
+  });
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... TROQUEI MEU ARQUIVO 'user-actions' antigo por esse aí...
+
+
+
+
+
+
+
+
+
+
+
+FIZ A MESMA COISA COM O 'USER-ROUTES.JS'....
+
+
+
+
+
+
+
+
+
+--> FAZEMOS BUILD E PUSH DESSA IMAGE AO DOCKERHUB...
+
+
+
+
+
+
+
+
+
+--> AÍ VAMOS PRECISAR 
+
+
+
+REAPLICAR NOSSAS CONFIG FILES (.yaml),
+
+
+COM 'kubectl apply -f',
+
+
+
+PARA QUE 
+
+
+
+
+ESSE CÓDIGO TODO CONSIGA SER APLICADO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS ANTES DISSO, O PROFESSOR DELETA TODOS OS DEPLOYMENTS ANTERIORES,
+
+
+
+COM 
+
+'kubectl delete deployment users-deployment'...
+
+
+
+
+
+
+
+
+
+--> depois ele roda 
+
+
+
+
+kubectl apply -f users.yaml 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> O DELETE DO DEPLOYMENT ANTERIOR NÃO É NECESSÁRIO, MAS 
+
+É BOM FAZÊ-LO, MESMO ASSIM...
+
+
+
+
+
+
+
+
+
+
+ASSIM QUE ESSE DEPLOYMENT TIVER STARTADO,
+
+
+PODEMOS TESTAR TUDO ISSO..
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR PEGA O POSTMAN 
+
+
+
+E SALVA 1 NOVO USER,
+
+
+COM 
+
+
+A DATA DE 
+
+
+
+
+{
+
+    "email": "test3@test.com",
+    "password": "testers"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.... ISSO DEVE FUNCIONAR.... FUNCIONOU,
+
+
+COMO FUNCIONOU ANTES... ------> O USER FOI CRIADO,
+
+MAS AGORA 
+
+DEVEMOS 
+
+TAMBÉM 
+
+
+TER 
+
+
+1 
+
+ENTRY 
+
+
+NAQUELA 'TEXT FILE'
+
+QUE FOI CRIADA...
+
+
+
+
+
+
+
+
+
+
+
+-> CERTO... DEPOIS DISSO,
+
+ENVIAMOS 
+
+1 REQUEST 
+
+À ROUTE DE 
+
+'/logs'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> COMO RESPOSTA DESSE REQUEST,
+
+GANHAMOS 
+
+1 LISTA 
+
+
+DAS LOG ENTRIES QUE 
+
+
+foram criadas (os users que foram criados, essencialmente)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> OK, MAS ISSO JÁ MOSTRA QUE 
+
+NOSSO PERSISTENT VOLUME FUNCIONOU...
+
+
+
+
+
+
+
+
+
+
+--> O 'STORE' E 'WRITE'
+
+
+
+DE ARQUIVOS NO VOLUME FUNCIONA, PORTANTO...
+
+
+
+
+
+
+
+
+
+
+MAS PODEMOS VISUALIZAR QUE ISSO FUNCIONOU DE OUTRA FORMA...
+
+
+
+
+
+
+
+
+
+
+
+-> abra a gui do amazon file system,
+
+E AÍ 
+
+
+COLOQUE NA SEÇÃO DE 'MONITORING' ----> NAS METRICS,
+
+
+
+
+VAMOS ENCONTRAR 
+1 
+
+
+'WRITE ACCESS'...
+
+
+
+
+
+
+SÃO UMAS MÉTRICAS  BEM PEQUENAS... -. TAMBÉM TEMOS ALGUMAS CLIENT CONNECTIONS,
+
+
+
+3 
+
+CLIENT CONNECTIONS --> ISSO FAZ SENTIDO 
+
+
+
+PQ ___ TEMOS 
+
+
+'''3 REPLICAS PARA O POD QUE 
+
+USA ESSE VOLUME'''...
+
+
+
+
+(por isso tivemos 3 connections)...
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... TUDO ISSO PARECE FUNCIONAR...
+
+
+
+
+
+
+
+
+
+
+
+
+-> EM 'METERED SIZE' 
+
+VC TBM DEVE VER AQUELE 
+
+'SIZE IN EFS STANDARD' ,
+
+
+de 12 kb-->  
+
+
+
+
+
+
+QUER DIZER QUE NOSSA DATA ESTÁ SENDO ARMAZENADA NO 
+
+
+EFS,
+
+SIM... nesse persistent volume....
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... AGORA DEVEMOS TESTAR SE NOSSA DATA 
+
+VAI DIMINUIR 
+
+
+
+
+SE PARARMOS NOSSOS PODS..
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS REMOVER NOSSOS PODS,
+
+BASTA REDUZIR O NÚMERO DE REPLICAS PARA '0'...
+
+
+
+
+
+
+
+
+-> SE FAZEMOS ISSO, TODOS OS 
+
+PODS SERÃO PARADOS...
+
+
+
+
+
+
+
+
+--> CERTO...
+
+
+
+
+
+
+
+
+E ASSIM QUE TODOS  OS PODS 
+
+
+
+TIVEREM PARADO,
+
+SE OS 
+RECRIARMOS,
+
+
+
+
+COM O AUMENTO DO NÚMERO DE REPLICAS PARA '1' ou '2' ou '3',
+
+
+
+
+
+
+
+
+
+__ BRAND NEW PODS SERÃO CRIADOS,
+
+
+E, 
+
+
+TRADICIONALMENTE,
+
+
+
+ISSO 
+
+
+
+
+FARIA COM QUE 
+
+TODA A DATA NOS CONTAINERS SERIA PERDIDA...
+
+
+
+
+
+
+
+
+
+
+
+MAS COM NOSSO VOLUME FUNCIONANDO, A DATA DEVE  FICAR LÁ DENTRO... --> COMO ESSE É UM 
+
+PERSISTENT VOLUME,
+
+
+
+A __ DATA__ DESSE VOLUME E O POD SÃO INDEPENDENTES 
+
+
+
+DESSE POD ESPECÍFICO, AO POD QUE FOI ATTACHEADO... 
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE 
+
+
+
+O LAUNCH DE NOVOS PODS 
+
+
+AINDA DEVE NOS DAR ACESSO à DATA QUE SALVAMOS ANTERIORMENTE, A DATA QUE 
+
+SALVAMOS ANTERIORMENTE COM POD INSTANCES DIFERENTES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK, AUMENTAMOS O NÚMERO DE REPLICAS E 
+
+
+
+REAPLICAMOS O ARQUIVO 'users.yaml'...
+
+
+
+
+
+
+
+
+
+--> AINDA SEREMOS CAPAZES DE VER A DATA QUE TÍNHAMOS ANTES, COM 
+
+'/logs'...
+
+
+
+
+
+
+
+
+
+
+--> OK... QUER DIZER QUE O USO DAQUELE VOLUME
+
+FUNCIONA,
+
+E É ASSIM QUE 
+
+
+
+__ PODEMOS _ _ADICIONAR 1 VOLUME,
+
+QUANDO USAMOS 
+
+'EKS'...
+
+
+
+
+
+
+
+
+
+
+DE NOVO, APLICAMOS O QUE APRENDEMOS ANTES,
+
+COM O PERSISTENT VOLUME E ASSIM POR DIANTE,
+
+
+
+
+
+
+MAS AGORA 
+
+COM ESSE 
+
+
+
+EFS E ESSE DRIVER ESPECÍFICO 'EFS' (com o CSI)
+
+
+PARA USAR 
+
+
+
+ESSE VOLUME COM ESSE DEPLOYMENT,
+
+COM ESSE APP...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É CLARO QUE PODERÍAMOS USAR OUTROS VOLUME TYPES,
+
+
+COM OUTROS TIPOS DE DEPLOYMENT,
+
+
+SEM  O AWS/COM SISTEMAS DIFERENTES...
+
+
+
+
+
+
+
+
+
+
+
+EX: 'awsElasticBlockStore' --> É UM TIPO DE STORAGE DIFERENTE 
+
+DO  EFS QUE ESTAMOS USANDO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAS COM O 'CSI',
+
+PODEMOS USAR QUALQUER  
+
+
+
+TIPO _ DE THIRD PARTY VOLUME QUE 
+
+SUPORTA ESSA INTERFACE -------> O DRIVER 'AWS EFS'
+
+
+
+DA 
+
+
+AWS 
+
+SÓ FAZ MT SENTIDO DE SER USADO ASSIM,
+
+
+
+
+MAS VC PODE USAR QUALQUER OUTRO THIRD PARTY 
+
+DRIVER,
+
+
+
+
+
+
+
+
+
+que funciona nesse app..
+
+
+
+
+
+É ASSIM QUE PODEMOS ADICIONAR 1 VOLUME, COMO PODEMOS O UTILIZAR...
+
+
+
+
+
+
+
+
+
+
+
+E ISSO FUNCIONA...
+
+
+
+
+A ÚNICA DIFERENÇA, AQUI, É QUE ESSE VOLUME FOI DEPLOYADO EM 1 CLUSTER DE VERDADE EKS....
