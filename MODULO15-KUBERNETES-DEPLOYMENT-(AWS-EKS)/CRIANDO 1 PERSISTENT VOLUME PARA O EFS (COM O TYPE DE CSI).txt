@@ -1,0 +1,932 @@
+
+
+
+
+
+
+
+
+OK... AGORA DEVEMOS 
+
+
+
+
+
+
+
+
+
+
+ADICIONAR ESSE 'EFS FILE SYSTEM'
+
+
+COMO 
+
+1 VOLUME AO NOSSO CLUSTER CLOUD KUBERNETES...
+
+
+
+
+
+
+
+
+
+E, NO MOMENTO,
+
+
+ESSA INTEGRATION/DRIVER PROVIDENCIADA PELA AWS PARA O ELASTIC FILE SYSTEM 
+
+FUNCIONA 
+
+
+APENAS 
+
+
+COM 
+PERSISTENT 
+
+VOLUMES,
+
+POR ISSO 
+
+
+
+
+
+
+
+É 
+
+
+ESSE TIPO DE PERSISTENT VOLUME ( o resource) 
+
+QUE 
+O 
+PROFESSOR 
+
+
+ADICIONARÁ,
+
+
+NO NOSSO CÓDIGO/PROJECT FOLDER...
+
+
+
+
+
+
+
+
+-->  poderíamos adicionar esse resource na mesma yaml file que tínhamos antes..
+
+
+
+
+
+
+
+mas prefiro adicionar o persistent-volume em 1 arquivo separado...
+
+
+
+
+
+
+
+ok.. começo assim:
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kub-aws-pv
+spec:
+  hostPath:
+    path: /stories
+    type: DirectoryOrCreate
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  storageClassName: standard
+
+
+
+
+
+
+-----------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO....
+
+
+
+
+
+
+
+O QUE O PROFESSOR ESCREVEU?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO... MAS QUANTO À 'CAPACITY',
+
+
+
+
+
+
+
+
+
+
+NO CASO DA EFS,
+
+ISSO NÃO IMPORTA MT... ------> VC PODE ESPECIFICAR 1 CAPACITY 
+
+CUSTOM,
+
+MAS 
+
+ISSO 
+
+
+NÃO FAZ MT DIFERENÇA,
+
+
+PARA O EFS (pq ele é, justamente, elástico)....
+
+
+
+
+
+
+
+
+
+--> O volumeMode 
+
+
+
+
+
+DO VOLUME DEVERÁ SER 'FileSystem',
+
+
+PQ 
+
+ESSE É O TIPO DE FILE STORAGE DO EFS..
+
+
+
+
+
+
+
+em 'accessModes',
+
+
+
+COLOCAMOS 'ReadWriteMany'
+
+
+
+PQ  QUEREMOS QUE MÚLTIPLOS NODES CONSIGAM 
+
+USAR 
+
+
+ESSE VOLUME (
+
+
+    pq os pods 
+
+    podem acabar distribuídos 
+
+    ao longo de diferentes NODES... é uma possibilidade,
+
+    pq temos 2 nodes...
+)
+
+
+
+
+
+
+
+
+
+
+-. certo..
+
+
+
+
+
+no 'storageClassName',
+
+
+O PROFESSOR VAI QUERER DEIXAR 1 VALUE DE 'efs-sc'.. (e não 'standard')...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK, MAS AQUI ESCREVI ALGO ERRADO...
+
+
+
+
+
+
+EU COLOQUEI 
+
+'hostPath',
+
+MAS O QUE 
+
+
+REALMENTE SERÁ USADO É 'csi',
+
+
+
+AQUELE TYPE CUSTOM DE VOLUME,
+
+
+
+QUE USAREMOS PARA IMPLEMENTAR O EFS COM NOSSO CLUSTER KUBERNETES.
+
+
+
+
+
+
+
+
+
+
+ex:
+
+
+
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kub-aws-pv
+spec:
+  # hostPath:  ////isso é usado no CONTEXTO LOCAL, COM O MINIKUBE (esse type de 'hostPath')...
+  #   path: /stories
+  #   type: DirectoryOrCreate
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc # AQUI NÃO DEVEMOS USAR 'standard', e sim 'efs-sc', pq vamos usar o ELASTIC FILE SYSTEM...
+  csi:
+    driver: 
+    volumeHandle: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... FICAMOS COM ESSA ESTRUTURA..
+
+
+
+
+
+
+-> em 'driver',
+
+
+colocamos o driver name,... ->  SERÁ 
+
+
+
+'efs.csi.aws.com' ------> É UM IDENTIFIER QUE 
+
+DEVE SER PASSADO,
+
+COMO 
+
+
+
+OBSERVAMOS NOS DOCS...
+
+
+
+
+
+
+
+
+
+EM 'volumeHandle',
+
+
+
+
+DEVEMOS COLOCAR __ O 'FILESYSTEM ID',
+
+
+
+
+que será algo como 'fs-59d14521',
+
+
+
+
+E QUE 
+
+é 
+ENCONTRADO LÁ NA AWS,
+
+
+
+
+NA COLUNA 
+
+'file system id'
+
+PARA 
+
+SEU 
+
+
+
+VOLUME CRIADO NO ELASTIC FILE SYSTEM...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS O PROFESSOR VOLTA AO TÓPICO DO 'storageClassName' -->
+
+
+
+
+
+ANTERIORMENTE, NO MINIKUBE (LOCAL DEVELOPMENT), 
+
+
+usamos 
+
+o 
+
+'STANDARD'..
+
+
+
+
+
+
+
+
+
+
+
+-> MAS AQUI PRECISAMOS 
+
+
+
+DE 1 STORAGE CLASS ESPECÍFICA PARA 
+
+O ELASTIC 
+
+FILE SYSTEM ------>  ENTRETANTO,
+
+NO MOMENTO,
+ISSO 
+
+NÃO ESTARÁ 
+
+PRESENTE NO NOSSO 
+
+
+
+KUBERNETES CLUSTER -> PODEMOS VISUALIZAR 
+
+ISSO 
+
+
+com 
+
+'kubectl get sc'...
+
+
+
+
+
+
+
+
+
+----> para visualizarmos essa class,
+
+
+
+
+
+PODEMOS IR ATÉ 
+
+O REPOSITORY DO DRIVER DE 'AWS EFI CSI',
+
+
+
+
+
+NO GITHUB,
+
+
+
+
+
+
+mas parece que essa coisa de 'storageClass'
+
+
+já foi deprecada,
+
+não está mais lá...
+
+
+
+
+
+
+
+
+basta deixar o 
+
+'storageClassName'
+
+
+
+
+COMO _ EMPTY....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok...
+
+
+
+
+
+
+
+AGORA TEMOS O PERSISTENT VOLUME SETTADO... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+BASTA _ ACESSARMOS ESSE VOLUME DENTRO DE NOSSOS CONTAINERS,
+
+
+
+por meio de 
+
+1 
+
+'persistent volume claim'...
+
+
+
+
+
+
+
+
+
+--> também criei o PERSISTENT VOLUME CLAIM:
+
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: aws-eks-persistent-volume-claim
+spec:
+  volumeName: kub-aws-pv
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 128M
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---> PARA ISSO, para usar o persistent volume claim,
+
+
+DEVEMOS IR ATÉ O RESOURCE DE 'users.yaml',
+
+LÁ 
+
+EM 'deployment',
+
+
+
+E AÍ ADICIONAR 1 KEY DE 'volumes',
+
+
+EM QUE 
+
+VAMOS ADICIONAR 
+
+
+
+
+ASSIM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+spec:
+  selector:
+    app: users
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+        - name: users-api
+          resources:
+            limits:
+              memory: 128Mi
+              cpu: 200m
+          image: academind/kub-dep-users:latest
+          env:
+            - name: MONGODB_CONNECTION_URI
+              value: 'mongodb+srv://maximilian:wk4nFupsbntPbB3l@cluster0.ntrwp.mongodb.net/users?retryWrites=true&w=majority'
+            - name: AUTH_API_ADDRESS
+              value: 'auth-service.default:3000'
+      volumes:
+        - name: story-volume
+          persistentVolumeClaim:
+            claimName: aws-eks-persistent-volume-claim
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO, NOSSO CONTAINER VAI USAR ESSE PERSISTENT-VOLUME 
+
+
+
+
+
+
+COMO VOLUME...
+
+
+
+
+
+
+
+
+
+
+IMPORTANTE!!! -> OS 'VOLUMES' de tipo 'persistent-volume-claim' DEVEM SER ADICIONADOS NO MESMO NÍVEL DOS CONTAINERS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK.. MAS AINDA NÃO TERMINAMOS....
+
+
+
+
+
+
+PQ 
+
+ISSO ADICIONOU O VOLUME, SIM,
+ MAS NÃO 
+ BINDOU ISSO A PATH ALGUM DENTRO DO CONTAINER....
+
+
+
+
+
+
+
+
+
+
+ --> PARA ISSO,
+
+
+ PRECISAMOS  escrever 'volumeMounts'
+
+
+
+ LÁ NO CONTAINER EM QUE QUEREMOS USAR ESSE VOLUME,
+
+
+ e aí 
+ devemos 
+
+ ESPECIFICAR 
+
+ O NOME DO volume/persistent-volume claim que vamos querer usar,
+
+  
+  E AÍ 
+  O PATH  ('mountPath')....
+
+  D
+  ENTRO DELE...
+
+
+
+
+  tipo assim:
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+        - name: users-api
+          volumeMounts:
+            - name: users-volume
+              mountPath: /app/users
+          resources:
+            limits:
+              memory: 128Mi
+              cpu: 200m
+          image: academind/kub-dep-users:latest
+          env:
+            - name: MONGODB_CONNECTION_URI
+              value: 'mongodb+srv://maximilian:wk4nFupsbntPbB3l@cluster0.ntrwp.mongodb.net/users?retryWrites=true&w=majority'
+            - name: AUTH_API_ADDRESS
+              value: 'auth-service.default:3000'
+      volumes:
+        - name: users-volume
+          persistentVolumeClaim:
+            claimName: aws-eks-persistent-volume-claim
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK...
+
+
+
+ISSO DEVE SER TUDO.... ESSA É A CONFIG QUE PRECISAMOS USAR, 
+
+
+PARA ADICIONAR ESSE VOLUME EFS 
+
+AO NOSSO KUBERNETES CLUSTER...
+
+
+
+
+
+
+
+--> CRIAMOS:
+
+
+
+1) UM PERSISTENT VOLUME 
+
+
+
+2) 1 PERSISTENT VOLUME CLAIM 
+
+
+
+
+3) E AÍ CONECTAMOS TUDO ISSO AO NOSSO POD,
+
+E, FINALMENTE,
+
+
+AO CONTAINER... (com 'volumeMounts')...

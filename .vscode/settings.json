@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "kubernetes://schema/apps/v1%40deployment": "file:///a%3A/projeto15-DOCKER/MODULO15-KUBERNETES-DEPLOYMENT-%28AWS-EKS%29/kubernetes-deploy-project/kubernetes/users.yaml"
+    }
+}
