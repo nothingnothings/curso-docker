@@ -1,0 +1,826 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ok... agora vamos começar com 1 comando....
+
+
+
+
+
+
+
+
+
+
+-> VAMOS APLICAR NOSSOS ARQUIVOS YAML..
+
+
+
+
+
+
+
+
+
+-> ESSA É A GRANDE IDEIA POR TRÁS DO KUBERNETES:
+
+
+
+QUE NÓS, DEPOIS DE CRIARMOS 1 CLUSTER (alguns passos, bem rápidos),
+
+
+
+
+
+PODEMOS USAR A CONFIGURATION QUE USAMOS ANTES, COM O MINIKUBE,
+
+E AÍ 
+
+
+__PEGÁ-LA 'COMO ESTÁ' 
+
+E __ A APLICARMOS 
+
+
+
+DIRETAMENTE AO CLUSTER.... ---------> NÓS NÃO TEMOS QUE ADICIONAR QUALQUER 
+
+INSTRUCTION ESPECÍFICA AO AWS NESSE DEPLOYMENT,
+
+E NÃO 
+
+
+PRECISAMOS FAZER MAIS NADA... APENAS PRECISAMOS 
+
+
+
+APLICAR ESSES ARQUIVOS YAML,
+
+
+PARA TER NOSSO APP UP AND RUNNING,
+
+
+NO AWS EKS....
+
+
+
+
+
+
+
+
+
+
+
+--> PARA ISSO,
+
+DEVEMOS 
+
+
+RODAR, NO NOSSO TERMINAL CONECTADO AO KUBERNETES CLUSTER DO AWS,
+
+
+
+
+
+
+
+
+
+kubectl apply -f auth.yaml -f users.yaml...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE APERTAMOS ENTER,
+
+
+ISSO CRIA ESSES 2 DEPLOYMENTS E SERVICES NA AWS EKS..
+
+
+
+
+
+
+
+
+
+
+-> se colocamos 'kubectl get deployments',
+
+
+
+
+
+
+VEREMOS OS 2 DEPLOYMENTS 
+
+
+
+NO NOSSO TERMINAL....
+
+
+
+
+
+
+
+
+--> OS 2 DEPLOYMENTS ESTARÃO UP AND RUNNING...
+
+
+
+
+
+
+
+
+
+
+-> PODEMOS RODAR 'kubectl get pods'
+
+PARA VERMOS 
+
+
+
+NOSSOS PODS (os 2)..
+
+
+
+
+
+
+
+
+
+
+-> MAS SE DIGITARMOS 
+
+
+'kubectl get services',
+
+
+
+
+
+
+
+
+
+VEREMOS ALGO INTERESSANTE  SOBRE OS SERVICES 
+
+
+
+
+QUE POSSUEM 'LOAD BALANCER'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> ANTERIORMENTE,
+
+COM O 'MINIKUBE',
+
+
+
+
+
+
+
+
+
+
+
+A COLUNA DE 'EXTERNAL-IP' 
+
+
+
+
+__ SEMPRE FICAVA '<pending>'...
+
+
+
+
+
+
+
+--> E TÍNAMOS QUE RODAR 'minikube service <service-name>'
+
+
+
+
+PARA REALMENTE  ABRIR AQUELE SERVICE DE TYPE 'LoadBalancer' AO MUNDO EXTERNO (
+
+
+    mundo externo, naquele caso, era nossa própria local machine, em que estava rodando o minikube-virtual machine...
+)
+
+
+
+
+
+
+
+
+
+
+
+-> MAS COM O AWS, ISSO É DIFERENTE -------> GANHAMOS UMA URL,
+
+URL QUE PODEMOS SIMPLESMENTE 
+
+USAR 
+
+PARA _ ENVIAR __ HTTP REQUESTS....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> É UMA URL COMO 
+
+
+
+
+
+
+
+a3112312dihjxizncvjkvhbiqsoihrfioghaikshd-1234214asdfas.us-east-2.elb.amazonaws.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------> PODEMOS, POR EXEMPLO, USAR ESSA 
+
+
+URL NO POSTMAN...
+
+
+
+
+
+
+---> PODEMOS ENVIAR 
+
+
+
+
+ REQUEST A 
+
+
+
+ ''a3112312dihjxizncvjkvhbiqsoihrfioghaikshd-1234214asdfas.us-east-2.elb.amazonaws.com/signup'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ----> ENVIAMOS A DATA JSON DE 
+
+
+ '{
+    "email": "test@test.com",
+    "password": "testers"
+ }'
+
+
+
+
+
+
+
+
+
+
+ CERTo...
+
+
+
+
+
+
+
+
+ AÍ MANDAMOS SEND...
+
+
+
+
+
+
+
+
+
+ --> GANHAMOS DE VOLTA UMA RESPONSE NOS DIZENDO QUE O USER FOI CRIADO....
+
+
+
+
+
+
+
+
+
+
+
+
+ ----> SIGNIFICA QUE 
+
+
+ ESSE SERVICE REALMENTE 'ABRIU' NOSSO APP AO MUNDO EXTERNO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ------> podemos também criar outro post request,
+
+
+
+
+
+
+para a route de 
+
+
+
+''
+
+
+
+
+
+
+
+
+ 
+a3112312dihjxizncvjkvhbiqsoihrfioghaikshd-1234214asdfas.us-east-2.elb.amazonaws.com/login 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+certo... significa que nosso service, e nosso pod/node de 
+
+
+
+'users'
+
+
+está funcionando...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------> ok... ESSE É NOSSO APP,
+
+DEPLOYDO COM O KUBERNETES..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> AQUI PERCEBEMOS A GRANDE VANTAGEM 
+
+DO KUBERNETES ------> A MESMA CONFIG QUE 
+
+
+USAMOS COM O MINIKUBE 
+
+
+
+
+
+__ FUNCIONA 'JUST LIKE THIS'
+
+COM O AWS...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> SE VISUALIZARMOS O CONSOLE EC2,
+
+
+
+
+
+
+
+
+
+
+
+
+VEREMOS QUE _ UM LOAD BALANCER FOI CRIADO _ AUTOMATICAMENTE 
+
+
+
+PELO AWS EKS,
+
+
+
+
+
+
+TUDO PQ DEPLOYAMOS ESSE SERVICE COM TYPE DE 'LOAD BALANCER'...
+
+
+
+
+
+
+
+
+
+--> e a url que esse service nos dá é a mesma url 
+
+
+que enxergamos 
+
+
+na GUI da aws, nos load balancers...
+
+
+
+
+
+
+
+
+
+
+
+ E ESSA É A GRANDE COISA SOBRE O KUBERNETES,
+
+ ESPECIALMENTE 
+
+ QUANDO 
+
+
+ O UTILIZAMOS COM MANAGED SERVICES,
+
+
+ COMO O EKS..
+
+
+
+
+
+
+
+
+
+
+
+ --> FOI SUPER SIMPLES  DEPLOYAR ESSE BASIC APP,
+
+
+ E NÃO TIVEMOS DE 
+
+
+SEGUIR MTAS ETAPAS EXTRAS ------> OS PASSOS QUE SEGUIMOS, NA AWS,
+
+NÃO FORAM MT DIFÍCEIS...
+
+
+
+
+
+
+
+
+
+
+
+-> BASTA APLICAR AS COISAS QUE VIMOS NOS ÚLTIMOS MÓDULOS,
+
+PARA TER 
+
+NOSSA PRÓPRIA 
+
+
+
+
+
+KUBERNETES APPLICATION- ---> E SE FIZERMOS ALGUMA MUDANÇA NESSES ARQUIVOS YAML,
+
+
+PODEMOS SÓ RODAR 
+
+
+
+
+'kubectl apply -f nome-do-arquivo',
+
+
+
+
+
+
+
+E ISSO SERÁ AUTOMATICMAENTE APLICADO...
+
+
+
+
+
+
+
+
+
+
+
+
+-> POR EXEMPLO, SE O PROFESSOR AUMENTAR O NÚMERO DE REPLICAS,
+LÁ EM 
+
+'users.yaml',
+
+
+
+
+VAMOS AUMENTAR O NÚMERO DE PODS,
+
+
+DISTRIBUÍDOS 
+
+AO LONGO DOS 
+
+AVAILABLE 
+
+NODES,
+
+
+
+
+
+tudo automaticamente,
+
+
+se 
+
+digitarmos 
+
+
+'kubectl apply -f nome-do-arquivo'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E PODS NÃO SÃO NODES.. -> OS PODS 
+
+
+SÃO DISTRIBUÍDOS AO LONGO DOS SEUS NODES..
+
+
+
+
+
+
+
+
+
+
+
+ESSE É O AMAZON EKS..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.... TAMBÉM REPARE QUE 
+
+AQUELA 
+
+
+COMMUNICATION 
+
+
+
+
+DO 'USERS API' 
+
+
+com a 'AUTH API',
+
+interna,
+
+
+no nosso cluster,
+
+'WORKS JUST FINE',
+
+
+
+só tivemos 
+
+de escrever aquela env variable de 
+
+
+
+
+'''            
+            - name: AUTH_API_ADDRESS
+              value: 'auth-service.default:3000'
+
+
+''
+
+(e settar o type do service como 'ClusterIP')..
+
+
+
+
+
+
+
+
+
+
+ISSO PQ TEMOS ESSE NAMESPACE DEFAULT DE 'default'
+
+NO 'EKS' 
+
+TAMBÉM...
+
+
+ele também é criado, lá, exatamente como no minikube...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO QUER DIZER QUE TUDO ISSO 'JUST WORKS',
+
+
+SEM PRECISARMOS MEXER EM MAIS DETALHES --> ESSA É EXATAMENTE 
+
+A IDEIA 
+  
+
+POR TRÁS DO KUBERNETES:
+
+
+
+
+QUE NÓS TENHAMOS 1 STANDARDIZED CONFIGURATION,
+
+QUE PODEMOS APLICAR A QUALQUER KUBERNETES CLUSTER,
+
+
+PARA TRAZER NOSSA KUB-MANAGED APP À VIDA... (em qualquer cloud provider de respeito)...
