@@ -1,0 +1,837 @@
+
+
+
+
+
+
+
+
+
+
+
+
+ok... conseguimos nosso cluster,
+
+e agora conseguimos usar o 'cubektl' com ele...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mas uma coisa importante está faltando.... nossos worker nodes estão 'missing'...
+
+
+
+
+
+
+
+
+
+-> PARA OS ADICIONAR, 
+
+
+
+OS CONCRETE WORKER NODES,
+
+
+
+DEVEMOS IR NA SECTION DE 'COMPUTE'
+
+
+
+
+
+E DEVEMOS ADICIONAR 1 NODE GROUP....
+
+
+
+
+
+
+
+
+
+
+--> DEVEMOS DAR 1 NOME A ESSE NODE GROUP --> 
+
+
+
+
+
+
+
+'demo-dep-nodes'..
+
+
+
+
+
+
+
+
+
+
+-> DEPOIS PRECISAMOS DAR 1 'IAM ROLE' a esse node group --> antes fizemos isso para o cluster em si,
+
+
+mas agora faremos isso 
+
+
+PARA OS NODES..
+
+
+
+
+
+
+
+
+
+
+
+
+- O CLUSTER PRECISAVA DE ALGUMA PERMISSÃO PARA FAZER COISAS POR TRÁS DAS CENAS (o role específico)...
+
+
+
+
+
+
+
+
+- Os nodes também precisam de permissões  específicas,
+
+para que consigam escrever log files,
+
+conectar-se a outros services 
+
+da aws, usados no nosso código -----------> É POR ISSO QUE PRECISAMOS ATTACHAR 
+
+1 
+
+
+OUTRO ROLE AQUI....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK... ISSO PQ AS MACHINES QUE EXISTIRÃO NESSE NODE  GROUP PRECISARÃO DE 
+
+PERMISSÃO...
+
+
+
+
+
+
+
+
+
+-> O LAUNCHING DAS INSTANCES VAI ACONTECER AUTOMATICAMENTE, PELO AWS,
+
+
+
+MAS AINDA PRECISAMOS SETTAR AS PERMISSIONS QUE ESSAS INSTANCES TERÃO....
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> aBRIMOS O CONSOLE 'IAM' EM UMA NOVA ABA,
+E AÍ 
+CRIAMOS 1 NOVA ROLE...
+
+
+
+
+
+
+
+
+
+
+
+
+-> CLIQUE EM 'COMMON USE CASES' --> EC2 ----> PERMISSIONS 
+
+
+
+
+
+
+
+
+
+
+
+--> dEVEMOS ADICIONAR 1 PUNHADO DE PERMISSIONS --> PRECISAMOS PROCURAR 
+
+
+
+PELA POLICY DE 'AmazonEKSWorkerNodePolicy' --> 
+ESSA POLICY 
+
+ADICIONA ALGUMAS PERMISSIONS NECESSÁRIAS AOS WORKER NODES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> TAMBÉM ADICIONE A POLICY DE 
+
+
+'AmazonEKS_CNI_policy'..
+
+
+
+
+
+
+
+
+
+
+
+
+-> também precisamos da policy 
+
+
+'AmazonEC2ContainerRegistryReadONly'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+essas policies free 
+
+
+
+
+DÃO ALGUMAS PERMISSIONS AOS SEUS NODES,
+
+TUDO 
+
+PARA QUE CONSIGAM PULLAR IMAGES E RODAR SUCCESSFULLY...
+
+
+
+
+
+
+
+
+
+AS 3 POLICIES NECESSÁRIAS, NESSE ROLE DO 'eksNODEGROUP' (nome do role) QUE VC VAI CRIAR:
+
+
+
+
+AmazonEKSWorkerNodePolicy'
+'AmazonEKS_CNI_policy'..
+'AmazonEC2ContainerRegistryReadONly'..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CERTO...
+
+
+
+
+
+
+
+
+
+
+
+ISSO FEITO, SELCIONE ESSE ROLE LÁ NO SEU 'NODE GROUP CONFIGURATION'....
+
+
+
+
+
+
+
+
+
+
+
+
+COM ISSO FEITO, VC PODE DEIXAR TODOS OS OUTROS DEFAULTS,
+
+
+
+
+E AÍ CLICAR NEXT...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> OK.. .AÍ TEMOS O 'SET COMPUTE AND SCALING CONFIGURATION'...
+
+
+
+
+
+
+
+
+
+
+
+
+--> AÍ VC CONFIGURA 'QUAIS TIPOS DE EC2 INSTANCES 
+
+SERÃO LAUNCHED E MANAGEADAS PELO AWS, NO SEU BEHALF'...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->  vamos deixar a image do 'amazon linux 2',
+
+
+
+
+mas, para os instance types,
+
+
+vamos usar 1 instance 
+
+'t3.small' (
+
+    É MELHOR QUE O MICRO,
+
+    PQ O SCHEDULE DE PODS 
+
+    EM 'MICRO'
+
+    PODE FALHAR... E SEU APP PODE ACABAR EM 1 STATE DE 'PENDING'...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+----> COMECE COM 't3.small'...
+
+
+
+
+
+
+
+
+
+CERTO....
+
+
+
+
+
+
+
+AÍ PODEMOS CONTROLAR NOSSA 'SCALING' POLICY... -----> NÃO VEREMOS 
+
+SCALING AQUI,
+
+
+
+
+
+
+
+
+MAS __ O PROFESSOR ESTÁ FELIZ COM O START COM 2 NODES...
+
+
+
+
+
+
+
+
+
+
+
+'''NODES''' E NÃO 'PODS'' --> PODEMOS TER MAIS DO QUE 2 PODS,
+
+SIM,
+
+
+
+MAS 
+
+OS 
+'NODES'
+
+
+
+SÃO SIMPLESMENTE AS MÁQUINAS EM QUE SEUS PODS RODAM...
+
+
+
+
+
+
+
+
+
+
+
+
+-> COM O MINIKUBE,
+
+TÍNHAMOS APENAS 1 DUMMY NODE, NAQUELA VIRTUAL MACHINE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> AGORA TEMOOS 2 ACTUAL NODES,
+
+2 DIFERENTES MÁQUINAS,
+
+
+
+EM QUE 
+
+NOSSOS PODS SERÃO DISTRIBUÍDOS AUTOMATICAMENTE,
+
+
+PELO KUBERNETES..
+
+
+
+
+
+
+
+
+
+--> O KUBERNETES FAZ ISSO DE MODO AUTO,
+
+
+ELE:
+
+
+
+
+1) STARTA OS PODS 
+
+
+
+2) MANAGEIA OS PODS 
+
+
+
+3) DISTRIBUI OS PODS AO LONGO DESSES NODES (MACHINES)...
+
+
+
+
+
+
+
+
+
+
+
+------> E A MAIOR QUANTIDADE DE NODES QUE VC TEM,
+
+MAIOR A QUANTIDADE DE ESPAÇO PARA SEUS PODS SEREM DISTRIBUÍDOS...
+
+
+
+
+
+
+
+
+
+
+-> MAS QUANTO MAIS NODES,
+
+MAIS CARO SEU APP...
+
+
+
+
+
+
+
+
+
+--> OK.... DEPOIS, TEMOS 'NODE GROUP NETWORK CONFIGURATION'..
+
+
+
+
+
+
+
+
+
+
+
+
+--> PODEMOS DESABILITAR O 'REMOTE ACCESS TO NODES' --------> ISSO VAI IMPEDIR O CONNECT 
+
+DIRETO A ESSAS INSTANCES EC2 (os nodes) 
+
+COM SSH,
+
+
+
+O QUE É BOM ----------> O PROFESSOR QUER QUE O PRÓPRIO EKS 
+
+
+
+
+MANAGEIE NOSSOS NODES/INSTANCES PARA NÓS,
+
+
+POR ISSO ELE MARCA ESSA OPÇÃO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... AÍ ELE VAI CRIAR ESSE NODE GROUP... 
+
+
+
+
+
+
+
+
+
+
+
+
+O CREATE DESSE NODE GROUP VAI GERAR 1 PUNHADO DE NODE INSTANCES,
+
+E ENTÃO 
+
+
+
+ADICIONARÁ 
+
+ESSAS NODE INSTANCES 
+
+NESSE CLUSTER...
+
+
+
+
+
+
+
+
+
+
+
+
+--> MAS O EKS VAI FAZER MAIS DO QUE APENAS ADICIONAR ESSAS INSTANCES E LANÇÁ-LAS, DENTRO DO SEU CLUSTER:
+
+
+
+
+
+
+
+
+1) VAI INSTALAR TODO O SOFTWARE KUBERNETES NESSAS MÁQUINAS (KUBELETS, KUBE PROXY, ETC)...
+
+
+
+
+
+
+
+
+
+2) VAI INSTALAR TUDO ISSO NESSA NETWORK,
+
+
+E AÍ 
+
+FARÁ TODO ESSE 'WIRING'
+
+ENTRE AS MÁQUINAS, PARA NÓS.... TERÍAMOS DE FAZER ISSO POR CONTA PRÓPRIA, SE ESSE SERVICE 
+
+NÃO EXISTISSE (com coisas como 'kops')...
+
+
+
+
+
+
+
+
+esperamos nosso node group ser criado,
+
+
+
+
+para então tentarmos fazer o deploy de nosso app 
+
+
+nesse cluster....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> OK.... NOSSO NODE GROUP ESTARÁ ACTIVE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> PARA CHECAR ISSO, VC PODE IR 
+
+LÁ 
+
+
+
+NA PÁGINA DE 'EC2',
+
+
+
+
+
+PARA VER NOSSAS INSTANCES,
+
+AS INSTANCES EC2 QUE FORAM CRIADAS 
+
+
+PARA NÓS, AUTOMATICAMENTE, PELO EKS...
+
+
+
+
+
+
+
+
+
+---> É ISSO QUE O PROFESSOR ESTAVA QUERENDO DIZER,
+
+QUANDO DIZIA 
+
+
+
+QUE 
+
+
+
+'''''EKS VAI TRABALHAR JUNTO COM OUTROS SERVICES OFERECIDOS PELA AWS,
+PARA TRAZER SEU CLUSTER TO LIFE''' --------> POR EXEMPLO,,
+
+
+
+
+AQUI O AWS LANÇOU 2 EC2 INSTANCES PARA NÓS..
+
+
+
+
+
+
+
+
+
+
+NO EC2 DASHBOARD,
+
+
+SE VC CLICAR EM 'LOAD BALANCERS',
+VC VERÁ 
+
+QEU 
+
+AINDA 
+NÃO TEMOS NENHUM LOAD BALANCER... ISSO SE TORNARÁ IMPORTANTE,
+
+MAIS TARDE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> SE VOLTAMOS NO 'EKS',
+
+
+
+
+
+
+
+PERCEBEMOS QUE O CLUSTER ESTÁ RODANDO, E QUE TEM UMA 
+
+
+
+NETWORK ASSIGNADA A SI... ------> E ELE TEM NODES RODANDO DENTRO DESSA NETWORK,
+
+
+COM TODAS AS TOOLS 
+
+
+KUBERNETES INSTALADAS NESSAS MÁQUINAS..
+
+
+
+
+
+
+
+
+
+
+--> OK... AGORA É COMO SE TIVÉSSEMOS O MINIKUBE,
+
+MAS NÃO NO NOSSO LOCAL SYSTEM,
+
+
+PQ O CLUSTER EXISTE NA NUVEM... MAS AINDA VAMOS ENVIAR OS COMANDOS COM 'kubectl'...
+
