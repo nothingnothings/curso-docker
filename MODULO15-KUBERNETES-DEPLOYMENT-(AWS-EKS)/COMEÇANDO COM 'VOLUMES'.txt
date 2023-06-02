@@ -1,0 +1,640 @@
+
+
+
+
+
+
+
+
+
+
+--> ok... temos nosso app UP AND RUNNING NO NOSSO CLUSTER, AQUI...
+
+
+
+
+
+
+
+
+
+AGORA DEVEMOS __ 'MOVE ON' 
+
+
+E VER O TÓPICO DE VOLUMES...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> NÓS VIMOS VOLUMES EM 1 MODULE ANTERIOR...
+
+
+
+
+
+
+
+
+--> E, LÁ, O PROFESSOR TAMBÉM FALOU SOBRE AQUELES 'TYPES'
+
+DE VOLUMES..
+
+
+
+
+
+
+
+
+
+-----> USAMOS OS TYPES DE 'emptyDir' 
+e 
+
+
+'hostPath'
+
+
+
+
+EM DEVELOPMENT, PARA TESTES...
+
+
+
+
+
+
+
+
+
+
+
+
+--> O PROFESSOR TAMBÉM MENCIONOU QUE AQUELE TYPE DE 'csi'
+
+
+SE TORNARIA IMPORTANTE, MAIS TARDE...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--> BEM, AGORA É 'MAIS TARDE'...
+
+
+
+
+
+
+
+
+
+
+
+--> ISSO PQ O APP QUE DEPLOYAMOS, NO MOMENTO,
+
+
+
+NÃO _ TEM NENHUM CÓDIGO QUE ESCREVE 1 ARQUIVO AO HARD DRIVE ->  PQ ATÉ AGORA USAMOS O 'MONGODB' PARA ARMAZENAR DADOS, NESSE APP.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-. OK... APESAR DISSO,
+
+
+
+PODEMOS ASSUMIR QUE TEREMOS 1 CÓDIGO QUE FAZ WRITE 
+
+DE CÓDIGO 
+A
+ 
+
+ ALGUM ARQUIVO...
+
+
+
+
+
+
+
+
+
+
+
+ DIGAMOS QUE TEMOS 1 CÓDIGO QUE FAZ WRITE DE DATA A UM FOLDER DE '/users',
+
+
+
+
+
+dentro do folder de '/app'
+
+
+
+de nosso app... -------> TALVEZ 
+
+
+ARMAZENA DADOS DOS USERS EM 1 ARQUIVO DE TEXTO... --> SE TIVERMOS 1 FEATURE ASSIM,
+
+TALVEZ SEJA 
+
+
+
+BOM USAR 1 VOLUME,
+PARA 
+
+PERSISTIR A DATA 
+
+
+
+
+NESSE 'FICTIONAL USERS FOLDER',
+
+
+DENTRO DE NOSSO PROJECT FOLDER...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK, MAS O QUE FARÍAMOS, NORMALMENTE?
+
+
+
+
+
+
+
+
+
+
+
+-> BEM, NO DOCKER-COMPOSE ADICIONARÍAMOS 1 'named volume'...
+
+
+
+
+
+
+
+
+
+
+
+--> MAS AQUI QUEREMOS FOCAR NO KUBERNETES...
+
+
+
+
+
+
+
+
+
+
+
+-> NO KUBERNETES,
+TEMOS 2 MAIN WAYS DE ADICIONAR 1 VOLUME...
+
+
+
+
+
+
+
+
+
+
+
+
+PODEMOS:
+
+
+
+
+
+
+1) ADICIONAR 1 REGULAR VOLUME,
+
+QUE FICA 
+
+ADICIONADO NO TEMPLATE DE NOSSO POD (fica vinculado a algum de nossos pods/conjunto de pods) 
+
+
+(É O APPROACH MENOS USADO)
+
+
+
+
+
+
+
+
+
+2) OU ADICIONAR 1 'PERSISTENT VOLUME',
+
+E AÍ
+
+
+ADICIONAR 'PERSISTENT VOLUME CLAIMS'
+
+
+
+NOS NOSSOS PODS...  PQ ESSES PERSISTENT VOLUME CLAIMS REALMENTE FICAM INDEPENDENTES 
+
+
+
+DOS PODS E DOS WORKER NODES 
+
+
+(
+
+    É O APPROACH MAIS USADO NA REALIDADE...
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+O PROFESSOR VAI ADICIONAR O TIPO 2... -> ISSO PQ __ O TIPO ESPECÍFICO DE VOLUME QUE 
+
+ELE SETTARÁ AQUI, NO MOMENTO,
+
+VAI FUNCIONAR APENAS COM PERSISTENT VOLUMES MESMO...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS DE VOLTA AO TÓPICO DOS VOLUMES, EM GERAL..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+BEM, EM DEVELOPMENT,
+
+USAMOS O 'EMPTYDIR'
+
+INICIALMENTE --> ELE É ÚTIL EM LOCAL DEVELOPMENT 
+
+
+PQ 
+
+
+
+ELE CRIA 1 'NOVO EMPTY DIRECTORY'
+
+PARA CADA POD... ---------> MAS NÃO É BOM PARA CASOS EM QUE 
+
+TEMOS 
+
+
+MÚLTIPLOS PODS UP AND RUNNING, OU 
+
+
+SE ENTÃO RESETTAMOS NOSSO POD (
+    pq 
+
+    a data de nosso folder sempre é 
+
+    RECRIADA COMO 1 'EMPTY DIRECTORY'...
+)
+
+
+
+
+
+
+
+
+
+
+--> OK... JÁ 'hostPath' FOI MT ÚTIL LOCALMENTE, COM O MINIKUBE,
+PQ 
+
+
+ISSO 
+
+
+AÍ 
+
+
+CRIOU 1 PATH NO NOSSO NODE,
+
+
+
+E AÍ USOU __ ESSE PATH __ COMO 1 VOLUME.... E, COMO O NODE NÃO É SHUT DOWN 
+
+
+
+QUANDO 1 POD É REMOVED,
+
+
+
+ISSO __ QUER _ DIZER QUE 
+
+
+
+
+ESSE VOLUME SOBREVIVE 
+
+
+
+
+A POD RESTARTS, O QUE QUER DIZER QUE MÚLTIPOS PODS ACABARAM CAPAZES 
+
+DE COMPARTILHAR '''ONE AND THE SAME VOLUME'''..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK... MAS ISSO NÃO SERÁ UMA OPÇÃO, AQUI...
+
+
+
+
+
+
+
+
+
+---> PQ TEREMOS MAIS DE 1 NODE.. ---> NO NOSSO CASO, TEMOS 2 NODES...
+
+
+
+
+
+
+
+
+
+
+
+
+--> NA GRANDE MAIORIA DOS KUB CLUSTERS NA CLOUD,
+
+VC TERÁ
+ 
+ MAIS 
+
+ DE 
+
+ 1 NODE ....
+
+
+
+
+
+
+
+
+
+
+--> 1 HOST PATH NÃO SERIA BOM NESSE CASO,
+
+
+PQ 
+
+
+
+
+O VOLUME SERIA CRIADO EM APENAS 1 NODE,
+E NÃO 
+
+NO OUTRO... -------> MAS VC NÃO SABE 
+
+
+'''EM QUE 
+
+LUGAR SEUS PODS SERÃO CRIADOS''' -> PQ O KUBERNETES 
+
+
+
+AUTOMATICAMENTE FAZ O MANAGE DESSE POD CREATION,
+
+
+E TENTA 
+
+
+
+CRIAR O VOLUME EM 1 NODE QUE NÃO TEM MT TRABALHO 
+
+NO MOMENTO (
+
+    isso quer dizer que o NODE 
+
+
+    EM QUE O POD É CRIADO 
+
+
+    PODE TALVEZ _ NÃO TER O 'HOSTPATH' A QUE VC QUER BINDAR SEU VOLUME... E MESMO 
+
+    SE TIVESSE 
+
+    ESSE PATH,
+
+    MÚLTIPLOS NODES POSSUIRÍAM 
+
+    DIFERENTE DATA EM SEUS HARD DRIVES ---------> POR ISSO 
+
+
+    O 'hostPath'
+
+
+    só é útil quando vc 
+
+    tem 1
+     
+     SINGLE NODE SETUP,
+
+     
+
+     QUE É ALGO QUE ACONTECE TIPICAMENTE EM DEVELOPMENT...
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+-> MAS O STORAGE TYPE DE 'csi' É ÚTIL.... -> CONTAINER STORAGE INTERFACE --> É UM 
+
+VOLUME 
+
+TYPE SUPER FLEXÍVEL,
+
+EM QUE 
+
+THIRD-PARTY DEVS 
+
+PODEM 
+ADICIONAR SUAS 
+PRÓPRIAS 
+
+INTEGRATIONS e 
+VOLUME TYPES COM FACILIDADE..
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> BEM, AQUI USAREMOS O 'AMAZON EFS CSI DRIVER' -> usaremos esse SERVICE,
+
+
+
+
+O AMAZON ELASTIC FILE SYSTEM, PARA MANAGEAR NOSSA DATA...
+
+
+
+
+
+
+
+
+
+
+
+
+-> É O MESMO SERVICE QUE USAMOS QUANDO USAMOS 
+
+
+O ECS COM A AMAZON...
+
+
+
+
+
+
+
+
+
+
+
+
+TEMOS A OFFICIAL DOCUMENTATION DO 'efs csi driver'...
+
+
+
+
+
+
+
+
+
+
+
+
+-> É UMA INTEGRATION MT ÚTIL, E QUE É FÁCIL DE SER ADDADA AO NOSSO CLUSTER,
+
+
+E __ QUE __ ENTÃO NOS PERMITE USAR _ o EFS 
+
+
+COMO 1 'VOLUME DRIVER/TYPE'...
